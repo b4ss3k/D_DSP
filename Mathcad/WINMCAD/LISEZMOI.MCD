@@ -1,0 +1,296 @@
+.MCAD 301010000 1 74
+.CMD FORMAT  rd=d ct=10 im=i et=3 zt=15 pr=3 mass length time charge
+.CMD SET ORIGIN 0
+.CMD SET TOL 0.001000000000000
+.CMD SET PRNCOLWIDTH 8
+.CMD SET PRNPRECISION 4
+.CMD PRINT_SETUP 1.200000 0
+.CMD DEFINE_FONTSTYLE_NAME fontID=0 name=Variables
+.CMD DEFINE_FONTSTYLE_NAME fontID=1 name=Constants
+.CMD DEFINE_FONTSTYLE_NAME fontID=2 name=Text
+.CMD DEFINE_FONTSTYLE_NAME fontID=4 name=User^1
+.CMD DEFINE_FONTSTYLE_NAME fontID=5 name=User^2
+.CMD DEFINE_FONTSTYLE_NAME fontID=6 name=User^3
+.CMD DEFINE_FONTSTYLE_NAME fontID=7 name=User^4
+.CMD DEFINE_FONTSTYLE_NAME fontID=8 name=User^5
+.CMD DEFINE_FONTSTYLE_NAME fontID=9 name=User^6
+.CMD DEFINE_FONTSTYLE_NAME fontID=10 name=User^7
+.CMD DEFINE_FONTSTYLE fontID=0 family=MS^Serif points=10 bold=0 italic=0 underline=0
+.CMD DEFINE_FONTSTYLE fontID=1 family=MS^Serif points=10 bold=0 italic=0 underline=0
+.CMD DEFINE_FONTSTYLE fontID=2 family=MS^Sans^Serif points=10 bold=0 italic=0 underline=0
+.CMD DEFINE_FONTSTYLE fontID=4 family=MS^Sans^Serif points=10 bold=0 italic=0 underline=0
+.CMD DEFINE_FONTSTYLE fontID=5 family=Courier points=10 bold=0 italic=0 underline=0
+.CMD DEFINE_FONTSTYLE fontID=6 family=System points=10 bold=0 italic=0 underline=0
+.CMD DEFINE_FONTSTYLE fontID=7 family=Script points=10 bold=0 italic=0 underline=0
+.CMD DEFINE_FONTSTYLE fontID=8 family=Terminal points=10 bold=0 italic=0 underline=0
+.CMD DEFINE_FONTSTYLE fontID=9 family=Modern points=10 bold=0 italic=0 underline=0
+.CMD DEFINE_FONTSTYLE fontID=10 family=Times^New^Roman points=10 bold=0 italic=0 underline=0
+.CMD UNITS U=1
+.TXT 2 1 0 0
+Cg a57.500000,57.500000,57
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {\f0 \fs24 \b \i \ulnone MATHCAD
+ VERSION 3.1NOTES EN LIGNE}}
+}
+.TXT 3 3 0 0
+Cg a57.250000,57.250000,188
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {Ce fichier présente les dernières
+ informations relatives à Mathcad 3.1,}{
+ ainsi que les ajouts et corrections apportés
+ au Manuel de l'Utilisateur et aux notes
+ relatives à Mathcad 3.1.}}
+}
+.TXT 10 -3 0 0
+Cg a36.875000,36.875000,61
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {\b COMMENT CONTACTER MATHSOFT INC}{\b 
+\f0 \fs20 \i0 \ulnone .}}
+}
+.TXT 4 3 0 0
+Cg a66.250000,66.250000,629
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {Nos collaborateurs sont prêts à
+ répondre à toutes vos questions d'ordre
+ technique. Il vous suffit de composer le
+ (19-44) 506 460373}{.\par \par Nous vous
+ prions de vous munir de votre numéro de
+ série lors de votre appel. (Il se trouve
+ sur la deuxième page de couverture de votre
+ manuel.)\par \par Nous vous conseillons
+ vivement d'envoyer votre carte d'enregistrement.
+ Les utilisateurs enregistrés bénéficient
+ d'avantages particuliers, et reçoivent 
+notamment des informations concernant les
+ nouvelles versions de Mathcad. \par \par 
+Si vous pensez avoir décelé un bogue, faites-le
+ nous savoir en contactant le service d'assistance
+ technique.}}
+}
+.TXT 26 -3 0 0
+Cg a30.375000,35.500000,37
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {\par ENVOYEZ-NOUS VOS SUGGESTIONS\par 
+\par }}
+}
+.TXT 9 3 0 0
+Cg a64.250000,64.250000,183
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {Aidez-nous à élaborer de nouvelles
+ caractéristiques pour les futures versions
+ de Mathcad, ou à modifier les caractéristiques
+ existantes, en nous faisant parvenir vos
+ suggestions.}}
+}
+.TXT 7 -2 0 0
+Cg a19.625000,31.000000,22
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {\par DOCUMENTS MATHCAD}}
+}
+.TXT 6 0 0 0
+Cg a66.250000,66.375000,206
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {Les documents }{Mathcad comprennent
+ de nombreux exemples ainsi qu'un manuel
+ de DEMARRAGE. Vous pouvez charger ce manuel
+ dans Mathcad et essayer différentes façons
+ d'utiliser les fonctions de Mathcad.\par 
+}}
+}
+.TXT 9 -1 0 0
+Cg a33.000000,33.000000,46
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {\par }{\b NOTES R}{\b ELATIVES 
+AUPROGRAMME}{ }}
+}
+.TXT 7 0 0 0
+Cg b4000.000000,73.000000,703
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain { }{\par IMPRESSION}{\b0 \par }{\b0 
+\f0 \fs20 \i0 \ulnone  \par Pour que le 
+document imprimé soit identique à celui 
+qui apparaît à l'écran, les polices de caractères
+ de ce document doivent être disponibles
+ sur l'imprimante.}{\f0 \fs20 \b0 \i0 \ulnone 
+\par Il se peut que Mathcad choisisse par
+ défaut une police non-imprimable, selon
+ l'imprimante sélectionnée. Par conséquent,
+ assurez-vous, avant de lancer l'impression,
+ que la police choisie pour le document 
+est imprimable. Pour plus d'informations
+ sur l'impression et l'utilisation des polices
+ de caractères, consultez les notes relatives
+ à Mathcad 3.1.\par \par Sur une HP LaserJet,
+ les documents Mathcad doivent toujours 
+avoir une résolution d'au moins   300 ppp.
+ \par }}
+}
+.TXT 26 0 0 0
+C x1,1,0,0
+.TXT 4 0 0 0
+Cg b4000.000000,73.000000,886
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {AFFICHAGE}{\par }{\par Les expressions
+ mathématiques seront plus lisibles si les
+ polices sélectionnées pour les Variables
+ et pour les Constantes sont de même taille.\par 
+\par Les expressions mathématiques et les
+ tableaux de solutions peuvent s'étendre
+ }{\i au-delà}{\i0  de l'axe d'une}{\i0 
+ équation. Lorsque vous créez une expression
+ importante ou que vous affichez le résultat
+ d'un vecteur ou d'une matrice, assurez-vous
+ que vous disposez d'assez de place verticalement.
+ }{  Pour séparer des zones qui se chevauchent,
+ utilisez la commande }{\b Séparer Zones}{
+ du menu }{\b Edition}{.\par \par Il existe
+ une taille minimale pour les graphiques;
+ Mathcad ne peut redimensionner un tracé
+ si sa nouvelle taille doit être inférieure
+ à ce minimum. Il est possible de modifier
+ arbitrairement la taille d'un tracé de 
+surface, mais la surface ne sera pas affichée
+ si la taille du tracé est trop petite.}}
+}
+.TXT 32 0 0 0
+Cg b4000.000000,73.000000,818
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {COMPATIBILITE\par }{\f0 \fs20 \b 
+ \i0 \ulnone }{\par Les documents de Mathcad
+ 3.0 sont entièrement compatibles avec Mathcad
+ 3.1, }{\b MAIS}{ les documents de}{ Mathcad
+ 3.1 ne peuvent pas être chargés dans Mathcad
+ 3.0.\par \par Lorsque des documents créés
+ avec Mathcad 2.0 ou 2.5 sont ouverts dans
+ Mathcad 3.1, les changements de page imposés
+ sont éliminés. \par \par Les unités classiques
+ sont à présent intégrées comme constantes
+ prédéfinies (les unités du système MKS 
+sont chargées par défaut). Si vous définissez
+ une variable ou une fonction avec le même
+ nom que celui d'une unité, cela revient
+ à redéfinir ce nom ; vous ne pourrez donc
+ utiliser l'unité correspondante. Si vous
+ utilisez le nom d'une unité comme nom de
+ fonction avant d'avoir défini la fonction,
+ Mathcad signalera qu'il s'agit d'un nom
+ de fonction interdit.\par \par }}
+}
+.TXT 36 0 0 0
+Cg a73.000000,73.000000,398
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {TRACES}{\par \par Si vous formatez
+ un graphique logarithmique en cochant la
+ case Lignes de Quadrillage, Mathcad affiche
+ neuf subdivisions par cycle entre les extrémités
+ supérieures et inférieures des axes. Si
+ le nombre de lignes est trop élevé, Mathcad
+ n'affiche aucune ligne de cycle ou de subdivision.
+  Il est alors possible de faire apparaître
+ ces lignes en étirant le graphique verticalement.
+  }}
+}
+.TXT 19 0 0 0
+Cg a24.750000,25.375000,26
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {COMMANDE DE REAFFICHAGE}}
+}
+.TXT 3 0 0 0
+Cg a65.250000,65.250000,1010
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {S'il vous semble que l'image à 
+l'écran ne représente pas exactement l'état
+ d'un document, ou si des équations se superposent
+ ou présentent des vides, utilisez la commande
+ de réaffichage en appuyant sur }{\f0 \fs20 
+\b \i0 \ulnone [Ctrl]R}{. Cela réaffichera
+ l'écran dans sa totalité.\par \par Voici
+ certaines actions pouvant être la cause
+ de vides ou d'éléments illisibles à l'écran
+ : \par \par     1. Zones se superposant
+ à l'écran.\par \par     2. Messages d'erreur
+ provenant d'une équation ou d'un tracé 
+qui coïncide à l'écran                  
+                              avec d'autres
+ régions. \par \par     3. Couper et coller
+ des équations qui se superposent.\par \par 
+    4. Interrompre l'affichage d'un tracé
+ de surface ou d'un schéma en utilisant 
+la touche \par        }{\f0 \fs20 \b \i0 
+\ulnone [Echap].\par }{\par Aucune de ces
+ actions ne peut provoquer d'erreurs de 
+calcul ; elles n'affectent que l'affichage}{.
+ Lorsque l'information à l'écran n'est pas
+ évidente, appuyez sur }{\f0 \fs20 \b \i0 
+\ulnone [Ctrl]R}{ pour tout réafficher. 
+ }}
+}
+.TXT 48 0 0 0
+Cg b4000.000000,73.000000,42
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {FICHIERS SCHEMAS DE PLUS DE 8000
+ POINTS}}
+}
+.TXT 4 0 0 0
+Cg a69.625000,69.875000,335
+{\rtf1\ansi \deff0
+{\fonttbl
+{\f0\fnil MS Sans Serif;}
+}
+{\plain {Le programme MCSTRANS.EXE, inclus
+ dans ce disque, traduit les fichiers HPGL
+ au format schéma de Mathcad. Si le schéma
+ obtenu est de plus de 8000 points, Mathcad
+ ne peut le représenter entièrement dans
+ un document Mathcad. Au lieu de cela, vous
+ en obtiendrez une représentation partielle,
+ ne montrant que les 8000 premiers points.}}
+}

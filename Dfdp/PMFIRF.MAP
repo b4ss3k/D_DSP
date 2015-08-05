@@ -1,0 +1,49 @@
+
+PC/CrossWare Family Linker v2.4 85.158  06/18/87  08:45:12            Page   1
+ Copyright (C) 1985, Texas Instruments Inc.  All Rights Reserved                
+ Command List
+
+ TASK     PMFIRF
+ PROGRAM  >0
+ COMMON   >200,CPMFIR
+ COMMON   >300
+ INCLUDE  PMFIRF.MPO
+ END
+PC/CrossWare Family Linker v2.4 85.158  06/18/87  08:45:12            Page   2
+ Copyright (C) 1985, Texas Instruments Inc.  All Rights Reserved                
+ Link Map
+
+ Control File = LINK.CTL
+
+ Linked Output File = PMFIRF.LOD
+
+ List File = PMFIRF.MAP
+
+ Output Format = ASCII
+
+PC/CrossWare Family Linker v2.4 85.158  06/18/87  08:45:12            Page   3
+ Copyright (C) 1985, Texas Instruments Inc.  All Rights Reserved                
+
+ Phase 0     PMFIRF    Module  Origin = 0000    Length = 0000
+
+ Module    No   Origin    Length      Type         Date       Time     Creator
+
+ PMFIR      1    0000*     00BC     INCLUDE      06-18-87   08:45:09   ASM320
+
+
+
+ Common    No   Origin    Length
+
+ CPMFIR     1    0200*     0065
+ DPMFIR     1    0300*     0066
+
+
+ Length of Region for Task             = 0000
+
+
+ Number of Records for Module PMFIRF   =   14
+
+ Total Records Written                 =   14
+
+ **** Linking Completed    06/18/87  08:45:13
+

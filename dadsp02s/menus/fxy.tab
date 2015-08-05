@@ -1,0 +1,9 @@
+@tabbed
+Generate z = F(x, y) Series
+
+~_MF("fxy.pan")
+~_MF("zgenset.pan")
+
+~~if(_chkwin > 0, _poffdwin;eval(sprintf("setwform(%s, '%s;setplottype(%d);setplotstyle(%d)')", _dwin, _FXYSTR, _str2pty(_fxyptype), 4*(_str2pty(_fxyptype)==400))))
+~~if(_chkwin > 0, _zdataunits)
+~~if(_chkwin > 0, if(_fxycmap!=0, _cwin=_getcwin;eval(sprintf("moveto(%s)", _dwin));eval(_i2cmap(_fxycmap));eval(sprintf("moveto(%s)", _cwin)), shadewith());_pondwin)

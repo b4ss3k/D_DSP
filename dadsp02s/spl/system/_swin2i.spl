@@ -1,0 +1,33 @@
+_swin2i(s)
+{
+	local w;
+
+	switch (tolower(s)) {
+		case "hamming":
+			w = 0;
+			break;
+
+		case "hanning":
+			w = 1;
+			break;
+
+		case "none":
+		default:
+			w = 2;
+			break;
+
+		case "kasier":
+			w = 3;
+			break;
+
+		case "flattop":
+			w = 4;
+			break;
+
+		case "blackman":
+			w = 5;
+			break;
+	}
+	return(w);
+}
+

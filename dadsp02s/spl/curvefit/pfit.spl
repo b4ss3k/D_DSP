@@ -1,0 +1,168 @@
+/*****************************************************************************
+*                                                                            *
+*   PFIT.SPL     Copyright (C) 1999-2002 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Polynomial fitting with fit statistics                      *
+*                                                                            *
+*   Revisions:    7 May 1999  RRR  Creation                                  *
+*                12 Sep 2002  RRR  optional polynomial form                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_PFIT
+
+    PFIT
+
+    Purpose: Least Squares Polynomial fitting with error statistics
+                                                                        
+    Format:  PFIT(series, order, mode, form)
+
+              series   - the input series
+              order    - an integer, the polynomial order
+              mode     - an optional integer, 0:no statistics, 1:return
+                         R^2 and Se (Standard Error of Estimate), defaults
+                         to 1.
+              form     - optional integer, polynomial form, 0:ascending
+                         powers, 1:descending powers, defaults to 0
+
+
+    Returns: A series or table
+
+    Example:
+             
+             W1: Gsin(100, 0.01, 0.8)
+             W2: Pfit(w1, 2)
+             W3: Polygraph(col(w2, 1), xvals(w1));overp(w1, lred)
+
+
+             W2 contains the table:
+
+              Coeff        R2        Se
+              0.349702     0.896020  0.232544
+              2.744303	
+             -4.769116
+
+             W3 contains the fitted result with an overplot of the 
+             original data.
+
+
+             W2: Pfit(w1, 4)
+
+             W2 contains the table:
+
+              Coeff        R2         Se
+             -0.044900     0.999201   0.020604
+              6.293248	
+             -6.989869	
+            -12.180623	
+             12.057509	
+
+             The increase in R2 and the corresponding decrease in Se
+             indicates the 4th order fit performs better in the least
+             squares sense than the previous 2nd order fit.
+
+
+    Remarks:
+             R2, sometimes called the coefficient of determination, is
+             an indication of how the fit accounts for the variability
+             of the data. R2 can be thought of as 
+
+             variability of model
+             --------------------
+             variability of data
+
+             An R2 of 1 indicates the model accounts for ALL the variability
+             of the data. An R2 of 0 indicates no data variability is 
+             accounted for by the model.
+
+
+             The Standard Error of Estimate, Se, can be thought of as a
+             normalized standard deviation of the residuals, or prediction
+             errors.
+                             
+             Residuals = Y - Yestimate
+
+             Se = sqrt(sum(Residuals^2)/(length(Y) - order - 1))
+
+             As the model fits the data better, Se approaches 0.
+
+
+    See Also
+             Polyfit
+             Stdev
+#endif
+
+
+ITERATE pfit(series, order, mode, form)
+{
+	local coeff, y, res, R2, Se;
+
+	/* hurdles */
+	if (argc < 4) {
+		if (argc < 3) {
+			if (argc < 2) error("pfit - series and order required");
+			mode = 1;
+		}
+		form  = 0;
+	}
+
+	if (order > length(series) - 1) {
+		error(sprintf("pfit - order must be < %d", length(series)));
+	}
+
+	/* do polyfit, do not create specfile */
+	coeff = polyfit(series, order, -1, form);
+
+	/* estimated values */
+	y = polygraph(coeff, xvals(series), ISXYSERIES(series), form);
+
+	/* residuals */
+	res = yvals(series) - y;
+
+	/* coefficient of determination - 0 <= R2 <= 1 */
+	R2 = {1 - (sum(res^2)/(stdev(yvals(series))^2 * (length(series)-1)))};
+
+	/* standard error of estimate */
+	Se = {sqrt((1 - R2) * stdev(yvals(series))^2*(length(series)-1) / (length(series)-order- 1))};
+
+	/* convert to table */
+	setplotstyle(coeff, 4);
+
+	/* comments */
+	setcomment(coeff, "Coeff");
+	setcomment(R2, "R^2");
+	setcomment(Se, "Se");
+
+	if (mode != 0) {
+		if (outargc == 0) {
+			/* stick in current window */
+			ravel(coeff, R2, Se);
+
+			/* tableview */
+			tablev;
+		}
+		else {
+			if (outargc == 1) {
+				return(ravel(coeff, R2, Se));	
+			}
+			else {
+				return(coeff, castreal(R2), castreal(Se), res);
+			}
+		}
+	}
+	else {
+		if (outargc > 0) {
+			return(coeff, castreal(R2), castreal(Se), res);
+		}
+		else {
+			/* stick in current window */
+			coeff;
+			tablev;
+		}
+	}
+}

@@ -1,0 +1,78 @@
+
+st			dmf("stats.dmn")
+stloaded 1
+
+_DEFSER5(str1)      defmacro("_SER5",str1,1)
+_gettables             	dmf("table1.dmn")
+_dmgetser2(s1,s2)       defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|dmf("ser2.dmn")
+XCHART(t)              	transpose(colmean(t));setmatrix(0);Xbar_CL(t);setsymbol(1);lines;setnewy
+Xbar_CL(t)             	cl1(t);cl2(t);cl3(t);lines
+cl1(t)                  cl(avg_m(curr),lgreen)
+cl2(t)                  cl((avg_m(curr) + getlim(mtab,2,length(t))*avg_r(t)),lred)
+cl3(t)                  cl((avg_m(curr) - getlim(mtab,2,length(t))*avg_r(t)),lred)
+cl(y,clr)               overpl(gline(length,deltax,0,y),clr)
+grandmean(t)            (mean(unravel(t)))
+grandcount(t)           (length(unravel(t)))
+grandtotal(t) 	        reduce(unravel(t),'+')
+fprob(f,df1,df2)     betai(df2/(df2+df1*f),0.5*df2,0.5*df1)
+
+mtab    (ravel(mtabc1,mtabc2))
+mtabc1  gser(2.12,1.73,1.5,1.34,1.22,1.13,1.06,1.00,0.95,0.90,0.87,0.83,0.80,.77,.75,.73,.71,.69,.67)
+mtabc2  gser(1.88,1.02,0.73,0.58,0.48,0.42,0.37,0.34,0.31,0.29,0.27,0.25,0.24,0.22,0.21,0.20,0.19,0.19,0.18)
+
+
+rtab    (ravel(rtabc1,rtabc2))
+rtabc1  gser(0.00,0.00,0.00 ,0.00,0.00,0.08,0.14,0.18,0.22,0.26,0.28,0.31,0.33,0.35,0.36,0.38,0.39,0.40,0.41)
+rtabc2  gser(3.27,2.57,2.28,2.11,2.00,1.92,1.86,1.82,1.78,1.74,1.72,1.69,1.67,1.65,1.64,1.62,1.61,1.60,1.59)
+
+getlim(t,colnum,group) (getpt(col(t,colnum),group-1))
+
+AVG_M(t)                (grandmean(t))
+setnewy      sety(getyb-real((getyt-getyb)*0.1),getyt+real((getyt-getyb)*0.1))
+
+RCHART(t)               	transpose(colmax(t)-colmin(t));R_CL(t);setsymbol(5,1);lines; setnewy
+R_CL(t)                 	cl(avg_r(t),lgreen);cl(getlim(rtab,2,length(t))*avg_r(t),lred);cl(getlim(rtab,1,length(t))*avg_r(t),lred)
+AVG_R(t)                	mean(transpose(colmax(t)-colmin(t)))
+MRCOEFS(y,x)        	Betahat(Amatrix(y,x),y);tableview
+BETAHAT(X,Y)       	mmult(inv(mmult(transpose(X),X)),mmult(transpose(X),Y))
+MMULT(M1,M2) 	INNERPROD(M1,M2,'+','*')
+Amatrix(y,x)    		ravel(gline(length(y),1,0,1),x)
+MRGRAPH(y,x)      	Amatrix(y,x);Mmult(curr,Betahat(curr,y));lines
+ANOVASUM(t)             _DEFS1(t);ANOVAMEN
+_DEFS1(t1)                  defmacro("_ser1",strwin(t1),2)
+ANOVAMEN                 echo("Calculating Analysis of Variance . . . ");eval('doanovadefs');dmf("anova.dmn")
+DOANOVADEFS          acorval;amsval;tssval;rssval;tdfval;rdfval;tmsval;resmsval;fval;fpval
+acorval                 defmacro("acor",avgcor(eval(_ser1)),1)
+amsval                  defmacro("ams",avgms(eval(_ser1)),1)
+tssval                  defmacro("tss",treatss(eval(_ser1)),1)
+rssval                  defmacro("rss",residss(eval(_ser1)),1)
+tdfval                  defmacro("tdf",treatdf(eval(_ser1)),1)
+rdfval                  defmacro("rdf",residdf(eval(_ser1)),1)
+tmsval                  defmacro("tms",real(eval('tss'))/real(eval('tdf')),1)
+resmsval                defmacro("resms",real(eval('rss'))/real(eval('rdf')),1)
+fval                    defmacro("frat",real(eval('tms')/eval('resms')),1)
+fpval                   defmacro("fpr",fprob(eval('frat'),int(eval('tdf')),int(eval('rdf'))),1)
+ftestcurr               if (eval('fpr') < siglev,accept,reject)
+accept                  defmacro("f_phrase1","Reject the null hypothesis.",2);defmacro("f_phrase2","Assume populations are different.",2)
+reject                  defmacro("f_phrase1","Accept the null hypothesis.",2);defmacro("f_phrase2","Assume populations are similar.",2)
+avgdf                   1
+_DEFS1(t1)              defmacro("_ser1",strwin(t1),2)
+_DEFS2(t1)              defmacro("_ser2",strwin(t1),2)
+AVGCOR(t)               real(grandcount(t))*grandmean(t)^2
+AVGMS(t)                crudess(t)
+CRUDESS(t)              grandtotal(unravel(t)^2)
+TREATSS(t)              grandtotal(collength(t)*((colmean(t)-grandmean(t))^2))
+RESIDSS(t)              grandtotal(unravel(res2(t,rept(t)))^2)
+RES2(t,rep)             (t) - (rep * ((t) || not(t)))
+rept(t)                 replicate(colmean(t),int(max(transpose(collength(t)))))
+TREATDF(t)              int(numcols(t)-1)
+RESIDDF(t)              int(grandtotal(collength(t))-numcols(t))
+TREATMS(t)              (treatss(t))/(treatdf(t))    ! need extra parens
+RESIDMS(t)              (residss(t))/(residdf(t))    ! need extra parens
+siglev                  .05                            ! default = .05
+setsiglevel(level)      defmacro("siglev",level,1)
+
+_oser2form(s)           eval(strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_ser2'),')")'))
+_oserform(s)             eval(Strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),')")'))
+
+

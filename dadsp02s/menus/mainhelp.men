@@ -1,0 +1,22 @@
+! mainhelp.men -- main help menu
+@y1
+@b{_helpbg}
+@f{_helpfg}
+                    DADiSP 4.0 System Overview
+ 
+ Welcome to the DADiSP 4.0 Worksheet.
+
+ The DADiSP Worksheet has hundreds of functions for analysis and
+ display.  These functions may be accessed via the easy-to-use 
+ pop-up menus and directly from the DADiSP command line.
+
+ These HELP menus provide a brief overview of each of the methods
+ for interacting with DADiSP, including:
+
+            The DADiSP Menu Interface
+            Using the Mouse in DADiSP
+            The DADiSP Command Line Interface and
+            Function Keys in DADiSP
+          
+ New users will probably find that using the menus will be the
+ most effective and quickest method for learning about DADiSP.

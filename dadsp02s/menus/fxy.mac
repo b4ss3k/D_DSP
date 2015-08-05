@@ -1,0 +1,39 @@
+! FXY.MAC  z = f(x, y) function evaluation macros
+
+! define data ranges
+_DEFXL(str1)   defmacro("$XL",numstr(str1),1)
+_DEFXU(str1)   defmacro("$XU",numstr(str1),1)
+_DEFXI(str1)   defmacro("$XI",numstr(str1),1)
+_DEFYL(str1)   defmacro("$YL",numstr(str1),1)
+_DEFYU(str1)   defmacro("$YU",numstr(str1),1)
+_DEFYI(str1)   defmacro("$YI",numstr(str1),1)
+
+! default data ranges
+$XL (-1.0)
+$XU (1.0)
+$XI (0.1)
+$YL (-1.0)
+$YU (1.0)
+$YI (0.1)
+
+! define function body
+_DEFFXYSTR(s)     defmacro("_fxystr", s, 1)
+_DEFYFXSTR(s)     defmacro("_yfxstr", s, 1)
+
+! default function
+_FXYSTR           'sinc(r^3)*cos(x*y)^3'
+_YFXSTR           'x^3-x^2+cos(x)'
+
+! misc
+_INLIT2(str1,str2)   INPUT(5,str1,"Enter Expression", str2)
+
+FXY                _mf("fxy.pan")
+YFX                _mf("yfx.pan")
+
+! define X & Y for F(X, Y) evaluation
+_DEFZXY               (x, y) = fxyvals(($XL),($XU),($XI),($YL),($YU),($YI));
+
+! define X for F(X) evaluation
+_DEFYX               setvar(X,gnum(($XL),($XU),($XI),($XI),($XL)))
+
+_fxyloaded 1

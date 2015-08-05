@@ -1,0 +1,46 @@
+/*****************************************************************************
+*                                                                            *
+*   INITWAV.SPL  Copyright (C) 1997 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Installs WAV module as a toolbar button                     *
+*                                                                            *
+*   Revisions:   22 Oct 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_INITWAV
+
+    INITWAV
+
+    Purpose: Installs WAV module as a toolbar button
+                                                                        
+    Format:  INITWAV()
+
+    Returns: Nothing
+
+    Remarks:
+             Initwav simply prepares the WAV module to be invoked as 
+             a toolbar button. See wav\wav.spl for the actual wav 
+             program files and menus. 
+
+             Initwav is invoked in splmain(), located in the
+             dadisp.spl file.
+
+#endif
+
+
+initwav()
+{
+	/* create macro for menu system */
+	defmacro("_mfw(s)","_menuf(strcat(_WAVHOME, s))",1);
+
+	/* install WAV button - first toolbar, last button */
+	toolbar(1,-1,4, lred,"WAV",'_MFW("wav.men")', 'DADiSP/WAV');
+
+    setvar("_wavinited", 1);
+
+}

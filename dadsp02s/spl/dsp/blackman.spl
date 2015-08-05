@@ -1,0 +1,67 @@
+/*****************************************************************************
+*                                                                            *
+*   BLACKMAN.SPL   Copyright (C) 2004 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Multiplies a series with a Blackman Window                 *
+*                                                                            *
+*   Revisions:    19 Mar 2004  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_BLACKMAN
+
+    BLACKMAN    
+
+    Purpose: Multiplies a series with a Blackman window
+                                                                        
+    Format:  BLACKMAN(s, ampflag)
+
+                    s - a series or array
+
+              ampflag - an optional integer, 0:do not correct amplitude,
+                        1:correct amplitude, 2: correct RMS ampltude,
+                        defaults to 0.
+
+    Returns: A series or array
+
+    Example:
+             W1: gsin(1000, .001, 45)
+             W2: spectrum(blackman(W1))
+             W3: spectrum(blackman(W1, 1))
+
+             The MAX of W2 == 0.419 and the MAX of W3 == 1.0. The amplitude
+             of the spectrum in W3 has been corrected to take into account
+             amplitude effects of the Blackman window.
+ 
+    Remarks:
+             If ampflag == 1, the correction factor is the mean of 
+             the Blackman window. This assures that the spectrum of a 
+             sinusoid of amplitude A has a peak of A.
+
+             If ampflag == 2, the correction is applied as follows:
+
+                w = blackman(s) * rms(s) / rms(blackman(s))
+
+             This assures that:
+
+                sqrt(area(psd(w))) == rms(s)    approximately
+
+    See Also:
+             Flattop
+             Gblckman
+             Hamming
+             Hanning
+             Kaiser
+             Winfunc
+#endif
+
+
+/* multiply a series with a blackman window */
+blackman(s, fixamp)
+{
+	return(winfunc(5, s, fixamp));
+}

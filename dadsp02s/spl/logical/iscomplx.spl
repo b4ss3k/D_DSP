@@ -1,0 +1,83 @@
+/*****************************************************************************
+*                                                                            *
+*   ISCOMPLX.SPL Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns 1 if input is complex                               *
+*                                                                            *
+*   Revisions:   14 Jun 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_ISCOMPLX
+
+    ISCOMPLX
+
+    Purpose: Returns 1 if input parameter is complex
+                                                                        
+    Format:  ISCOMPLX(val)
+
+              val - series, scalar or string input
+
+    Returns: The scalar 1 if the input is complex or a complex
+             series, else 0.
+
+    Example:
+             iscomplx(3i)
+
+             returns 1
+
+    Example:
+
+             iscomplx("string")
+
+             returns 0
+
+    Example:
+
+             iscomplx(fft({1, 2, 3, 4}))
+
+             returns 1
+
+    Remarks:
+             If the input series is empty, iscomplx returns 0.
+
+
+    See Also:
+             Isreal
+
+#endif
+
+
+
+/* is input complex ? */
+iscomplx(s)
+{
+	local v;
+
+	if (argc < 1) {
+		if (length > 0) {
+			/* first sample of current window */
+			v = W0[1];
+		}
+		else return(0);
+	}
+	else {
+		if (not(IS_ARRAY(s))) {
+			v = s;
+		}
+		else if (length(s) > 0) {
+			v = s[1];
+		}
+		else {
+			return(0);
+		}
+	}
+	/* test value for complex */
+	return(IS_COMPLEX(v));
+}

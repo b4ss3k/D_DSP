@@ -1,0 +1,14 @@
+! ainterp.dmn -- Digital interpolation menu. modified for the demo
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+    Interpolation  
+
+ Linear Interpolation ~echo('Perform Linear Interpolation')
+
+ Spline               ~echo('Perform Cubic Spline Interpolation')
+
+ Sin(x)/x             ~echo('Perform Sin(x)/x Interpolation')
+
+ Sin(nx)/sin(x)       ~echo('Perform Sin(nx)/sin(x) Interpolation')

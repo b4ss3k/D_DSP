@@ -1,0 +1,88 @@
+/*****************************************************************************
+*                                                                            *
+*   STEPCTR.SPL  Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets bar reference bottom                                   *
+*                                                                            *
+*   Revisions:   22 Jan 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_STEPCTR
+
+    STEPCTR
+
+    Purpose: Sets the centering reference of a 2D step plot
+                                                                        
+    Format:  STEPCTR(win, on_off)
+
+              win    - an optional window, defaults to current window
+              on_off - an integer 0:use 0.0 1:center steps (default 0)
+
+    Returns: Nothing
+
+    Example:
+             W1: gnorm(10, 1);steps;stepctr(1)
+             W2: W1;steps;stepctr(0)
+
+             The steps in W1 are centered around the data value, 
+             while the steps in W2 begin at the data value (the default).
+
+    Remarks: 
+             STEPCTR only effects step charts.
+
+             STEPCTR is a Window property. All step plots plotted in the
+             Window will be drawn in the current STEPCTR mode.
+
+    See Also:
+             Bars
+             Steps
+#endif
+
+
+/* toggle step centering */
+stepctr(win, val)
+{
+	local exstyle;
+
+	/* stepctr is a winexstyle bit */
+	if (argc < 1) {
+		return((winexstyle(W0) & EX_STEP_CENTER) != 0);
+	}
+	else if (argc == 1) {
+		if (IS_WINDOW(win)) {
+			return((winexstyle(win) & EX_STEP_CENTER) != 0);
+		}
+		else {
+			val = win != 0;
+			exstyle = winexstyle(W0);
+			/* clear EX_STEP_CENTER bit */
+			exstyle &= ~EX_STEP_CENTER;
+
+			/* set EX_STEP_CENTER bit */
+			if (val) exstyle |= EX_STEP_CENTER;
+			winexstyle(W0, exstyle);
+
+			/* indicate window should plot */
+			plotmode(1, 0);
+		}
+	}
+	else {
+		val = val != 0;
+		exstyle = winexstyle(win);
+		/* clear EX_STEP_CENTER bit */
+		exstyle &= ~EX_STEP_CENTER;
+		if (val) exstyle |= EX_STEP_CENTER;
+		winexstyle(win, exstyle);
+
+		/* indicate window should plot */
+		plotmode(win, 1, 0);
+
+	}
+}
+

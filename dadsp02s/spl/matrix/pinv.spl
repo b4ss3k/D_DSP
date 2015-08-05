@@ -1,0 +1,103 @@
+/*****************************************************************************
+*                                                                            *
+*   PINV.SPL    Copyright (C) 2001 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the pseudo inverse of a matrix                   *
+*                                                                            *
+*   Revisions:   24 Jul 2001  RRR  Creation                                  *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_PINV
+
+    PINV  
+
+    Purpose: Calculates the pseudo inverse of a matrix using SVD
+                                                                        
+    Format:  PINV(a, tol)
+
+                  a - input array
+
+                tol - optional real, singular value tolerance, defaults to
+                      (max of rows or cols) * max(singular values) * eps
+                      
+
+    Returns: An array, P, the pseudo inverse of the input matrix a, such that
+             a *^ P ^* a == a.
+
+    Example:
+             a = {{1, 4, 7},
+                  {2, 5, 8},
+                  {3, 6, 9}}
+
+
+             P = pinv(a)
+
+             P == {{-0.638889, -0.055556,  0.527778},
+                   {-0.166667,  0.000000,  0.166667},
+                   { 0.305556,  0.055556, -0.194444}}
+
+
+             a *^ P *^ a == {{1, 4, 7},
+                             {2, 5, 8},
+                             {3, 6, 9}}
+
+
+             P *^ a *^ P == {{-0.638889, -0.055556,  0.527778},
+                             {-0.166667,  0.000000,  0.166667},
+                             { 0.305556,  0.055556, -0.194444}}
+
+    Remarks:
+             PINV use SVD to compute the pseudo inverse. The pseudo inverse
+             P, of a matrix m has the same size as transpose(m) such that:
+
+             m *^ P *^ m == m
+
+             P *^ m *^ P == P
+
+    See Also:
+             *^
+             Norm
+             Rank
+             Svd
+#endif
+
+
+/* calculate pseudo inverse of a matrix */
+pinv(a, tol)
+{
+	local u, w, v, nr, nc, r, P;
+
+	if (argc < 1) error("pinv - input array required");
+
+	(nr, nc) = size(a);
+
+	/* svd decomposition */
+	(u, w, v) = svd(a);
+
+	if (argc < 2) {
+		/* use rank as tolerance */
+		tol = maxval(nr, nc) * w[1] * eps;
+	}
+
+	/* find rank */
+	r = sum(w > tol);
+	
+	if (r == 0) {
+		/* no inverse */
+		P = zeros(nc, nr);
+	}
+	else {
+		/* SVD inverse */
+		w = diag(w);
+		w = diag(1 / w[1..r]);
+		P = v[.., 1..r] *^ (w *^ conj(transpose(u[..,1..r])));
+	}
+	return(P);
+}

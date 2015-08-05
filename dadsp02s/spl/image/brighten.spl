@@ -1,0 +1,112 @@
+/*****************************************************************************
+*                                                                            *
+*   BRIGHTEN.SPL Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Brightens or darkens a colormap                             *
+*                                                                            *
+*   Revisions:   17 Mar 1998  RRR  Creation                                  *
+*   Revisions:   11 Jun 1998  RRR  24 bit RGBIMAGE support                   *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_BRIGHTEN
+
+    BRIGHTEN
+
+    Purpose: Brightens or darkens an image
+                                                                        
+    Format:  Brighten(beta, cmap)
+
+              beta - an optional integer, -1 <= beta <= 1, default 0.5
+              cmap - optional colormap, defaults to current colormap
+
+    Returns: A colormap or alters the current colormap
+
+    Example:
+             W1: Rainbow();showcmap()
+             brighten(.5)
+
+             brightens the rainbow colormap
+
+             brighten(-.5)
+
+             restores the brightened colormap to the orginal colors
+
+    Remarks:
+             For beta > 0, the color map is brighten and if beta < 0, 
+             the colormap is darkend.
+
+
+    See Also
+             Getcolormap
+             Showcmap
+             Setcolormap
+
+#endif
+
+
+
+brighten(beta, map)
+{
+	local gamma, isrgb = FALSE, r, g, b;
+
+	if ((beta > 1) || (beta < -1)) {
+	   error('brighten - Beta must be between -1 and 1')
+	}
+
+	if (beta > 0) {
+		gamma = 1 - minval(1,beta);
+	}
+	else {
+		gamma = 1/(1 + maxval(-1+eps,beta));
+	}
+
+	if (argc < 2) {
+		if (argc < 1) {
+			beta = 0.5;
+		}
+		if (rgbimage()) {
+			isrgb = TRUE;
+			(r, g, b) = getrgb(w0);
+		}
+		else {
+			map = getcolormap();
+		}
+	}
+
+	if (isrgb) {
+		 r = r^gamma;
+		 g = g^gamma;
+		 b = b^gamma;
+	}
+	else {
+		if (max(maxval(map)) > 1) {
+			map = map/255;
+		}
+		map = map^gamma;
+	}
+
+
+	if (outargc == 0) {
+		if (isrgb) {
+			w0 = rgbimage(r, g, b);
+		}
+		else {
+			setcolormap(map);
+			setshading();
+		}
+	}
+	else {
+		if (isrgb) {
+			return(r, g, b);
+		}
+		else {
+			return(map);
+		}
+	}
+}

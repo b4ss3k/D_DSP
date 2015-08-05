@@ -1,0 +1,10 @@
+! cdatform.men
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+ Clear Data & Formulas
+
+    Current         ~_MC | Clear
+    Range           ~_deffname('CLEAR    Clear Selected Windows') | _defformat('Clear(window,window,...)') | _defxamp('Clear(W2,W3,W6)') | _getser | _evalserform("Clear")
+    All Windows     ~if(strcmp(strextract(input(3,"Clear ALL Windows?"),1,1),"y",0)==0,eval("_MC;Clearall"))

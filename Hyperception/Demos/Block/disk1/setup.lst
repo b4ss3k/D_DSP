@@ -1,0 +1,10 @@
+1;
+..\data.z
+..\disk\vsauthd.vxd
+..\disk\inetwh16.dll
+..\disk\inetwh32.dll
+..\disk\ds1410d.sys
+..\disk\giveio.sys
+..\disk\swa16ut.dll
+..\disk\swa32ut.dll
+..\disk\sacwd400.dll

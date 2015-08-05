@@ -1,0 +1,19 @@
+[.wav]
+FileName0=signal.wav
+PathName0=C:\Hypersignal\RIDE40\EXAMPLES
+file format=Wave
+data type=float
+data size=16
+real complex=real
+data dimension=1
+data amplitude=
+data offset=0.0
+number of channels=1
+interleave=0
+channel select=0
+sampling frequency=11025.0
+frame size=100
+fft order=7
+frame overlap=80
+initial offset=0
+number of elements=0

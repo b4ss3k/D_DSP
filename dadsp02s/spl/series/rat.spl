@@ -1,0 +1,182 @@
+/*****************************************************************************
+*                                                                            *
+*   RAT.SPL      Copyright (C) 2003 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Rational approximation using continued fraction expansion   *
+*                                                                            *
+*   Revisions:   17 Sep 2003  RRR  Creation - from PD source                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_RAT
+
+    RAT   
+
+    Purpose: Calculates a rational approximation within a tolerance.
+                                                                        
+    Format:  RAT(x, tol)
+
+             (n, d) = RAT(x, tol)
+
+              x   - A scalar or series, the input value
+
+              tol - Optional. A real, the tolerance of the approximation.
+                    Defaults to 1.0e-6 * norm(x, 1).
+
+    Returns: A series or string. 
+
+             (n, d) = RAT(x, tol) returns the numerator and denominator in
+             separate variables as scalars or series.
+
+    Example:
+             rat(1.5)
+
+             returns the string '3/2'
+
+    Example:
+             rat(pi)
+
+             returns the string '104348/33215'
+
+    Example:
+             rat(pi, 1e-2)
+
+             returns the string '22/7.'
+
+    Example:
+             (n, d) = rat(pi, 1e-2)
+
+             n == 22, d == 7.
+
+    Example:
+             rat({pi, 1.5})
+
+             returns the series: {{104348, 33215},
+                                  {     3,     2}}
+
+    Remarks:
+             For series x, the first column of the result is the numerator
+             value and the second column is the denominator.
+
+             RAT uses the continued fraction expansion to produce the
+             rational approximation of a value. This is the same result
+             as SETFORMAT(7) with the default tolerance.
+
+             The tolerance, tol, controls the result such that:
+             
+                 abs(n/d - x) <= abs(x) * tol
+
+    See Also:
+             Setformat
+#endif
+
+
+/* continued fraction rational approximation */
+rat(x, tol)
+{
+	local y, n, d, frac, lastn, lastd, flip, step, nextn, nextd, len, str;
+
+	/* check input */
+	if (argc < 2) {
+		if (argc < 1) error("rat - input value required");
+		tol = 1.0e-6 * norm(x, 1);
+	}
+
+	/* convert input to 1 column series */
+	y = unravel(castseries(x));
+
+	/* number of values */
+	len = length(y);
+
+	/* initial approximation is integer part */	
+	n = round(y);
+	d = ones(len, 1);
+	frac = y - n;
+	lastn = ones(len, 1);
+	lastd = zeros(len, 1);
+
+	while (1) {
+
+		/* check convergence */
+		idx = find(abs(y-n/d) >= tol);
+		if (isempty(idx)) break;
+
+		/* next continued fraction */
+		flip = 1 / frac[idx];
+		step = round(flip);
+		frac[idx] = flip - step;
+
+		/* update values */
+		nextn = n;
+		nextd = d;
+
+		n[idx] = n[idx] * step + lastn[idx];
+		d[idx] = d[idx] * step + lastd[idx];
+
+		lastn = nextn;
+		lastd = nextd;
+	}
+
+	/* sign in numerator */
+	n = n * sign(d);
+	d = abs(d);
+
+	if (IS_NUMERIC(x)) {
+		/* convert back to scalar */
+		if (IS_COMPLEX(x)) {
+			n = castcomplex(n);
+			d = castcomplex(d);
+		}
+		else {
+			n = castreal(n);
+			d = castreal(d);
+		}
+	}
+	else {
+		/* reset to original rows & columns */
+		n = ravel(n, numrows(x));
+		d = ravel(d, numrows(x));
+	}
+
+	if (outargc < 2) {
+		if (IS_NUMERIC(x)) {
+			/* return as string */
+			if (IS_COMPLEX(x)) {
+				str = sprintf("(%s)/(%s)", rat_format_cpx(n), rat_format_cpx(d));
+			}
+			else {
+				str = sprintf("%.0f/%.0f", n, d);
+			}
+			return(str);
+		}
+		else {
+			/* combine numerator & denominator columns - return as series */
+			return(ravel(n, d));
+		}
+	}
+	else {
+		/* return in separate variables */
+		return(n, d);
+	}
+}
+
+
+/* stringify a complex */
+rat_format_cpx(n)
+{
+	local sym, str;
+
+	if (imag(n) < 0) {
+		sym = "-";
+	}
+	else {
+		sym = "+";
+	}
+	str = sprintf("%.0f %s %.0fi", real(n), sym, abs(imag(n)));
+	return(str);
+}

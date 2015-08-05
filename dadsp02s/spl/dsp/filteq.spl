@@ -1,0 +1,163 @@
+/*****************************************************************************
+*                                                                            *
+*   FILTEQ.SPL       Copyright (C) 1999-2003 DSP Development Corporation     *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Evaluates a Linear Constant Coeffcient Difference Equation  *
+*                                                                            *
+*   Revisions:   22 Mar 1999  RRR  Creation                                  *
+*                 1 Aug 2001  RRR  Optional Z transform form                 *
+*                10 Oct 2003  RRR  Added optional xi initial conditions      *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_FILTEQ
+
+    FILTEQ  
+
+    Purpose: Evaluates a Linear Constant Coefficient Difference Equation
+                                                                        
+    Format:  FILTEQ(b, a, x, yi, xi)
+
+              b  - a series, x[n] (FIR or zero) coefficients
+
+              a  - a series, y[n] (IIR or pole) coefficients, 
+                   if a[1] == 1, the coefficients are assumed to be 
+                   in standard Z transform form
+
+              x  - a series, the input
+
+              yi - an optional series, Y initial conditions
+
+              xi - an optional series, X initial conditions
+
+
+    Returns: A series
+
+
+    Example:
+             x = {1, 0, 0, 0, 0}
+             y = Filteq({1, -0.5}, {0.8, -0.2, -0.5}, x) 
+
+             y == {1.0, 0.3, 0.04, -0.528, -0.5804} 
+
+             y is the output produced by the difference equation:
+
+             y[n] = x[n] - 0.5*x[n-1] + 0.8*y[n-1] - 0.2*y[n-2] - 0.5*y[n-3]
+
+            
+
+            W1: impulse(1, 1024)
+            W2: Filteq({1, -0.5}, {0.8, -0.2, -0.5}, W1) 
+            W3: Spectrum(w2)
+
+
+            calculates 1024 samples of the impulse response of the above
+            difference equation. The Spectrum in W3 shows a resonate peak
+            at approximately 0.127 Hertz.
+
+
+    Example:
+             x = {1, 0, 0, 0, 0}
+             y = Filteq({1, -0.5}, {1, -0.2, -0.5}, x) 
+
+
+             y == {1.0, -0.3, 0.44, -0.062, 0.2076}
+
+             Because a[1] == 1, y is the output produced by the difference 
+             equation:
+
+             y[n] = x[n] - 0.5*x[n-1] + 0.2*y[n-1] + 0.5*y[n-2]
+
+             or the equivalent Z transform:
+
+  
+                                          -1
+                    Y(z)         1 - 0.5*z  
+             H(z) = ---- = -----------------------
+                                      -1       -2
+                    X(z)    1 - 0.2*z   - 0.5*z
+
+
+    Remarks:
+             FILTEQ evaluates a linear constant coefficient difference 
+             equation of the following form:
+
+             y[n] = a1*y[n-1] + a2*y[n-2] + a3*y[n-3] + ... + aN*y[n-N] +
+                    b0*x[n]   + b1*x[n-1] + b2*x[n-2] + ... + bM*x[n-M]
+
+             for n >=1 
+ 
+             Initial conditions, y[0], y[-1], ... y[-L] are specified by
+             the optional series yi. If not specified, yi is assumed to
+             be 0.
+
+             Initial conditions, x[0], x[-1], ... x[-K] are specified by
+             the optional series xi. If not specified, xi is assumed to
+             be 0.
+
+             If a[1] == 1, the coefficients are assumed to be in standard
+             Z transform form:
+  
+                                        -1                 -Q
+                    Y(z)   b[1] + b[2]*z   + ... + b[Q+1]*z
+             H(z) = ---- = -------------------------------------
+                                        -1                 -P
+                    X(z)    1   + a[2]*z   + ... + a[P+1]*z
+
+
+    See Also:
+             Fir
+             Iir
+             Zfreq
+#endif
+
+
+
+ITERATE filteq(b, a, x, yi, xi)
+{
+	/* check inputs */
+	if (argc < 3) error("filteq - b, a, and input series required");
+
+	if (filteq_isequal(a[1], 1.0)) {
+		/* Z transfer form - convert to difference equation */
+		if (length(a) == 1) {
+			a = {0};
+		}
+		else {
+			a = -extract(a, 2, -1);
+		}
+	}
+
+	if (argc == 3) {
+		/* difference equation with initial conditions set to 0 */
+		return(iir(fir(x, b), a));
+	}
+	else if (argc == 4) {
+		/* difference equation with y initial conditions */
+		return(iir(fir(x, b), a, yi));
+	}
+	else {
+		/* difference equation with y and x initial conditions */
+		return(iir(fir(x, b, xi), a, yi));
+	}
+}
+
+
+/* are two values equal within a tolerence */
+filteq_isequal(d1, d2, tol)
+{
+	local eq;
+
+	if (argc < 3) {
+		tol = 1e-8;
+	}
+	eq = abs(d1 - d2) < abs(d1 * tol);
+
+	return(eq);
+}

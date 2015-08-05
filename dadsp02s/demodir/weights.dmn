@@ -1,0 +1,16 @@
+! weights.mnu - extracts the network weights for applying to test data
+! changed for demo.
+@x 0
+@y 0
+@panel
+
+     MLP Weights and Biases
+
+  Extracts the network weights for 
+
+  applying to test data.
+
+  Inputs:
+       Source Window:  Wn
+       Run Number:     N
+~menuc()

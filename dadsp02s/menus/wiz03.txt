@@ -1,0 +1,20 @@
+Clip             !_PDC_EXEC059  $Set Outliers to Threshold
+Col              !_PDC_EXEC258  $Extract a Single Column
+Concat           !_PDC_EXEC053  $Append Series
+Cut              !_PDC_EXEC259  $Extract Displayed Contents of a Window
+Decimate         !_PDC_EXEC058  $Keep Every Nth Point
+Delete           !_PDC_EXEC062  $Delete Points Based on Condition
+Extract          !_PDC_EXEC052  $Extract a Portion of a Series
+Interp           !_PDC_EXEC057  $Linear Interpolate a Series
+Merge            !_PDC_EXEC054  $Multiplex Series
+Quantize         !_PDC_EXEC321  $Quantize Series to N Levels
+Remove by Factor !_PDC_EXEC060  $Delete Every Nth Point
+Remove by Index  !_PDC_EXEC340  $Delete Based on Index Series
+Replace          !_PDC_EXEC339  $Replace Points Based on Condition
+Replicate        !_PDC_EXEC055  $Repeat Series
+Reverse          !_PDC_EXEC056  $Reverse Series Right to Left
+Row              !_PDC_EXEC257  $Extract a Single Row
+SetNAvalue       !_PDC_EXEC061  $Replace NA Values
+Spline           !_PDC_EXEC315  $Cubic Spline Interpolation
+Unmerge          !_PDC_EXEC314  $Demultiplex Series
+Xyinterp         !_PDC_EXEC338  $Linear Interpolate Irregularly Spaced Data

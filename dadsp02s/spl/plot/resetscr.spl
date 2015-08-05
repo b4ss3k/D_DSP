@@ -1,0 +1,143 @@
+/*****************************************************************************
+*                                                                            *
+*   RESETSCR.SPL    Copyright (C) 2002 DSP Development Corporation           *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Resets the display settings set by SCRN2PRT                 *
+*                                                                            *
+*   Revisions:   25 Jan 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_RESETSCR
+
+    RESETSCR
+
+    Purpose: Resets the Worksheet display settings altered by scr2prt.
+                                                                        
+    Format:  RESETSCR
+
+
+    Returns: Nothing, the Worksheet settings are restored to the state 
+             before scr2prt was invoked.
+
+
+    Example:
+             W1: gnorm(1000,1)
+             W2: integ(w1)
+
+             scr2prt
+             copyworksheet
+             resetscr
+
+             The Worksheet settings are set to the printer settings so the
+             Worksheet is displayed as if it will be printed. The Worksheet
+             is then copied to the clipboard as a metafile and the original
+             settings are restored. The clipboard can then be used to paste
+             the Worksheet image into another application.
+
+    Remarks:
+             RESETSCR resets the window color, series color, header
+             justification, margin alignment and header colors. The
+             Window GUI style is also restored.
+
+             Use RESETSCR only if SCR2PRT has been invoked.
+
+             
+    See Also:
+             Scrn2prt
+#endif
+
+
+
+/* reset screen settings changed by scr2prt */
+resetscr()
+{
+	scrnresetcnf();
+}
+
+
+/* restore original display settings */
+scrnresetcnf()
+{
+	if (isvar("_scrn2prt_set")) {
+		if (getvar("_scrn2prt_set") == 1) {
+			/* use saved settings */
+
+			setconf("GUI_WINDOW", scrn_winstyle);
+
+			/* window frame */
+			setgcolor(17, scrn_gc_wf);
+
+			/* normal caption text */
+			setgcolor(31, scrn_gc_nc_fg);
+			setgcolor(32, scrn_gc_nc_bg);
+
+			/* inactive caption text */
+			setgcolor(36, scrn_gc_ic_fg);
+			setgcolor(35, scrn_gc_ic_bg);
+
+			/* active caption text */
+			setgcolor(38, scrn_gc_ac_fg);
+			setgcolor(37, scrn_gc_ac_bg);
+
+			/* window highlight */
+			setgcolor(20, scrn_win_hilite);
+			setgcolor(21, scrn_win_shadow);
+
+			/* header justification */
+			setconf("SCREEN_HEADER_JUSTIFY_DEFAULT", scrn_headjust);
+			setconf("SCREEN_WINHEADER_DEFAULT",      scrn_winhead);
+			setconf("SCREEN_WINBORDER_DEFAULT",      scrn_winbord);
+			setconf("SCREEN_WINMARGIN_DEFAULT",      scrn_winmarg);
+			setconf("SCREEN_WINNAME_DEFAULT",        scrn_winname);
+			setconf("SCREEN_ALIGN_MARGINS",          scrn_align);
+
+			/* redraw and update fonts */
+			redrawall(3);
+
+			setvar("_scrn2prt_set", 0);
+		}
+	}
+	else {
+		/* never set, use config defaults */
+		defscrnset();
+	}
+}
+
+defscrnset()
+{
+	setconf("GUI_WINDOW", getconfdef("GUI_WINDOW"));
+
+	/* window frame */
+	setgcolor(17, castint(getconfdef("window_background_color")));
+
+	/* normal caption text */
+	setgcolor(31, castint(getconfdef("window_label_color")));
+	setgcolor(32, castint(getconfdef("label_background")));
+
+	/* inactive caption text */
+	setgcolor(36, castint(getconfdef("inactive_text_color")));
+	setgcolor(35, castint(getconfdef("inactive_label_bg")));
+
+	/* active caption text */
+	setgcolor(38, castint(getconfdef("active_text_color")));
+	setgcolor(37, castint(getconfdef("active_label_bg")));
+
+	/* window highlight */
+	setgcolor(20, castint(getconfdef("window_hilite")));
+	setgcolor(21, castint(getconfdef("window_shadow")));
+
+	/* header justification */
+	setconf("SCREEN_HEADER_JUSTIFY_DEFAULT",getconfdef("SCREEN_HEADER_JUSTIFY_DEFAULT" ));
+	setconf("SCREEN_WINHEADER_DEFAULT",     getconfdef("SCREEN_WINHEADER_DEFAULT"      ));
+	setconf("SCREEN_WINBORDER_DEFAULT",     getconfdef("SCREEN_WINBORDER_DEFAULT"      ));
+	setconf("SCREEN_WINMARGIN_DEFAULT",     getconfdef("SCREEN_WINMARGIN_DEFAULT"      ));
+	setconf("SCREEN_WINNAME_DEFAULT",       getconfdef("SCREEN_WINNAME_DEFAULT"        ));
+	setconf("SCREEN_ALIGN_MARGINS",         getconfdef("SCREEN_ALIGN_MARGINS"          ));
+
+	/* redraw and update fonts */
+	redrawall(3);
+}

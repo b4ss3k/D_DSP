@@ -1,0 +1,26 @@
+/* get spany as percentage */
+_gspnyp(w)
+{
+	local yb, yt, syb, syt, pct;
+
+	if (argc < 1) {
+		syt = getspany(1);
+		syb = getspany(0);
+		yt = getyt;
+		yb = getyb;
+	}
+	else {
+		syt = getspany(w, 1);
+		syb = getspany(w, 0);
+		yt = getyt(w);
+		yb = getyb(w);
+	}
+
+	if (syt == 0.0 && syb == 0.0) pct = 1.0;
+	else {
+		pct = (syt - syb) / (yt - yb);
+	}
+	if (pct > 1 || pct < 0) pct = 1;
+	return(castint(100*pct+0.5));
+}
+

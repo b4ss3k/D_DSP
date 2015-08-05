@@ -1,0 +1,48 @@
+! legtxt.mac
+! legend & text annotation macro file
+mm macread("acroch\legtxt.mac")
+legdir "acroch\"
+mf(s) menufile(strcat(legdir,s))
+GLASS_WMARGIN 2
+GLASS_WPMARGIN 3
+GLASS_WSMARGIN 4
+GLASS_WM 2
+GLASS_WPM 3
+GLASS_WSM 4
+WIN_MARGIN GLASS_WMARGIN
+WP_MARGIN GLASS_WPMARGIN
+WS_MARGIN GLASS_WSMARGIN
+_textleg OFF
+_textstretch ON
+
+! new symbol stuff
+CLRUPARROW	6
+CLRDNARROW	7
+UPARROW		8
+DNARROW		9
+CLRDIAMOND	10
+CLRSQUARE	11
+CLRTRIANGLE	12
+CLRINVTRIANGLE	13
+
+! margin adjustments
+NO_MARGIN -1
+TOP	0
+RIGHT	1
+BOTTOM	2
+LEFT	3
+
+! defaults
+_symb "Dots"
+
+Vdef90		0
+Vdef270		1
+VdefChar90	2
+Vdef90_270	3
+Vdef270_90	4
+
+Rot0		0
+Rot90		1
+Rot180		2
+Rot270		3
+RotChar90	4

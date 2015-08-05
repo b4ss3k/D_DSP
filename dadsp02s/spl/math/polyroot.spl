@@ -1,0 +1,176 @@
+/*****************************************************************************
+*                                                                            *
+*   POLYROOT.SPL     Copyright (C) 2002-2003 DSP Development Corporation     *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Finds roots of a polynomial using the companion matrix      *
+*                                                                            *
+*   Revisions:    3 Jan 2002  RRR  Creation                                  *
+*                26 Sep 2003  RRR  erones handles empty coeff                *
+*                16 Oct 2003  RRR  handle leading and trailing zeros         *
+*                                                                            *
+*****************************************************************************/
+
+
+#define erones(l) (if(l<=2,{},region(diag(gline((l)-1,1,0,1)),1,(l)-1,1,(l)-2)))
+#define errow1(s) (ravel(extract(-rev((s)/s[length(s)]),2,-1)))
+
+#if @HELP_POLYROOT
+
+    POLYROOT
+
+    Purpose: Finds the roots of a polynomial using the companion matrix
+                                                                        
+    Format:  POLYROOT(coef, form)
+
+              coef - A series, the polynomial coefficients
+
+              form - An optional integer, form of the polynomial coefficients,
+                     0: ascending powers, 1: decreasing powers, defaults to 0.
+
+    Returns: A real or complex series, the roots of the polynomial.
+
+
+    Example:
+             polyroot({0, -2, 1}) 
+             returns {2, 0}, the roots of 0 - 2*x + x^2.
+
+    Example:
+             r = polyroot({1, -1, -1}, 1)
+             r == {1.618034, -0.618034}
+             r[1] == phi
+             returns 1, i.e. positive root of x^2 - x - 1 is PHI, the
+             Golden Mean.
+
+    Example:
+             a := rand
+             x = -10..0.01..10
+
+
+             W1: polyroot({a, 1, -1, -1}, 1)
+             W2: xy(W1, zeros(length(W1),1));points;setsym(14)
+             W3: a*x^3 + x^2 - x - 1;overp(W2, lred)
+
+             W3 displays a cubic of the form a*x^3 + x^2 - x - 1 over
+             the range -10 <= x <= 10.  The roots of the cubic are
+             overplotted in red and displayed as solid circles.
+
+             Executing the statement a := rand creates a new polynomial that
+             is automatically updated in W3.
+
+    Remarks:
+             POLYROOT calculates the roots of a polynomial by finding the
+             eigenvalues of the companion matrix for the corresponding 
+             characteristic polynomial.
+
+             POLYROOT(a) finds the roots of:
+
+                    a[1] + a[2]*x + a[3]*x^2 + ... + a[n]*x^(n-1)
+
+             this is the same form as POLYFIT and POLYGRAPH.
+
+
+             POLYROOT(a, 1) finds the roots of:
+
+                    a[n]*x^(n-1) + a[n-1]*x^(n-2) + ... + a[2]*x + a[1]
+
+    See Also:
+             Pfit
+             Poly
+             Polyfit
+             Polygraph
+#endif
+
+
+/* find polynomial roots using the companion matrix */
+ITERATE polyroot(coef, form)
+{
+	local len, cols, r, n, idx;
+
+	if (argc < 2) {
+		if (argc < 1) error("polyroot - input series required");
+		form = 0;
+	}
+
+	(len, cols) = size(coef);
+
+	if (cols > 1) {
+		coef = col(yvals(coef), 1);
+		len = length(coef);
+	}
+
+	if (len < 2) {
+		/* P(x) = K, no roots */
+		return({});
+	}
+
+	/* strip leading zeros */
+	(n, idx) = polyroot_lzeros(coef);
+	if (n > 0) {
+		coef = extract(coef, idx, -1);
+	}
+
+	/* handle trailing zeros as roots at zero */
+	(n, idx) = polyroot_tzeros(coef);
+	if (n > 0) {
+		coef = extract(coef, 1, idx);
+	}
+
+	if ((len = length(coef)) > 1) {
+		/* flip coefficients */
+		if (form) coef = rev(coef);
+
+		/* calc roots via companion matrix */
+		r = eigval(transpose(ravel(errow1(coef),erones(len))));
+	}
+	else {
+		r = {};
+	}
+
+	if (n > 0) {
+		/* preprend zero roots */
+		r = {zeros(n, 1), r};
+	}
+
+	return(r);
+}
+
+
+/* return number and index of leading zeros */
+polyroot_lzeros(b)
+{
+	local f, idx, d;
+
+	f = {0};
+	d = idx = 0;
+
+	if (b[1] == 0) {
+		/* find indices of non-zero elements */
+		f = find(b);
+
+		if (length(f) == 0) {
+			/* all zeros */
+			d = length(b);
+			idx = d;
+		}
+		else {
+			idx = f[1];
+			d = idx - 1;
+		}
+	}
+	return(d, idx);
+}
+
+
+/* return number and index of leading zeros */
+polyroot_tzeros(b)
+{
+	local idx, d;
+
+	b = rev(b);
+	d = polyroot_lzeros(b);
+	idx = length(b) - d;
+	return(d, idx);
+}

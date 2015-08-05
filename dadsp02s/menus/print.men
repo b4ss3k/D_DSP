@@ -1,0 +1,16 @@
+! Print.men -- Printing Functions
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+   System Printer   
+
+ CURRENT Window     ~_deffname('PRINT    PRINT Current Window')  |_defformat('Print("title", colormode)')|_defxamp('Print("mytitle")')|_str1int1("Title         ","Color Mode    ")|_mf("print3.pan")
+
+ ALL Windows        ~_deffname('PRINTALL PRINT Each Window on Separate Page')  |_defformat('Printall(colormode)')|_defxamp('Printall')|_defint1prmt("Color Mode    ")|_mf("print2.pan")|eval('printall(_pcolor)')
+
+ Worksheet          ~_deffname('PRINTWS  PRINT Worksheet on Single Page')  |_defformat('Printws(colormode)')|_defxamp('Printws')|_defint1prmt("Color Mode    ")|_mf("print2.pan")|eval('printws(_pcolor)')
+
+ Infoprint Window   ~_deffname('INFOPRINT Print Window and Background Info')|_defformat(' Infoprint(colormode)')|_defxamp(' Infoprint')|_defint1prmt("Color Mode    ")|_mf("print2.pan")|eval('infoprint(_pcolor)')
+
+ Infoprint ALL      ~_deffname('INFOPRINT Print Each Window and Background Info')  |_defformat(' Infoprintall(colormode)')|_defxamp(' Infoprintall')|_defint1prmt("Color Mode    ")|_mf("print2.pan")|eval('infoprintall(_pcolor)')

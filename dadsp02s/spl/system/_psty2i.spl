@@ -1,0 +1,33 @@
+_psty2i(p)
+{
+	local s;
+
+	switch (p) {
+		case "Lines":
+		default:
+			s = 0;
+			break;
+
+		case "Points":
+			s = 1;
+			break;
+
+		case "Sticks":
+			s = 2;
+			break;
+
+		case "Bars":
+			s = 3;
+			break;
+
+		case "Table":
+			s = 4;
+			break;
+
+		case "Steps":
+			s = 8;
+			break;
+	}
+
+	return(s);
+}

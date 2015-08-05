@@ -1,0 +1,22 @@
+/* reset activex menu parameters to defaults */
+_defatx()
+{
+	setvar("_axenb", castint(getconfdefault("ACTIVEX_ENABLED")));
+	setvar("_axreg", castint(getconfdefault("ACTIVEX_REGISTER")));
+	setvar("_axtrn", castint(getconfdefault("ACTIVEX_ARRAY_TRANSPOSE")));
+	setvar("_axvrt", castint(getconfdefault("ACTIVEX_CASTVARIANT")));
+
+	setvar("_eowi", castreal(getconfdefault("ACTIVEX_EMBEDDED_WIDTH")));
+	setvar("_eohi", castreal(getconfdefault("ACTIVEX_EMBEDDED_HEIGHT")));
+
+	setvar("_axebfmt", castint(getconfdefault("ACTIVEX_EMBEDFORMAT")));
+	setvar("_axprfmt", castint(getconfdefault("ACTIVEX_PRINTFORMAT")));
+	setvar("_axres",   castint(getconfdefault("ACTIVEX_USE_PRINTER")));
+
+	setvar("_dpauto", strlen(getconfdefault("ACTIVEX_DOCDIR" ))==0);
+	setvar("_mpauto", strlen(getconfdefault("ACTIVEX_TEMPDIR"))==0);
+
+	setvar("_axdp",  getconfdefault("ACTIVEX_DOCDIR"));
+	setvar("_axmp",  getconfdefault("ACTIVEX_TEMPDIR"));
+}
+

@@ -1,0 +1,19 @@
+
+/* set gui based message configuration parameter */
+_setgmes(slmes, mbmes, slerrmes, mberrmes)
+{
+	local val = 0;
+
+	/* gui_messages == 0 implies display status & errors in status line */
+
+	if (not(slmes == 1 && mbmes == 0 && slerrmes == 1 && mberrmes == 0)) {
+		if (slmes)    val |= 0x04; /* status line messages */
+		if (mbmes)    val |= 0x01; /* message box messages */
+		if (slerrmes) val |= 0x08; /* status line error messages */
+		if (mberrmes) val |= 0x02; /* message box error messages */
+	}
+
+	/* set configuration parameter */
+	setconf("gui_messages", strnum(val));
+}
+

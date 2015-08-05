@@ -1,0 +1,12 @@
+/* set activex image format - returns integer */
+_saxfmt(v)
+{
+	local f;
+
+	f = castint(v);
+
+	/* set to bitmap format if not metafile */
+	if (f > 0) f = 2;
+
+	return(f);
+}

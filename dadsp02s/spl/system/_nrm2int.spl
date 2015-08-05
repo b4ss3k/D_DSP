@@ -1,0 +1,18 @@
+/* normalization string to integer */
+_nrm2int(n)
+{
+	switch (n) {
+		case _nonestr:
+		default:
+			return(0);
+		
+		case _normalizedstr:
+			return(1);
+
+		case _biasedstr:
+			return(2);
+
+		case _unbiasedstr:
+			return(3);
+	}
+}

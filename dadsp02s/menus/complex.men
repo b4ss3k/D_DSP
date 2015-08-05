@@ -1,0 +1,15 @@
+! Complex.men - Real/Imaginary Magnitude/Phase Conversions
+@x0
+@y0
+@b{_bg3}
+@f{_fg3}
+ Complex Conversions
+
+ Get Real Part      ~_deffname('REAL     Real Part of Complex Series')      |_defformat('Real(series)')|_defxamp('Real(W1)')|_getser|_serform("Real")
+ Get Imag Part      ~_deffname('IMAG     Imag Part of Complex Series')      |_defformat('Imag(series)')|_defxamp('Imag(W1)')|_getser|_serform("Imag")
+ Get Magnitude      ~_deffname('MAG      Magnitude Part of Complex Series')      |_defformat('Mag(series)')|_defxamp('Mag(W1)')|_getser|_serform("Mag")
+ Get Phase          ~_deffname('PHASE    Phase Part of Complex Series')      |_defformat('Phase(series)')|_defxamp('Phase(W1)')|_getser|_serform("Phase")
+
+ Convert to Polar   ~_deffname('POLAR    Convert to Polar (Magnitude/Phase) form')      |_defformat('Polar(series)')|_defxamp('Polar(W1)')|_getser|_serform("Polar")
+ Convert to Cart    ~_deffname('CARTESIAN  Convert to Cartesian (Real/Imag) form')      |_defformat('  Cartesian(series)')|_defxamp('  Cartesian(W1)')|_getser|_serform("Cartesian")
+ Complex Conjugate  ~_deffname('CONJ     Complex Conjugate')      |_defformat('Conj(series)')|_defxamp('Conj(W1)')|_getser|_serform("Conj")

@@ -1,0 +1,14 @@
+! Serint1.dpn - inputs a series and an integer . modified for the demo
+@f{_fg1}
+@b{_bg1}
+@panel
+{_funcstr}
+{_formatstr}
+{_examplestr}
+
+ {_serprompt } <                                  >~_DEFSER1(strcat("'","<{_SER1}>","'"))~_INSER("Series or Window")
+ {_int1prompt} <          >~_DEFINT1(strcat("'","<{_INT1}>","'"))~_ININT("Integer Number")
+
+     Destination Window: W<   >~defmacro("_dwin",strcat("W","<{getwnum}>"),2)~input(2,"Integer","Window Number","",1,numwin)
+~_mc;if(strcmp(_ser1,_dwin)==0,_DEFSER1("'curr'"))
+

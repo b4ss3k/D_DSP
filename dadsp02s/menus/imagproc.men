@@ -1,0 +1,11 @@
+! imagproc.men -- image processing functions menu
+@x0
+@y0
+@b{_bg1}
+@f{_fg1}
+  Image Processing
+
+Sobel Edge Detection   ~_deffname('SOBEL    Sobel Edge Detection')|_defformat('Sobel(Image Matrix,Threshold)')|_defxamp('Sobel(W1,5)')|_getserreal1("Matrix:   ","Threshold:")|_serreal1form("SOBEL")
+Nonlinear 2D Filtering ~_mf("Nonlin2d.pan")
+2D FFT                 ~_mf("fft2d.pan")
+2D IFFT                ~_mf("ifft2d.pan")

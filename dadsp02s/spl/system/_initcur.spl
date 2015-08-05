@@ -1,0 +1,10 @@
+/* initializes cursor panel */
+_initcur()
+{
+	setvar("_vcurs", castint(getconf("VERT_CURSOR")));
+	setvar("_vcurstype", if(getconf("VERT_CURSOR_STYLE")=="4", 0, 1));
+	setvar("_vcursstk1", castint(getconf("CURSOR1_STICKS")));
+	setvar("_vcursstk2", castint(getconf("CURSOR2_STICKS")));
+	setvar("_vcursmem1", castint(getconf("CURSOR1_MEMORY")));
+	setvar("_vcursmem2", castint(getconf("CURSOR2_MEMORY")));
+}

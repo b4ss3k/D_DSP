@@ -1,0 +1,10 @@
+! ANN.dmn - Neural Network Training and Application
+! DSPTrial menu
+@x0
+@y0
+      Neural Network Design
+
+  Multi-Layer Perceptron Design   ~DMF("MLP.dmn")
+
+  Apply Network Weights to Data   ~DMF("apply.dmn")
+

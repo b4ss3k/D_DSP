@@ -1,0 +1,22 @@
+/* displays a message about overwriting window data */
+queryign(title, msg, ignmes, ignvar)
+{
+	
+	defvar(ignvar, 0);
+
+	if (eval(ignvar) == 1) return(1);
+
+	else {
+		setvar("_queryign_title", title);
+		setvar("_queryign_msg", msg);
+		setvar("_queryign_ignmsg", ignmes);
+		setvar("_queryign_status", -1);
+		setvar("_queryign_ign", 0);
+
+		/* load dialog without _dwin processing */
+		_mf2("queryign.pan");
+
+		eval(sprintf("setvar('%s', %d)", ignvar, getvar("_queryign_ign")));
+		return(getvar("_queryign_status"));
+	}
+}

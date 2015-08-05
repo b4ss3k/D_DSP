@@ -1,0 +1,5 @@
+TASK     exemp
+PROGRAM  >0
+COMMON   >2
+INCLUDE  exemp.MPO
+END

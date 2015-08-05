@@ -1,0 +1,49 @@
+/* returns size in bytes of a data type */
+_typ2siz(type)
+{
+	local size;
+
+	if (argc < 0) type = DOUBLE;
+
+	switch (type) {
+		
+		case "FLOAT":
+			size = 4;
+			break;
+
+		case "DOUBLE":
+			size = 8;
+			break;
+
+		case "INTEGER":
+			size = 2;
+			break;
+
+		case "UINTEGER":
+			size = 2;
+			break;
+
+		case "BYTE":
+			size = 1;
+			break;
+
+		case "UBYTE":
+			size = 1;
+			break;
+
+		case "LONG":
+			size = 4;
+			break;
+
+		case "ULONG":
+			size = 4;
+			break;
+
+		default :
+			size = 8;
+			break;
+
+	}
+	return(size);
+}
+

@@ -1,0 +1,261 @@
+/*****************************************************************************
+*                                                                            *
+*   XLPUT.SPL    Copyright (C) 2001-2007 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Puts a range of data to Excel via Automation                *
+*                                                                            *
+*   Revisions:   17 Aug 2001  RRR  Creation                                  *
+*                14 Sep 2001  RRR  support for sheet names                   *
+*                21 Apr 2006  RRR  automatic range calculation               *
+*                 1 May 2007  RRR  clear support, range verification         *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_XLPUT
+
+    XLPUT
+
+    Purpose: Transfers a range of values to Excel via ActiveX Automation
+                                                                        
+    Format:  XLPUT("rangestr", value, "bookname", sheet)
+
+              rangestr - a string, Excel input range, defaults to
+                         "A1", the first cell
+
+                value  - series, string or scalar to transfer
+
+              bookname - an optional string, Excel Workbook name, defaults to
+                         "" (empty) indicating use current Workbook
+
+                 sheet - an optional integer or string, Excel Sheet number, 
+                         or sheet name, defaults to 1, the first sheet if 
+                         bookname is specified, else the current sheet
+
+
+    Returns: 1 if successful, else an error
+
+
+    Example:
+             W1: rand(10, 3);
+
+             xlput("A1:C10", W1);
+
+             W2: xlget("A1:C10");
+
+             W1 == W2 is all ones, that is W1 and W2 are equivalent. The data
+             is transferred to the current Sheet of the current Workbook.
+
+
+    Example:
+             W1: rand(10, 3);
+
+             xlput("A1:C10", W1, "Book2", 2);
+
+             W2: xlget("A1:C10", "Book2", 2);
+
+             W1 == W2 is all ones, that is W1 and W2 are equivalent. The data
+             is transferred to the second Sheet of Workbook Book2.
+
+
+    Example:
+             xlput("A1:C10", {});
+
+             Clears the values in the range A1 to C10.
+
+    Remarks:
+             If Excel is already running, XLPUT attempts to connect to
+             the running instance of Excel, otherwise XLPUT connects 
+             to a new instance of Excel.
+
+             Numeric data is transferred as variants containing
+             double precision or date/time values.
+
+             Setting a range to an empty series {}, clears the range.
+
+    See Also:
+             Xlclear
+             Xlget
+#endif
+
+
+
+/* transfer data to a range of Excel cells */
+xlput(rangestr, s, bookname, sheet)
+{
+	local xl, sheetlen, cv, ta, range;
+
+	if (argc < 4) {
+		if (argc < 3) {
+			if (argc < 2) {
+				if (argc < 1) {
+					error("xlput - range string and value required");
+				}
+				s = refwin(W0); /* default to current window */
+			}
+			bookname = "";
+		}
+		/* if we have a bookname, use first sheet, else default to current */
+		if (strlen(bookname) > 0) sheet = 1;
+		else sheet = 0;
+	}
+
+	if (not(IS_STRING(rangestr))) {
+		error("xlput: input range string required");
+	}
+
+	if (not(IS_STRING(bookname))) {
+		error("xlput: bookname must be a string or empty string");
+	}
+
+	/* default _excel if not defined */
+	defvar("_excel", -1);
+
+	/* use existing Excel connection or establish a new one */
+	if (not(isobject(_excel))) {
+		/* no current connection, try to connect to existing Excel */
+		xl = getobject("excel.application", 0);
+		if (not(isobject(xl))) {
+			/* try loading new instance of Execl */
+			xl = createobject("excel.application");
+			if (not(isobject(xl))) {
+				/* no go */
+				error("xlput - cannot start Excel");
+			}
+			else {
+				/* add workbook */
+				xl.workbooks.add();
+			}
+		}
+		/* save Excel handle to global */
+		setvar("_excel", xl);
+	}
+	else {
+		/* get global Excel handle */
+		xl = getvar("_excel");
+	}
+
+	/* check input range */
+	range = xlput_getrange(xl, bookname, sheet, rangestr);
+	if (not(isobject(range))) {
+		error(sprintf("xlput - invalid range: %s", rangestr));
+	}
+	range = {};
+
+	/* cast to variants so we can transfer date/time values */
+	cv = getconf("activex_castvariant");
+	setconf("activex_castvariant", "1");
+
+	/* do not transpose */
+	ta = getconf("activex_array_transpose");
+	setconf("activex_array_transpose", "0");
+
+	/* format range string */
+	rangestr = xlput_autorange(xl, rangestr, s);
+
+	/* get output range */
+	range = xlput_getrange(xl, bookname, sheet, rangestr);
+	if (not(isobject(range))) {
+		setconf("activex_castvariant", cv);
+		setconf("activex_array_transpose", ta);
+		error(sprintf("xlput - invalid range: %s", rangestr));
+	}
+
+	/* set value or clear */
+	if (length(s) > 0) {
+		range.value = s;
+	}
+	else {
+		range.clear();
+	}
+
+	/* restore state */
+	setconf("activex_castvariant", cv);
+	setconf("activex_array_transpose", ta);
+
+	return(1);
+}
+
+
+/* build A1 range based on start cell and series size */
+xlput_autorange(xl, rangestr, s)
+{
+	local end, svar, evar, nr, nc;
+
+	if (IS_ARRAY(s)) {
+		/* find ending range */
+		end = strget(2, rangestr, ":");
+		if (strlen(end) == 0) {
+
+			/* no end range specified - calculate */
+			svar = strget(1, rangestr, ":");
+
+			(nr, nc) = size(s);
+			if (nr > 0) {
+				if (iscomplx(s)) {
+					nc *= 2;
+				}
+	
+				evar = xlput_endvar(xl, svar, nr, nc);
+				rangestr = sprintf("%s:%s", svar, evar);
+			}
+		}
+	}
+	return(rangestr);
+}
+
+
+/* get ending A1 cell reference */
+xlput_endvar(xl, svar, nr, nc)
+{
+	local f1, r, c, evar;
+
+	/* use Excel to convert A1 to R1C1 reference string */
+	f1 = xl.ConvertFormula(svar, 1, -4150, 1);
+
+	r = castint(numstr(strextract(f1, strlen(strfind("R", strrev(f1))), -1)));
+	c = castint(numstr(strfind("C", f1)));
+
+	/* increment R1C1 and convert to A1 form */
+	evar = sprintf("R%dC%d", r + nr - 1, c + nc - 1);
+	evar = xl.ConvertFormula(evar, -4150, 1, 4);
+
+	return(evar);
+}
+
+
+/* get a range object */
+xlput_getrange(xl, bookname, sheet, rangestr)
+{
+	local sheetlen, xlrange;
+
+	/* see if sheet is a string or numeric */
+	if (IS_STRING(sheet)) {
+		sheetlen = strlen(sheet);
+	}
+	else {
+		sheetlen = sheet;
+	}
+
+	/* now select the range */
+	if (strlen(bookname) > 1) {
+		/* use specified workbook and worksheet */
+		xlrange = xl.workbooks(bookname).worksheets(sheet).range(rangestr);
+	}
+	else {
+		/* use current workbook */
+		if (sheetlen > 0) {
+			/* use specified sheet */
+			xlrange = xl.worksheets(sheet).range(rangestr);
+		}
+		else {
+			/* use current sheet */
+			xlrange = xl.range(rangestr);
+		}
+	}
+	return(xlrange);
+}

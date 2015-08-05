@@ -1,0 +1,14 @@
+!  Menu for channel 1 setup
+@display
+@x0
+@y0
+  Channel 1
+_____________
+
+ Time Range  ~ defmacro("otimrng",strnum(input(1,"Timebase Range in Seconds",10E-9,10)),3)
+ Volt Range  ~ defmacro("ovolrng",strnum(input(1,"Channel 1 Amplitude in Volts",4E-2,16)),3)
+ Time Delay  ~ defmacro("otimdel",strnum(input(1,"Timebase Delay from Reference (in Seconds)")),3)
+ Volt Offset ~ defmacro("ovoloff",strnum(input(1,"Channel 1 Offset in Volts",-30,30)),3)
+ 
+ Query Curr. ~QUERONEMEN
+ Options     ~OPTONEMEN

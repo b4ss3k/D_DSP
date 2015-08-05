@@ -1,0 +1,76 @@
+/*****************************************************************************
+*                                                                            *
+*   SLP.SPL      Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Digital emulation of single pole analog low pass filter     *
+*                                                                            *
+*   Revisions:   12 Feb 1998  RRR  Creation - from SPOLE.MAC                 *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_SLP
+
+    SLP    
+
+    Purpose: Emulates a single pole analog low pass filter.
+                                                                        
+    Format:  SLP(s, fc)
+
+              s  - Input series
+
+              fc - Optional real, cutoff frequency in Hertz, defaults
+                   to rate(s) / 10.
+
+    Returns: A series
+
+    Example:
+             W1: Gsqrwave(100, .01, 4)
+             W2: Slp(w1, 10)
+
+             Lowpass filters the squarewave in W1 with a cutoff frequency
+             of 10 Hz. The sample rate is set to the sample rate of the 
+             input data.
+
+    Remarks:
+
+             The single pole analog lowpass filter is implemented in the
+             digital domain using the impulse invariance technique.
+
+
+    See Also
+             Iir
+             Shp
+
+#endif
+
+
+/* Single pole low pass analog filter */
+slp(s, fc)  
+{
+	local b1, rc, ts, lps;
+
+	if (argc < 2) {
+		if (argc < 1) error("slp - input series required");
+		fc = rate(s) / 10;
+	}
+			
+	/* sample interval */
+	ts = deltax(s);
+
+	/* inverse frequency in radians */
+	rc = 1/(2*pi*fc);
+
+	/* impulse invariant transformation */
+	b1 = exp(-1.0*ts/rc);
+
+	/* calculate via difference equation */	
+	lps = iir((s)*(1-b1), {b1});
+
+	/* set output sample interval */
+	setdeltax(lps, deltax(s));
+
+	return(lps);
+}

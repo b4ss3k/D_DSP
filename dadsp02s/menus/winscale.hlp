@@ -1,0 +1,6 @@
+! Winscale.hlp
+SCALE LOCATION:
+This will set the scale location for the series in focus.
+Axes can be located on the Bottom or Top (X-axis), 
+Left or Right (Y-axis), and with or without labels 
+(in any combination).  

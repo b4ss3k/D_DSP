@@ -1,0 +1,93 @@
+/*****************************************************************************
+*                                                                            *
+*   RGB2MONO.SPL  Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Converts an RGB image to monochrome                         *
+*                                                                            *
+*   Revisions:    3 May 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_RGB2MONO
+
+    RGB2MONO 
+
+    Purpose: Converts an RGB image to 8 bit monochrome
+                                                                        
+    Format:  RGB2MONO(inwin)
+
+              inwin - a series containing the source image
+
+    Returns: An array, an 8 bit monochrome image
+
+    Example:
+
+             W1: Density(spline2(ravel(gnorm(100,1),10), 8));rainbow()
+             W2: Image24(W1);
+             W3: Rgb2mono(W2)
+
+             W1 contains an image of a random surface shaded with 
+             the colors of the spectrum ranging from red to blue. W2 
+             converts the image into a 24 bit color image.
+
+             W3 contains the monochrome image displayed in the
+             current colormap. The monochrome image contains values
+             ranging from 0 to 255.
+
+    Remarks:
+             RGB2MONO converts the 24 bit image into 8 bit integer
+             values ranging from 0 to 255. The resulting image is
+             displayed using the current colormap.
+
+             For each RGB pixel, the converted pixel is determined as follows:
+
+                 mono = 0.56*r + 0.33*g + 0.11*b
+
+             where r, g, b are the red, green and blue components of the
+             original RGB image.
+
+
+    See Also:
+             Density
+             Getcolormap
+             Getrgb
+             Image24
+             Iminterp
+             Rgbimage
+             Spline2
+             Interp2
+
+#endif
+/* convert RGB image to monochrome */
+rgb2mono(a)
+{
+	local r, g, b, m;
+
+	if (not(isimage(a))) error("rgb2mono - image required");
+
+	(r, g, b) = getrgb(a);
+
+	/* convert to 0-255 monochrome */
+	m = int(255 * (0.56 * r + 0.33 * g + 0.11 * b));
+	setimage(m);
+
+	return(m);
+}
+
+
+/* true if input is an image */
+isimage(a)
+{
+	getplottype(a) == 5;
+}
+
+/* sets to image */
+setimage(a)
+{
+	setplottype(a, 5);
+}

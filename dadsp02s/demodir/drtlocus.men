@@ -1,0 +1,16 @@
+! Menu to output bode magnitude and freq. responses
+! This is a DSPTrial menu for controls module
+@panel
+@b{_bg1}
+@f{_fg1}
+            Root Locus Plot               
+________________________________________
+~echo("Calculating Root Locus Plot...")
+ Numerator Coef :          <           >~_Defser1(Strcat("'","<W1>","'"))~(_Inser("Series or Window"))
+ Denominator Coef :        <           >~_Defser2(Strcat("'","<W2>","'"))~(_Inser("Series or Window"))
+ Controller Gains :        <           >~_Defser3(Strcat("'","<W5>","'"))~(_Inser("Series or Window"))
+
+________________________________________
+
+           Current window is: W{getwnum}
+~menuc();_rtlocusm

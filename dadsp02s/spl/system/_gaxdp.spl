@@ -1,0 +1,14 @@
+/* get document path */
+_gaxdp(path, auto)
+{
+	local p;
+
+	if (auto) {
+		/* get system doc path without trailing pathchar */
+		p = getdocpath(0, 1);
+	}
+	else {
+		p = path;
+	}
+	return(p);
+}

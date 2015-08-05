@@ -1,0 +1,127 @@
+/*****************************************************************************
+*                                                                            *
+*   SVD.SPL        Copyright (C) 1999 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the singular value decomposition of an array     *
+*                                                                            *
+*   Revisions:   13 Jun 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+/* macros to extract SVD components from composit matrix */
+#define USVD(SVDM, A)    (REGION(SVDM,1,NUMROWS(A),2,NUMROWS(A)))
+#define VSVD(SVDM, A)    (REGION(SVDM,1,NUMCOLS(A),NUMROWS(A)+2,NUMCOLS(A)))
+#define WSVD(SVDM, A)    (EXTRACT(DIAGONAL(EXTRACT(COL(SVDM,1),1,NUMCOLS(A))),1,NUMROWS(A)))
+#define IWSVD(SVDM, A)   (DIAGONAL(1/COL(SVDM,1)))
+
+#if @HELP_SVD
+
+    SVD
+
+    Purpose: Calculates the singular value decomposition of an array
+                                                                        
+    Format:  (u, w, v) = SVD(a, mode)
+
+              a    - the input array
+
+              mode - an optional integer, type of output matrix:
+                     00 - W, Singular values as a column (default).
+                     01 - V, Right singular value matrix.
+                     10 - U, Left singular value matrix.
+                     11 - Combined U W V matrix.
+ 
+              (u, w, v) = SVD(a) 
+
+              returns U, W and V as three separate matrices.
+
+
+              s = SVD(a) 
+
+              returns the singular values of a.
+
+
+    Returns: A series or array
+
+    Example:
+              w1: {{1, 2, 3},
+                   {4, 5, 6},
+                   {7, 8, 9}}
+
+
+              w2: svd(w1)
+
+              w2 == {1.6848E+001, 
+                     1.0684E+000, 
+                     1.9637E-016}
+
+
+    Example:
+              (u, w, v) = svd(w1)
+
+              u == {{-0.2148, 0.8872, 0.4082},
+                    {-0.5206, 0.2496,-0.8165},
+                    {-0.8263,-0.3879, 0.4082}}
+
+              w == {{1.6848E+001, 0.0000E+000, 0.0000E+000},
+                    {0.0000E+000, 1.0684E+000, 0.0000E+000},
+                    {0.0000E+000, 0.0000E+000, 1.9637E-016}}
+
+              v == {{-0.4797,-0.7767,-0.4082},
+                    {-0.5724,-0.0757, 0.8165},
+                    {-0.6651, 0.6253,-0.4082}}
+
+
+              u *^ w *^ v' == {{1, 2, 3},
+                               {4, 5, 6},
+                               {7, 8, 9}}
+
+    Remarks:
+             The input matrix A is decomposed into a left singular value
+             matrix U, a diagonal matrix W, and a right singular matrix
+             V such that:
+
+             A = U *^ W *^ V'
+
+             The inverse of the matrix can be calculated as:
+
+             V *^ (diag(1/diag(W)) *^ U'
+ 
+
+
+    See Also:
+             QR
+             Svddiv
+
+    References:
+
+             [1] Press, Flannery, Teukolsky, Vetterling
+                 Numerical Recipes in C
+                 Cambridge Press, 1988
+                 pp. 407-552
+#endif
+
+
+
+
+svd(a, mode)
+{
+	local m;
+
+	if (outargc > 1) {
+		/* generate composite matrix and return u, w, v */
+		m = _svd(a, 11);
+		return(USVD(m, a), WSVD(m, a), VSVD(m, a));
+	}
+	else if (argc > 1) {
+		/* return a component */
+		return(_svd(a, mode));
+	}
+	else {
+		/* return singular values as a column */
+		return(_svd(a));
+	}
+}

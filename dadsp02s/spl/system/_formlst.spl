@@ -1,0 +1,16 @@
+/* generate the number format list */
+_formlst()
+{
+	local lst, s;
+
+	s = setformat();
+
+	lst = sprintf("%s\n%s\n%s\n%s\n%s\n%s\n%s\n", _formafstr, _formfnstr, _formbestr, _formlestr, _formgxstr, _formhxstr, _formrtstr);
+
+	/* add custom format if necessary */
+	if (strlen(strfind(s, lst)) == 0) {
+		lst = sprintf("%s%s\n", lst, s);
+	}
+	return(strescape(lst));
+}
+

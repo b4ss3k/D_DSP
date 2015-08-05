@@ -1,0 +1,383 @@
+/*****************************************************************************
+*                                                                            *
+*   IMPZ.SPL     Copyright (C) 2003-2005 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Impulse response of a Z transform                           *
+*                                                                            *
+*   Revisions:    7 Oct 2003  RRR  Creation from PD source by Paul Kienzle   *
+*                17 Jul 2004  RRR  support for cascaded bi-quad coeffs       *
+*                24 Feb 2005  RRR  support for raveled B, A coefficients     *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_IMPZ
+
+    IMPZ
+
+    Purpose: Calculates the impulse response of a Z transform.
+
+    Format:  IMPZ(b, a, N, Fs)
+             (h, t) = IMPZ(b, a, N, Fs)
+
+                 b - A series, the numerator coefficients in ascending
+                     powers of z^(-1).
+
+                 a - A series, the denominator coefficients in ascending
+                     powers of z^(-1).
+
+                 N - Optional. An integer specifying the length of the
+                     output series. If not specifed or empty, the length
+                     is determined by allowing the output to decay to
+                     -120dB or to display 5 periods if the output is not
+                     significantly damped.
+
+                Fs - Optional. A real, the sample rate of the output.
+                     Defaults to rate(b) if rate(b) == rate(a), else
+                     defaults to 1.0.
+
+    Alternative Format:  
+
+             IMPZ(c, N, Fs)
+             (h, t) = IMPZ(c, N, Fs)
+
+                 c - A series, the system coefficients in cascaded 
+                     bi-quad form. If c contains 2 columns, c is 
+                     assumed to be in direct form, where the first
+                     column is b and the second column is a.
+
+                 N - Optional. An integer specifying the length of the
+                     output series. If not specifed or empty, the length
+                     is determined by allowing the output to decay to
+                     -120dB or to display 5 periods if the output is not
+                     significantly damped.
+
+                Fs - Optional. A real, the sample rate of the output.
+                     Defaults to rate(c).
+
+
+    Returns: A series, the impulse response of the system.
+
+             (h, t) = IMPZ(b, a) returns the impulse response and time
+             values as two separate series.
+
+    Example:
+                             z          1
+             Given H(z) = ------- = ----------
+                          z - 0.5   1 - 0.5z^-1
+
+             W1: impz({1}, {1, -0.5})
+
+             returns 14 samples of the series h[n] = (0.5)^n in W1.
+
+    Example:
+                                 1 - 2z^-1
+             Given H(z) = ----------------------
+                          1 - 0.7z^-1 + 0.1z^- 2
+
+
+	         (r, p, k) = residuez({1, -2}, {1, -0.7, 0.1})
+
+             r == {-5, 6}
+             p == {.5, .2}
+             k == {}
+
+             Representing the partial fraction expansion:
+
+                         -5               6
+             H(z) = ------------- + -------------
+                    (1 - 0.5z^-1)   (1 - 0.2z^-1)
+
+             or h[n] = -5 * (0.5^n) + 6 * (0.2^n)
+
+             n = 0..20
+             W1: -5 * (0.5^n) + 6 * (0.2^n);stem
+             W2: impz({1, -2}, {1, -0.7, 0.1}, 21)
+             W3: w1 - w2
+
+             W1 contains 21 samples of the analytical impulse response 
+             as determined by the partial fraction expansion method. 
+
+             W2 displays 21 samples of the calculated response and
+             W3 confirms that the difference is negligible.
+
+    Remarks:
+             The input series represent the terms of the rational polynomial 
+             H(z) = b(z)/a(z) where:
+
+             M = length(b) and N = length(a):
+        
+                     b(z)    b[1] + b[2] z^(-1) + ... + b[M] z^(-M+1) 
+             H(z) = ------ = ----------------------------------------
+                     a(z)    a[1] + a[2] z^(-1) + ... + a[N] z^(-N+1)
+
+
+             If a[1] does not equal 1, the numerator and denominator terms
+             are normalized by dividing each coefficient by a[1].
+
+             If there are no output arguments, the result is displayed in
+             the current window as a stem plot.
+
+             For IMPZ(c, N, Fs), if the input c is a single column, the
+             coefficients are assumed to be in cascaded bi-quad form. 
+             This is the output format of IIR filters designed by
+             DADiSP/Filters.  If c contains 2 columns, the coefficients
+             are assumed to be in direct form, where the first column
+             is b and the second column is a.
+
+    See Also:
+             Filteq
+             Gimpulse
+             Residuez
+             Zfreq
+
+#endif
+
+
+
+/* Z transform impulse response */
+impz(b, a, N, Fs)
+{
+	/* parse args */
+	(b, a, N, Fs) = impz_parse_args(b, a, N, Fs);
+
+	/* normalize coefficients */
+	if (a[1] != 0.0 && a[1] != 1.0) {
+		b /= a[1];
+		a /= a[1];
+	}
+
+	if (length({N}) == 0 || N <= 0) {
+		/* find resonable length */
+		N = impz_length(b, a);
+	}
+	else {
+		N = castinteger(N);
+	}
+
+	/* calculate difference equation with impulse as input */
+	h = filteq(b, a, gimpulse(N, 1/Fs, xoffset(b)));
+
+	if (outargc > 1) {
+		/* return impulse response and time values */
+		return(h, xvals(h));
+	}
+	else if (outargc < 1) {
+		/* default to stem plot */
+		setplotstyle(h, 10);
+	}
+	return(h);
+}
+
+
+/* parse optional args for impz */
+impz_parse_args(b, a, N, Fs)
+{
+	local oneser, cascade;
+
+	cascade = 0;
+
+	if (argc > 0) {
+		if (argc == 1) {
+			N = {};
+			Fs = rate(b);
+			cascade = 1;
+		}
+		else {
+			oneser = not(IS_ARRAY(a));
+			/* always cast first arg to series */
+			b = {b};
+
+			if (argc > 2) {
+				if (argc < 4) {
+					/* 3 args */
+					if (oneser) {
+						/* one series and 2 scalars */
+						Fs = N;
+						N = a;
+						cascade = 1;
+					}
+					else {
+						/* 2 series and scalar */
+						Fs = impz_rate(b, a);
+					}
+				}
+				else {
+					/* 4 args, cast to series */
+					a = {a};
+				}
+			}
+			else {
+				/* 2 args */
+				if (oneser) {
+					/* series and scalar */
+					N = a;
+					Fs = rate(b);
+					cascade = 1;
+				}
+				else {
+					/* two series */
+					N = {};
+					Fs = impz_rate(b, a);
+				}
+			}
+		}
+	}
+	else {
+		error("impz - input series of system coefficients required");
+	}
+
+	if (cascade) {
+		if (numcols(b) == 2) {
+			/* raveled B, A direct form */
+			a = col(b, 2);
+			b = col(b, 1);
+		}
+		else {
+			a = polecoef(b);
+			b = zerocoef(b);
+		}
+	}
+	
+	return(b, a, N, Fs)
+}
+	
+	
+
+
+/* find reasonable length based on system characteristics */
+impz_length(b, a)
+{
+	local n, delay, precision; 
+	local p, ind, periods, maxp, maxidx; 
+
+	if (length(a) > 1) {
+		precision = 1.0e-4;
+		p = roots(a); // poles 
+		if (any(mag(p) > 1.0 + precision)) {
+			// unstable - cutoff at 120 dB
+			ind = find(mag(p) > 1);
+			N = 6 / log10(max(mag(p[ind])));
+		}
+		else { // stable or periodic - cutoff after at least 5 cycles
+			delay = impz_delay(b);
+			precision = 1.0e-5;
+			(maxp, maxidx) = max(mag(p));
+
+			ind = find(mag(p - 1) < precision);
+			p[ind] = -p[ind];
+			ind = find(mag(mag(p) - 1) < precision);
+
+			periods = 10*max(pi/abs(angle(p[ind]))); // 5 cycles
+			p[ind] = {};   // remove unit circle poles
+			(maxp, maxidx) = max(mag(p));
+
+			if (isempty(p)) { // pure oscillation
+				n = periods;
+			}
+			else if (isempty(ind)) { // no oscillation
+				n = impz_pmult(p, maxidx)*(-4.3)/log10(maxp) + delay;
+			}
+			else { // oscillation + non-oscilation
+				n = max(periods, impz_pmult(p, maxidx)*(-4.3)/log10(maxp)) + delay;
+			}
+		}
+	}
+	else {
+		n = length(b);
+	}
+
+	// make sure we have an integer 
+	n = castinteger(n);
+
+	n = max(length(a)+length(b)-1,n);
+
+	return(n);
+}
+
+
+/* return number of leading zeros */
+impz_delay(b)
+{
+	local f, d = 0;
+
+	if (b[1] == 0) {
+		f = find(b != 0);
+		d = f[1] - 1;
+	}
+	return(d);
+}
+
+
+/* total pole multiplicity for p[ind] */
+impz_pmult( p, ind, tol)
+{
+	local mults, indx, i, m;
+
+	if (argc < 3) {
+		tol = .001;
+	}
+
+	(mults, indx) = impz_mpoles(p, tol);
+
+	m = mults[indx[ind]];
+	for (i = (indx[ind]+1); i <= length(mults); i++) {
+        if (mults[i] > m) {
+            m++;
+		}
+		else break;
+	}
+	return(m);
+}
+
+
+
+/* returns poles and multiplicity */
+impz_mpoles(p, tol)
+{
+	local i, pm, idx;
+
+	if (argc < 2) tol = 1e-3;
+
+	/* sort in descending order */
+	(p, idx) = sort(p, 0);
+
+	/* initial multiplicity */
+	pm = ones(length(p), 1);
+
+	/* search for repeated poles and record multiplicity */
+	if (length(p) > 1) {
+		loop (i = 2..length(p)) {
+			if (mag(p[i] - p[i-1]) <= tol) {
+				/* repeated root - accumulate multiplicity */
+				pm[i] += pm[i-1];
+			}
+		}
+	}
+	return(pm, idx);
+}
+
+
+/* get sample rate from coefficients */
+impz_rate(b, a)
+{
+	local irate;
+
+	if (rate(b) == rate(a)) {
+		irate = rate(b);
+	}
+	else if (length(b) == 1) {
+		irate = rate(a);
+	}
+	else if (length(a) == 1) {
+		irate = rate(b);
+	}
+	else {
+		irate = 1.0;
+	}
+	return(irate);
+}

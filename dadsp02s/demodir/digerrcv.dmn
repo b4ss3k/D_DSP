@@ -1,0 +1,17 @@
+! digerrcv.mnu - extracts the digital error descent curve of an MLP network
+!                of the cross-validation test data.
+! changed for demo.
+@x 0
+@y 0
+@panel
+
+ Cross-Validation Digital Error
+
+  Extracts the digital error descent curve of an
+
+  MLP network of the cross-validation test data.
+
+  Inputs:
+       Source Window:  Wn
+       Run Number:     N
+~menuc()

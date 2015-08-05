@@ -1,0 +1,10 @@
+/* line settings panel */
+_lineset()
+{
+	
+	defvar("_linewidth", 1);
+	defvar("_arrowlen",   castint(getconf("ARROW_LENGTH")));
+	defvar("_arrowwidth", castint(getconf("ARROW_WIDTH")));
+	defvar("_arrowdir",   castint(getconf("ARROW_DIRECTION")));
+}
+

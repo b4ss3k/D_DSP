@@ -1,0 +1,203 @@
+/*****************************************************************************
+*                                                                            *
+*   SYSTEM.SPL   Copyright (C) 1995-2006 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      DSP Development Corporation                                 *
+*                                                                            *
+*   Synopsis:    System support SPL routines and variables                   *
+*                                                                            *
+*   Revisions:   14 Jun 1995  DSP  Creation                                  *
+*                 2 Feb 1999  DSP  system authorization                      *
+*                 2 Nov 2000  DSP  allow minimal mode                        *
+*                16 Jan 2004  DSP  allow view tutorial                       *
+*                27 May 2004  DSP  strings                                   *
+*                15 Jul 2004  DSP  email or hardcopy password request form   *
+*                12 Jul 2006  DSP  module menu and SPL debugger support      *
+*                                                                            *
+*****************************************************************************/
+
+/* strings */
+#define _pswdmes1  'We will send a Password Request Form to the default printer "lpr".'
+#define _pswdmes2  'After clicking "OK", please fill out the printed form and fax it to DSP.'
+
+#define _pswdmes3  'Print Permission Request'
+#define _pswdmes4  'Permission file "faxnow.txt" sent to printer.'
+#define _pswdmes5  'Password Required for Machine ID ->'
+#define _pswdmes6  'password@dadisp.com'
+#define _pswdmes7  'DADiSP Password Request'
+
+#define _pswdmes8  'Email failed, so we will run Notepad with a Password Request Form.' 
+#define _pswdmes9  'After clicking "OK", please switch to the "Notepad FAXNOW.TXT" application, print the form, fill it out, and fax it to DSP.'
+
+
+/* editor name for SPL and Macros */
+#define _spleditor    getconf("spl_editor")
+#define _macroeditor  getconf("spl_editor")
+
+/* debugger name for SPL and Macros */
+#define _spldebugger  getconf("spl_debugger")
+
+
+/* create a new SPL file */
+_pdcsplnew    run(_spleditor)
+
+
+/* open an existing SPL file */
+_pdcsplopen(s)
+{
+	run(sprintf('%s "%s"', _spleditor, s));
+}
+
+
+/* create a new Macro file */
+_pdcmacrosnew    run(_macroeditor)
+
+
+/* open an existing macro file */
+_pdcmacrosopen(s)
+{
+	run(sprintf('%s "%s"', _macroeditor, s));
+}
+
+
+/* paste dde link */
+_pdc_pastelink()
+{
+	setwform(strcat('Ddelink("', ddegetlink, '")'));
+}
+
+
+/* start debugger with file or SPL name */
+_pdcdebugopen(s)
+{
+	if (argc > 0) {
+		eval(sprintf('%s("%s")', _spldebugger, s));
+	}
+	else {
+		eval(_spldebugger);
+	}
+}
+
+
+sysmain()
+{
+	/* define some variables */
+	setvar("_replot", 0);
+
+	/* build modules menu */
+	copyfile(gethome+_menudir+pathchar+"modbase.men", getmiscpath(1, 1)+"modules.men", 2);
+}
+
+
+/* explains password for machine id */
+_sys_auth1()
+{
+	local response;
+
+	echo('');
+
+	/* default to get password */
+	setvar("_sys_authmode", 1);
+
+	/* pathchar is not yet defined */
+	if (getcomputer() >= 100) {
+		menufile(strcat(gethome, "menus", "/", "pswd.pan"));
+	}
+	else {
+		menufile(strcat(gethome, "menus", "\", "pswd.pan"));
+	}
+
+	/* the menu sets _sys_authmode */
+	if ( _sys_authmode == 1 ) {
+		return(1); /* Yes, so advance to built-in password getter */
+	}
+	else if (_sys_authmode == 0 ) { /* request password */
+		_sys_featprt();
+	}
+	else if (_sys_authmode == 3) {
+		/* request demo */
+		return(3);
+	}
+
+	/* 0 will ask for Minimal Mode internally */
+	return(0);
+}
+
+
+/* creates a password request template */
+_sys_featprt()
+{
+	local fname;
+	extern _sys_pswdmode;
+
+	if (getcomputer() >= 100) { /* Unix */
+		message( _sys_pswdstr(), strcat(_pswdmes1, strescape("\n\n"), _pswdmes2 ), 8 );
+		_sys_pswdmode = 1;
+	}
+	else {
+		menufile(strcat(gethome, "menus", "\", "pswdmode.pan"));
+	}
+
+	if (_sys_pswdmode >= 0) {
+		if (getcomputer() >= 100) { /* Unix */
+			fname = getmiscpath(1, 1) + "faxnow.txt";
+			menuprint("pswd.txt", fname);
+			run("lpr faxnow.txt",-1);
+			message(_pswdmes3, _pswdmes4, 3);
+		}
+		else {
+			if (_sys_pswdmode == 0) {
+				/* request password via web */
+				_sys_regpswd();
+			}
+			else {
+				fname = getmiscpath(1, 1) + "faxnow.txt";
+				menuprint("pswd.txt", fname);
+				if (_sys_pswdmode == 1) {
+					if (sendmail(strfile(fname), _pswdmes6, _pswdmes7) != 1) {
+						message( _sys_pswdstr(), strcat(_pswdmes8, strescape("\n\n"), _pswdmes9 ), 8 ); 
+						run("NOTEPAD.EXE " + fname, 3);
+					}
+				}
+				else {
+					run("NOTEPAD.EXE " + fname, 3);
+				}
+			}
+		}
+	}
+	return();
+}
+
+
+/* message string with machine id */
+_sys_pswdstr()
+{
+	return(strcat(_pswdmes5, gethostid, '<-'));
+}
+
+_sys_pswdinfo()
+{
+	local str;
+
+	/* build URL query string with password parameters */
+	str = sprintf("machid=%s&version=%s&snumb=%s&oem=%s&os=%d", 
+		toupper(gethostid),
+		version,
+		version(7),
+		getconf("oem_name"),
+		getcomputer(1)
+	);
+
+	str = chr2chr(str, " ", "+");
+	return(str);
+}
+
+_sys_regpswd()
+{
+	local url;
+
+	/* open web based password page */
+	url = "http://www.dadisp.com/cgi-bin/regpwd.pl?" + _sys_pswdinfo();
+	gotourl(url, 2, 1, 1);
+}

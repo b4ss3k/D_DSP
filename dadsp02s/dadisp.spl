@@ -1,0 +1,10 @@
+
+/* splmain is automatically invoked at startup time */
+splmain()
+{
+	/* install WAV module */
+	initwav();
+
+	/* install Filters module */
+	initflt();
+}

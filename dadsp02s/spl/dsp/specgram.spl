@@ -1,0 +1,165 @@
+/*****************************************************************************
+*                                                                            *
+*   SPECGRAM.SPL   Copyright (C) 1997-1999 DSP Development Corporation       *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates and plots the magnitude of the STFT              *
+*                                                                            *
+*   Revisions:    9 Jul 1997  RRR  Creation                                  *
+*                 9 Jul 1999  RRR  added fftlen                              *
+*                                                                            *
+*****************************************************************************/
+
+
+/* spectrogram windows */
+#define HAMMWIN 0
+#define HANNWIN 1
+#define RECTWIN 2
+#define KAISWIN 3
+
+
+#if @HELP_SPECGRAM
+
+    SPECGRAM
+
+    Purpose: Calculates the 2D Spectrogram as an image.
+                                                                        
+    Format:  SPECGRAM(series, len, lap, fftlen, swin)
+
+                 series  -   input series
+                    len  -   segment length, defaults to 512
+                    lap  -   optional overlap length, defaults to len / 2
+                  fftlen -   optional integer, length of FFT, defaults to len
+                   swin  -   optional windowing function, default HAMMING
+
+
+    Returns: A table of Amplitude values in Frequency vs Time format.
+
+    Example:
+
+             W1: {gsin(1000,.001,200),gsin(1000,.001,400),gsin(1000,.001,300)}
+             W2: Spectrum(W1)
+             W2: Specgram(W1, 128);rainbow
+
+             W1 consists of three concatenated sinusoids of 200, 400 and 300
+             Hertz.
+
+             W2 shows the frequency spectrum with peaks at 200, 400, and 300
+             Hertz.
+
+             W3 divides W1 into columns of 128 points that overlap by 64
+             points. The Spectrum (i.e. magnitude of the FFT) of each
+             column is calculated and the result is displayed as an
+             image with the rainbow colormap.
+
+             The image in W3 shows how the frequency of the series in
+             W1 changes over time, clearly showing the distinct 200,
+             400 and 300 Hertz components and the times when the components
+             occurred.
+
+
+             W3: Specgram(W1, 128, 64, 1024)
+
+             Same as above, but a 1024 point zero padded FFT is used.
+
+     Remarks:
+             The following windows are available:
+             0:Hamming, 1:Hanning, 2:Rectangle (i.e. none) 3:Kaiser
+
+             The SPECTRUM function displays the frequency content of the
+             data where the SPECGRAM functions displays the frequencies and
+             the times at which those frequency occurs. 
+
+             For example, when applied to music, the spectrum (or FFT) only 
+             indicates the notes and the amplitudes of the notes of a 
+             given song. The specgram is more like a musical score, displaying
+             the notes, amplitudes of the notes and the times at which those
+             notes were played. 
+
+     See Also:
+             FFT
+             Ravel
+             Sonogram
+             Spectrum
+#endif
+
+
+
+/* Magnitude of Short Term Fourier Transform as Density plot */
+specgram(s, len, lap, fftlen, swin, fixamp)
+{
+	local f;
+
+	/* display help if no input */
+	if (argc < 1) {
+		eval("help('specgram')");
+		return;
+	}
+
+	if (argc < 6) {		
+		if (argc < 5) {
+			if (argc < 4) {
+				if (argc < 3) {
+					if (argc < 2) {
+						if (argc < 1) error("specgram - input series required");
+						len = 512;
+					}
+					/* default overlap to half */
+					lap = int(len/2);
+				}
+				fftlen = len;
+			}
+			/* default to Hamming window */
+			swin = HAMMWIN;
+		}
+		fixamp = 0;
+	}
+	/* calculate Spectrum on each column of length len */
+	f = spectrum(winfunc(swin, ravel(s, len, 1, lap), fixamp), fftlen)';
+
+	/* restore x offset */
+	setxoffset(f, xoffset(s));
+
+	/* set to density plot */
+	setplotstyle(f, 0);
+	setplottype(f, 3);
+
+	if (outargc == 0) {
+		/* stick in current window */
+		f;
+
+		/* set current window to density plot */
+		setplotstyle(0);setplottype(3);
+	}
+	else {
+		return(f);
+	}
+}
+
+
+/* spectrogram window */
+specwin(s, swin)
+{
+	if (argc < 2) swin = HAMMWIN;
+
+	switch (swin) {
+		case HAMMWIN:
+			s = hamming(s);
+			break;
+
+		case HANNWIN:
+			s = hanning(s);
+			break;
+
+		case KAISWIN:
+			s = kaiser(s);
+			break;
+
+		case RECTWIN:
+		default:
+			break;
+	}
+	return(s);
+}

@@ -1,0 +1,13 @@
+! GPIB Menu startup facility for Digital Storage Oscilloscope
+@x0
+@y0
+@f{_fg2}
+@b{_bg2}
+     GPIB System
+______________________
+
+ Init GPIB      
+ Remote Commands 
+ Local Commands  
+
+ Oscilloscope         ~dmf("demo488b.men")

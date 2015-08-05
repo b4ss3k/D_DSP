@@ -1,0 +1,83 @@
+/*****************************************************************************
+*                                                                            *
+*   REPLACE.SPL Copyright (C) 2001-2002 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Replaces values based on a condition                        *
+*                                                                            *
+*   Revisions:   28 Nov 2001  RRR  Creation - from series.mac                *
+*                22 Aug 2002  RRR  support for newer NA handling             *
+*                19 Feb 2002  RRR  use FIND for better generality            *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_REPLACE
+
+    REPLACE  
+
+    Purpose: Replaces values in a series based on a logical condition
+                                                                        
+    Format:  REPLACE(series, condition, newval)
+
+             series    - input series or table
+             condition - logical expression resulting in a binary series
+             newval    - a or real or series, the value to replace with
+              
+    Returns: A series.
+
+    Example:
+             W1: 1..5
+             W2: replace(W1, W1 > 3, -1)
+
+             W2 contains the series {1, 2, 3, -1, -1}.
+             Any value in W1 that is greater than 3 is replaced with the 
+             value -1.
+
+             W1: gnorm(1000,1)
+             W2: gnorm(1000,1)
+             W3: replace(W1, W2 > W1, W2)
+
+             The series in W3 contains the point by point maximums of W1
+             and W2.
+
+    Remarks:
+             REPLACE uses FIND to detect and replace values. The
+             existing value is preserved where condition == 0 and the value
+             is replaced by newval where condition != 0.
+             
+
+    See Also:
+             Delete
+             Find
+             Insert
+             Remove
+#endif
+
+
+
+/* replace values in a series based on a logical condition */
+replace(series, condition, newval)
+{
+	local s, idx;
+
+	if (argc < 3) error("replace - series, condition and value required");
+
+	if (length(condition) > 0) {
+		/* find indices where condition is satisfied */
+		idx = find(condition);
+
+		/* make sure we operate on a copy of the input */
+		s = series;
+
+		/* replace values */
+		s[idx] = newval;
+	}
+	else {
+		s = refseries(series);
+	}
+
+	return(s);
+}

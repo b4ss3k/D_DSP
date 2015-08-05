@@ -1,0 +1,81 @@
+/*****************************************************************************
+*                                                                            *
+*   TRIU.SPL  Copyright (C) 2002 DSP Development Corporation                 *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns upper triangle                                      *
+*                                                                            *
+*   Revisions:   13 Aug 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_TRIU
+
+    TRIU  
+
+    Purpose: Returns the upper triangle of a matrix
+                                                                        
+    Format:  TRIU(m, d)
+
+                  m -  An array.
+
+                  d -  Optional An integer, the diagonal on and below which
+                       to include matrix elements. Defaults to 0, the main
+                       diagonal.
+
+
+    Returns: An array consisting of the upper triangle of m where the other
+             elements are zero.
+
+    Example:
+             W1: {{1, 2, 3},
+                  {4, 5, 6},
+                  {7, 8, 9}}
+
+             W2: triu(w1)
+
+             W2 == {{1, 2, 3},
+                    {0, 5, 6},
+                    {0, 0, 9}}
+
+
+             W3: triu(W1, 1)
+
+             W3 == {{0, 2, 3},
+                    {0, 0, 6},
+                    {0, 0, 0}}
+
+
+             W4: triu(W1, -1)
+
+             W4 == {{1, 2, 3},
+                    {4, 5, 6},
+                    {0, 8, 9}}
+
+
+    Remarks:
+             TRIU(m, 1) is equivalent to UPTRIX(m).
+
+    See Also:
+             TRIL
+             UPLOTRI
+             UPLOTRIX
+#endif
+
+
+
+/* upper triangle */
+triu(M, d)
+{
+	if (argc < 2) {
+		if (argc < 1) error("triu - input array required");
+		d = 0;
+	}
+	if (not(IS_ARRAY(M))) M = castseries(M);
+
+	return((M)*(rownos(M) <= (colnos(M)-d)));
+}

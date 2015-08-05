@@ -1,0 +1,29 @@
+/* remove file from DWK Worksheet */
+_remdwk(list, msg1, msg2)
+{
+	local i, fname, status = 0;
+
+	if (strlen(list) > 0) {
+
+		i = 1;		
+		do {
+			/* get ith name from list */
+			fname = strget(i++, list, ",");
+
+			/* check if all done */
+			if (strlen(fname) == 0) break;
+
+			if (status != 2) {
+				status = message(msg1, sprintf(msg2, fname), 10);
+
+				/* cancel */
+				if (status == -1) break;
+
+				/* no */
+				if (status == 0) continue;
+			}
+			/* remove file */
+			addworksheetfile(fname, -1);
+		} while (1);
+	}
+}

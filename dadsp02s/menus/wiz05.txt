@@ -1,0 +1,13 @@
+DFT          !_PDC_EXEC137  $Slow Fourier Transform
+FFT          !_PDC_EXEC135  $Fast Fourier Transform
+Fftshift     !_PDC_EXEC322  $Shift FFT Origin
+Flattop      !_PDC_EXEC364  $Apply Flattop Window
+Hamming      !_PDC_EXEC134  $Apply Hamming Window
+Hanning      !_PDC_EXEC243  $Apply Hanning Window
+IFFT         !_PDC_EXEC138  $Inverse Fourier Transform
+Kaiser       !_PDC_EXEC244  $Apply Kaiser Window
+Powspec      !_PDC_EXEC372  $Magnitude Squared Spectrum
+PSD          !_PDC_EXEC142  $Power Spectral Density
+Specgram     !_PDC_EXEC285  $Joint Time Frequency Transform
+Spectrum     !_PDC_EXEC141  $Magnitude Spectrum
+Windowing    !_PDC_EXEC358  $Windowing Functions

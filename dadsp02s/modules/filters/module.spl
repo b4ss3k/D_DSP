@@ -1,0 +1,9 @@
+
+/* initialization routine for Filter Module */
+modmain()
+{
+	/* redefine Filter directory so only new Filter files are found */
+	defmacro("_filterdir",  strcat("modules", pathchar, "filters"), 2);
+	defmacro("_filterhome", strcat(eval("_filterdir"), pathchar), 2);
+}
+

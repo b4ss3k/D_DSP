@@ -1,0 +1,61 @@
+/*****************************************************************************
+*                                                                            *
+*   ROWLEN.SPL       Copyright (C) 2004 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Produces a column of the lengths of each row of an array    *
+*                                                                            *
+*   Revisions:   30 Mar 2004  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_ROWLEN
+
+    ROWLEN
+
+    Purpose: Produces a column of the lengths of each row of a table.
+                                                                        
+    Format:  ROWLEN(table)
+
+              table - A series, table or expression evaluating to a series
+                      or table.
+
+    Returns: A single column series with the same number of rows as the
+             input table.
+
+    Example:
+             a = {{2,  4,  6}, 
+                  {8, 10}}
+
+             b = rowlen(a)
+
+             b == {3, 2} 
+
+    Remarks:
+             ROWLEN works with arrays with differing number of elements.
+
+    See Also:
+             Collen
+             Length
+             Row
+             Rowmax
+             Rowmean
+             Rowmin
+             Rowreduce
+             Rowstdev
+             Rowsum
+             Size
+#endif
+
+
+/* find the lengths of each row */
+rowlen(a)
+{
+	local s;
+
+	s = isnan(a) + not(isnan(a));
+	return(rowsum(s));
+}

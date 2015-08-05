@@ -1,0 +1,3 @@
+[autorun]
+open=demo32.exe -q
+icon=hsblock.ico

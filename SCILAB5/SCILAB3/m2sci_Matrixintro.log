@@ -1,0 +1,17 @@
+   ****** Beginning of mfile2sci() session ******
+   File to convert: H:/MATLAB/1Demos/Matrixintro.m
+   Result file path: H:/MATLAB/1Demos/
+   Recursive mode: OFF
+   Only double values used in M-file: NO
+   Verbose mode: 1
+   Generate formated code: YES
+   M-file reading...
+   M-file reading: Done
+   Syntax modification...
+   Syntax modification: Done
+   Macro to tree conversion...
+   Macro to tree conversion: Done
+   Conversion of M-tree...
+   Conversion of M-tree: Done
+   Translation may be wrong (see the //!! comments)
+   ****** End of mfile2sci() session ******

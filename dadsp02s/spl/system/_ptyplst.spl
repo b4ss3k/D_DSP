@@ -1,0 +1,15 @@
+_ptyplst()
+{
+	local s = "";
+
+	s = s + _zsurfstr     + strescape("\n");
+	s = s + _contourstr   + strescape("\n");
+	s = s + _waterfallstr + strescape("\n");
+	s = s + _densitystr   + strescape("\n");
+	s = s + _tablevstr    + strescape("\n");
+	s = s + _seriesgrpstr + strescape("\n");
+	s = s + _chartgrpstr;
+
+	return(s);
+}
+

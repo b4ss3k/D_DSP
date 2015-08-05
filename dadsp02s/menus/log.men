@@ -1,0 +1,12 @@
+! Log.men  - Log Functions.
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+  Log Functions
+
+ Log              ~_deffname('LOG      Natural Log of a Series') | _defformat('Log(series)') | _defxamp('Log(W1)') | _getser | _serform("Log")
+ Log10            ~_deffname('LOG10    Log Base 10 of a Series') | _defformat('Log10(series)') | _defxamp('Log10(W1)') | _getser | _serform("Log10")
+ Natural Log      ~_deffname('LN       Natural Log of a Series') | _defformat('Ln(series)') | _defxamp('Ln(W1)') | _getser | _serform("Ln")
+
+ Exponent         ~_deffname('EXP      Raise "e" to Series Values') | _defformat('Exp(series)') | _defxamp('Exp(W1)') | _getser | _serform("Exp")

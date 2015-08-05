@@ -1,0 +1,62 @@
+/*****************************************************************************
+*                                                                            *
+*   ERFCINV.SPL  Copyright (C) 2001 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns inverse incomplete error function                   *
+*                                                                            *
+*   Revisions:    6 Dec 2001  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_ERFCINV
+
+    ERFCINV  
+
+    Purpose: Returns the inverse incomplete error function
+                                                                        
+    Format:  ERFCINV(y)
+
+                 y - real or series
+
+
+    Returns: A real or series, the inverse incomplete error function 
+             x where y = erfc(x) for 0 <= y <= 2 and -inf <= x <= inf.
+
+
+    Example:
+             erfcinv(.2)
+
+             returns 0.90619381, the inverse incomplete error function of 0.2.
+
+             erfc(erfcinv(.2))
+
+             returns 0.2, indicating that ERFC and ERFCINV are inverse
+             functions.
+            
+    Remarks:
+             ERFCINV uses the built-in INVPROBN function to find the Z value
+             for a given a probability value of a normal distribution.
+
+             erfc(erfcinv(x)) == x
+
+             erfcinv(x) == -invprobn(x/2) / sqrt(2)
+
+    See Also:
+             Erf
+             Erfc
+             Erfinv
+             Invprobn
+             Probn
+#endif
+
+
+
+/* inverse incomplete error function */
+erfcinv(x)
+{
+	/* use inverse normal CDF */
+	return(-invprobn(x/2) / sqrt(2));
+}

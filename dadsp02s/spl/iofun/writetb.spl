@@ -1,0 +1,120 @@
+/*****************************************************************************
+*                                                                            *
+*   WRITETB.SPL  Copyright (C) 1997 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Write a binary "table" to a file                            *
+*                                                                            *
+*   Revisions:    7 Jun 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#define REAL_TABLE    (-101)
+#define COMPLEX_TABLE (-202)
+
+#if @HELP_WRITETB
+
+    WRITETB  
+
+    Purpose: Writes a binary table
+                                                                        
+    Format:  Writeb("filename", type, data)
+
+              filename - a string, name of file in quotes
+
+              type     - an integer, file data type, SBYTE (1), UBYTE (2),
+                         SINT (3), UINT (4), LONG (5), FLOAT (6), DOUBLE (7)
+
+              data     - series or array
+
+    Returns: Nothing
+
+    Example:
+             Writetb("bin.dat", SINT, {{1, 2, 3}, {4, 5, 6}});
+             mydata = Readtb("bin.dat");
+
+             writes the 2x3 array 
+
+                       {{1, 2, 3},
+                        {4, 5, 6}}
+             
+             to the file bin.dat as signed integers and reads the
+             array into the variable mydata.
+
+
+    Remarks:
+             Writetb does not currently handle DELTAX, XOFFSET and units.
+
+
+    See Also
+             Readb
+             Reada
+             Writea
+             Writeb
+
+#endif
+
+
+
+
+
+/* write a binary table */
+writetb(fname, type, table)
+{
+	local nc, nr, tag;
+
+	if (argc < 1) {
+		error("writetb - filename required");
+	}
+
+	if (argc < 3) {
+		/* default to current window if series not specified */
+		table = current;
+	}
+	if (argc < 2) {
+		/* default to double if type not specified */
+		type = DOUBLE;
+	}
+
+	if (length(table) <= 0) {
+		error("writeb - series required");
+	}
+	nc = numcols(table);
+	nr = collength(table)';
+
+	if (fopen(fname, "wb") != TRUE) {
+		error(sprintf("writeb - cannot open %s", fname));
+	}
+
+	/* real or complex? */
+	if (IS_COMPLEX(table[1])) {
+		tag = COMPLEX_TABLE;
+	}
+	else {
+		tag = REAL_TABLE;
+	}
+
+
+	/* write a tag value to mark file as binary table */
+	fwriteb(fname, SINT, {tag});
+
+	/* total number of columns */
+	fwriteb(fname, SINT, {nc});
+
+	/* write the length of each column */
+	fwriteb(fname, SINT, nr);
+
+	/* write the data type and close file */
+	fwriteb(fname, SINT, {type});
+	fclose(fname);
+
+	/* now append all the data */
+	writeb(fname, type, 2, unravel(table));
+
+	return(sprintf("%d column(s) written to '%s'", nc, fname));
+}
+

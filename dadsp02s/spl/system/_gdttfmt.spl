@@ -1,0 +1,17 @@
+/* get current time using format */
+_gdttfmt(f, prec)
+{
+	local t, fmt, oprec;
+
+	prec = caststring(prec);
+
+	oprec = getconf("time_precision");
+	fmt = getconf("dt_time_format");
+	setconf("time_precision", prec);
+	setconf("dt_time_format", caststring(f));
+	t = gettime();
+	setconf("time_precision", oprec);
+	setconf("dt_time_format", fmt);
+	return(t);
+
+}

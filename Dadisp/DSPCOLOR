@@ -1,0 +1,35 @@
+WHITE    ! foreground
+BLACK    ! background
+YELLOW   ! text_foreground
+BLACK    ! text_background
+WHITE    ! signal_color
+LRED     ! window_border_color
+BLUE     ! window_color
+RED      ! popmes_background_color
+LBLUE    ! list_background_color
+WHITE    ! list_text_foreground_color
+LBLUE    ! list_text_background_color
+WHITE    ! poptext_foreground_color
+GREEN    ! infobox_color
+WHITE    ! infobox_text_color
+RED      ! help_color
+WHITE    ! help_text_color
+
+
+The current color choices:
+CLEARCOLOR
+BLACK
+RED
+BLUE
+PURPLE
+YELLOW
+ORANGE
+GREEN
+WHITE
+GREY
+LGREY
+LRED
+LBLUE
+LPURPLE
+LGREEN
+LORANGE

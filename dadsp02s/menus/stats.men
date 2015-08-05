@@ -1,0 +1,17 @@
+! Statistics menu- STATS.MEN
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+     Statistics 
+
+ Summary Statistics   ~_MF("statsum.men")
+ Column Statistics    ~_MF("colstats.men")
+ 
+ Error Bars           ~_deffname('ERRORBAR Stat. Error Bars')|_defformat('Errorbar(4 series,0/1)')|_defxamp('Errorbar(1*w1,2*w1,.8*w1,.9*w1,ON)')|_getser4int("Bar Hi:   ","Stick Hi: ","Stick Low:","Bar Low:  ","Wicks:    ")|_ser4intform("Errorbar")
+ Histogram            ~_deffname('HISTOGRAM Histogram Distribution')|_defformat('Histogram(series, bins)')|_defxamp('Histogram(W1,10)')|_getserint1("Input Series: ", "Bins:         ")|_serint1form("Histogram")
+ 
+ Linear Fit           ~_deffname('LINREG   Fit a Line to a Series')      |_defformat('Linreg(series)')|_defxamp('Linreg(W1)')|_getser|_serform("Linreg")
+ Fit Polynomial       ~_deffname('POLYFIT  Least Square Polynomial Fit')  |_defformat('Polyfit(series, order)')|_defxamp('Polyfit(W1, 8)')|_getserint1("Input Series:", "Input Order: ")|_serint1form("Polyfit") 
+ Regress Two Series   ~_deffname('LINREG2  Linearly Regress Series1 vs Series2')  |_defformat('Linreg2(series1, series2)')|_defxamp('Linreg2(W1,W2)')|_getser2("Input Series 1:","Input Series 2:")|_ser2form("Linreg2")
+ Graph a Fit to Scale ~_deffname('POLYGRAPH   Graph A Polynomial Fit') |_defformat('Polygraph(coefs,xvals)') |_defxamp('Polygraph(W2,xvals(W1))') | _getser2("Coefficients: ","X values:     ") | _ser2form("Polygraph")

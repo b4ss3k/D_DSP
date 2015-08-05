@@ -1,0 +1,87 @@
+/*****************************************************************************
+*                                                                            *
+*   CPHASE.SPL   Copyright (C) 2002 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Evaluates the phase response of Cascade coefficients        *
+*                                                                            *
+*   Revisions:   17 Sep 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_CPHASE
+
+    CPHASE  
+
+    Purpose: Evaluates the phase of Cascade form coefficients
+                                                                        
+    Format:  CPHASE(c, N, r)
+
+                c - a series, filter coefficients in cascade format
+
+                N - an optional integer, number of output samples,
+                    defaults to 2048
+
+                r - an optional real, sample rate of data, defaults
+                    to rate of filter
+
+
+    Returns: A real series, the phase response of filter
+
+
+    Example:
+             
+             W1: Wkfcoef(1000)
+             W2: cphase(w1)
+ 
+             W2 contains 2048 uniformly spaced samples of the phase
+             response of the Wk filter in W1. 
+
+
+    Remarks:
+             CPHASE uses the ZFREQ to evaluate N uniformly spaced
+             samples of the frequency response of the filter. The 
+             cascade coefficients are converted to direct form and the
+             frequency response is evaluated using the FFT. The phase of
+             the response is returned.
+
+    See Also:
+             Clogmag
+             Fft
+             Zfreq
+#endif
+
+
+cphase(c, N, r)
+{
+	local f, g, cs, p;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("cphase - input series required");
+			N = 2048;
+		}
+		/* default to rate of filter */
+		r = rate(c);
+	}
+
+	/* get individual stages */
+	cs = ravel(extract(c, 2, -1), 5);
+
+	/* add the leading 1 for the denominator */
+	cs = {cs[1..3, ..], ones(1, numcols(cs)), cs[4..5, ..]};
+
+	/* evaluate frequency response over upper half of the unit circle */
+	f = zfreq(cs[1..3, ..], cs[4..6, ..], N, r);
+
+	/* combine response from each stage */
+	f = c[1] * rowreduce(f, "*");
+
+	p = phase(f);
+	setvunits(p, "Radians");
+	setcomment(p, "Phase Response in Radians");
+
+	return(p);
+}

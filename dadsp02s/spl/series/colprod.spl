@@ -1,0 +1,61 @@
+/*****************************************************************************
+*                                                                            *
+*   COLPROD.SPL  Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the product of each column of a series           *
+*                                                                            *
+*   Revisions:   13 Apr 2000  RRR  Creation - from PROD.SPL                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_COLPROD
+
+    COLPROD
+
+    Purpose: Calculates the product of each column of an array.
+
+    Format:  COLPROD(x)
+
+              x - input array
+
+    Returns: A series 
+    
+    Example:
+             a = {{1, 2, 3}, 
+                  {4, 5, 6},
+                  {7, 8, 9}}
+
+             b = colprod(a)
+
+             b == {{28}, {80}, {162}}
+
+
+    See Also:
+             Prod
+             Sum
+
+#endif
+
+
+/* product of each column */
+colprod(s)
+{
+	local r;
+
+	if (argc < 1) error("colprod - input series required");
+
+	/* convert to series if required */
+	if (not(IS_ARRAY(s))) {
+		s = castseries(s);
+	}
+
+	/* colreduce does just what we need */
+	r = colreduce(s, "*");
+
+	return(r);
+}

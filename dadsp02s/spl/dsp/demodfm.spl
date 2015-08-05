@@ -1,0 +1,70 @@
+/*****************************************************************************
+*                                                                            *
+*   DEMODFM.SPL  Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    FM Demodulation using the Hilbert Transform                 *
+*                                                                            *
+*   Revisions:    8 Feb 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_DEMODFM
+
+    DEMODFM  
+
+    Purpose: Demodulates an FM waveform using the Hilbert Transform
+                                                                        
+    Format:  DEMODFM(s)
+ 
+              s - the input series
+
+
+    Returns: A series or array
+
+    Example:
+             W1: Gtriwave(1000,.001, 4)
+             W2: W1 * 100 + 20
+             W3: Cos(integ(2*pi*w2))
+             W4: Demodfm(w3)
+
+             W2 represents the scaled information signal and W3 is the
+             resulting frequency modulated signal. The amplitude of W2
+             determines the instantaneous frequency of W3. The instantaneous
+             frequency of W3 ranges from:
+
+                             min(w3) == 20 Hz 
+ 
+                                     to 
+
+                             max(w3) == 120 Hz
+
+
+             W4 is the demodulated waveform. 
+
+    Remarks:
+             DEMODFM uses HILB to calculate the Hilbert Transform.
+
+
+    See Also:
+             Hilb
+
+#endif
+
+/* demodulate an FM waveform using the Hilbert transform */
+demodfm(s)
+{
+	local h, fm;
+
+	if (argc < 1) error("demodfm - input series required");
+
+	h = hilb(s) * exp(-i*2*pi*rate(s)*xvals(s));
+	fm = deriv(unwrap(phase(h))) / (2*pi);
+
+	/* restore the offset */
+	setxoffset(fm, xoffset(s));
+
+	return(fm);
+}

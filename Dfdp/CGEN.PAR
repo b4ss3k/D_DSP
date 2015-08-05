@@ -1,0 +1,4840 @@
+1
+1
+%
+TMS32010; Direct Paged Memory
+  1542
+1
+1
+%
+TMS32010; Direct Paged Memory; Increased Precision
+  9030
+1
+2
+%
+TMS32020; Direct Paged Memory
+ 16869
+1
+2
+%
+TMS32020; Direct Paged Memory; Increased Precision
+ 24100
+1
+2
+%
+TMS32020; Indexed Memory
+ 31878
+1
+2
+%
+TMS32020; Indexed Memory; Increased Precision
+ 39112
+1
+2
+%
+TMS32020; Index Memory; Looping Control
+ 46792
+1
+2
+%
+TMS32020; Indexed Memory; Looping Control; Increased Precision
+ 52773
+2
+1
+%
+TMS32010; Direct Paged Memory
+ 59049
+2
+2
+%
+TMS32020/c25; Indexed Memory; MACD realization
+ 63744
+2
+2
+%
+TMS32020/c25; Internal Direct Paged Memory
+ 68953
+2
+2
+%
+TMS32020/c25; Indexed Memory; Internal Delay Memory
+ 73360
+2
+2
+%
+TMS32020/c25; Indexed Memory; Internal or External Memory
+ 78519
+3
+1
+%
+TMS32010; Direct Paged Memory
+ 83425
+3
+2
+%
+TMS32020/c25; Indexed Memory; MACD realization
+ 88120
+3
+2
+%
+TMS32020/c25; Internal Direct Paged Memory
+ 93329
+3
+2
+%
+TMS32020/c25; Indexed Memory; Internal Delay Memory
+ 97737
+3
+2
+%
+TMS32020/c25; Indexed Memory; Internal or External Memory
+102896
+1
+3
+%
+TMS320c25; Direct Paged Memory
+107803
+1
+3
+%
+TMS320c25; Direct Paged Memory; Increased Precision
+115041
+1
+3
+%
+TMS320c25; Indexed Memory
+122814
+1
+3
+%
+TMS320c25; Indexed Memory; Increased Precision
+130025
+1
+3
+%
+TMS320c25; Indexed Memory; Looping Control
+137684
+1
+3
+%
+TMS320c25; Indexed Memory; Looping Control; Increased Precision
+143651
+>>>>
+>>>
+1
+1
+%
+TMS32010; Direct Paged Memory
+>>>
+%batch_files 2  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32010 DIGITAL FILTER REALIZATION   *
+*************************************************
+*
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	6
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SOVM			*SATURATION ARITHMETIC
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	0		*FILTER TEMPORY DATA
+VSAMPL	EQU	1		*FILTER INPUT/OUTPUT DATA
+IOPAGE	EQU	0
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+%section%*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%if B0<%%else%	DATA	%B0%		*B0
+%endif%%if B1<>%	DATA	%B1%		*B1
+%endif%%if A1<%%else%	DATA	%A1%		*A1
+%endif%%if half%%else%	DATA	%A2%		*A2
+%if B2<%%else%	DATA	%B2%		*B2
+%endif%%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+* DELAY STORAGE DATA STORAGE AREA
+*
+DELAY	EQU	$
+%section%Z%section_n%1	BSS	1
+%if half%%else%Z%section_n%2	BSS	1
+%endif%%loop%*
+*
+* COEFFICIENT DATA STORAGE AREA
+*
+FDATA	EQU	$
+%section%*
+%if B0<%%else%B%section_n%0	BSS	1	*B0
+%endif%%if B1<>%B%section_n%1	BSS	1	*B1
+%endif%%if A1<%%else%A%section_n%1	BSS	1	*A1
+%endif%%if half%%else%A%section_n%2	BSS	1	*A2
+%if B2<%%else%B%section_n%2	BSS	1	*B2
+%endif%%endif%%loop%*
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%	LACK	1		*GET A 1
+	SACL	FILTT		*TEMPORARY SAVE
+	LT	FILTT		*LOAD 1 IN T
+	MPYK	COEF
+	PAC			*AC POINTS TO COEF DATA
+	MPYK	1		*1 INTO P
+	LARK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	LARK	1,%points%		*COUNT FOR NUMBER OF POINTS
+ILP	LARP	0		*RESET AR TO 0
+	TBLR	*+,1		*TRANSFER DATA VALUE
+	APAC			*INCREMENT POINTER
+	BANZ	ILP		*LOOP
+%endif%	LARK	1,%ndelay%		*NUMBER OF DELAY POINTS
+	ZAC			*CLEAR ACCUMULATOR
+	LARK	0,Z011		*POINT TO DELAY MEMORY
+ILPA	LARP	0		*RESET AR TO 0
+	SACL	*+,0,1		*CLEAR DATA VALUE
+	BANZ	ILPA		*LOOP
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      PAGE REGISTER IS SET TO COEF. PAGE
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+%if option M%FILTER%else%F%IDT%%endif%
+%section%*
+* SECOND-ORDER FILTER SECTION # %section_n%
+*
+%filtin%%if half%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = (B0 * INPUT)/2
+%else%	MPY	B%section_n%0		*P = (B0 * INPUT)/2
+%endif%	ZALH	Z%section_n%1
+	ADDH	Z%section_n%1		*AC = Z-1
+%if B1<>%	APAC
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	MPY	B%section_n%1		*P = (B1 * INPUT)/2
+%else%	APAC
+	APAC			*AC = Z-1 + (B0 * INPUT)
+%endif%	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+%if B1<>%	PAC
+%endif%	LT	%if option M%VSAMPL%else%V%IDT%%endif%%if B1<>%		*AC = (B1 * INPUT)/2%endif%
+%if A1<%	MPYK	%A1%		*P = (A1 * OUTPUT)/2
+%else%	MPY	A%section_n%1		*P = (A1 * OUTPUT)/2
+%endif%	%if B1<>%A%endif%PAC			*AC = ((B1 * INPUT) + (A1 * OUTPUT))/2
+%if A1shft%	APAC
+%endif%	SACH	Z%section_n%1		*Save in Z-1
+%else 
+
+%%if B1<>%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = (B0 * INPUT)/2
+%else%	MPY	B%section_n%0		*P = (B0 * INPUT)/2
+%endif%	ZALH	Z%section_n%1
+	ADDH	Z%section_n%1		*AC = Z-1
+	APAC
+	APAC				*AC = Z-1 + (B0 * INPUT)
+	MPY	B%section_n%1			*P = (B1 * INPUT)/2
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	PAC
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = (B1 * INPUT)/2
+	ADDH	Z%section_n%2		*AC = (Z-2 + (B1 * INPUT))/2
+%if A1<%	MPYK	%A1%		*P = (A1 * OUTPUT)/2
+%else%	MPY	A%section_n%1		*P = (A1 * OUTPUT)/2
+%endif%%if A1shft%	APAC
+%endif%	APAC			*AC = (Z-2 + (B1 * INPUT) + (A1 * OUTPUT))/2
+	MPY	A%section_n%2		*P = (A2 * OUTPUT)/2
+	SACH	Z%section_n%1		*Save in Z-1
+	PAC			*AC = A2 * OUTPUT
+	LT	FILTT
+%if B2<%	MPYK	%B2%		*P = (B2 * INPUT)/2
+%else%	MPY	B%section_n%2		*P = (B2 * INPUT)/2
+%endif%	APAC			*AC = ((B2 * INPUT) + (A2 * OUTPUT))/2
+ 	SACH	Z%section_n%2	*Save in Z-2
+%else 
+
+
+%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = (B0 * INPUT)/2
+%else%	MPY	B%section_n%0		*P = (B0 * INPUT)/2
+%endif%	ZALH	Z%section_n%1
+	ADDH	Z%section_n%1		*AC = Z-1
+	APAC
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*Get OUTPUT
+	ZALH	Z%section_n%2		*AC = (Z-2)/2
+%if A1<%	MPYK	%A1%		*P = (A1 * OUTPUT)/2
+%else%	MPY	A%section_n%1		*P = (A1 * OUTPUT)/2
+%endif%%if A1shft%	APAC
+%endif%	APAC
+	MPY	A%section_n%2		*AC = ((B1 * INPUT) + (A1 * OUTPUT))/2
+*				*P = (A2 * OUTPUT)/2
+	SACH	Z%section_n%1	*Save in Z-1
+	PAC		*AC = A2 * OUTPUT
+	LT	FILTT
+%if B2<%	MPYK	%B2%		*P = (B2 * INPUT)/2
+%else%	MPY	B%section_n%2		*P = (B2 * INPUT)/2
+%endif%	APAC			*AC = ((B2 * INPUT) + (A2 * OUTPUT))/2
+ 	SACH	Z%section_n%2	*Save in Z-2
+%endif%%endif%%loop%*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+1
+%
+TMS32010; Direct Paged Memory; Increased Precision
+>>>
+%batch_files 2  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32010 DIGITAL FILTER REALIZATION   *
+*************************************************
+*       INCREASED PRECISION IMPLEMENTATION
+*
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	6
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SOVM			*SATURATION ARITHMETIC
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	0		*FILTER TEMPORY DATA
+VSAMPL	EQU	1		*FILTER INPUT/OUTPUT DATA
+IOPAGE	EQU	0
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+%section%*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%if B0<%%else%	DATA	%B0%		*B0
+%endif%%if B1<>%	DATA	%B1%		*B1
+%endif%%if A1<%%else%	DATA	%A1%		*A1
+%endif%%if half%%else%	DATA	%A2%		*A2
+%if B2<%%else%	DATA	%B2%		*B2
+%endif%%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+* DELAY STORAGE DATA STORAGE AREA
+*
+DELAY	EQU	$
+%section%Z%section_n%1	BSS	1
+L%section_n%1	BSS	1
+%if half%%else%Z%section_n%2	BSS	1
+L%section_n%2	BSS	1
+%endif%%loop%*
+*
+* COEFFICIENT DATA STORAGE AREA
+*
+FDATA	EQU	$
+%section%*
+%if B0<%%else%B%section_n%0	BSS	1	*B0
+%endif%%if B1<>%B%section_n%1	BSS	1	*B1
+%endif%%if A1<%%else%A%section_n%1	BSS	1	*A1
+%endif%%if half%%else%A%section_n%2	BSS	1	*A2
+%if B2<%%else%B%section_n%2	BSS	1	*B2
+%endif%%endif%%loop%*
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%	LACK	1		*GET A 1
+	SACL	FILTT		*TEMPORARY SAVE
+	LT	FILTT		*LOAD 1 IN T
+	MPYK	COEF
+	PAC			*AC POINTS TO COEF DATA
+	MPYK	1		*1 INTO P
+	LARK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	LARK	1,%points%		*COUNT FOR NUMBER OF POINTS
+ILP	LARP	0		*RESET AR TO 0
+	TBLR	*+,1		*TRANSFER DATA VALUE
+	APAC			*INCREMENT POINTER
+	BANZ	ILP		*LOOP
+%endif%	LARK	1,%ndelay%+%ndelay%+1		*NUMBER OF DELAY POINTS
+	ZAC			*CLEAR ACCUMULATOR
+	LARK	0,Z011		*POINT TO DELAY MEMORY
+ILPA	LARP	0		*RESET AR TO 0
+	SACL	*+,0,1		*CLEAR DATA VALUE
+	BANZ	ILPA		*LOOP
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      PAGE REGISTER IS SET TO COEF. PAGE
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+%if option M%FILTER%else%F%IDT%%endif%
+%section%*
+* SECOND-ORDER FILTER SECTION # %section_n%
+*
+%filtin%%if half%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = (B0 * INPUT)/2
+%else%	MPY	B%section_n%0		*P = (B0 * INPUT)/2
+%endif%	ZALH	Z%section_n%1
+	ADDS	L%section_n%1
+	ADDH	Z%section_n%1
+	ADDS	L%section_n%1		*AC = Z-1
+%if B1<>%	APAC
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	MPY	B%section_n%1		*P = (B1 * INPUT)/2
+%else%	APAC
+	APAC			*AC = Z-1 + (B0 * INPUT)
+%endif%	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+%if B1<>%	PAC
+%endif%	LT	%if option M%VSAMPL%else%V%IDT%%endif%%if B1<>%		*AC = (B1 * INPUT)/2%endif%
+%if A1<%	MPYK	%A1%		*P = (A1 * OUTPUT)/2
+%else%	MPY	A%section_n%1		*P = (A1 * OUTPUT)/2
+%endif%	%if B1<>%A%endif%PAC			*AC = ((B1 * INPUT) + (A1 * OUTPUT))/2
+%if A1shft%	APAC
+%endif%	SACH	Z%section_n%1		*Save in Z-1
+	SACL	L%section_n%1
+%else 
+
+%%if B1<>%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = (B0 * INPUT)/2
+%else%	MPY	B%section_n%0		*P = (B0 * INPUT)/2
+%endif%	ZALH	Z%section_n%1
+	ADDS	L%section_n%1
+	ADDH	Z%section_n%1
+	ADDS	L%section_n%1		*AC = Z-1
+	APAC
+	APAC				*AC = Z-1 + (B0 * INPUT)
+	MPY	B%section_n%1			*P = (B1 * INPUT)/2
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	PAC
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = (B1 * INPUT)/2
+	ADDH	Z%section_n%2
+	ADDS	L%section_n%2		*AC = (Z-2 + (B1 * INPUT))/2
+%if A1<%	MPYK	%A1%		*P = (A1 * OUTPUT)/2
+%else%	MPY	A%section_n%1		*P = (A1 * OUTPUT)/2
+%endif%%if A1shft%	APAC
+%endif%	APAC			*AC = (Z-2 + (B1 * INPUT) + (A1 * OUTPUT))/2
+	MPY	A%section_n%2		*P = (A2 * OUTPUT)/2
+	SACH	Z%section_n%1		*Save in Z-1
+	SACL	L%section_n%1
+	PAC			*AC = A2 * OUTPUT
+	LT	FILTT
+%if B2<%	MPYK	%B2%		*P = (B2 * INPUT)/2
+%else%	MPY	B%section_n%2		*P = (B2 * INPUT)/2
+%endif%	APAC			*AC = ((B2 * INPUT) + (A2 * OUTPUT))/2
+ 	SACH	Z%section_n%2	*Save in Z-2
+	SACL	L%section_n%2
+%else 
+
+
+%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = (B0 * INPUT)/2
+%else%	MPY	B%section_n%0		*P = (B0 * INPUT)/2
+%endif%	ZALH	Z%section_n%1
+	ADDS	L%section_n%1
+	ADDH	Z%section_n%1
+	ADDS	L%section_n%1		*AC = Z-1
+	APAC
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*Get OUTPUT
+	ZALH	Z%section_n%2
+	ADDS	L%section_n%2		*AC = (Z-2)/2
+%if A1<%	MPYK	%A1%		*P = (A1 * OUTPUT)/2
+%else%	MPY	A%section_n%1		*P = (A1 * OUTPUT)/2
+%endif%%if A1shft%	APAC
+%endif%	APAC			*AC = ((B1 * INPUT) + (A1 * OUTPUT) + Z-2)/2
+	MPY	A%section_n%2		*P = (A2 * OUTPUT)/2
+	SACH	Z%section_n%1	*Save in Z-1
+	SACL	L%section_n%1
+	PAC		*AC = A2 * OUTPUT
+	LT	FILTT
+%if B2<%	MPYK	%B2%		*P = (B2 * INPUT)/2
+%else%	MPY	B%section_n%2		*P = (B2 * INPUT)/2
+%endif%	APAC			*AC = ((B2 * INPUT) + (A2 * OUTPUT))/2
+ 	SACH	Z%section_n%2	*Save in Z-2
+	SACL	L%section_n%2
+%endif%%endif%%loop%*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+2
+%
+TMS32020; Direct Paged Memory
+>>>
+%batch_files 2  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	0		*TEMPORARY FILTER DATA
+VSAMPL	EQU	1		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	6
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%if B0<%%else%	DATA	%B0%		*B0
+%endif%%if B1<>%	DATA	%B1%		*B1
+%endif%%if A1<%%else%	DATA	%A1%		*A1
+%endif%%if half%%else%	DATA	%A2%		*A2
+%if B2<%%else%	DATA	%B2%		*B2
+%endif%%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+* DELAY STORAGE DATA STORAGE AREA
+*
+DELAY	EQU	$
+%section%Z%section_n%1	BSS	1
+%if half%%else%Z%section_n%2	BSS	1
+%endif%%loop%*
+*
+* COEFFICIENT DATA STORAGE AREA
+*
+FDATA	EQU	$
+%section%*
+%if B0<%%else%B%section_n%0	BSS	1	*B0
+%endif%%if B1<>%B%section_n%1	BSS	1	*B1
+%endif%%if A1<%%else%A%section_n%1	BSS	1	*A1
+%endif%%if half%%else%A%section_n%2	BSS	1	*A2
+%if B2<%%else%B%section_n%2	BSS	1	*B2
+%endif%%endif%%loop%*
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	RPTK	%points%		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+%endif%	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*      SIGN EXTEND MODE IS ON
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+*
+%if option M%FILTER%else%F%IDT%%endif%
+%section%*
+* SECOND-ORDER FILTER SECTION # %section_n%
+*
+%filtin%%if half%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+%if B1<>%	APAC
+	MPY	B%section_n%1		*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+%else%	APAC			*AC = Z-1 + (B0 * INPUT)
+%endif%	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT%if B1<>%P%endif%	%if option M%VSAMPL%else%V%IDT%%endif%%if B1<>%		*AC = B1 * INPUT%endif%
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%	%if B1<>%A%endif%PAC			*AC = (B1 * INPUT) + (A1 * OUTPUT)
+%if A1shft%	APAC
+%endif%	SACH	Z%section_n%1		*Save in Z-1
+%else 
+
+%%if B1<>%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+	APAC
+	MPY	B%section_n%1		*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LTP	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = B1 * INPUT 
+	ADDH	Z%section_n%2		*AC = Z-2 + (B1 * INPUT)
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	APAC
+	MPY	A%section_n%2		*AC = Z-2 + (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	Z%section_n%1		*Save in Z-1
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	B%section_n%2		*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	Z%section_n%2	*Save in Z-2
+%else 
+
+
+%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*Get OUTPUT
+	ZALH	Z%section_n%2		*AC = Z-2
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	APAC
+	MPY	A%section_n%2		*AC = (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	Z%section_n%1	*Save in Z-1
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	B%section_n%2		*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	Z%section_n%2	*Save in Z-2
+%endif%%endif%%loop%*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+2
+%
+TMS32020; Direct Paged Memory; Increased Precision
+>>>
+%batch_files 2  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*       INCREASED PRECISION IMPLEMENTATION
+*
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	0		*TEMPORARY FILTER DATA
+VSAMPL	EQU	1		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	6
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%if B0<%%else%	DATA	%B0%		*B0
+%endif%%if B1<>%	DATA	%B1%		*B1
+%endif%%if A1<%%else%	DATA	%A1%		*A1
+%endif%%if half%%else%	DATA	%A2%		*A2
+%if B2<%%else%	DATA	%B2%		*B2
+%endif%%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+* DELAY STORAGE DATA STORAGE AREA
+*
+DELAY	EQU	$
+%section%Z%section_n%1	BSS	1
+L%section_n%1	BSS	1
+%if half%%else%Z%section_n%2	BSS	1
+L%section_n%2	BSS	1
+%endif%%loop%*
+*
+* COEFFICIENT DATA STORAGE AREA
+*
+FDATA	EQU	$
+%section%*
+%if B0<%%else%B%section_n%0	BSS	1	*B0
+%endif%%if B1<>%B%section_n%1	BSS	1	*B1
+%endif%%if A1<%%else%A%section_n%1	BSS	1	*A1
+%endif%%if half%%else%A%section_n%2	BSS	1	*A2
+%if B2<%%else%B%section_n%2	BSS	1	*B2
+%endif%%endif%%loop%*
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	RPTK	%points%		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+%endif%	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%+%ndelay%+1		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*      SIGN EXTEND MODE IS ON
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+*
+%if option M%FILTER%else%F%IDT%%endif%
+%section%*
+* SECOND-ORDER FILTER SECTION # %section_n%
+*
+%filtin%%if half%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+	ADDS	L%section_n%1		*ADD in least significant
+%if B1<>%	APAC
+	MPY	B%section_n%1		*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+%else%	APAC			*AC = Z-1 + (B0 * INPUT)
+%endif%	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT%if B1<>%P%endif%	%if option M%VSAMPL%else%V%IDT%%endif%%if B1<>%		*AC = B1 * INPUT%endif%
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%	%if B1<>%A%endif%PAC			*AC = (B1 * INPUT) + (A1 * OUTPUT)
+%if A1shft%	APAC
+%endif%	SACH	Z%section_n%1		*Save in Z-1
+	SACL	L%section_n%1		*Save least significant
+%else 
+
+%%if B1<>%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+	ADDS	L%section_n%1		*ADD in least significant
+	APAC
+	MPY	B%section_n%1		*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LTP	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = B1 * INPUT 
+	ADDH	Z%section_n%2		*AC = Z-2 + (B1 * INPUT)
+	ADDS	L%section_n%2		*ADD in least significant
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	APAC
+	MPY	A%section_n%2		*AC = Z-2 + (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	Z%section_n%1		*Save in Z-1
+	SACL	L%section_n%1		*Save least significant
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	B%section_n%2		*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	Z%section_n%2		*Save in Z-2
+	SACL	L%section_n%2		*Save least significant
+%else 
+
+
+%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+	ADDS	L%section_n%1		*ADD in least significant
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*Get OUTPUT
+	ZALH	Z%section_n%2		*AC = Z-2
+	ADDS	L%section_n%2		*ADD in least significant
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	APAC
+	MPY	A%section_n%2		*AC = (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	Z%section_n%1		*Save in Z-1
+	SACL	L%section_n%1		*Save least significant
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	B%section_n%2		*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	Z%section_n%2		*Save in Z-2
+	SACL	L%section_n%2		*Save least significant
+%endif%%endif%%loop%*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+2
+%
+TMS32020; Indexed Memory
+>>>
+%batch_files 0  %	IDT	'%IDT%'			*UNIQUE NAME
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*   ASPI TMS32020 DIGITAL FILTER REALIZATION    *
+*************************************************
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%if B0<%%else%	DATA	%B0%		*B0
+%endif%%if B1<>%	DATA	%B1%		*B1
+%endif%%if A1<%%else%	DATA	%A1%		*A1
+%endif%%if half%%else%	DATA	%A2%		*A2
+%if B2<%%else%	DATA	%B2%		*B2
+%endif%%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+*
+* COEFFICIENT DATA STORAGE AREA
+*
+FDATA	BSS	%points%+1
+*
+* DELAY STORAGE DATA STORAGE AREA
+*
+DELAY	BSS	%ndelay%+1
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	RPTK	%points%		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+%endif%	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*      SIGN EXTEND MODE IS ON
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+COEFAR	EQU	1		*Use AR1 to point to COEF's
+DELAR	EQU	2		*Use AR2 to point to DELAY's
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LRLK	COEFAR,FDATA	*Load COEF AR with beginning of COEF's
+	LRLK	DELAR,DELAY	*Load DELAY AR with beginning of DELAY's
+	LARP	%if B10<%DELAR%else%COEFAR%endif%		*Select Proper AR for initial use
+%section%*
+* SECOND-ORDER FILTER SECTION # %section_n%
+*
+%filtin%%if half%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*,COEFAR	*AC = Z-1
+%if B1<>%	APAC
+	MPY	*+,%if A1<%DELAR%else%COEFAR%endif%	*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+%else%	APAC			*AC = Z-1 + (B0 * INPUT)
+%endif%	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT%if B1<>%P%endif%	%if option M%VSAMPL%else%V%IDT%%endif%%if B1<>%		*AC = B1 * INPUT%endif%
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+,DELAR	*P = A1 * OUTPUT
+%endif%	%if B1<>%A%endif%PAC			*AC = (B1 * INPUT) + (A1 * OUTPUT)
+%if A1shft%	APAC
+%endif%	SACH	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save in Z-1
+%else 
+
+%%if B1<>%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*+,COEFAR	*AC = Z-1
+	APAC
+	MPY	*+,DELAR	*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LTP	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = B1 * INPUT 
+	ADDH	*-,COEFAR	*AC = Z-2 + (B1 * INPUT)
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	APAC
+	MPY	*+,DELAR	*AC = Z-2 + (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	*+,0,%if B2<%DELAR%else%COEFAR%endif%	*Save in Z-1
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	*+,DELAR	*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save in Z-2
+%else 
+
+
+%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*+,DELAR	*AC = Z-1
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*Get OUTPUT
+	ZALH	*-,COEFAR	*AC = Z-2
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	APAC
+	MPY	*+,DELAR	*AC = (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	*+,0,%if B2<%DELAR%else%COEFAR%endif%	*Save in Z-1
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%	*P = B2 * INPUT
+%else%	MPY	*+,DELAR	*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save in Z-2
+%endif%%endif%%loop%*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+2
+%
+TMS32020; Indexed Memory; Increased Precision
+>>>
+%batch_files 0  %	IDT	'%IDT%'			*UNIQUE NAME
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*   ASPI TMS32020 DIGITAL FILTER REALIZATION    *
+*************************************************
+*             Increased Precision
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%if B0<%%else%	DATA	%B0%		*B0
+%endif%%if B1<>%	DATA	%B1%		*B1
+%endif%%if A1<%%else%	DATA	%A1%		*A1
+%endif%%if half%%else%	DATA	%A2%		*A2
+%if B2<%%else%	DATA	%B2%		*B2
+%endif%%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+*
+* COEFFICIENT DATA STORAGE AREA
+*
+FDATA	BSS	%points%+1
+*
+* DELAY STORAGE DATA STORAGE AREA
+*
+DELAY	BSS	%ndelay%+%ndelay%+2
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	RPTK	%points%		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+%endif%	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%+%ndelay%+1		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*      SIGN EXTEND MODE IS ON
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+COEFAR	EQU	1		*Use AR1 to point to COEF's
+DELAR	EQU	2		*Use AR2 to point to DELAY's
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LARK	0,3		*Set up AR0 for subtract
+	LRLK	COEFAR,FDATA	*Load COEF AR with beginning of COEF's
+	LRLK	DELAR,DELAY	*Load DELAY AR with beginning of DELAY's
+	LARP	%if B10<%DELAR%else%COEFAR%endif%		*Select Proper AR for initial use
+%section%*
+* SECOND-ORDER FILTER SECTION # %section_n%
+*
+%filtin%%if half%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*+		*AC = Z-1
+	ADDS	*-,COEFAR	*ADD Least Significant
+%if B1<>%	APAC
+	MPY	*+,%if A1<%DELAR%else%COEFAR%endif%	*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+%else%	APAC			*AC = Z-1 + (B0 * INPUT)
+%endif%	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT%if B1<>%P%endif%	%if option M%VSAMPL%else%V%IDT%%endif%%if B1<>%		*AC = B1 * INPUT%endif%
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+,DELAR	*P = A1 * OUTPUT
+%endif%	%if B1<>%A%endif%PAC			*AC = (B1 * INPUT) + (A1 * OUTPUT)
+%if A1shft%	APAC
+%endif%	SACH	*+		*Save in Z-1
+	SACL	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save Least Significant
+%else 
+
+%%if B1<>%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*+		*AC = Z-1
+	ADDS	*+,COEFAR	*ADD in least significant
+	APAC
+	MPY	*+,DELAR	*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LTP	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = B1 * INPUT 
+	ADDH	*+		*AC = Z-2 + (B1 * INPUT)
+	ADDS	*0-,COEFAR	*ADD in least significant
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	APAC
+	MPY	*+,DELAR	*AC = Z-2 + (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	*+		*Save in Z-1
+	SACL	*+,0,%if B2<%DELAR%else%COEFAR%endif%	*Save least significant
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	*+,DELAR	*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	*+		*Save in Z-2
+	SACL	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save least significant
+%else 
+
+
+%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*+		*AC = Z-1
+	ADDS	*+,DELAR	*ADD in least significant
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*Get OUTPUT
+	ZALH	*+		*AC = Z-2
+	ADDS	*0-,COEFAR	*ADD in least significant
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	APAC
+	MPY	*+,DELAR	*AC = (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	*+		*Save in Z-1
+	SACL	*+,0,%if B2<%DELAR%else%COEFAR%endif%	*Save least significant
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%	*P = B2 * INPUT
+%else%	MPY	*+,DELAR	*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	*+		*Save in Z-2
+	SACL	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save least significant
+%endif%%endif%%loop%*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+2
+%
+TMS32020; Index Memory; Looping Control
+>>>
+%batch_files 0  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*               LOOPING CONTROL
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER to I/O PAGE
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          INITIALIZATION FOR COEFFICIENTS
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+	DATA	%stages%-1		*Number of stages -1 to follow
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%tunable%
+	DATA	%b_scale%		*BLOCK FLOATING POINT SHIFT
+	DATA	%B0%		*B0
+	DATA	%B1%		*B1
+	DATA	%A1%		*A1
+	DATA	%A2%		*A2
+	DATA	%B2%		*B2
+%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+*
+*COEFICIENT DATA STORAGE AREA (including block floating point shifts
+*                              and storage for the number of stages)
+*
+FDATA	BSS	%points%+2
+*
+* DELAY STORAGE STORAGE AREA
+*
+DELAY	BSS	%ndelay%+1
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+	RPTK	%points%+1		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*          PAGE.
+*      SIGN EXTEND MODE IS ON
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+COEFAR	EQU	1		*Use AR1 to point to COEF's
+DELAR	EQU	2		*Use AR2 to point to DELAY's
+LOOPAR	EQU	3		*Use AR3 as loop counter
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LRLK	COEFAR,FDATA	*Load COEF AR with beginning of COEF's
+	LRLK	DELAR,DELAY	*Load DELAY AR with beginning of DELAY's
+	LARP	COEFAR		*Point to COEF AR
+	LAR	LOOPAR,*+	*SET SECTION LOOP COUNT
+*
+* SECOND-ORDER FILTER SECTION LOOP
+*
+	LT	*+		*GET SCALE FACTOR
+FLOOP
+	LACT	%if option M%VSAMPL%else%V%IDT%%endif%		*GET and SCALE INPUT
+	SACH	FILTT,4		*SAVE SCALED INPUT
+	LT	FILTT		*GET SCALED INPUT
+	MPY	*+,DELAR	*P = B0 * INPUT
+	PAC			*AC = B0 * INPUT
+	ADDH	*+,COEFAR	*AC = (B0 * INPUT) + Z-1
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*SAVE IN OUTPUT
+	MPY	*+,DELAR	*P = B1 * OUTPUT
+	ZALH	*-,COEFAR	*AC = Z-2
+	LTA	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = (B1 * INPUT) + Z-2, GET CURRENT OUTPUT
+	MPY	*+,DELAR	*P = A1/2 * OUTPUT
+	APAC
+	APAC			*AC = (A1 * OUTPUT) + (B1 * INPUT) + Z-2
+	SACH	*+,0,COEFAR	*SAVE Z-1
+	MPY	*+		*P = A2 * OUTPUT
+	LTP	FILTT		*AC = A2 * OUTPUT, GET SCALED INPUT
+	MPY	*+		*P = B2 * INPUT
+	LTA	*+,DELAR	*AC = (A2 * OUTPUT) + (B2 * INPUT)
+*				* & GET NEXT SCALE FACTOR
+	SACH	*+,0,LOOPAR	*SAVE Z-2
+*
+	BANZ	FLOOP,*-,COEFAR	*REPEAT FOR ALL SECTIONS
+*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+2
+%
+TMS32020; Indexed Memory; Looping Control; Increased Precision
+>>>
+%batch_files 0  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*       INCREASED PRECISION IMPLEMENTATION
+*
+*               LOOPING CONTROL
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER to I/O PAGE
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          INITIALIZATION FOR COEFFICIENTS
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+	DATA	%stages%-1		*Number of stages -1 to follow
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%tunable%
+	DATA	%b_scale%		*BLOCK FLOATING POINT SHIFT
+	DATA	%B0%		*B0
+	DATA	%B1%		*B1
+	DATA	%A1%		*A1
+	DATA	%A2%		*A2
+	DATA	%B2%		*B2
+%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+*
+*COEFICIENT DATA STORAGE AREA (including block floating point shifts
+*                              and storage for the number of stages)
+*
+FDATA	BSS	%points%+2
+*
+* DELAY STORAGE STORAGE AREA
+*
+DELAY	BSS	%ndelay%+%ndelay%+2
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+	RPTK	%points%+1		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%+%ndelay%+1		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*          PAGE.
+*      SIGN EXTEND MODE IS ON
+*      AR0, COEFAR, DELAR, LOOPAR index registers
+*          are destroyed.
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+COEFAR	EQU	1		*Use AR1 to point to COEF's
+DELAR	EQU	2		*Use AR2 to point to DELAY's
+LOOPAR	EQU	3		*Use AR3 as loop counter
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LARK	0,3		*SET UP AR0
+	LRLK	COEFAR,FDATA	*Load COEF AR with beginning of COEF's
+	LRLK	DELAR,DELAY	*Load DELAY AR with beginning of DELAY's
+	LARP	COEFAR		*Point to COEF AR
+	LAR	LOOPAR,*+	*SET SECTION LOOP COUNT
+*
+* SECOND-ORDER FILTER SECTION LOOP
+*
+	LT	*+		*GET SCALE FACTOR
+FLOOP
+	LACT	%if option M%VSAMPL%else%V%IDT%%endif%		*GET and SCALE INPUT
+	SACH	FILTT,4		*SAVE SCALED INPUT
+	LT	FILTT		*GET SCALED INPUT
+	MPY	*+,DELAR	*P = B0 * INPUT
+	PAC			*AC = B0 * INPUT
+	ADDH	*+		*AC = (B0 * INPUT) + Z-1
+	ADDS	*+,COEFAR	*ADD LEAST SIG. PART OF Z-1
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*SAVE IN OUTPUT
+	MPY	*+,DELAR	*P = B1 * OUTPUT
+	ZALH	*+		*AC = Z-2
+	ADDS	*0-,COEFAR	*ADD LEAST SIG. PART OF Z-2
+	LTA	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = (B1 * INPUT) + Z-2, GET CURRENT OUTPUT
+	MPY	*+,DELAR	*P = A1/2 * OUTPUT
+	APAC
+	APAC			*AC = (A1 * OUTPUT) + (B1 * INPUT) + Z-2
+	SACH	*+		*SAVE Z-1
+	SACL	*+,0,COEFAR	*SAVE LEAST SIGNIFICANT PART
+	MPY	*+		*P = A2 * OUTPUT
+	LTP	FILTT		*AC = A2 * OUTPUT, GET SCALED INPUT
+	MPY	*+		*P = B2 * INPUT
+	LTA	*+,DELAR	*AC = (A2 * OUTPUT) + (B2 * INPUT)
+*				* & GET NEXT SCALE FACTOR
+	SACH	*+		*SAVE Z-2
+	SACL	*+,0,LOOPAR	*SAVE LEAST SIGNIFICANT PART
+*
+	BANZ	FLOOP,*-,COEFAR	*REPEAT FOR ALL SECTIONS
+*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+2
+1
+%
+TMS32010; Direct Paged Memory
+>>>
+%batch_files 2  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32010 DIGITAL FILTER REALIZATION   *
+*************************************************
+*                  Direct Page
+*                 KAISER WINDOW
+*               %taps%-TAP FIR FILTER
+*
+*           FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B       START
+	BSS	6
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	ROVM			*2S COMPLEMENT
+	LDPK	IOPAGE		*SET PAGE POINTER
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to perform filter operations
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percentage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate either a busy state or
+* that the filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	1		*TEMPORARY FILTER DATA
+VSAMPL	EQU	0		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	V%IDT%,FILTT
+%endif%*
+COEF
+*
+*  FIR COEFFICIENTS
+*
+%do%%if coef<%%else%	DATA	%coef%		*%coef_name%
+%endif%%loop%*
+	PEND
+*
+	CSEG	'D%IDT%'
+*
+* DELAY MEMORY STORAGE
+*
+DELAY	EQU	$
+%do%%Z_nameI%	BSS	1
+%loop%*
+* COEFFICIENT DATA STORAGE
+*
+FDATA	EQU	$
+%do%%if coef<%%else%%coef_name%	BSS	1
+%endif%%loop%*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%	LACK	1		*GET A 1
+	LDPK	0		*SET PAGE POINTER
+	SACL	FILTT		*TEMPORARY SAVE
+	LT	FILTT		*LOAD 1 IN T
+	MPYK	COEF
+	PAC			*AC POINTS TO COEF DATA
+	MPYK	1		*1 INTO P
+	LARK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	LARK	1,%points%		*COUNT FOR NUMBER OF POINTS
+ILP	LARP	0		*RESET AR TO 0
+	TBLR	*+,1		*TRANSFER DATA VALUE
+	APAC			*INCREMENT POINTER
+	BANZ	ILP		*LOOP
+%endif%	LARK	1,%ndelay%		*NUMBER OF DELAY POINTS
+	ZAC			*CLEAR ACCUMULATOR
+	LARK	0,DELAY		*POINT TO DELAY MEMORY
+ILPA	LARP	0		*RESET AR TO 0
+	SACL	*+,0,1		*CLEAR DATA VALUE
+	BANZ	ILPA		*LOOP
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+* 
+*************************************************
+%if option M%FILTER%else%F%IDT%%endif%
+%pshift%%filtin%	ZAC			*INIT. ACC
+%do%%if coef<>%	LT%if first%%else%D%endif%	%Z_name%
+%if coef<%	MPYK	%coef%		*%coef_name%
+%else%	MPY	%coef_name%
+%endif%%else%%if firstd%%else%	DMOV	%Z_name%
+%endif%%endif%%loop%	APAC			*FORM RESULT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%%output_shift%	*SAVE OUTPUT
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+2
+2
+%
+TMS32020/c25; Indexed Memory; MACD realization
+>>>
+%batch_files 0 D%	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*           INTERNAL DELAY MEMORY
+*          COEF. in PROGRAM MEMORY
+*
+* NOTE: This realization uses internal memory
+*       BANK 0 for program memory.  This allows
+*       for very fast execution of the filter
+*       by storing the coefficients in BANK 0.
+*       However, BANK 0 can not be accessed
+*       as data in this mode.  Also, the delay
+*       memory must reside in BANK 1 or BANK 2
+*
+*                 KAISER WINDOW
+*               %taps%-TAP FIR FILTER
+*
+*           FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B       START				   
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	ROVM			*2S COMPLEMENT
+	SSXM			*SIGN EXTEND MODE
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SPM	1		*P output is shifted left 1 bit
+	CALL	INIT		*INITIALIZE
+*
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to perform filter operations
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percentage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate either a busy state or
+* that the filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	V%IDT%,FILTT
+%endif%*
+COEF
+*
+*  FIR COEFFICIENTS
+*
+%do%%ndata+%	DATA	%coef%		*%coef_name%
+%loop%*
+	PEND
+*
+	CSEG	'D%IDT%'
+*
+* DELAY STORAGE
+*
+Z000	BSS	1
+	BSS	%ndelay%-1
+ZLAST	BSS	1
+	BSS	1		*Extra storage: MACD destroys this
+*				                Location.
+	CEND
+*
+* COEFFICIENT DATA STORAGE
+*
+	CSEG	'C%IDT%'
+*
+FDATA	BSS	%points%+1
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0
+	CNFD
+	LRLK	0,FDATA		*POINTER TO COEF. MEMORY
+	RPTK	%points%
+	BLKP	COEF,*+		*MOVE COEF.
+	CNFP
+	LRLK	0,Z000		*POINTER TO DELAY MEMORY
+	ZAC			*CLEAR ACCUMULATOR
+	RPTK	%ndelay%
+	SACL	*+		*CLEAR DELAY MEMORY
+	RET	
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+* ASSUMPTIONS:
+*     BANK 0 is set to PROGRAM MEMORY.
+*     COEFFICIENTS are located at 'FDATA'.
+*     DELAY elements are located at 'DELAY'.
+* NOTE: COEF's must be in BANK 0 and DELAY's
+*       must be in BANK 1 or BANK 2.
+*     'DELAR' AR is destroyed by filter routine.
+*     P output shift is set to 1.
+*     SIGN EXTEND mode is ON.
+*     Two's Complement Arithmetic.
+*
+*************************************************
+DELAR	EQU	1		*DELAY AR REGISTER
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LARP	DELAR		*POINT TO THE DELAY INDEX REGISTER
+	LRLK	DELAR,Z000	*INDEX POINTS TO Z-0 (INPUT)
+%filtinI%
+	MPYK	0		*P = 0
+	ZAC			*AC = 0
+	LRLK	DELAR,ZLAST	*INDEX POINTS TO Z-N
+	RPTK	%points%
+	MACD	FDATA+>FD00,*-	*MULTIPLY, ACCUM. and  DELAY
+	APAC			*FORM RESULT
+	SACH    %if option M%VSAMPL%else%V%IDT%%endif%%output_shift%	*SAVE OUTPUT
+	RET			*RETURN
+*
+	PEND
+	END
+%end%
+>>>>
+>>>
+2
+2
+%
+TMS32020/c25; Internal Direct Paged Memory
+>>>
+%batch_files 2  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*                   Direct Page
+*                  KAISER WINDOW
+*               %taps%-TAP FIR FILTER
+*
+*           FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B       START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	ROVM			*2S COMPLEMENT
+	SSXM			*SIGN EXTEND MODE
+	SPM	1		*P output is shifted left 1 bit
+	LDPK	IOPAGE
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to perform filter operations
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percentage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate either a busy state or
+* that the filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	1		*TEMPORARY FILTER DATA
+VSAMPL	EQU	0		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	4
+%else%	REF	V%IDT%,FILTT
+%endif%*
+COEF
+*
+*  FIR COEFFICIENTS
+*
+%do%%if coef<%%else%	DATA	%coef%		*%coef_name%
+%endif%%loop%*
+	PEND
+*
+	CSEG	'D%IDT%'
+*
+* DELAY MEMORY STORAGE
+*
+DELAY	EQU	$
+%do%%Z_nameI%	BSS	1
+%loop%*
+* COEFFICIENT DATA STORAGE
+*
+FDATA	EQU	$
+%do%%if coef<%%else%%coef_name%	BSS	1
+%endif%%loop%*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0
+%if data%	LRLK	0,FDATA		*POINTER TO COEF. MEMORY
+%copy_coef%%endif%	LRLK	0,DELAY		*POINTER TO DELAY MEMORY
+	ZAC			*CLEAR ACCUMULATOR
+%zero_delay%	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+* 
+*************************************************
+%if option M%FILTER%else%F%IDT%%endif%
+%filtin%	ZAC			*INIT. ACC
+%do%%if coef<>%	LT%if first%%else%D%endif%	%Z_name%
+%if coef<%	MPYK	%coef%		*%coef_name%
+%else%	MPY	%coef_name%
+%endif%%else%%if firstd%%else%	DMOV	%Z_name%
+%endif%%endif%%loop%	APAC			*FORM RESULT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%%output_shift%	*SAVE OUTPUT
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+2
+2
+%
+TMS32020/c25; Indexed Memory; Internal Delay Memory
+>>>
+%batch_files 0  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*              EXTERNAL COEFFICIENTS
+*                 INTERNAL DELAYS
+*
+*                 KAISER WINDOW
+*               %taps%-TAP FIR FILTER
+*
+*           FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B       START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	ROVM			*2S COMPLEMENT
+	SSXM			*SIGN EXTEND MODE
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SPM	1		*P output is shifted left 1 bit
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to perform filter operations
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percentage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate either a busy state or
+* that the filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	V%IDT%,FILTT
+%endif%*
+COEF
+*
+*  FIR COEFFICIENTS
+*
+%do%%if coef<%%else%	DATA	%coef%		*%coef_name%
+%endif%%loop%*
+	PEND
+*
+	CSEG	'D%IDT%'
+*
+* DELAY STORAGE
+*
+	DEF	Z%IDT%,L%IDT%
+Z%IDT%	BSS	1
+	BSS	%ndelay%-1
+L%IDT%	BSS	1
+*
+	CEND
+*
+	CSEG	'X%IDT%'
+*
+* COEFFICIENT DATA STORAGE
+*
+FDATA	BSS	%points%+1
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0
+%if data%	LRLK	0,FDATA		*POINTER TO COEF. MEMORY
+%copy_coef%%endif%	LRLK	0,Z%IDT%   	*POINTER TO DELAY MEMORY
+	ZAC			*CLEAR ACCUMULATOR
+%zero_delay%	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+* ASSUMPTIONS:
+*     PAGE POINTER must be set to 'DPAGE'.
+*     The AR pointer register is destroyed.
+*     The address registers 'COEFAR' and 'DELAR'
+*        are destroyed by filter routine.
+*     P output shift is set to 1.
+*     SIGN EXTEND mode is ON.
+*     Two's Complement Arithmetic.
+*     COEF. elements are located in any in
+*        data memory.
+*     DELAY elements must be in internal memory
+*        and must not cross a page boundary.
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+DELAR	EQU	2
+COEFAR	EQU	1
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LARP	DELAR		*POINT TO CORRECT AR
+	LRLK	COEFAR,FDATA	*AR = START OF COEF.
+	LRLK	DELAR,Z%IDT%
+%filtinI%	LRLK	DELAR,L%IDT%
+	ZAC			*INIT AC.
+%do%%if coef<>%	LT%if first%%else%D%endif%	*-%if coef<%	%else%,COEFAR%endif%	*%Z_name%
+%if coef<%	MPYK	%coef%		*%coef_name%
+%else%	MPY	*+,DELAR	*%coef_name%
+%endif%%else%%if firstd%	MAR	*-
+%else%	DMOV	*-		*%Z_name%
+%endif%%endif%%loop%	APAC			*FORM RESULT
+	SACH    %if option M%VSAMPL%else%V%IDT%%endif%%output_shift%		*SAVE OUTPUT
+*
+	RET			*RETURN
+*
+	PEND
+	END
+%end%
+>>>>
+>>>
+2
+2
+%
+TMS32020/c25; Indexed Memory; Internal or External Memory
+>>>
+%batch_files 0  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*              EXTERNAL MEMORY MODEL
+*
+*                 KAISER WINDOW
+*               %taps%-TAP FIR FILTER
+*
+*           FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	ROVM			*2S COMPLEMENT
+	SSXM			*SIGN EXTEND MODE
+	SPM	1		*P output is shifted left 1 bit
+	LDPK	IOPAGE
+	CALL	INIT		*INITIALIZE
+*
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to perform filter operations
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percentage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate either a busy state or
+* that the filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	V%IDT%,FILTT
+%endif%*
+COEF
+*
+*  FIR INITIALIZATION COEFFICIENTS
+*
+%do%%if coef<%%else%	DATA	%coef%		*%coef_name%
+%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+*
+* COEFFICIENT DATA STORAGE
+*
+FDATA	BSS	%points%
+LCOEF	BSS	1
+*
+* DELAY STORAGE
+*
+ZLAST	BSS	1
+	BSS	%ndelay%-1
+Z000	BSS	1
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0
+%if data%	LRLK	0,FDATA		*POINTER TO COEF. MEMORY
+%copy_coef%%endif%	LRLK	0,ZLAST		*POINTER TO DELAY MEMORY
+	ZAC			*CLEAR ACCUMULATOR
+%zero_delay%	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+* ASSUMPTIONS:
+*     PAGE POINTER must point to page with
+*        %if option M%VSAMPL%else%V%IDT%%endif%.
+*     The address registers 'COEFAR' and 'DELAR'
+*        are destroyed by filter routine.
+*     P output shift is set to 1.
+*     SIGN EXTEND mode is ON.
+*     Two's Complement Arithmetic.
+*     COEF. & DELAY elements are located any in
+*        data memory.
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+COEFAR	EQU	1
+DELAR	EQU	2
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LRLK	COEFAR,LCOEF	*INIT INDEX REGISTER POINTERS
+	LRLK	DELAR,Z000
+	LARP	DELAR		*POINTER TO CORRECT INDEX REGISTER
+%filtinI%%do%	LT%if first%%elseif second%P%else%A%endif%	*-%if coef<%%else%,COEFAR%endif%
+%if coef<%	MPYK	%coefI%		*%coef_nameI%
+%else%	MPY	*-,DELAR	*%coef_nameI%
+%endif%%loop%	APAC			*FORM RESULT
+	SACH    %if option M%VSAMPL%else%V%IDT%%endif%%output_shift%	*SAVE OUTPUT
+*
+	LRLK	DELAR,ZLAST
+%move_delay%*
+	RET			*RETURN
+*
+	PEND
+	END
+%end%
+>>>>
+>>>
+3
+1
+%
+TMS32010; Direct Paged Memory
+>>>
+%batch_files 2  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32010 DIGITAL FILTER REALIZATION   *
+*************************************************
+*                  Direct Page
+*                PARK-MCCLELLAN
+*               %taps%-TAP FIR FILTER
+*
+*           FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B       START
+	BSS	6
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	ROVM			*2S COMPLEMENT
+	LDPK	IOPAGE		*SET PAGE POINTER
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to perform filter operations
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percentage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate either a busy state or
+* that the filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	1		*TEMPORARY FILTER DATA
+VSAMPL	EQU	0		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	V%IDT%,FILTT
+%endif%*
+COEF
+*
+*  FIR COEFFICIENTS
+*
+%do%%if coef<%%else%	DATA	%coef%		*%coef_name%
+%endif%%loop%*
+	PEND
+*
+	CSEG	'D%IDT%'
+*
+* DELAY MEMORY STORAGE
+*
+DELAY	EQU	$
+%do%%Z_nameI%	BSS	1
+%loop%*
+* COEFFICIENT DATA STORAGE
+*
+FDATA	EQU	$
+%do%%if coef<%%else%%coef_name%	BSS	1
+%endif%%loop%*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%	LACK	1		*GET A 1
+	LDPK	0		*SET PAGE POINTER
+	SACL	FILTT		*TEMPORARY SAVE
+	LT	FILTT		*LOAD 1 IN T
+	MPYK	COEF
+	PAC			*AC POINTS TO COEF DATA
+	MPYK	1		*1 INTO P
+	LARK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	LARK	1,%points%		*COUNT FOR NUMBER OF POINTS
+ILP	LARP	0		*RESET AR TO 0
+	TBLR	*+,1		*TRANSFER DATA VALUE
+	APAC			*INCREMENT POINTER
+	BANZ	ILP		*LOOP
+%endif%	LARK	1,%ndelay%		*NUMBER OF DELAY POINTS
+	ZAC			*CLEAR ACCUMULATOR
+	LARK	0,DELAY		*POINT TO DELAY MEMORY
+ILPA	LARP	0		*RESET AR TO 0
+	SACL	*+,0,1		*CLEAR DATA VALUE
+	BANZ	ILPA		*LOOP
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+* 
+*************************************************
+%if option M%FILTER%else%F%IDT%%endif%
+%pshift%%filtin%	ZAC			*INIT. ACC
+%do%%if coef<>%	LT%if first%%else%D%endif%	%Z_name%
+%if coef<%	MPYK	%coef%		*%coef_name%
+%else%	MPY	%coef_name%
+%endif%%else%%if firstd%%else%	DMOV	%Z_name%
+%endif%%endif%%loop%	APAC			*FORM RESULT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%%output_shift%	*SAVE OUTPUT
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+3
+2
+%
+TMS32020/c25; Indexed Memory; MACD realization
+>>>
+%batch_files 0 D%	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*           INTERNAL DELAY MEMORY
+*          COEF. in PROGRAM MEMORY
+*
+* NOTE: This realization uses internal memory
+*       BANK 0 for program memory.  This allows
+*       for very fast execution of the filter
+*       by storing the coefficients in BANK 0.
+*       However, BANK 0 can not be accessed
+*       as data in this mode.  Also, the delay
+*       memory must reside in BANK 1 or BANK 2
+*
+*                PARK-MCCLELLAN
+*               %taps%-TAP FIR FILTER
+*
+*           FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B       START				   
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	ROVM			*2S COMPLEMENT
+	SSXM			*SIGN EXTEND MODE
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SPM	1		*P output is shifted left 1 bit
+	CALL	INIT		*INITIALIZE
+*
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to perform filter operations
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percentage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate either a busy state or
+* that the filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	V%IDT%,FILTT
+%endif%*
+COEF
+*
+*  FIR COEFFICIENTS
+*
+%do%%ndata+%	DATA	%coef%		*%coef_name%
+%loop%*
+	PEND
+*
+	CSEG	'D%IDT%'
+*
+* DELAY STORAGE
+*
+Z000	BSS	1
+	BSS	%ndelay%-1
+ZLAST	BSS	1
+	BSS	1		*Extra storage: MACD destroys this
+*				                Location.
+	CEND
+*
+* COEFFICIENT DATA STORAGE
+*
+	CSEG	'C%IDT%'
+*
+FDATA	BSS	%points%+1
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0
+	CNFD
+	LRLK	0,FDATA		*POINTER TO COEF. MEMORY
+	RPTK	%points%
+	BLKP	COEF,*+		*MOVE COEF.
+	CNFP
+	LRLK	0,Z000		*POINTER TO DELAY MEMORY
+	ZAC			*CLEAR ACCUMULATOR
+	RPTK	%ndelay%
+	SACL	*+		*CLEAR DELAY MEMORY
+	RET	
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+* ASSUMPTIONS:
+*     BANK 0 is set to PROGRAM MEMORY.
+*     COEFFICIENTS are located at 'FDATA'.
+*     DELAY elements are located at 'DELAY'.
+* NOTE: COEF's must be in BANK 0 and DELAY's
+*       must be in BANK 1 or BANK 2.
+*     'DELAR' AR is destroyed by filter routine.
+*     P output shift is set to 1.
+*     SIGN EXTEND mode is ON.
+*     Two's Complement Arithmetic.
+*
+*************************************************
+DELAR	EQU	1		*DELAY AR REGISTER
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LARP	DELAR		*POINT TO THE DELAY INDEX REGISTER
+	LRLK	DELAR,Z000	*INDEX POINTS TO Z-0 (INPUT)
+%filtinI%
+	MPYK	0		*P = 0
+	ZAC			*AC = 0
+	LRLK	DELAR,ZLAST	*INDEX POINTS TO Z-N
+	RPTK	%points%
+	MACD	FDATA+>FD00,*-	*MULTIPLY, ACCUM. and  DELAY
+	APAC			*FORM RESULT
+	SACH    %if option M%VSAMPL%else%V%IDT%%endif%%output_shift%	*SAVE OUTPUT
+	RET			*RETURN
+*
+	PEND
+	END
+%end%
+>>>>
+>>>
+3
+2
+%
+TMS32020/c25; Internal Direct Paged Memory
+>>>
+%batch_files 2  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*                   Direct Page
+*                 PARKS-MCCLELLAN
+*               %taps%-TAP FIR FILTER
+*
+*           FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B       START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	ROVM			*2S COMPLEMENT
+	SSXM			*SIGN EXTEND MODE
+	SPM	1		*P output is shifted left 1 bit
+	LDPK	IOPAGE
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to perform filter operations
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percentage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate either a busy state or
+* that the filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	1		*TEMPORARY FILTER DATA
+VSAMPL	EQU	0		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	4
+%else%	REF	V%IDT%,FILTT
+%endif%*
+COEF
+*
+*  FIR COEFFICIENTS
+*
+%do%%if coef<%%else%	DATA	%coef%		*%coef_name%
+%endif%%loop%*
+	PEND
+*
+	CSEG	'D%IDT%'
+*
+* DELAY MEMORY STORAGE
+*
+DELAY	EQU	$
+%do%%Z_nameI%	BSS	1
+%loop%*
+* COEFFICIENT DATA STORAGE
+*
+FDATA	EQU	$
+%do%%if coef<%%else%%coef_name%	BSS	1
+%endif%%loop%*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0
+%if data%	LRLK	0,FDATA		*POINTER TO COEF. MEMORY
+%copy_coef%%endif%	LRLK	0,DELAY		*POINTER TO DELAY MEMORY
+	ZAC			*CLEAR ACCUMULATOR
+%zero_delay%	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+* 
+*************************************************
+%if option M%FILTER%else%F%IDT%%endif%
+%filtin%	ZAC			*INIT. ACC
+%do%%if coef<>%	LT%if first%%else%D%endif%	%Z_name%
+%if coef<%	MPYK	%coef%		*%coef_name%
+%else%	MPY	%coef_name%
+%endif%%else%%if firstd%%else%	DMOV	%Z_name%
+%endif%%endif%%loop%	APAC			*FORM RESULT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%%output_shift%	*SAVE OUTPUT
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+3
+2
+%
+TMS32020/c25; Indexed Memory; Internal Delay Memory
+>>>
+%batch_files 0  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*              EXTERNAL COEFFICIENTS
+*                 INTERNAL DELAYS
+*
+*                PARK-MCCLELLAN
+*               %taps%-TAP FIR FILTER
+*
+*           FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B       START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	ROVM			*2S COMPLEMENT
+	SSXM			*SIGN EXTEND MODE
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SPM	1		*P output is shifted left 1 bit
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to perform filter operations
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percentage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate either a busy state or
+* that the filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	V%IDT%,FILTT
+%endif%*
+COEF
+*
+*  FIR COEFFICIENTS
+*
+%do%%if coef<%%else%	DATA	%coef%		*%coef_name%
+%endif%%loop%*
+	PEND
+*
+	CSEG	'D%IDT%'
+*
+* DELAY STORAGE
+*
+	DEF	Z%IDT%,L%IDT%
+Z%IDT%	BSS	1
+	BSS	%ndelay%-1
+L%IDT%	BSS	1
+*
+	CEND
+*
+	CSEG	'X%IDT%'
+*
+* COEFFICIENT DATA STORAGE
+*
+FDATA	BSS	%points%+1
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0
+%if data%	LRLK	0,FDATA		*POINTER TO COEF. MEMORY
+%copy_coef%%endif%	LRLK	0,Z%IDT%   	*POINTER TO DELAY MEMORY
+	ZAC			*CLEAR ACCUMULATOR
+%zero_delay%	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+* ASSUMPTIONS:
+*     PAGE POINTER must be set to 'DPAGE'.
+*     The AR pointer register is destroyed.
+*     The address registers 'COEFAR' and 'DELAR'
+*        are destroyed by filter routine.
+*     P output shift is set to 1.
+*     SIGN EXTEND mode is ON.
+*     Two's Complement Arithmetic.
+*     COEF. elements are located in any in
+*        data memory.
+*     DELAY elements must be in internal memory
+*        and must not cross a page boundary.
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+DELAR	EQU	2
+COEFAR	EQU	1
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LARP	DELAR		*POINT TO CORRECT AR
+	LRLK	COEFAR,FDATA	*AR = START OF COEF.
+	LRLK	DELAR,Z%IDT%
+%filtinI%	LRLK	DELAR,L%IDT%
+	ZAC			*INIT AC.
+%do%%if coef<>%	LT%if first%%else%D%endif%	*-%if coef<%	%else%,COEFAR%endif%	*%Z_name%
+%if coef<%	MPYK	%coef%		*%coef_name%
+%else%	MPY	*+,DELAR	*%coef_name%
+%endif%%else%%if firstd%	MAR	*-
+%else%	DMOV	*-		*%Z_name%
+%endif%%endif%%loop%	APAC			*FORM RESULT
+	SACH    %if option M%VSAMPL%else%V%IDT%%endif%%output_shift%		*SAVE OUTPUT
+*
+	RET			*RETURN
+*
+	PEND
+	END
+%end%
+>>>>
+>>>
+3
+2
+%
+TMS32020/c25; Indexed Memory; Internal or External Memory
+>>>
+%batch_files 0  %	IDT	'%IDT%'		*Unique Identifier
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*    ASPI TMS32020 DIGITAL FILTER REALIZATION   *
+*************************************************
+*              EXTERNAL MEMORY MODEL
+*
+*                PARK-MCCLELLAN
+*               %taps%-TAP FIR FILTER
+*
+*           FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	ROVM			*2S COMPLEMENT
+	SSXM			*SIGN EXTEND MODE
+	SPM	1		*P output is shifted left 1 bit
+	LDPK	IOPAGE
+	CALL	INIT		*INITIALIZE
+*
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to perform filter operations
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percentage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate either a busy state or
+* that the filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	V%IDT%,FILTT
+%endif%*
+COEF
+*
+*  FIR INITIALIZATION COEFFICIENTS
+*
+%do%%if coef<%%else%	DATA	%coef%		*%coef_name%
+%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+*
+* COEFFICIENT DATA STORAGE
+*
+FDATA	BSS	%points%
+LCOEF	BSS	1
+*
+* DELAY STORAGE
+*
+ZLAST	BSS	1
+	BSS	%ndelay%-1
+Z000	BSS	1
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0
+%if data%	LRLK	0,FDATA		*POINTER TO COEF. MEMORY
+%copy_coef%%endif%	LRLK	0,ZLAST		*POINTER TO DELAY MEMORY
+	ZAC			*CLEAR ACCUMULATOR
+%zero_delay%	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+* ASSUMPTIONS:
+*     PAGE POINTER must point to page with
+*        %if option M%VSAMPL%else%V%IDT%%endif%.
+*     The address registers 'COEFAR' and 'DELAR'
+*        are destroyed by filter routine.
+*     P output shift is set to 1.
+*     SIGN EXTEND mode is ON.
+*     Two's Complement Arithmetic.
+*     COEF. & DELAY elements are located any in
+*        data memory.
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+COEFAR	EQU	1
+DELAR	EQU	2
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LRLK	COEFAR,LCOEF	*INIT INDEX REGISTER POINTERS
+	LRLK	DELAR,Z000
+	LARP	DELAR		*POINTER TO CORRECT INDEX REGISTER
+%filtinI%%do%	LT%if first%%elseif second%P%else%A%endif%	*-%if coef<%%else%,COEFAR%endif%
+%if coef<%	MPYK	%coefI%		*%coef_nameI%
+%else%	MPY	*-,DELAR	*%coef_nameI%
+%endif%%loop%	APAC			*FORM RESULT
+	SACH    %if option M%VSAMPL%else%V%IDT%%endif%%output_shift%	*SAVE OUTPUT
+*
+	LRLK	DELAR,ZLAST
+%move_delay%*
+	RET			*RETURN
+*
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+3
+%
+TMS320c25; Direct Paged Memory
+>>>
+%batch_files 2  %	IDT	'%IDT%'			*UNIQUE NAME
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*   ASPI TMS320c25 DIGITAL FILTER REALIZATION   *
+*************************************************
+*             Direct Paged Memory
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	0		*TEMPORARY FILTER DATA
+VSAMPL	EQU	1		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	6
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%if B0<%%else%	DATA	%B0%		*B0
+%endif%%if B1<>%	DATA	%B1%		*B1
+%endif%%if A1<%%else%	DATA	%A1%		*A1
+%endif%%if half%%else%	DATA	%A2%		*A2
+%if B2<%%else%	DATA	%B2%		*B2
+%endif%%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+* DELAY STORAGE DATA STORAGE AREA
+*
+DELAY	EQU	$
+%section%Z%section_n%1	BSS	1
+%if half%%else%Z%section_n%2	BSS	1
+%endif%%loop%*
+*
+* COEFFICIENT DATA STORAGE AREA
+*
+FDATA	EQU	$
+%section%*
+%if B0<%%else%B%section_n%0	BSS	1	*B0
+%endif%%if B1<>%B%section_n%1	BSS	1	*B1
+%endif%%if A1<%%else%A%section_n%1	BSS	1	*A1
+%endif%%if half%%else%A%section_n%2	BSS	1	*A2
+%if B2<%%else%B%section_n%2	BSS	1	*B2
+%endif%%endif%%loop%*
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	RPTK	%points%		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+%endif%	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*      SIGN EXTEND MODE IS ON
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+*
+%if option M%FILTER%else%F%IDT%%endif%
+%section%*
+* SECOND-ORDER FILTER SECTION # %section_n%
+*
+%filtin%%if half%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+%if B1<>%	MPYA	B%section_n%1		*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+%else%	APAC			*AC = Z-1 + (B0 * INPUT)
+%endif%	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT%if B1<>%P%endif%	%if option M%VSAMPL%else%V%IDT%%endif%%if B1<>%		*AC = B1 * INPUT%endif%
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%	%if B1<>%A%endif%PAC			*AC = (B1 * INPUT) + (A1 * OUTPUT)
+%if A1shft%	APAC
+%endif%	SACH	Z%section_n%1		*Save in Z-1
+%else 
+
+%%if B1<>%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+	MPYA	B%section_n%1		*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LTP	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = B1 * INPUT 
+	ADDH	Z%section_n%2		*AC = Z-2 + (B1 * INPUT)
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	MPYA	A%section_n%2		*AC = Z-2 + (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	Z%section_n%1		*Save in Z-1
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	B%section_n%2		*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	Z%section_n%2	*Save in Z-2
+%else 
+
+
+%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*Get OUTPUT
+	ZALH	Z%section_n%2		*AC = Z-2
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	MPYA	A%section_n%2		*AC = (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	Z%section_n%1	*Save in Z-1
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	B%section_n%2		*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	Z%section_n%2	*Save in Z-2
+%endif%%endif%%loop%*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+3
+%
+TMS320c25; Direct Paged Memory; Increased Precision
+>>>
+%batch_files 2  %	IDT	'%IDT%'			*UNIQUE NAME
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*   ASPI TMS320c25 DIGITAL FILTER REALIZATION   *
+*************************************************
+*             Increased Precision
+*             Direct Paged Memory
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	0		*TEMPORARY FILTER DATA
+VSAMPL	EQU	1		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	6
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%if B0<%%else%	DATA	%B0%		*B0
+%endif%%if B1<>%	DATA	%B1%		*B1
+%endif%%if A1<%%else%	DATA	%A1%		*A1
+%endif%%if half%%else%	DATA	%A2%		*A2
+%if B2<%%else%	DATA	%B2%		*B2
+%endif%%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+* DELAY STORAGE DATA STORAGE AREA
+*
+DELAY	EQU	$
+%section%Z%section_n%1	BSS	1
+L%section_n%1	BSS	1
+%if half%%else%Z%section_n%2	BSS	1
+L%section_n%2	BSS	1
+%endif%%loop%*
+*
+* COEFFICIENT DATA STORAGE AREA
+*
+FDATA	EQU	$
+%section%*
+%if B0<%%else%B%section_n%0	BSS	1	*B0
+%endif%%if B1<>%B%section_n%1	BSS	1	*B1
+%endif%%if A1<%%else%A%section_n%1	BSS	1	*A1
+%endif%%if half%%else%A%section_n%2	BSS	1	*A2
+%if B2<%%else%B%section_n%2	BSS	1	*B2
+%endif%%endif%%loop%*
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	RPTK	%points%		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+%endif%	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%+%ndelay%+1		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*      SIGN EXTEND MODE IS ON
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+*
+%if option M%FILTER%else%F%IDT%%endif%
+%section%*
+* SECOND-ORDER FILTER SECTION # %section_n%
+*
+%filtin%%if half%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+	ADDS	L%section_n%1		*ADD in least significant
+%if B1<>%	MPYA	B%section_n%1		*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+%else%	APAC			*AC = Z-1 + (B0 * INPUT)
+%endif%	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT%if B1<>%P%endif%	%if option M%VSAMPL%else%V%IDT%%endif%%if B1<>%		*AC = B1 * INPUT%endif%
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%	%if B1<>%A%endif%PAC			*AC = (B1 * INPUT) + (A1 * OUTPUT)
+%if A1shft%	APAC
+%endif%	SACH	Z%section_n%1		*Save in Z-1
+	SACL	L%section_n%1		*Save least significant
+%else 
+
+%%if B1<>%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+	ADDS	L%section_n%1		*ADD in least significant
+	MPYA	B%section_n%1		*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LTP	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = B1 * INPUT 
+	ADDH	Z%section_n%2		*AC = Z-2 + (B1 * INPUT)
+	ADDS	L%section_n%2		*ADD in least significant
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	MPYA	A%section_n%2		*AC = Z-2 + (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	Z%section_n%1		*Save in Z-1
+	SACL	L%section_n%1		*Save least significant
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	B%section_n%2		*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	Z%section_n%2		*Save in Z-2
+	SACL	L%section_n%2		*Save least significant
+%else 
+
+
+%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	B%section_n%0		*P = B0 * INPUT
+%endif%	ZALH	Z%section_n%1		*AC = Z-1
+	ADDS	L%section_n%1		*ADD in least significant
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*Get OUTPUT
+	ZALH	Z%section_n%2		*AC = Z-2
+	ADDS	L%section_n%2		*ADD in least significant
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	A%section_n%1		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	MPYA	A%section_n%2		*AC = (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	Z%section_n%1		*Save in Z-1
+	SACL	L%section_n%1		*Save least significant
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	B%section_n%2		*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	Z%section_n%2		*Save in Z-2
+	SACL	L%section_n%2		*Save least significant
+%endif%%endif%%loop%*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+3
+%
+TMS320c25; Indexed Memory
+>>>
+%batch_files 0  %	IDT	'%IDT%'			*UNIQUE NAME
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*   ASPI TMS320c25 DIGITAL FILTER REALIZATION   *
+*************************************************
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%if B0<%%else%	DATA	%B0%		*B0
+%endif%%if B1<>%	DATA	%B1%		*B1
+%endif%%if A1<%%else%	DATA	%A1%		*A1
+%endif%%if half%%else%	DATA	%A2%		*A2
+%if B2<%%else%	DATA	%B2%		*B2
+%endif%%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+*
+* COEFFICIENT DATA STORAGE AREA
+*
+FDATA	BSS	%points%+1
+*
+* DELAY STORAGE DATA STORAGE AREA
+*
+DELAY	BSS	%ndelay%+1
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	RPTK	%points%		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+%endif%	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*      SIGN EXTEND MODE IS ON
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+COEFAR	EQU	1		*Use AR1 to point to COEF's
+DELAR	EQU	2		*Use AR2 to point to DELAY's
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LRLK	COEFAR,FDATA	*Load COEF AR with beginning of COEF's
+	LRLK	DELAR,DELAY	*Load DELAY AR with beginning of DELAY's
+	LARP	%if B10<%DELAR%else%COEFAR%endif%		*Select Proper AR for initial use
+%section%*
+* SECOND-ORDER FILTER SECTION # %section_n%
+*
+%filtin%%if half%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*,COEFAR	*AC = Z-1
+%if B1<>%	MPYA	*+,%if A1<%DELAR%else%COEFAR%endif%	*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+%else%	APAC			*AC = Z-1 + (B0 * INPUT)
+%endif%	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT%if B1<>%P%endif%	%if option M%VSAMPL%else%V%IDT%%endif%%if B1<>%		*AC = B1 * INPUT%endif%
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+,DELAR	*P = A1 * OUTPUT
+%endif%	%if B1<>%A%endif%PAC			*AC = (B1 * INPUT) + (A1 * OUTPUT)
+%if A1shft%	APAC
+%endif%	SACH	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save in Z-1
+%else 
+
+%%if B1<>%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*+,COEFAR	*AC = Z-1
+	MPYA	*+,DELAR	*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LTP	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = B1 * INPUT 
+	ADDH	*-,COEFAR	*AC = Z-2 + (B1 * INPUT)
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	MPYA	*+,DELAR	*AC = Z-2 + (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	*+,0,%if B2<%DELAR%else%COEFAR%endif%	*Save in Z-1
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	*+,DELAR	*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save in Z-2
+%else 
+
+
+%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*+,DELAR	*AC = Z-1
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*Get OUTPUT
+	ZALH	*-,COEFAR	*AC = Z-2
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	MPYA	*+,DELAR	*AC = (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	*+,0,%if B2<%DELAR%else%COEFAR%endif%	*Save in Z-1
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%	*P = B2 * INPUT
+%else%	MPY	*+,DELAR	*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save in Z-2
+%endif%%endif%%loop%*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+3
+%
+TMS320c25; Indexed Memory; Increased Precision
+>>>
+%batch_files 0  %	IDT	'%IDT%'			*UNIQUE NAME
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*   ASPI TMS320c25 DIGITAL FILTER REALIZATION   *
+*************************************************
+*             Increased Precision
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%if B0<%%else%	DATA	%B0%		*B0
+%endif%%if B1<>%	DATA	%B1%		*B1
+%endif%%if A1<%%else%	DATA	%A1%		*A1
+%endif%%if half%%else%	DATA	%A2%		*A2
+%if B2<%%else%	DATA	%B2%		*B2
+%endif%%endif%%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+*
+* COEFFICIENT DATA STORAGE AREA
+*
+FDATA	BSS	%points%+1
+*
+* DELAY STORAGE DATA STORAGE AREA
+*
+DELAY	BSS	%ndelay%+%ndelay%+2
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+%if data%	RPTK	%points%		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+%endif%	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%+%ndelay%+1		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*      SIGN EXTEND MODE IS ON
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+COEFAR	EQU	1		*Use AR1 to point to COEF's
+DELAR	EQU	2		*Use AR2 to point to DELAY's
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LARK	0,3		*Set up AR0 for subtract
+	LRLK	COEFAR,FDATA	*Load COEF AR with beginning of COEF's
+	LRLK	DELAR,DELAY	*Load DELAY AR with beginning of DELAY's
+	LARP	%if B10<%DELAR%else%COEFAR%endif%		*Select Proper AR for initial use
+%section%*
+* SECOND-ORDER FILTER SECTION # %section_n%
+*
+%filtin%%if half%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*+		*AC = Z-1
+	ADDS	*-,COEFAR	*ADD Least Significant
+%if B1<>%	MPYA	*+,%if A1<%DELAR%else%COEFAR%endif%	*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+%else%	APAC			*AC = Z-1 + (B0 * INPUT)
+%endif%	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT%if B1<>%P%endif%	%if option M%VSAMPL%else%V%IDT%%endif%%if B1<>%		*AC = B1 * INPUT%endif%
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+,DELAR	*P = A1 * OUTPUT
+%endif%	%if B1<>%A%endif%PAC			*AC = (B1 * INPUT) + (A1 * OUTPUT)
+%if A1shft%	APAC
+%endif%	SACH	*+		*Save in Z-1
+	SACL	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save Least Significant
+%else 
+
+%%if B1<>%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*+		*AC = Z-1
+	ADDS	*+,COEFAR	*ADD in least significant
+	MPYA	*+,DELAR	*AC = Z-1 + (B0 * INPUT)
+*				*P = B1 * INPUT
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LTP	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = B1 * INPUT 
+	ADDH	*+		*AC = Z-2 + (B1 * INPUT)
+	ADDS	*0-,COEFAR	*ADD in least significant
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	MPYA	*+,DELAR	*AC = Z-2 + (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	*+		*Save in Z-1
+	SACL	*+,0,%if B2<%DELAR%else%COEFAR%endif%	*Save least significant
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%		*P = B2 * INPUT
+%else%	MPY	*+,DELAR	*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	*+		*Save in Z-2
+	SACL	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save least significant
+%else 
+
+
+%	LT	FILTT		*GET SCALED INPUT
+%if B0<%	MPYK	%B0%		*P = B0 * INPUT
+%else%	MPY	*+,DELAR	*P = B0 * INPUT
+%endif%	ZALH	*+		*AC = Z-1
+	ADDS	*+,DELAR	*ADD in least significant
+	APAC			*AC = Z-1 + (B0 * INPUT)
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*Save in OUTPUT
+	LT	%if option M%VSAMPL%else%V%IDT%%endif%		*Get OUTPUT
+	ZALH	*+		*AC = Z-2
+	ADDS	*0-,COEFAR	*ADD in least significant
+%if A1<%	MPYK	%A1%		*P = A1 * OUTPUT
+%else%	MPY	*+		*P = A1 * OUTPUT
+%endif%%if A1shft%	APAC
+%endif%	MPYA	*+,DELAR	*AC = (B1 * INPUT) + (A1 * OUTPUT)
+*				*P = A2 * OUTPUT
+	SACH	*+		*Save in Z-1
+	SACL	*+,0,%if B2<%DELAR%else%COEFAR%endif%	*Save least significant
+	LTP	FILTT		*AC = A2 * OUTPUT
+%if B2<%	MPYK	%B2%	*P = B2 * INPUT
+%else%	MPY	*+,DELAR	*P = B2 * INPUT
+%endif%	APAC			*AC = (B2 * INPUT) + (A2 * OUTPUT)
+ 	SACH	*+		*Save in Z-2
+	SACL	*+,0,%if BN0<%DELAR%else%COEFAR%endif%	*Save least significant
+%endif%%endif%%loop%*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+3
+%
+TMS320c25; Indexed Memory; Looping Control
+>>>
+%batch_files 0  %	IDT	'%IDT%'			*UNIQUE NAME
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*   ASPI TMS320c25 DIGITAL FILTER REALIZATION   *
+*************************************************
+*               LOOPING CONTROL
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER to I/O PAGE
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          INITIALIZATION FOR COEFFICIENTS
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+	DATA	%stages%-1		*Number of stages -1 to follow
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%tunable%
+	DATA	%b_scale%		*BLOCK FLOATING POINT SHIFT
+	DATA	%B0%		*B0
+	DATA	%B1%		*B1
+	DATA	%A1%		*A1
+	DATA	%A2%		*A2
+	DATA	%B2%		*B2
+%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+*
+*COEFICIENT DATA STORAGE AREA (including block floating point shifts
+*                              and storage for the number of stages)
+*
+FDATA	BSS	%points%+2
+*
+* DELAY STORAGE STORAGE AREA
+*
+DELAY	BSS	%ndelay%+1
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+	RPTK	%points%+1		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*          PAGE.
+*      SIGN EXTEND MODE IS ON
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+COEFAR	EQU	1		*Use AR1 to point to COEF's
+DELAR	EQU	2		*Use AR2 to point to DELAY's
+LOOPAR	EQU	3		*Use AR3 as loop counter
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LRLK	COEFAR,FDATA	*Load COEF AR with beginning of COEF's
+	LRLK	DELAR,DELAY	*Load DELAY AR with beginning of DELAY's
+	LARP	COEFAR		*Point to COEF AR
+	LAR	LOOPAR,*+	*SET SECTION LOOP COUNT
+*
+* SECOND-ORDER FILTER SECTION LOOP
+*
+	LT	*+		*GET SCALE FACTOR
+FLOOP
+	LACT	%if option M%VSAMPL%else%V%IDT%%endif%		*GET and SCALE INPUT
+	SACH	FILTT,4		*SAVE SCALED INPUT
+	LT	FILTT		*GET SCALED INPUT
+	MPY	*+,DELAR	*P = B0 * INPUT
+	ZALH	*+,COEFAR	*AC = Z-1
+	MPYA	*+,DELAR	*P = B1 * OUTPUT
+*				*AC = (B0 * INPUT) + Z-1
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*SAVE IN OUTPUT
+	ZALH	*-,COEFAR	*AC = Z-2
+	LTA	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = (B1 * INPUT) + Z-2, GET CURRENT OUTPUT
+	MPY	*+		*P = A1/2 * OUTPUT
+	APAC
+	MPYA	*+,DELAR	*P = A2 * OUTPUT
+*				*AC = (A1 * OUTPUT) + (B1 * INPUT) + Z-2
+	SACH	*+,0,COEFAR	*SAVE Z-1
+	LTP	FILTT		*AC = A2 * OUTPUT, GET SCALED INPUT
+	MPY	*+		*P = B2 * INPUT
+	LTA	*+,DELAR	*AC = (A2 * OUTPUT) + (B2 * INPUT)
+*				* & GET NEXT SCALE FACTOR
+	SACH	*+,0,LOOPAR	*SAVE Z-2
+*
+	BANZ	FLOOP,*-,COEFAR	*REPEAT FOR ALL SECTIONS
+*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>
+>>>
+1
+3
+%
+TMS320c25; Indexed Memory; Looping Control; Increased Precision
+>>>
+%batch_files 0  %	IDT	'%IDT%'			*UNIQUE NAME
+%if option M%%else%	DEF	F%IDT%		*Name of filter subroutine
+	DEF	I%IDT%		*Name of filter initialization subroutine
+%endif%*************************************************
+*   ASPI TMS320c25 DIGITAL FILTER REALIZATION   *
+*************************************************
+*             Increased Precision
+*               LOOPING CONTROL
+*          %stages%-STAGE RECURSIVE FILTER
+*            SECOND ORDER SECTIONS
+*          FILTER GENERATED FROM FILE
+%filter_file%
+*
+*************************************************
+	PSEG
+%if option M%%if main%%else%	B	START
+	BSS	254		*START PROGRAM MEMORY AT 100 Hex
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER to I/O PAGE
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+* The following three instructions are used in conjunction
+* with the PATCH program to indicate an idle state where no
+* machine cycles are being used to preform filter operation
+* (i.e. The time that location 4 is 1 could be used to do
+* other useful things).  PATCH monitors location 4 to determine
+* percetage utilization of the processor by the filter.
+*
+LPTS	LACK	1
+	SACL	FILTT
+	OUT	FILTT,4		*SIGNAL IDLE STATE
+*
+LPTSA	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTSA		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+* The following three instructions are used in conjuction
+* with the PATCH program to indicate a busy state or that the
+* filter is in operation.
+*
+	LACK	0		*GET CONSTANT FOR IDLE
+	SACL	FILTT		*SAVE FOR OUTPUT
+	OUT	FILTT,4		*SIGNAL BUSY STATE
+*
+* The following three instructions are used to determine whether
+* or not the filter should be active.  In the non-active state the
+* input data is simply passed to the output.  In the active state
+* the input data is filtered, then passed to the output.
+*
+	IN	FILTT,5		*CHECK FOR ACTIVE STATE
+	LAC	FILTT
+	BNZ	LPTS		*NOT ACTIVE, PASS DATA THROUGH
+*
+	CALL	FILTER		*ACTIVE EXECUTE FILTER
+	B	LPTS		*LOOP
+%endif%%endif%*************************************************
+*           DATA MEMORY DEFINITION              *
+*************************************************
+*     CONTAINS:
+*          STORAGE FOR FILTER INPUT AND OUTPUT
+*          INITIALIZATION FOR COEFFICIENTS
+*          STORAGE FOR COEFFICIENTS
+*          STORAGE FOR DELAY ELEMENTS
+*************************************************
+*
+* FILTER INPUT and OUTPUT STORAGE
+*
+%if option M%FILTT	EQU	96		*TEMPORARY FILTER DATA
+VSAMPL	EQU	97		*INPUT/OUTPUT FILTER DATA
+IOPAGE	EQU	0
+%else%	REF	FILTT,V%IDT%
+%endif%*
+COEF
+* COEFFICIENT INITIALIZATION STORAGE AREA
+*
+	DATA	%stages%-1		*Number of stages -1 to follow
+%section%*
+*
+*  SECOND-ORDER SECTION # %section_n%
+*
+%tunable%
+	DATA	%b_scale%		*BLOCK FLOATING POINT SHIFT
+	DATA	%B0%		*B0
+	DATA	%B1%		*B1
+	DATA	%A1%		*A1
+	DATA	%A2%		*A2
+	DATA	%B2%		*B2
+%loop%*
+	PEND
+*
+	CSEG	'X%IDT%'
+*
+*COEFICIENT DATA STORAGE AREA (including block floating point shifts
+*                              and storage for the number of stages)
+*
+FDATA	BSS	%points%+2
+*
+* DELAY STORAGE STORAGE AREA
+*
+DELAY	BSS	%ndelay%+%ndelay%+2
+*
+	CEND
+*
+	PSEG
+*************************************************
+*       FILTER INITIALIZATION SUBROUTINE        *
+*************************************************
+%if option M%INIT%else%I%IDT%%endif%
+	LARP	0		*POINT TO AR0
+	LRLK	0,FDATA		*POINTER TO DATA MEMORY
+	RPTK	%points%+1		*COUNT FOR NUMBER OF POINTS
+	BLKP	COEF,*+		*BLOCK MOVE OF COEF.
+	ZAC			*CLEAR ACCUMULATOR
+	LRLK	0,DELAY
+	RPTK	%ndelay%+%ndelay%+1		*NUMBER OF DELAY POINTS
+	SACL	*+		*CLEAR DATA VALUE
+	RET			*INIT RETURN
+*************************************************
+*              FILTER SUBROUTINE                *
+*************************************************
+*   ASSUMPTIONS:
+*      SATURATION ARITHMETIC MODE IS ON
+*      P REGISTER OUTPUT SHIFT = 1
+*      PAGE REGISTER IS SET TO 'IOPAGE'
+*          PAGE.
+*      SIGN EXTEND MODE IS ON
+*
+*   INPUT:    %if option M%VSAMPL%else%V%IDT%%endif%
+*   OUTPUT:   %if option M%VSAMPL%else%V%IDT%%endif%
+*
+*************************************************
+COEFAR	EQU	1		*Use AR1 to point to COEF's
+DELAR	EQU	2		*Use AR2 to point to DELAY's
+LOOPAR	EQU	3		*Use AR3 as loop counter
+*
+%if option M%FILTER%else%F%IDT%%endif%
+	LARK	0,3		*Set up AR0 for subtract
+	LRLK	COEFAR,FDATA	*Load COEF AR with beginning of COEF's
+	LRLK	DELAR,DELAY	*Load DELAY AR with beginning of DELAY's
+	LARP	COEFAR		*Point to COEF AR
+	LAR	LOOPAR,*+	*SET SECTION LOOP COUNT
+*
+* SECOND-ORDER FILTER SECTION LOOP
+*
+	LT	*+		*GET SCALE FACTOR
+FLOOP
+	LACT	%if option M%VSAMPL%else%V%IDT%%endif%		*GET and SCALE INPUT
+	SACH	FILTT,4		*SAVE SCALED INPUT
+	LT	FILTT		*GET SCALED INPUT
+	MPY	*+,DELAR	*P = B0 * INPUT
+	ZALH	*+		*AC = Z-1
+	ADDS	*+,COEFAR	*ADD in least significant
+	MPYA	*+,DELAR	*P = B1 * OUTPUT
+*				*AC = (B0 * INPUT) + Z-1
+	SACH	%if option M%VSAMPL%else%V%IDT%%endif%		*SAVE IN OUTPUT
+	ZALH	*+		*AC = Z-2
+	ADDS	*0-,COEFAR	*ADD in least significant
+	LTA	%if option M%VSAMPL%else%V%IDT%%endif%		*AC = (B1 * INPUT) + Z-2, GET CURRENT OUTPUT
+	MPY	*+		*P = A1/2 * OUTPUT
+	APAC
+	MPYA	*+,DELAR	*P = A2 * OUTPUT
+*				*AC = (A1 * OUTPUT) + (B1 * INPUT) + Z-2
+	SACH	*+		*SAVE Z-1
+	SACL	*+,0,COEFAR	*Save least significant
+	LTP	FILTT		*AC = A2 * OUTPUT, GET SCALED INPUT
+	MPY	*+		*P = B2 * INPUT
+	LTA	*+,DELAR	*AC = (A2 * OUTPUT) + (B2 * INPUT)
+*				* & GET NEXT SCALE FACTOR
+	SACH	*+		*SAVE Z-2
+	SACL	*+,0,LOOPAR	*Save least significant
+*
+	BANZ	FLOOP,*-,COEFAR	*REPEAT FOR ALL SECTIONS
+*
+	RET			*RETURN
+	PEND
+	END
+%end%
+>>>>

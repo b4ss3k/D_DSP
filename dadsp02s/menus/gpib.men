@@ -1,0 +1,11 @@
+! Gpib.men -- Handles simple GPIB functions
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+  GPIB Functions
+
+ Set up GPIB       ~_MF("init.men")
+
+ Remote Commands   ~_MF("remote.men")
+ Local Commands    ~_MF("local.men")

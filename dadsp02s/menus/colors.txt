@@ -1,0 +1,16 @@
+{"Black"}
+{"Dark Blue"}
+{"Green"}
+{"Teal"}
+{"Dark Red"}
+{"Violet"}
+{"Brown"}
+{"Light Grey"}
+{"Dark Grey"}
+{"Blue"}
+{"Bright Green"}
+{"Cyan"}
+{"Red"}
+{"Pink"}
+{"Yellow"}
+{"White"}

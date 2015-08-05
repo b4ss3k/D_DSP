@@ -1,0 +1,104 @@
+/*****************************************************************************
+*                                                                            *
+*   FIRSAMP.SPL      Copyright (C) 2000 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     FIR filter design using frequency sampling                 *
+*                                                                            *
+*   Revisions:    14 Mar 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_FIRSAMP
+
+    FIRSAMP    
+
+    Purpose: Designs an arbitrary FIR filter using frequency sampling
+                                                                        
+    Format:  FIRSAMP(f, m)
+
+              f - an XY series specifying the desired frequencies 
+                  (in Hertz) and magnitudes of the filter OR an 
+                  explicit series specifying the frequencies only
+
+              m - an optional series, explicit desired magnitudes
+
+
+    Returns: A series
+
+    Example:
+
+             W1: {0, 1, 10, 20, 30}
+             W2: {1, 1, 2,  0, 0}
+             W3: xy(w1, w2)
+
+             W4: firsamp(w3)
+             W5: mag(fft(w4, bestpow2(length(w4))))
+
+             W4 contains a 61 point linear phase FIR filter. The filter
+             has unity gain from at 0 and 1 Hz and a gain of 2 at
+             10 Hz. W5 shows the magnitude response of the filter.
+
+    Example:
+             firsamp(w1, w2)
+
+             Same as above except the frequencies and magnitudes
+             are specified explicitly.
+
+    Remarks:
+             FIRSAMP sorts the input frequencies in ascending order.
+             If a frequency of 0 Hz is not specified, a 0 Hz term 
+             equal to the magnitude of the frequency nearest 0
+             is added to the list.
+
+             FIRSAMP produces non-causal filters with linear phase.
+
+    See Also:
+             Fft
+             Fftshift
+             Xyinterp
+#endif
+
+
+
+/* FIR design via frequency sampling */
+firsamp(f, m)
+{
+	local s, h;
+
+	if (argc < 2) {
+		m = yvals(f);
+		f = xvals(f);
+	}
+
+	/* sort values in ascending order */
+	h = grade(f, 1);
+	f = f[h];
+	m = m[h];
+
+	/* get XY plot so we can interpolate it */
+	m = xy(f, m);
+		
+	/* add DC term if required */
+	if (f[1] != 0) {
+		m = {xy({0}, {m[1]}), m};
+		printf("firsamp: Setting DC Value to %g", m[1]);
+	}
+
+	/* interpolate to equally spaced samples */
+	m = xyinterp(m);
+
+	/* form full magnitude response */
+	m = {m, (rev(extract(m, 2, -1)))};
+
+	/* inverse transform to get impulse response */
+	h = real(ifft(m));
+
+	/* shift to non causal - automatically sets linear phase */
+	h = fftshift(h);
+
+	return(h);
+}

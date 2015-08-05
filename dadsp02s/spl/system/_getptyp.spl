@@ -1,0 +1,10 @@
+/* get plottype - deals with TABLEVIEW */
+_getptyp()
+{
+	if (getplotstyle == 4) { /* tablev */
+		return(400);
+	}
+	else {
+		return(getplottype);
+	}
+}

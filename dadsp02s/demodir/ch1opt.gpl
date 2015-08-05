@@ -1,0 +1,10 @@
+!  Set channel 1 Options
+@display
+  Ch. 1 Options
+________________
+
+ Digitize      ~Echo("DIGITIZE CHANNEL 1")
+ Resume        ~ Echo(" ")
+ Probe Gain    ~defmacro("probe1",strnum(input(2,"Probe Gain","1",1,100)),3)
+ Couple: [<  >]~defmacro("OCPL","< >",3)~<AC><DC>
+ Autoscale     ~Echo("Autoscaling Complete")

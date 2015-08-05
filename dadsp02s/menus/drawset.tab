@@ -1,0 +1,12 @@
+! drawing settings
+@tabbed
+
+Drawing Settings
+
+~setvar("_tabbed", 1)
+
+~_txtset
+~_legset
+~_mf("linann.pan")
+
+~setvar("_tabbed", 0)

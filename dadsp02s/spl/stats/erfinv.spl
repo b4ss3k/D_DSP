@@ -1,0 +1,62 @@
+/*****************************************************************************
+*                                                                            *
+*   ERFINV.SPL  Copyright (C) 2001 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns inverse error function                              *
+*                                                                            *
+*   Revisions:    6 Dec 2001  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_ERFINV
+
+    ERFINV  
+
+    Purpose: Returns the inverse error function
+                                                                        
+    Format:  ERFINV(y)
+
+                 y - real or series
+
+
+    Returns: A real or series, the inverse error function x where
+             y = erf(x) for -1 <= y <= 1 and -inf <= x <= inf.
+
+
+    Example:
+             erfinv(.2)
+
+             returns 0.17914345, the inverse error function of 0.2.
+
+             erf(erfinv(.2))
+
+             returns 0.2, indicating that ERF and ERFINV are inverse
+             functions.
+            
+    Remarks:
+             ERFINV uses the built-in INVPROBN function to find the Z value
+             for a given a probability value of a normal distribution.
+
+             erf(erfinv(x)) == x
+
+             erfinv(x) == invprobn((x+1)/2) / sqrt(2)
+
+    See Also:
+             Erf
+             Erfc
+             Erfcinv
+             Invprobn
+             Probn
+#endif
+
+
+
+/* inverse error function */
+erfinv(x)
+{
+	/* use inverse normal CDF */
+	return(invprobn((x+1)/2) / sqrt(2));
+}

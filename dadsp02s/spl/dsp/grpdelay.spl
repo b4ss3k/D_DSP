@@ -1,0 +1,467 @@
+/*****************************************************************************
+*                                                                            *
+*   GRPDELAY.SPL Copyright (C) 2005 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates group delay of a direct form or cascade filter   *
+*                                                                            *
+*   Revisions:   30 Mar 2005  RRR  Creation, from FILTER.MAC                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_GRPDELAY
+
+    GRPDELAY
+
+    Purpose: Calculates the group delay of a direct form or cascade filter.
+
+    Format:  GRPDELAY(b, a, N, Fs, whole)
+
+                 b - A series, the numerator coefficients in ascending
+                     powers of z^(-1).
+
+                 a - A series, the denominator coefficients in ascending
+                     powers of z^(-1).
+
+                 N - Optional. An integer specifying the length of the
+                     output series. Defaults to 512.
+
+                Fs - Optional. A real, the sample rate of the output.
+                     Defaults to rate(b) if rate(b) == rate(a), else
+                     defaults to 1.0.
+
+             whole - an optional integer or string, 
+
+                     0: evaluate the transform only over the upper half 
+                        of the unit circle (default) 
+
+                     1: evaluate the transform over the entire unit circle
+ 
+                     If whole is a string, the transform is also
+                     evaluated over the entire unit circle.
+
+    Alternative Format:  
+
+             GRPDELAY(c, N, Fs, whole)
+
+                 c - A series, the system coefficients in cascaded 
+                     bi-quad form.
+
+                 N - Optional. An integer specifying the length of the
+                     output series. Defaults to 512.
+
+                Fs - Optional. A real, the sample rate of the output.
+                     Defaults to rate(c).
+
+             whole - an optional integer or string, 
+
+                     0: evaluate the transform only over the upper half 
+                        of the unit circle (default) 
+
+                     1: evaluate the transform over the entire unit circle
+ 
+                     If whole is a string, the transform is also
+                     evaluated over the entire unit circle.
+
+
+    Returns: A series, the group delay of the system.
+
+    Example:
+                             z          1
+             Given H(z) = ------- = ----------
+                          z - 0.5   1 - 0.5z^-1
+
+             W1: grpdelay({1}, {1, -0.5})
+
+             returns 512 samples of the group delay in W1.
+
+    Example:    
+             W1: Butterworth(1, 100.0, 10.0)
+             W2: grpdelay(w1, 1024)
+
+             creates a 10 Hz lowpass Butterworth filter. W2
+             calculates and displays 1024 samples of the group delay
+             response of the filter.  The amplitude of the group
+             delay is in samples.
+
+    Remarks:
+             The group delay is defined as:
+
+                              d PHASE
+                            - -------
+                                dF
+
+             Where PHASE is the unwrapped phase response of the
+             filter.  To avoid difficulties in determining the
+             unwrapped phase, the derivative is calculated by the
+             following equivalent FFT expression:
+
+                              FFT(t*s)
+                       real( ----------)
+                               FFT(s)
+
+             where t is the time index series and s is the impulse
+             response of the filter.
+
+             The input series represent the terms of the rational polynomial 
+             H(z) = b(z)/a(z) where:
+
+             M = length(b) and N = length(a):
+        
+                     b(z)    b[1] + b[2] z^(-1) + ... + b[M] z^(-M+1) 
+             H(z) = ------ = ----------------------------------------
+                     a(z)    a[1] + a[2] z^(-1) + ... + a[N] z^(-N+1)
+
+
+             For GRPDLEAY(c, N, Fs, whole), if the input c is a single
+             column, the coefficients are assumed to be in cascaded
+             bi-quad form.  This is the output format of IIR filters
+             designed by DADiSP/Filters.  If c contains 2 columns, the
+             coefficients are assumed to be in direct form, where the
+             first column is b and the second column is a.
+
+
+    See Also:
+             Filteq
+             Impz
+             Phase
+             Unwrap
+             Zfreq
+#endif
+
+
+/* calculate phase derivative using the FFT */
+grpdelay(b, a, n, Fs, whole)
+{
+	local m, g, c, cr, k;
+
+	/* parse args */
+	(b, a, n, Fs, whole) = grpdelay_args(b, a, n, Fs, whole);
+
+	/* max coefficient length */
+	m = max(length(b), length(a));
+
+	/* determines length of FFT calculation */
+	fac = (whole) ? 1 : 2;
+
+	/* form B(z) * (z^(-N) * A(1/z)) */
+	c = conv(b, rev(a));
+
+	/* ramped z polynomial */
+	cr = c * (0..(length(c)-1));
+
+	if (N < m) {
+		/*
+		** requested number samples less than coefficient length,
+		** use time aliased FFT and decimate
+		*/
+		k = n * 2 * fac;
+	}
+	else {
+		/* use normal FFT */
+		k = n * fac;
+	}
+
+	/* use FFT to calculate phase derivative */
+	g = real(grpdelay_nfft(cr, k) / grpdelay_nfft(c, k));
+
+	if (not(whole)) {
+		/* get first half */
+		g = extract(g, 1, int(length(g) / 2));
+	}
+
+	if (N < m) {
+		/* used time aliased FFT, get every other sample */
+		g = decimate(g, 2, 1);
+	}
+
+	/* adjust for filter length */
+	g -= length(a) - 1;
+
+	/* adjust for non-causal FIR filter */
+	if (length(a) == 1) {
+		g += xoffset(b) * rate(b);
+	}
+
+	/* set proper sample rate */
+	setdeltax(g, grpdelay_rate(b, a, Fs) / (fac * length(g)));
+
+	/* set units */
+	setvunits(g, "Samples");
+	setcomment(g, "Group Delay in Samples");
+
+	return(g);
+}
+
+
+/* parse args for grpdelay() */
+grpdelay_args(b, a, n, Fs, whole)
+{
+	local numeric, cascade;
+
+	(b, a, numeric, cascade) = grpdelay_ba(b, a);
+
+	switch (argc) {
+		case 1:
+			if (cascade) {
+				/* grpdelay(c) */
+				n = 512;
+				whole = 0;
+				Fs = -1;
+			}
+			else {
+				grpdelay_err();
+			}
+			break;
+
+		case 2:
+			if (cascade) {
+				/* grpdelay(c, n) */
+				if (IS_STRING(numeric)) {
+					whole = 1;
+					n = 512;
+				}
+				else if (IS_NUMERIC(numeric)) {
+					whole = 0;
+					n = numeric;
+				}
+				else {
+					grpdelay_err();
+				}
+			}
+			else {
+				/* grpdelay(b, a) */
+				whole = 0;
+				n = 512;
+			}
+			Fs = -1;
+			break;
+
+		case 3:
+			if (cascade) {
+				/*          b, a,  n     */
+				/* grpdelay(c, n, Fs/whole) */
+				if (IS_STRING(n)) {
+					whole = 1;
+					n = numeric;
+					Fs = -1;
+				}
+				else if (IS_NUMERIC(n)) {
+					Fs = n;
+					n = numeric;
+					whole = 0;
+				}
+				else {
+					grpdelay_err();
+				}
+			}
+			else {
+				/* grpdelay(b, a, n) */
+				if (IS_STRING(n)) {
+					whole = 1;
+					n = 512;
+				}
+				else if (IS_NUMERIC(n)) {
+					whole = 0;
+					Fs = -1;
+				}
+				else {
+					grpdelay_err();
+				}
+			}
+			break;
+
+		case 4:
+			if (cascade) {
+				/*          b, a,  n,   Fs */
+				/* grpdelay(c, n, Fs, whole) */
+				if (IS_STRING(n) && IS_NUMERIC(Fs)) {
+					whole = 1;
+					n = numeric;
+				}
+				else if (IS_NUMERIC(n) && IS_STRING(Fs)) {
+					whole = 1;
+					Fs = n;
+					n = numeric;
+				}
+				else {
+					grpdelay_err();
+				}
+				break;
+			}
+			/* direct */
+			else if (IS_NUMERIC(n)) {
+				/* grpdelay(b, a, n, Fs) */
+				if (IS_STRING(Fs)) {
+					whole = 1;
+					Fs = -1;
+				}
+				else if (IS_NUMERIC(Fs)) {
+					whole = 0;
+				}
+				else {
+					grpdelay_err();
+				}
+			}
+			else {
+				grpdelay_err();
+			}
+			break;
+
+		case 5:
+			if (cascade) {
+				grpdelay_err();
+			}
+			else {
+				/* grpdelay(b, a, n, Fs, whole) */
+				if (IS_NUMERIC(n)) {
+					if (IS_STRING(whole) && IS_NUMERIC(Fs)) {
+						whole = 1;
+					}
+					else if (IS_NUMERIC(whole) && IS_STRING(Fs)) {
+						Fs = whole;
+						whole = 1;
+					}
+					else {
+						grpdelay_err();
+					}
+				}
+				else {
+					grpdelay_err();
+				}
+			}
+			break;
+
+		default:
+			grpdelay_err();
+			break;
+	}
+	return(b, a, n, Fs, whole);
+}
+
+
+/* get B(z) and A(z) coefficients from input args */
+grpdelay_ba(b, a)
+{
+	local cascade, numeric;
+
+	numeric = 0;
+
+	if (argc < 1) {
+		grpdelay_err();
+	}
+	else if (not(IS_ARRAY(b))) {
+		grpdelay_err();
+	}
+
+	switch (argc) {
+		case 1:
+		default:
+			if (numcols(b) == 2) {
+				/* raveled Direct form */
+				a = col(b, 2);
+				b = col(b, 1);
+			}
+			else {
+				/* cascade form */
+				(b, a) = grpdelay_cas2dir(b);
+			}
+			cascade = 1;
+			break;
+
+		case 2:
+			if (IS_ARRAY(a)) {
+				cascade = 0;
+			}
+			else {
+				numeric = a;
+				if (numcols(b) == 2) {
+					/* raveled Direct form */
+					a = col(b, 2);
+					b = col(b, 1);
+				}
+				else {
+					(b, a) = grpdelay_cas2dir(b);
+				}
+				/* set cascade for further argument processing */
+				cascade = 1;
+			}
+			break;
+	}
+
+	return(b, a, numeric, cascade);
+}
+
+
+/* error message for grpdelay arguments */
+grpdelay_err()
+{
+	error("grpdelay - B and A Coefficients or Cascade Coefficients Required");
+}
+
+	
+
+/* get sample rate from coefficients */
+grpdelay_rate(b, a, Fs)
+{
+	if (Fs <= 0) {
+		if (rate(b) == rate(a)) {
+			Fs = rate(b);
+		}
+		else if (length(b) == 1) {
+			Fs = rate(a);
+		}
+		else if (length(a) == 1) {
+			Fs = rate(b);
+		}
+		else {
+			Fs = 1.0;
+		}
+	}
+	return(Fs);
+}
+
+
+/* convert cascade coefficients to direct form */
+grpdelay_cas2dir(c)
+{
+	local z, p;
+
+	if (argc < 1)         grpdelay_err();
+	if (not(IS_ARRAY(c))) grpdelay_err();
+	if (length(c) == 0)   grpdelay_err();
+
+	z = zerocoef(c);
+	p = polecoef(c);
+
+	setcomment(z, "Num");
+	setcomment(p, "Den");
+
+	if (outargc > 1) {
+		return(z, p);
+	}
+	else {
+		return(ravel(z, p));
+	}
+}
+
+
+/* time aliased or normal FFT */
+ITERATE grpdelay_nfft(s, n)
+{
+	if (argc < 2) {
+		if (argc < 1) error("grpdelay_nfft - input series required");
+		n = length(s);
+	}
+	if (n < length(s)) {
+		/* time alias */
+		s = rowsum(ravel(s, n));
+		return(fft(s));
+	}
+	return(fft(s, n));
+}
+

@@ -1,0 +1,15 @@
+/* conformity mode to string */
+_cni2str(val)
+{
+	switch (val) {
+		case 0:
+		default:
+			return(_cnfrm0str);
+
+		case 1:
+			return(_cnfrm1str);
+
+		case 2:
+			return(_cnfrm2str);
+	}
+}

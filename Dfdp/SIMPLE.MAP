@@ -1,0 +1,59 @@
+
+PC/CrossWare Family Linker v2.4 85.158  06/18/87  08:57:38            Page   1
+ Copyright (C) 1985, Texas Instruments Inc.  All Rights Reserved                
+ Command List
+
+ TASK     SIMPLE
+ PROGRAM  >0
+ COMMON   >300 XIIR
+ INCLUDE  SIMPLE.MPO
+ INCLUDE  IIR.MPO
+ END
+PC/CrossWare Family Linker v2.4 85.158  06/18/87  08:57:38            Page   2
+ Copyright (C) 1985, Texas Instruments Inc.  All Rights Reserved                
+ Link Map
+
+ Control File = SIMPLE.CTL
+
+ Linked Output File = SIMPLE.LOD
+
+ List File = SIMPLE.MAP
+
+ Output Format = ASCII
+
+PC/CrossWare Family Linker v2.4 85.158  06/18/87  08:57:38            Page   3
+ Copyright (C) 1985, Texas Instruments Inc.  All Rights Reserved                
+
+ Phase 0     SIMPLE    Module  Origin = 0000    Length = 0000
+
+ Module    No   Origin    Length      Type         Date       Time     Creator
+
+ SIMPLE     1    0000*     0030     INCLUDE      06-18-87   08:57:36   ASM320
+ IIR        2    0030*     005A     INCLUDE      06-18-87   08:56:54   ASM320
+
+
+
+ Common    No   Origin    Length
+
+ XIIR       2    0300*     0015
+
+
+
+
+                             D E F I N I T I O N S
+
+
+  Name    Value No    Name    Value No    Name    Value No    Name    Value No
+
+  FIIR    004B*  2    FILTT   0061*  1    IIIR    003F*  2    VIIR    0060*  1
+
+
+ Length of Region for Task             = 0000
+
+
+ Number of Records for Module SIMPLE   =   10
+
+ Total Records Written                 =   10
+
+ **** Linking Completed    06/18/87  08:57:39
+

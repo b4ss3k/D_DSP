@@ -1,0 +1,62 @@
+.version 3.0
+
+.titleAPPRENTISSAGE
+
+splash          splgetst.mcd    : Titre
+cover           cover.mcd       : Bienvenue !
+TOC             content.mcd     : Table des matières
+demoTOC demo.mcd        : Démonstration
+demo0           df0.mcd         : Manuels Electroniques
+demo1           df1.mcd         : Math, texte, graphes
+demo2           df2.mcd         : Saisie et édition d'équations
+demo3           df3.mcd         : Définition de variables
+demo4           df4.mcd         : Graphes
+demo5           df5.mcd         : Unités de mesure
+demo6           df6.mcd         : Fonctions et opérateurs
+demo7           df7.mcd         : Calculs matriciels
+demo8           df8.mcd         : Arithmétique complexe
+demo9           df9.mcd         : Résolution d'équations
+demo10  df10.mcd        : Calcul symbolique
+demo11  df11.mcd        : Informations produits
+tutorialTOC     tutor.mcd       : Didacticiel
+tutorial1               t1.mcd          : Fonctionnement de Mathcad
+tutorial2               t2.mcd          : Définition de variables
+tutorial3               t3.mcd          : Ajout de texte
+tutorial4               t4.mcd          : Edition d'équations
+tutorial5       t5.mcd          : Couper, coller et déplacer
+tutorial6               t6.mcd          : Variable indice
+tutorial7               t7.mcd          : Création de graphes
+tutorial8       t8.mcd          : Utilisation de l'Aide
+samplesTOC      samples.mcd     : Documents exemples
+anharm          anharm.mcd      skip    : Oscillations anharmoniques
+beam            beam.mcd        skip    : Flexion d'une poutre
+bode            bode.mcd        skip    : Tracé de Bode pour un système de second ordre
+boolean         boolean.mcd     skip    : Fonctions algébriques booléennes
+brake           brake.mcd       skip    : Analyse du freinage d'une automobile
+compfunc        compfunc.mcd    skip    : Visualisation d'une fonction complexe
+conform conform.mcd             skip    : Représentation conforme par transformation linéaire
+contour         contour.mcd     skip    : Intégrale complexe par contour
+curvefit        curvefit.mcd    skip    : Régression polynômiale
+decay           decay.mcd       skip    : Désintégration radioactive
+diffuse         diffuse.mcd     skip    : Simulation de l'équation de diffusion
+fftfilt         fftfilt.mcd     skip    : Filtrage d'un signal sonore avec FFT
+fluid           fluid.mcd       skip    : Dimensionnement d'un tuyau pour écoulement turbulent
+fractal         fractal.mcd     skip    : Courbes fractales
+heattran        heattran.mcd    skip    : Transfert de chaleur
+histo           histo.mcd       skip    : Tracé d'histogrammes
+lissajou                lissajou.mcd    skip    : Figure de Lissajous
+mortgage        mortgage.mcd    skip    : Calcul d'un prêt hypothécaire
+motion          motion.mcd      skip    : Mouvement des projectiles
+npv             npv.mcd skip    : Valeur nette actuelle
+polar           polar.mcd       skip    : Tracé de coordonnées polaires
+quadrati        quadrati.mcd    skip    : Résolution d'une équation quadratique générale
+shuttle         shuttle.mcd     skip    : Importation d'images
+simult          simult.mcd      skip    : Itération simultanée
+spiral          spiral.mcd      skip    : Tracé d'une spirale
+stair           stair.mcd       skip    : Conception d'un escalier
+stars           stars.mcd       skip    : Tracés d'étoiles
+sepdiff         sepdiff.mcd     skip    : Intégration symboliques et séries
+surface         surface.mcd     skip    : Tracé de surface
+transfer                transfer.mcd    skip    : Calcul symbolique d'un taux d'absorption
+triangle                triangle.mcd    skip    : Résolution de triangle
+Indx            index.mcd       skip    : Index

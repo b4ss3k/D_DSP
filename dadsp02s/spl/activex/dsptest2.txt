@@ -1,0 +1,43 @@
+Sub DSPTest()
+Dim DADiSP As Object
+Dim VBData(1000) As Double
+
+
+''' Connect to DADiSP
+Set DADiSP = CreateObject("DADiSP.Application")
+
+''' Show DADiSP
+DADiSP.Visible = 1
+
+''' Create a 2 Window Worksheet (unconditional)
+DADiSP.Execute("NewWorksheet(2, 0)")
+
+''' Generate Data
+DADiSP.Execute("Gnorm(1000,1)")
+
+''' Moveto W2
+DADiSP.Execute("Moveto(W2)")
+
+''' Integrate
+DADiSP.Execute("Movavg(W1, 10)/Max(w1)+Gnorm(Length(w1),1)/5")
+
+''' No Scaling on W2
+DADiSP.Execute("Ascale(W2, 0)")
+
+''' Get Data
+data = DADiSP.GetData("W2")
+
+''' Clear W1
+DADiSP.Execute("Clear(W1)")
+
+''' No Scaling on W1
+DADiSP.Execute("Ascale(W1, 0)")
+
+''' Get W2, place in VB Data Array then put to W1
+For i = 0 To 500
+    DADiSP.PutData "W1", data
+    data = DADiSP.GetData("W2")
+Next i
+
+End Sub
+

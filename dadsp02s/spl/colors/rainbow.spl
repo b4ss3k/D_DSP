@@ -1,0 +1,102 @@
+/*****************************************************************************
+*                                                                            *
+*   RAINBOW.SPL    Copyright (C) 1997 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Generate a colormap of the visible color spectrum           *
+*                                                                            *
+*   Revisions:    4 Aug 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_RAINBOW
+
+    RAINBOW
+
+    Purpose: Generates a colormap of the visible color spectrum.           
+                                                                        
+    Format:  RAINBOW(len)                           
+
+               len - optional colormap length, defaults to
+                     the length of the current colormap
+                                                                        
+
+    Returns: A table of RGB triples suitable for the SETCOLORMAP function.   
+                                                                        
+    Example:                                                            
+
+             clen = length(getcolormap());
+             density(ravel(rep(0..(clen-1), 32), clen)');
+             rainbow();
+                                                                        
+             Creates a table of 32 x colormap length RBG values and   
+             displays the resulting colors. The resulting image is a    
+             vertical plot of colors ranging from blue (lowest) to red  
+             (highest).
+
+     Remarks:
+
+             Rainbow() by itself sets the colormap and shading.
+
+             a = rainbow() or setcolormap(rainbow()) returns the rgb values.
+             In this case, use SETSHADING to make the new colormap
+             take effect on an existing density or 2D plot.
+
+     See Also:
+
+             Cool
+             Hot             
+             Setcolormap
+             Setshading
+             Showcmap
+
+#endif
+
+
+/*
+** create a colomap of the visible color spectrum ranging
+** from blue to red
+*/
+
+rainbow(cmaplen)
+{
+	local n, a, b, c, r, g, b, rgb;
+
+	if (argc < 1) {
+		/* set size to current colormap size */
+		cmaplen = length(getcolormap());
+	}
+
+	n = maxval(round(cmaplen/4),1);
+	a = (1..n)/n;
+	b = ((n/2)..n)/n;
+	c = ones(length(a),1);
+
+	/* generate rbg values */
+	r = {0*b, 0*c, a, c, rev(b)};
+	g = {0*b, a, c, rev(a), 0*b};
+	b = {b, c, rev(a), 0*c, 0*b};
+
+	rgb = ravel(r, g, b);
+
+	if (length(rgb) > cmaplen) {
+		rgb = extract(rgb, int((length(rgb)-cmaplen)/2)+1, cmaplen);
+	}
+
+	if (outargc == 0) {
+		/* set the colormap and shading */
+		setcolormap(rgb);
+		setshading();
+	}
+	else {
+		/* return the colormap */
+		setvunits(rgb, "Red",   1);
+		setvunits(rgb, "Green", 2);
+		setvunits(rgb, "Blue",  3);
+		return(rgb);
+	}
+}
+

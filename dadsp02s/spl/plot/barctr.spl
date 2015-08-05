@@ -1,0 +1,91 @@
+/*****************************************************************************
+*                                                                            *
+*   BARCTR.SPL  Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets bar centering                                          *
+*                                                                            *
+*   Revisions:   22 Jan 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_BARCTR
+
+    BARCTR
+
+    Purpose: Sets the centering of a 2D bar plot
+                                                                        
+    Format:  BARCTR(win, on_off)
+
+              win    - Optional. A window, defaults to current window
+              on_off - Optional. An integer, 0:use 0.0, 1:center bars 
+                       (default 0)
+
+    Returns: Nothing
+
+    Example:
+             W1: gnorm(10, 1);bars;barctr(1)
+             W2: W1;bars;barctr(0)
+
+             The steps in W1 are centered on the data value while the bars
+             (the default), while the bars in W2 begin at the data value.
+
+
+    Remarks: 
+             BARCTR only effects 2D bar charts.
+
+             BARCTR is a Window property. All bar plots plotted in the
+             Window will be drawn in the current BARCTR mode.
+
+    See Also:
+             Bargap
+             Bars
+             Barstyle
+             Steps
+#endif
+
+
+barctr(win, val)
+{
+	local exstyle;
+
+	/* barctr is a winexstyle bit */
+	if (argc < 1) {
+		return((winexstyle(W0) & EX_BAR_CENTER) != 0);
+	}
+	else if (argc == 1) {
+		if (IS_WINDOW(win)) {
+			return((winexstyle(win) & EX_BAR_CENTER) != 0);
+		}
+		else {
+			val = win != 0;
+			exstyle = winexstyle(W0);
+			/* clear EX_BAR_CENTER bit */
+			exstyle &= ~EX_BAR_CENTER;
+
+			/* set EX_BAR_CENTER bit */
+			if (val) exstyle |= EX_BAR_CENTER;
+			winexstyle(W0, exstyle);
+
+			/* indicate window should plot */
+			plotmode(1, 0);
+		}
+	}
+	else {
+		val = val != 0;
+		exstyle = winexstyle(win);
+		/* clear EX_BAR_CENTER bit */
+		exstyle &= ~EX_BAR_CENTER;
+		if (val) exstyle |= EX_BAR_CENTER;
+		winexstyle(win, exstyle);
+
+		/* indicate window should plot */
+		plotmode(win, 1, 0);
+
+	}
+}
+

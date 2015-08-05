@@ -1,0 +1,11 @@
+Delay               !_PDC_EXEC326  $Prepend Zeros to a Series
+Grade               !_PDC_EXEC066  $Arrange Indices in Ascending or Descending Order
+Lookup              !_PDC_EXEC063  $Address a Series Based on Indices
+Ravel into Segments !_PDC_EXEC068  $Divide Series into Equal Segments $Ravel
+Ravel into Table    !_PDC_EXEC248  $Combine Series into Multicolumn Table $Ravel
+Reorder             !_PDC_EXEC067  $Address a Long Series Based on Indices
+Reshape             !_PDC_EXEC070  $Divide Series into Arbitrary Segments
+Sort                !_PDC_EXEC065  $Arrange in Ascending or Descending Order
+Transpose           !_PDC_EXEC064  $Swap Rows and Columns
+Unravel             !_PDC_EXEC069  $Convert Multicolumn Table to Series
+Xylookup            !_PDC_EXEC359  $Lookup Y Values Based on Arbitrary X Values

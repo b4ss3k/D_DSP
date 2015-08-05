@@ -1,0 +1,73 @@
+/*****************************************************************************
+*                                                                            *
+*   PEARSON.SPL   Copyright (C) 1998 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates Pearson's Correlation Coefficient                *
+*                                                                            *
+*   Revisions:    1 Dec 1998  RRR  Creation - from PEARSON.MAC               *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_PEARSON
+
+    PEARSON
+
+    Purpose: Calculates Pearson's Linear Correlation Coefficient
+                                                                        
+    Format:  PEARSON(x, y)
+
+             x - input series
+             y - input series
+
+    Returns: A number, the correlation coefficient
+
+    Example:
+             W1: Gsin(100, .01, 4)
+             W2: Gsin(100, .01, 4, pi/3)
+
+             Pearson(w1, w2)
+             Returns: 0.5
+
+
+             Pearson(w1, w1)
+             Returns: 1.0
+
+             Pearson(w1, w1/2)
+             Returns: 1.0
+ 
+
+             Pearson(w1, -w1)
+             Returns -1.0
+
+ 
+   Remarks:
+             Pearson returns the degree of linear correlation between
+             the two input series. The result ranges from -1 to 1.
+
+             Pearson assumes X and Y have the same number of points.
+
+
+    See Also:
+             Autocor
+             Crosscor
+#endif
+
+
+/* Pearson's Linear Correlation Coefficient */
+pearson(x, y)
+{
+	local xm, ym;
+
+	if (argc < 2) error("Pearson - two input series required");
+
+	/* remove mean values */
+	xm = x - mean(x);
+	ym = y - mean(y);
+
+	/* calculate coefficient */
+	return(real(sum(xm * ym) / sqrt(sum(xm * xm) * sum(ym * ym))));
+}
+

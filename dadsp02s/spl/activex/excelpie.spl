@@ -1,0 +1,112 @@
+/*****************************************************************************
+*                                                                            *
+*   EXCELPIE.SPL    Copyright (C) 2002 DSP Development Corporation           *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Example of ActiveX support with Excel                      *
+*                                                                            *
+*   Revisions:    28 Feb 2002  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_EXCELPIE
+
+    EXCELPIE    
+
+    Purpose: Creates a 3D Pie Chart in Excel using ActiveX
+                                                                        
+    Format:  EXCELPIE(usecurr)
+
+             usecur - Optional. An integer startup flag:
+                       0: create new Excel (default)
+                       1: connect to running Excel
+
+
+    Returns: An ActiveX handle, starts Excel and creates the chart
+
+    Example:
+             excelpie
+
+             DADiSP starts Excel and executes the various
+             instructions to create a 3D pie chart.
+
+    Remarks:
+             EXCELPIE is a simple example of how to invoke an external
+             application (Excel) as an ActiveX server using SPL. 
+             SPL uses an ActiveX syntax similar to C++ and Visual Basic.
+
+
+             See MSWORD for an example using Word.
+
+    See Also:
+             Createobject
+             Msword
+             Xlget
+             Xlput
+
+#endif
+
+
+#define XL3DPIE -4102
+#define XLROWS  1
+
+
+/* tests Automation with Excel */
+excelpie(usecur)
+{
+	local xl = -1, Books, Book, Sheet, Range, Chart;
+
+	if (argc < 1) {
+		usecur = 0;
+	}
+
+	if (usecur) {
+		// try connecting to running Excel - don't show errors
+		xl = getobject("Excel.Application", 0);
+	}
+
+	if (not(isobject(xl))) {		
+		// start new Excel
+		xl = CreateObject("Excel.Application");
+	}
+
+	if (not(isobject(xl))) error("excelpie - cannot start Excel");
+
+	// make it visible
+	xl.Visible = 1;
+
+	// create Workbook and select sheet
+	Books = xl.Workbooks;
+	Book  = Books.Add();
+
+	Sheet = xl.ActiveSheet;
+
+	Sheet.Name = "Market Share";
+
+	// create data
+	Sheet.Range("A2").Value = "DSP Development Corporation";
+	Sheet.Range("B2").Value = "Microsoft";
+	Sheet.Range("C2").Value = "IBM";
+	Sheet.Range("D2").Value = "Borland";
+
+	Sheet.Range("A3").Value = 75.0;
+	Sheet.Range("B3").Value = 14.0;
+	Sheet.Range("C3").Value = 7.0;
+	Sheet.Range("D3").Value = 4.0;
+
+	Range = Sheet.Range("A2:D3");
+	Chart = Book.Charts.Add();
+
+	// use chart wizard to produce the chart
+	Chart.ChartWizard(Range, XL3DPIE, 7, XLROWS,
+		1, 0, 2, "Engineering Spreadsheet Market Share");
+
+	// return handle if requested
+	if (outargc > 0) {
+		return(xl);
+	}
+}
+

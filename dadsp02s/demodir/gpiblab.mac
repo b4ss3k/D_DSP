@@ -1,0 +1,77 @@
+
+
+! GPIBLab macros:
+
+gpibloaded 1
+INITIALIZE     Echo("IEEE488 Interface Initialized (Driver 488)")
+				      ! Initialize IEEE-488 bus control
+TTIMRNG  '.1'
+TVOLRNG  '10.0'
+TTIMDEL  '1.0'
+TVOLOFF  '0.0'
+OTIMRNG  '5.0'
+OVOLRNG  '10.0'
+OTIMDEL  '1.0'
+OVOLOFF  '0.0'
+OCPL  'AC'
+TCPL  'AC'
+dur "1"
+acqtim numstr(dur)
+srate "100"
+smprate numstr(srate)
+
+ch2rng    numstr( TTIMRNG  )
+ch2vfs    numstr(TVOLRNG  )
+ch2timdel numstr(TTIMDEL  )
+ch2ofst   numstr(TVOLOFF  )
+ch1rng    numstr(OTIMRNG )
+ch1vfs    numstr(OVOLRNG )
+ch1ofst   numstr(OTIMDEL )
+ch1ofst   numstr (OVOLOFF  )
+
+! generate acquired waveforms 
+acqsqr   (Gsqr(int(acqtim*smprate),1/int(smprate),smprate/20)/pr1)
+acqran   (0.05*Gnorm(int(acqtim*smprate),1/int(smprate)))
+acqser   (acqsqr+acqran)
+ACQUIRE  ch1ofst+(ch1vfs*acqser)
+ACQUIRE2 ch2ofst+(ch2vfs*(Gsin(    int(acqtim*smprate),1/int(smprate),smprate/20)/pr2))
+
+acqch   1
+probe1 "1"
+probe2 "1"
+pr1 numstr(probe1)
+pr2 numstr(probe2)
+!  Macros to enter GPIBLab menuing system:
+
+ACQMEN          GMF('acq.gpl')
+MENUS           GMF('startup.gpl')     ! Enter Menuing System
+INITMEN         GMF('init.gpl')
+REMOTEMEN       GMF('remote.gpl')
+LOCALMEN        GMF('local.gpl')
+SCOPEMEN        GMF('scope.gpl')
+EOLMEN          GMF('eol.gpl')
+CHONEMEN        GMF('ch1.gpl')     ! Enter Menuing System
+CHTWOMEN        GMF('ch2.gpl')
+SYSTEMMEN       GMF('system.gpl')
+TRIGGERMEN      GMF('trigger.gpl')
+DISPLAYMEN      GMF('display.gpl')
+DATAINMEN       GMF('datain.gpl')
+QUERONEMEN      GMF('querych1.gpl')
+QUERTWOMEN      GMF('querych2.gpl')
+OPTONEMEN       GMF('ch1opt.gpl')
+OPTTWOMEN       GMF('ch2opt.gpl')
+
+
+GMF(s)      MENUFILE(-1,-1,white,blue,strcat(DEMOHOME,s))
+
+M           MENUS
+
+! Misc.
+
+EXITMES   "Exit   (ESC)"
+
+SETHEAD    Echo("Set Defaults")                         !  Defaults for data reads
+
+! dummy acquisition
+acqcmp  echo ("Acquisition Complete")
+

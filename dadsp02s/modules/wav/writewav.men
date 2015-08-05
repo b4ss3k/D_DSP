@@ -1,0 +1,11 @@
+! WriteWAV.pan
+! Write Wave File Selection Menu
+@x10
+@y0
+
+    Select WAV File Type
+____________________________
+
+  MONO                ~_MFW("writem.pan")
+
+  STEREO              ~_MFW("writest.pan")

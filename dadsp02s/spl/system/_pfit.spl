@@ -1,0 +1,20 @@
+_pfit(func, ser, order, pstat, _dwin)
+{
+	local evalstr;
+
+	if (pstat == 1) {
+		if (_checkdwin) {
+			evalstr = sprintf("Pfit(%s, %s)", ser, order);
+		}
+	}
+	else {
+		if (_checkdwin) {
+			evalstr = sprintf("Pfit(%s, %s, 0)", ser, order);
+		}
+	}
+
+	evalstr = sprintf("setwf(%s, '%s')", _dwin, evalstr);
+
+	eval(evalstr);
+}
+

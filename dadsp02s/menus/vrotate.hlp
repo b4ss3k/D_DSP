@@ -1,0 +1,32 @@
+! VRotate.hlp
+LABEL ROTATION
+
+DEFAULT ROTATION:
+When the Y-axis location changes, the default vertical label rotations may 
+be different than what you desire.  Since the vertical label rotation 
+default settings persist across changes to the scales, you should set them
+here, rather than in the Label Orientation option.
+
+ROTATION OPTIONS FOR VERTICAL TIC & AXIS LABELS:
+
+Vdef90:      90 Degree CCW of entire string for scales on all sides.
+
+Vdef270:     270 Degree CCW of entire string (90 deg CW) for scales on 
+             all sides.
+
+VdefChar90:  Horizontal Characters laid out in vertical sequence for scales
+             on all sides. 
+             (The leftmost letter becomes the vertical topmost letter.)
+
+Vdef90_270:  90 Degree CCW of entire string for scales on left & bottom 
+             sides, and 270 degree CCW of entire string for scales on right
+             & top sides.
+
+Vdef270_90:  270 Degree CCW of entire string for scales on left & bottom 
+             sides, and 90 degree CCW of entire string for scales on right
+             & top sides.
+
+CCW = counterclockwise 
+CW =  clockwise 
+
+

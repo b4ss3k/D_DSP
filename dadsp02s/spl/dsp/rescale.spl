@@ -1,0 +1,113 @@
+/*****************************************************************************
+*                                                                            *
+*   RESCALE.SPL  Copyright (C) 2001-2004 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Linearly rescales an input series                           *
+*                                                                            *
+*   Revisions:   25 Jul 2001  RRR  Creation                                  *
+*                10 Sep 2004  RRR  min/max instead of min/maxval for images  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_RESCALE
+
+    RESCALE
+
+    Purpose: Linearly rescales an input series
+                                                                        
+    Format:  RESCALE(xi, yl, yh, xl, xh, clipflag)
+
+                   xi  - input series or scalar
+
+                   yl  - an optional real, low value output range,
+                         defaults to 0.0
+
+                   yh  - an optional real, high value output range,
+                         defaults to 1.0
+
+                   xl  - an optional real, low value input range, 
+                         defaults to minval(xi)
+
+                   xh  - an optional real, high value input range.
+                         defaults to maxval(xi)
+
+
+              clipflag - an optional integer, 1:clip input
+                         to xl and xh, 0:do not clip, defaults
+                         to 1.
+
+    Returns: A series or real
+
+    Example:
+             Rescale(10, -1, 1, 0, 100)
+
+             returns -0.8, the corresponding output for an input
+             value of 10.0 on a 0 to 100 input range and a 
+             corresponding -1.0 to 1.0 output range.
+
+    Example:
+             Rescale(0..100)
+
+             returns a series ranging from 0 to 1. This is equivalent
+             to:
+
+             Rescale(0..100, 0, 1, 0, 100)
+
+    Example:
+             Rescale(0..100, -5, 5)
+
+             returns a series ranging from -5 to 5. This is equivalent
+             to:
+
+             Rescale(0..100, -5, 5, 0, 100)
+
+    Example:
+             Rescale(0..100, -5, 5, -200, 200)
+
+             returns a series ranging from 0 to 2.5
+
+
+    Remarks:
+             By default, Rescale automatically clips out of range
+             input values. Rescale uses Linscale to lineraly convert
+             the input values.
+
+    See Also:
+             Bitscale
+             Linscale
+             Quantize
+#endif
+
+
+/* linearly rescale input range to output range */
+rescale(xi, yl, yh, xl, xh, clipflag)
+{
+	local delta, xspan, yspan, yo;
+
+	/* check input args */
+	if (argc < 6) {
+		if (argc < 5) {
+			if (argc < 4) {
+				if (argc < 3) {
+					if (argc < 2) {
+						if (argc < 1) {
+							error("rescale: input value required");
+						}
+						yl = 0.0;
+					}
+					yh = 1.0;
+				}
+				xl = min(xi);
+			}
+			xh = max(xi);
+		}
+		clipflag = 1;
+	}
+	/* linscale does the job */
+	return(linscale(xi, xl, xh, yl, yh, clipflag));
+}

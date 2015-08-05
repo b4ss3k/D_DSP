@@ -1,0 +1,139 @@
+/*****************************************************************************
+*                                                                            *
+*   SHOWCMAP.SPL   Copyright (C) 1997-1999 DSP Development Corporation       *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Displays the current colormap                               *
+*                                                                            *
+*   Revisions:   23 Jul 1997  RRR  Creation                                  *
+*                17 Jun 1999  RRR  added scaling to input series             *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#define NCELLS 32
+
+
+#if @HELP_SHOWCMAP
+
+    SHOWCMAP
+
+    Purpose: Displays the current colormap as a density plot.           
+                                                                        
+    Format:  SHOWCMAP(s, len)                           
+
+                 s - optional series to scale colormap
+
+               len - optional colormap length, defaults to
+                     the length of the current colormap
+                                                                        
+
+    Returns: A table of values graded from 0 to 255 displayed as an image.   
+             If a series is specified, the Y values of the colormap is 
+             scaled to the series.
+                                                                        
+    Example:                                                            
+
+             setcolormap(rainbow());
+             showcmap()
+                                                                        
+             Sets the colormap to colors ranging from blue to red   
+             and displays the colors as a density plot.
+
+
+             W1: spline2(ravel(gnorm(100, 1), 10), 3)
+             W2: showcmap(w1)
+
+             Shows the colormap in W2 scaled to the Z values of W1.
+
+     Remarks:                                                            
+             Use SETSHADING to make a new colormap take effect          
+             on an existing density plot.
+
+
+     See Also:
+             
+             Setcolormap
+             Setshading
+
+#endif
+
+
+showcmap(s, len)
+{
+	local l, m, n, map, mx, mn, dy, yoff, yscale;
+
+	yscale = FALSE;
+	m = length(getcolormap());
+
+	/* check input args */
+	if (argc < 2) {
+		if (argc < 1) {
+			n = NCELLS;
+		}
+		else {
+			if (IS_ARRAY(s)) {
+				yscale = TRUE;
+				n = NCELLS;
+			}
+			else {
+				n = s;
+			}
+		}
+	}
+	if (n < NCELLS) n = NCELLS;
+
+	/* display the current colormap as a vertical density plot */
+	map = ravel(rep(0..(m-1), n), m)';
+
+	/* dx and units */
+	setdeltax(map, 1.0);
+	setzunits(map, "Color Index");
+	setvunits(map, "Index");
+	sethunits(map, "Range");
+
+	/* do y scaling */
+	if (yscale) {
+		mx = max(s);
+		mn = min(s);
+		yoff = mn;
+		dy = (mx - mn) / (numcols(map) - 1);
+		setdeltay(map, dy);
+		setyoffset(map, yoff);
+		setvunits(map, getzunits(s));
+	}
+	else {
+		if (getcrange() == 0.0) { /* color range not set */
+			mx = 255.0;
+			yoff = 0.0;
+		}
+		else {
+			mx = getcrange(1);
+			mn = getcrange(0);
+			yoff = mn;
+			dy = (mx - mn) / (numcols(map) - 1);
+			setdeltay(map, dy);
+			setyoffset(map, yoff);
+		}
+	}
+
+	map = (map / max(map)) * (mx - yoff) + yoff;
+
+	if (outargc == 0) { /* place in window */
+		map;
+		/* override window and setup density plot attributes */
+		setplotstyle(w0, 0);
+		setplottype(w0, 3);
+
+		/* set to current colors */
+		setshading();
+	}
+	else { /* return map array */
+		setplotstyle(map, 0);
+		setplottype(map, 3);
+		return(map);
+	}
+}

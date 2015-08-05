@@ -1,0 +1,8 @@
+@tabbed
+Lookup Y Values Given Arbitrary X Values
+
+
+~_MF("xylookup.pan")
+~_MF("xylookop.pan")
+
+~~if(strlen(_formstr), eval(sprintf("setwf(%s, '%s')", _dwin, _formstr)))

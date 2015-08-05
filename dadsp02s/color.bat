@@ -1,0 +1,1 @@
+copy dspcolor.col dspcolor

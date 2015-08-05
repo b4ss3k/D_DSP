@@ -1,0 +1,12 @@
+! Display.men
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+     Display
+
+ All Windows     ~_MC;Displayall
+ Range           ~_deffname('DISPLAY  Display Selected Windows')|_defformat('Display(window,window,...)')|_defxamp('Display(W2,W3,W6)')|_getser|_evalserform("Display")
+ Column Layout   ~_deffname('COLLAYOUT  Arrange Number of Windows Per Column')|_defformat('  Collayout(#Windows in Col 1,...,#Windows in Col n)')|_defxamp('  Collayout(3,1,2)')|_getstr1("List of Windows per Column")| _evalstrlist("Collayout")
+ Row Layout      ~_deffname('ROWLAYOUT  Arrange Number of Windows Per Row')|_defformat('  Rowlayout(#Windows in Row 1,...,#Windows in Row n)')|_defxamp('  Rowlayout(3,1,2)')|_getstr1("List of Windows per Row")| _evalstrlist("Rowlayout")
+ Row & Col Layout~_deffname('LAYOUT   Arrange Windows into Rows and Columns')|_defformat('Layout(# Cols, # Rows)')|_defxamp('Layout(4,2)')|_getint2("Number of Columns:","Number of Rows:")|_evalint2("Layout")

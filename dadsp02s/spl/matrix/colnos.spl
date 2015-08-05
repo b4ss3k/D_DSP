@@ -1,0 +1,67 @@
+/*****************************************************************************
+*                                                                            *
+*   COLNOS.SPL  Copyright (C) 2000 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns an array of COL numbers                             *
+*                                                                            *
+*   Revisions:    3 Apr 2000  RRR  Creation - from MATRIX.MAC by             *
+*                                             Kevin Carmondy                 *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_COLNOS
+
+    COLNOS  
+
+    Purpose: Returns an array of COL numbers
+                                                                        
+    Format:  COLNOS(m)
+
+                  m -  array, the size of m determines the size of the
+                       output array
+
+
+    Returns: An array of size(m)
+
+    Example:
+             W1: ones(3)
+             W2: colnos(W1)
+
+             W2 == {{1, 2, 3},
+                    {1, 2, 3},
+                    {1, 2, 3}}
+
+    Example:
+             W1: zeros(3, 2)
+             W2: colnos(W1)
+
+             W2 == {{1, 2},
+                    {1, 2},
+                    {1, 2}}
+
+
+    Remarks:
+             COLNOS is used by several of the matrix disection routines
+             to select specific regions of an array.
+
+    See Also:
+             Lotri
+             Lotrix
+             Rownos
+             Uptri  
+             Uptrix
+
+#endif
+
+
+/* returns a matrix of the column numbers of the input matrix */
+colnos(M)
+{
+	return(transpose(ravel(rep(gline(numcols(M),1,1,1),numrows(M)),numcols(M))));
+}
+
+
+

@@ -1,0 +1,120 @@
+/*****************************************************************************
+*                                                                            *
+*   PROBN.SPL   Copyright (C) 2000 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Probabilty of X <= z for a normal distribution              *
+*                                                                            *
+*   Revisions:    7 Apr 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_PROBN
+
+    PROBN  
+
+    Purpose: Returns the probability of X <= z for a normal distribution
+                                                                        
+    Format:  PROBN(z, mean, std)
+
+                 z - real or series, the z value
+
+              mean - an optional real, the mean of the distribution, 
+                     defaults to 0.0
+
+
+               std - an optional real, the standard deviation of the
+                     distribution, defaults to 1.0
+
+
+
+    Returns: A real or series, the probability that a value is less than
+             or equal to the input value for a normal distribution with
+             the specified mean and standard deviation.
+
+
+    Example:
+             probn(0)
+
+             returns 0.5, the probability that a value is less than or equal
+             to 0.0 for a normal distribution with a mean of 0.0 and a
+             standard deviation of 1.0. 
+
+             In probablistic terms, given the normal distribution N(0, 1),
+             (i.e. mean of 0, variance of 1):
+
+                              P(X <= 0.0) = 0.5
+
+    Example:
+             probn(2, 1, 2) - probn(0, 1, 2)
+
+             returns 0.382925, the probability that a value is less than or 
+             equal to 2 and greater than or equal to 0.0 for a normal 
+             distribution with a mean of 1.0 and a standard deviation of 2.0
+
+             In probablistic terms, given the normal distribution N(1, 4),
+             (i.e. mean of 1, variance of 4):
+
+                          P(0.0 <= X <= 2.0) = 0.382925
+
+
+             1 - probn(.5)
+
+             returns 0.30853754, the probability that a value is
+             greater than 0.5 for a normal distribution with a mean
+             of 0.0 and a standard deviation of 1.0
+
+             probn(invprobn(.3))
+
+             returns 0.3, indicating that PROBN and INVPROBN are
+             inverse functions.
+
+             probn(-3..0.01..3)
+
+             displays the normal cumulative distribution function
+             from -3 to 3.
+
+ 
+    Remarks:
+             PROBN uses the built-in ERF function to evaluate the area under
+             the normal distribution curve. Note that PROBN(z) returns the
+             area from -infinity to z.
+
+             See INVPROBN to calulate the inverse normal cumulative
+             distribution function.  PROBN and INVPROBN are inverse
+             functions.
+
+             See PDFNORM to generate the normal density function.
+
+
+    See Also:
+             Erf
+             Invprobn
+             Pdfnorm
+#endif
+
+
+
+/* area under gaussian from -infinity to z */
+probn(z, mean, std)
+{
+	local p;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("probn - input value required");
+			mean = 0;
+		}
+		std = 1;
+	}
+
+	/* convert to standard units for erf function */
+	z = (z - mean) / (std * sqrt(2));
+
+	/* normalize to gaussian */
+	p = 0.5 * (1 + erf(z));
+
+	return(p);
+}

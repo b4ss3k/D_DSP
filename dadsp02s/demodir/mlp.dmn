@@ -1,0 +1,23 @@
+! MLP.dmn (Multi-Layer Perceptron or Backpropagation Neural Network) Design
+! DSPTrial menu
+@x0
+   MLP Training and Design
+
+ Normalize Input Data       ~DMF("norm.dmn")
+ Design and Train Network   ~DMF("Train.dmn")
+ Cross-Validation Training  ~DMF("CVTrain.dmn")
+
+ Post-Training Graphs:
+  Show Digital Error       ~DMF("digerror.dmn")
+  Show Analog Error        ~DMF("anerror.dmn")
+  Show Maximum Error       ~DMF("maxerror.dmn")
+  Show Gradient Values     ~DMF("gradient.dmn")
+  Show C-V Digital Error   ~DMF("digerrcv.dmn")
+  Show C-V Analog Error    ~DMF("anerrcv.dmn")
+  Show C-V Maximum Error   ~DMF("maxerrcv.dmn")
+
+ Seeds:
+  Extract Random Seeds     ~DMF("seeds.dmn")
+
+ Weights:
+  Extract Network Weights  ~DMF("weights.dmn")

@@ -1,0 +1,112 @@
+/*****************************************************************************
+*                                                                            *
+*   XTOIDX.SPL  Copyright (C) 2003 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Converts an x value to an index                             *
+*                                                                            *
+*   Revisions:   30 Jan 2003  RRR  Creation                                  *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_XTOIDX
+
+    XTOIDX  
+
+    Purpose: Converts X values of a series to index values.
+                                                                        
+    Format:  XTOIDX(series, x)
+
+             series    - input series
+
+                  x    - A real or series of reals. The x values
+                         to convert to indices
+              
+    Returns: A real or series.
+
+    Example:
+             W1: 1..0.1..10
+             W2: xtoidx(W1, 1..0.1..1.5)
+
+             W2 contains the series {1, 2, 3, 4, 5}, the first 5
+             index values of W1.
+
+    Remarks:
+             For XY or XYZ series, the indices are looked up and the 
+             closest matches are returned.
+
+             For interval series, the indices are computed as follows:
+
+                 idx = 1 + int((x - xoffset(s)) / deltax(s) + 0.5);
+
+
+    See Also:
+             Idx
+             Idxtox
+             Xvals
+
+#endif
+
+
+
+/* convert x value to index */
+xtoidx(s, x)
+{
+	local idx, gx, sx, len, start, isnum;
+
+	if (argc < 2) {
+		if (argc < 1) error("xtoindex - input series and X value required");
+
+		/* assume sole input is x value */
+		x = s;			
+
+		/* reference current series */
+		s = refseries();
+	}
+	if (ISXYSERIES(s) || ISXYZSERIES(s)) { /* try to lookup indices */
+		sx = xvals(s);
+		len = length(s);
+
+		if (len < length(sx)) {
+			sx = extract(sx, 1, len);
+		}
+
+		/* get indices of sorted x values */
+		gx = grade(sx, 1);
+
+		/* sort x values */
+		sx = sx[gx];
+
+		/* lookup indices from sorted xvalues */
+		idx = int(yvals(xylookup(sx, 1..len, x, "linear", 1)) + 0.5);
+
+		/* convert to original indices */
+		idx = gx[idx];
+	}
+	else {
+
+		/* start index - usually 1 */
+		start = castint(getconf("SPL_START_INDEX"));
+
+		/* interval series - use direct computation */
+		idx = start + int((x - xoffset(s)) / deltax(s) + 0.5);
+
+		isnum = IS_NUMERIC(idx);
+
+		/* clip out of range values */
+		idx = clip({idx}, start, length(s));
+
+		/* convert back to scalar if necessary */
+		if (isnum) {
+			idx = castreal(idx);
+		}
+	}
+	return(idx);
+}
+

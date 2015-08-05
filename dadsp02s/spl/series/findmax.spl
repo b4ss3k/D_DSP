@@ -1,0 +1,112 @@
+/*****************************************************************************
+*                                                                            *
+*   FINDMAX.SPL   Copyright (C) 1999-2000 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Finds the max value of a series                            *
+*                                                                            *
+*   Revisions:    15 Jun 1999  RRR  Creation                                 *
+*                  7 Mar 2000  RRR  Uses MAXLOC, handles XYZ                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_FINDMAX
+
+    FINDMAX
+
+    Purpose: Returns X and Y value of the maximum of a series
+                                                                        
+    Format:  FINDMAX(s)
+
+             s - a series
+
+
+    Returns: An XY series or separate scalars:
+
+             b = findmax(s)
+
+             returns an XY or XYZ series
+
+
+             (x, y) = findmax(s)
+
+             returns the X and Y values as separate scalars
+
+
+             (x, y, z) = findmax(s)
+
+             returns the X, Y and Z values as separate scalars
+
+
+
+    Example:
+             a = {1, 12, 0, 5};
+             b = findmax(a);
+             (x, y) = findmax(a, 0);
+
+             b == xy({1}, {12})
+             x == 1.0
+             y == 12.0
+
+
+    Example:
+             W1: gnorm(100,.1):overp(findmax(curr),lred);setsym(CIRCLE,2)
+
+             marks the max of W1 with a red circle
+
+    Remarks:
+             FINDMAX returns an XY series with the same units as the
+             input series. If the series is XYZ or a LIST (i.e. Z
+             surface, density or contour), FINDMAX returns an XYZ 
+             series. 
+
+
+             (x, y) = findmax(s) returns the first occurence of the
+             maximum in s.
+
+    See Also:
+             Find
+             Findmin
+             Findval
+             Markmax
+             Markmin
+             Maxloc
+             Minloc
+
+#endif
+
+
+/* finds the max of a series */
+findmax(s)
+{
+	local x, y, z, maxser;
+
+	if (argc < 1) {
+		error("findmax - input series required");
+	}
+
+	/* get max values */
+	(x, y, z) = maxloc(s);
+
+	if (outargc < 2) {
+		if (ISLIST(s) || ISXYZSERIES(s)) {
+			maxser = xyz({x}, {y}, {z});
+			setzunits(maxser, getzunits(s));
+		}
+		else {
+			maxser = xy({x}, {y});
+		}
+		setvunits(maxser, getvunits(s));
+		sethunits(maxser, gethunits(s));
+
+		return(maxser);
+
+	}
+	else {
+		return(x, y, z);
+	}
+}

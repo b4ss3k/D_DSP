@@ -1,0 +1,1161 @@
+/*****************************************************************************
+*                                                                            *
+*   WAV.SPL       Copyright (C) 1996-1997 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Philip P. Giordano                                         *
+*                                                                            *
+*   Synopsis:     DADiSP Series-to-WAV / WAV-to-Series conversion            *
+*                 Read, Write and Play functions for Mono and Stereo files   *
+*                                                                            *
+*   Revisions:    27 Feb 1996  PPG  Creation Beta Ver 1.0                    *
+*                 09 Jul 1996  PPG  Creation Full Product Ver 1.0            *
+*                 19 Jul 1996  AMK  Release Full Product Ver 1.0             *
+*                                   DADiSP 4.0A B06 support                  *
+*                 21 Oct 1997  RRR  DADiSP 4.1                               *
+*                  1 Mar 2000  RRR  ReadWav data_size RIFF tag search        *
+*                                                                            *
+*****************************************************************************/
+
+/*
+** _initwav
+** initializes the default variables for WAV menus, and adds a toolbar
+** button to the main toolbar.
+*/
+
+_initwav()
+{
+     setvar("_wavwin",  "W1");
+     setvar("_lwavwin", "W1");
+     setvar("_rwavwin", "W2");
+     setvar("_wdisp",    0);
+
+     setvar("_wavtmp",    getmiscpath(1, 1)  + "temp.wav");
+     setvar("_wavfname",  gethome + _wavhome + "dadisp.wav");
+
+     setvar("_wavsrate", 11025);
+     setvar("_wavbits", 8);
+
+     setvar("_wavcnf", "wav.cnf");
+     
+     setvar("_wavmedia", "Program Files\Windows Media Player\mplayer2.exe");
+     setvar("_wavplyr", _getwavplayer());
+
+
+     defmacro("_wavloaded",1,1);
+     defmacro("_wavmes"," ", 2);
+
+     /* load WAV button if necessary */
+     if (not(isvar("_wavinited")))
+         {
+         defmacro("_mfw(s)","_menuf(strcat(_WAVHOME, s))",1);
+         toolbar(1,-1,4,lred,"WAV",'_MFW("wav.men")', 'DADiSP/WAV Module');
+         setvar("_wavinited", 1);
+         }
+}
+
+_wavmenu(s, n, t)
+{
+	eval(s);
+	pdchist(n, s, t);
+}
+
+
+/* get wav player from cnf file */
+_getwavplayer()
+{
+	extern _wavplyr, _wavcnf;
+	local fn, wavname;
+
+	fn = _wavcnf;
+	wavname = "";
+
+	if (fopen(fn, "r") > 0) {
+		wavname = fgets(fn);
+
+		/* strip newline */
+		if (strlen(wavname) > 0) {
+			wavname = strextract(wavname, 1, strlen(wavname) - 1);
+		}
+		fclose(fn);
+	}
+
+	if (strlen(wavname) == 0) {
+		wavname = _getdefwavplyr();
+	}
+	return(wavname);
+}
+
+
+/* write wav player to cnf file */
+_putwavplayer(name)
+{
+	local fn, status = 0;
+	extern _wavcnf;
+
+	fn = _wavcnf;
+
+	if (strlen(fn) > 0) {
+		if (fopen(fn, "w") > 0) {
+			status = fputs(fixslash(name) + strescape("\n"), fn);
+			fclose(fn);
+		}
+	}
+
+	return(status);
+}
+
+
+/* find default wav player */
+_getdefwavplyr()
+{
+	local p1, p2;
+
+	/* windows directory */
+	p1 = getmiscpath(0, 2);
+	p2 = strfind(pathchar, p1);
+	p1 = strextract(p1, 1, strlen(p1) - strlen(p2) + 1);
+
+	p1 = p1 + _wavmedia;
+	return(p1);
+}
+
+	
+
+
+
+
+
+/*
+**  WriteWav
+**
+**  HELPER FUNCTION NOT DIRECTLY INVOKED BY MENUS OR AT COMMAND LINE
+**  CALLED BY WRITEMONO, WRITESTEREO, PLAYMONO, PLAYSTEREO.
+** 
+**  Convert DADiSP series into a mono or stereo .WAV file
+**
+**  WriteWav(nChannels, LeftChan, RightChan, fname, nSamplesPerSec, nBitsPerSample)
+**
+**  nChannels       - number of input channels, defaults to 1
+**  LeftChan        - Left Channel input series, defaults to current Window
+**  RightChan       - Right Channel input series, defaults to duplicate Left Channel
+**  fname           - string - .WAV filename in quotes, defaults to DADiSP.WAV
+**  nSamplesPerSec  - sample rate, defaults to rate of Left Channel input data
+**  nBitsPerSample  - resolution, defaults to 8 bits
+**
+**  WRITEWAV is a Helper Function called by functions WRITEMONO, WRITESTEREO
+**  PLAYMONO, and PLAYSTEREO.  It is not directly implemented by itself.
+*/
+
+WriteWav(nChannels, LeftChan, RightChan, fname, nSamplesPerSec, nBitsPerSample, verify)
+{ 
+     local sLeft, sRight, s, type, status;
+
+     /*
+     ** Note: isvar(v, 5) returns TRUE if variable v was specified
+     */
+
+     /* verify file existence */
+     if (not(isvar("verify", 5)))
+          {
+               /* default to verify */
+               verify = 1;
+          }
+
+
+     /* mono or stereo */
+     if (not(isvar("nChannels", 5)))
+          {
+               /* default to mono */
+               nChannels = 1;
+          }
+
+
+     /* input data */
+     sLeft = LeftChan;
+
+     sRight = RightChan;
+
+
+
+     /* WAV filename */
+     if (not(isvar("fname", 5)))
+          {
+               /* use pickfile dialog box to select file */
+               fname = pickfile(getlabpath,"Select WAV File", strescape("Wave Files(*.wav)\0\*.wav\0\ALL Files(*.*)\0\*.*\0"),1);
+          }
+
+        
+     /* sample rate */       
+     if (not(isvar("nSamplesPerSec", 5)))
+          {
+               /* default to data rate */
+               nSamplesPerSec = int(rate(sLeft));
+          }
+
+
+     /* resolution - 8 or 16 bits */
+     if (not(isvar("nBitsPerSample", 5)))
+          {
+               /* default to ubyte */
+               nBitsPerSample = 8; 
+          }
+
+     /* check if file exists */
+     if (verify)
+          {
+          if (fstat(fname) > 0) 
+               {
+               status = message("WriteWav: File Already Exists", sprintf("Replace File %s?", fname), 7);
+               if (not(status == 1))
+                    {
+                    return(status);
+                    }
+               }
+           }
+
+     /* open .WAV file */
+     if (not(fopen(fname, "wb+")))
+          {
+               if (verify)
+                    {
+                    message("WriteWav", sprintf("WriteWav: Cannot Open %s", fname), 4);
+                    }
+               return(0);
+          }
+
+
+     /* Determine length of longest series - assign to variable 's' */
+     s = length(sLeft);
+
+     if (nChannels == 2)
+          {
+               if (length(sRight) > length(sLeft))
+                    {
+                         s = length(sRight);
+                    }
+          }
+
+
+     /* Write out appropriate .WAV file header */
+
+     /* RIFF tag */
+     fwriteb(fname, ubyte, charstrs("RIFF"));
+
+
+     /* RIFF-size */
+     if (nChannels == 1)      /* Mono Case */
+          {
+               if (nBitsPerSample <= 8)
+                    {
+                         /* s = length of longest chan, defaults to LeftChannel */
+                         fwriteb(fname, long, gser((s)+36));
+                    }
+               else
+                    {
+                         fwriteb(fname, long, gser((2*s)+36));
+                    }
+          }
+
+     else      /* nChannels == 2, Stereo Case */
+          {
+               if (nBitsPerSample <= 8)
+                    {
+                         /* s = length of longest chan */
+                         fwriteb(fname, long, gser((2 * s) + 36));
+                    }
+
+               else
+                    {
+                         fwriteb(fname, long, gser((4 * s) + 36));
+                    }
+          }
+
+
+     /* WAVE tag */
+     fwriteb(fname, ubyte, charstrs("WAVE"));
+
+
+     /* fmt tag - note the space character */
+     fwriteb(fname, ubyte, charstrs("fmt "));
+ 
+
+     /* fmt-size - always 16 */
+     fwriteb(fname, long, gser(16));
+ 
+
+     /* format tag - 1: PCM */
+     fwriteb(fname, uint, gser(1));
+ 
+
+     /* nChannels - 1 for mono, 2 for stereo */
+     fwriteb(fname, uint, gser(nChannels));
+ 
+
+     /* nSamplesPerSec - sample rate */
+     fwriteb(fname, long, gser(nSamplesPerSec));
+ 
+
+     /* nAveBytesPerSec */
+     nAveBytesPerSec = nChannels * nSamplesPerSec * (nBitsPerSample / 8);
+     fwriteb(fname, long, gser(nAveBytesPerSec));
+ 
+
+     /* nBlockAlign */
+     nBlockAlign = nChannels * (nBitsPerSample / 8);
+     fwriteb(fname, uint, gser(nBlockAlign));
+ 
+
+     /* nBitsPerSample */
+     fwriteb(fname, uint, gser(nBitsPerSample));
+ 
+
+     /* data-ck tag */
+     fwriteb(fname, ubyte, charstrs("data"));
+ 
+
+     /* data-size */
+     if (nChannels == 1)       /* Mono Case */
+          {
+               if (nBitsPerSample <= 8)
+                    {
+                         /* s = length of longest chan, defaults to LeftChannel */
+                         fwriteb(fname, long, gser((s)));
+                    }
+               else
+                    {
+                         fwriteb(fname, long, gser((2*s)));
+                    }
+          }       
+
+     else    /* nChannels == 2, Stereo Case */
+          {
+               if (nBitsPerSample <= 8)
+                    {
+                         /* s = length of longest chan */
+                         fwriteb(fname, long, gser((2 * s)));
+                    }
+               else
+                    {
+                         fwriteb(fname, long, gser((4 * s)));
+                    }
+          }
+
+
+     /* type of data samples */
+     if (nBitsPerSample <= 8)
+          {
+               type = ubyte; /* ubyte range = 0 - 255 */
+          }
+
+     else
+          {
+               type = sint; /* sint range = -32768 - 32767 */
+          }
+
+
+     /* Return Message to User  */
+     echo(strcat("Please Wait . . . Writing ",fname));
+   
+
+     /* finally, the actual data */
+     if (nChannels == 1)      /* Mono Case */
+          {
+               fwriteb(fname, type, sLeft);
+          }
+
+     else    /* nChannels == 2, Stereo Case */
+          {
+               StereoData = merge(sLeft,sRight);
+               setdeltax(StereoData,(1/nSamplesPerSec));
+               fwriteb(fname, type, StereoData);
+          }
+
+     fclose(fname);
+
+     return(1);
+}
+
+
+
+#if @HELP_WRITESTEREO
+
+    WriteStereo Converts DADiSP series into a Stereo .WAV file
+  
+    WriteStereo(LeftChan, RightChan, fname, nSamplesPerSec, nBitsPerSample, DisplayFlag)
+  
+    LeftChan        - Left Channel input series
+    RightChan       - Right Channel input series
+    fname           - A string - .WAV filename in quotes
+    nSamplesPerSec  - Optional. Sample rate, defaults to rate of Left Channel data
+    nBitsPerSample  - Optional. Resolution, defaults to 8 bits
+    DisplayFlag     - Optonal. Integer flag. Determines on which part of the
+                      waveform the operation will be carried out on.
+                      0: Entire Waveform, 
+                      1: Displayed Waveform.
+                      Defaults to 0.
+  
+    Examples:
+  
+    W1: 200*gcos(11025, 1/11025, 400)
+    W2: 200*gcos(11025, 1/11025, 400)
+  
+    Writestereo(W1,W2,"DADiSP.WAV",11025,8)
+  
+    creates a stereo .WAV file named DADiSP.WAV that contains a 400 Hz cosine tone
+    with a sampling rate of 11025 Hz and 8 bits resolution.
+  
+    Writestereo(W1,W2)
+  
+    will present the user with a common dialog box for destination file selection
+    and will default number of channels to 2, sample rate to rate of input data in Hz,
+    and bit resolution to 8 if not specified by user.
+    
+#endif
+
+
+WriteStereo(LeftChan, RightChan, fname, nSamplesPerSec, nBitsPerSample, DisplayFlag)
+{ 
+     local nChannels, sLeft, sRight, Lgrableft, Lgrabright, Rgrableft, Rgrabright;
+     local status;
+
+     /*
+     ** Note: isvar("v", 5) returns TRUE if variable v was specified
+     */
+
+
+     /* mono or stereo */
+     /* default to stereo */
+     nChannels = 2;
+
+
+     /* WAV filename */
+     if (not(isvar("fname", 5)))
+          {
+               /* use pickfile dialog box to select file */
+               fname = pickfile(getlabpath,"Select WAV File", strescape("Wave Files(*.wav)\0\*.wav\0\ALL Files(*.*)\0\*.*\0"),1);
+          }
+        
+
+     /* sample rate */       
+     if (not(isvar("nSamplesPerSec", 5)))
+          {
+               /* default to data rate */
+               nSamplesPerSec = int(rate(LeftChan));
+          }
+
+     /* resolution - 8 or 16 bits */
+     if (not(isvar("nBitsPerSample", 5)))
+          {
+               /* default to ubyte */
+               nBitsPerSample = 8; 
+          }
+          
+     /* DisplayFlag - Integer flag: 0:Entire Waveform or 1: Displayed portion */
+     if (not(isvar("DisplayFlag", 5)))
+          {
+               /* default to 0: Entire Waveform */
+               DisplayFlag = 0; 
+          }
+          
+
+     /* Determine input data dependent on Displayflag value */
+     if (DisplayFlag == 0)
+          {
+               /* grab entire waveform */
+               
+               /* input data */
+               sLeft = LeftChan;
+               sRight = RightChan;
+          }               
+
+     
+     else
+          {
+               /* grab only displayed waveform */
+               
+               /* grab Left Channel data from displayed portion in Window */
+               /* getxl, getxr require Window reference, xoffset, deltax require series */ 
+               Lgrableft = floor(((getxl(LeftChan))-xoffset(LeftChan))/deltax(LeftChan)+0.5)+1;
+               Lgrabright = floor(((getxr(LeftChan))-xoffset(LeftChan))/deltax(LeftChan)+0.5)+1;
+
+               /* grab Right Channel data from displayed portion in Window */
+               /* getxl, getxr require Window ref, xoffset, deltax require series */ 
+               Rgrableft = floor(((getxl(RightChan))-xoffset(RightChan))/deltax(RightChan)+0.5)+1;
+               Rgrabright = floor(((getxr(RightChan))-xoffset(RightChan))/deltax(RightChan)+0.5)+1;
+
+               /*
+               ** input data
+               ** Set sLeft as displayed portion of LeftChan
+               */
+               sLeft = extract(LeftChan, Lgrableft, (Lgrabright-Lgrableft)+1, getxl(LeftChan));
+     
+               /* input data
+               ** Set sRight as displayed portion of RightChan
+               */
+               sRight = extract(RightChan, Rgrableft, (Rgrabright-Rgrableft)+1, getxl(RightChan));
+          }               
+          
+
+     /* Call WriteWav Helper Function */
+     status = WriteWav(nChannels, sLeft, sRight, fname, nSamplesPerSec, nBitsPerSample);
+     return(status);
+
+}
+
+
+
+#if @HELP_WRITEMONO
+
+    WriteMono  Converts a DADiSP series into a Mono .WAV file
+  
+  
+    WriteMono(series, fname, nSamplesPerSec, nBitsPerSample, DisplayFlag)
+  
+    series          - input series
+    fname           - A string - .WAV filename in quotes
+    nSamplesPerSec  - Optional. Sample rate, defaults to rate of input data
+    nBitsPerSample  - Optional. Resolution, defaults to 8 bits
+    DisplayFlag     - Optonal. Integer flag. Determines on which part of the
+                      waveform the operation will be carried out on.
+                      0: Entire Waveform, 
+                      1: Displayed Waveform.
+                      Defaults to 0.
+  
+    Examples:
+  
+    W1: 200*gcos(11025, 1/11025, 400)
+  
+    WriteMono(W1,"DADiSP.WAV",2,11025,8)
+  
+    creates a mono .WAV file named DADiSP.WAV that contains a 400 Hz cosine tone
+    with a sampling rate of 11025 Hz and 8 bits resolution.
+  
+    WriteMono(W1)
+  
+    will present the user with a common dialog box for destination file selection
+    and will default number of channels to 1, sample rate to rate of input data in Hz,
+    and bit resolution to 8 if not specified by user.
+    
+#endif
+
+
+WriteMono(LeftChan, fname, nSamplesPerSec, nBitsPerSample, DisplayFlag)
+{ 
+     local nChannels, sLeft, grableft, grabright;
+     local status;
+
+     /*
+     ** Note: isvar("v", 5) returns TRUE if variable v was specified
+     */
+
+     /* mono or stereo */
+     /* always set to mono */
+     nChannels = 1;
+
+
+     /* WAV filename */
+     if (not(isvar("fname", 5)))
+          {
+               /* use pickfile dialog box to select file */
+               fname = pickfile(getlabpath,"Select WAV File", strescape("Wave Files(*.wav)\0\*.wav\0\ALL Files(*.*)\0\*.*\0"),1);
+          }
+        
+
+     /* sample rate */       
+     if (not(isvar("nSamplesPerSec", 5)))
+          {
+               /* default to data rate */
+               nSamplesPerSec = int(rate(LeftChan));
+          }
+
+     /* resolution - 8 or 16 bits */
+     if (not(isvar("nBitsPerSample", 5)))
+          {
+               /* default to ubyte */
+               nBitsPerSample = 8; 
+          }
+          
+          
+     /* DisplayFlag - Integer flag: 0:Entire Waveform or 1: Displayed portion */
+     if (not(isvar("DisplayFlag", 5)))
+          {
+               /* default to 0: Entire Waveform */
+               DisplayFlag = 0; 
+          }
+          
+
+     /* Determine input data dependent on Displayflag value */
+     if (DisplayFlag == 0)
+          {
+               /* grab entire waveform */
+               
+               /* input data */
+               /* Set LeftChan as only single channel for use in WRITEWAV */
+               sLeft = LeftChan;
+               /* Set RightChan to 0 and pass to WRITEWAV */
+               RightChan = 0;
+          }
+          
+     else
+          {
+               /* grab only displayed portion of waveform */
+               
+               /* grab new sound data from displayed portion in Window */
+               /* getxl, getxr require Window ref, xoffset, deltax require series */ 
+               grableft = floor(((getxl(LeftChan))-xoffset(LeftChan))/deltax(LeftChan)+0.5)+1;
+               grabright = floor(((getxr(LeftChan))-xoffset(LeftChan))/deltax(LeftChan)+0.5)+1;
+
+               /*
+               ** input data
+               ** Set sLeft as displayed portion of LeftChan
+               ** as only single channel for use in WRITEWAV
+               */
+               sLeft = extract(LeftChan, grableft, (grabright-grableft)+1, getxl(LeftChan));
+     
+               /* Set RightChan to 0 and pass to WRITEWAV */
+               RightChan = 0;  
+          }               
+          
+
+     /* Call WriteWav Helper Function */
+     status = WriteWav(nChannels, sLeft, RightChan, fname, nSamplesPerSec, nBitsPerSample);
+     return(status);
+
+}
+
+
+
+#if @HELP_PLAYMONO
+
+    PlayMono Converts a DADiSP series into a .WAV file and plays .WAV file.
+  
+  
+    PlayMono(LeftChan, fname, nSamplesPerSec, nBitsPerSample, DisplayFlag)
+  
+    LeftChan        - input series, defaults to current Window
+    fname           - Optional. A string - .WAV filename in quotes, defaults to DADiSP.WAV
+    nSamplesPerSec  - Optional. Sample rate, defaults to rate of input data
+    nBitsPerSample  - Optional. Resolution, defaults to 8 bits
+    DisplayFlag     - Optonal. Integer flag. Determines on which part of the
+                      waveform the operation will be carried out on.
+                      0: Entire Waveform, 
+                      1: Displayed Waveform.
+                      Defaults to 0.
+  
+    Example:
+  
+    PlayMono(200*gcos(11025, 1/11025, 400),"DADiSP.WAV")
+  
+    creates a .WAV file named DADiSP.WAV that contains a 400 Hz cosine
+    tone and runs Windows Media Player in order to play DADiSP.WAV file.
+  
+#endif
+
+
+PlayMono(LeftChan, fname, nSamplesPerSec, nBitsPerSample, DisplayFlag)
+{ 
+     /*
+     ** Note: isvar("v", 5) returns TRUE if variable v was specified
+     */
+
+     /* mono or stereo */
+     /* default to mono */
+     nChannels = 1;
+
+     /* WAV filename */
+     if (not(isvar("fname", 5)))
+          {
+               fname = Strcat(getlabpath, "DADiSP.WAV");
+          }
+
+
+     /* sample rate */       
+     if (not(isvar("nSamplesPerSec", 5)))
+          {
+               /* default to data rate */
+               nSamplesPerSec = int(rate(LeftChan));
+          }
+
+     /* resolution - 8 or 16 bits */
+     if (not(isvar("nBitsPerSample", 5)))
+          {
+               /* default to ubyte */
+               nBitsPerSample = 8; 
+          }
+          
+     /* DisplayFlag - Integer flag: 0:Entire Waveform or 1: Displayed portion */
+     if (not(isvar("DisplayFlag", 5)))
+          {
+               /* default to 0: Entire Waveform */
+               DisplayFlag = 0; 
+          }
+          
+
+     /* Determine input data dependent on Displayflag value */
+     if (DisplayFlag == 0)
+          {
+               /* grab entire waveform */
+               
+               /* input data */
+               /* Set LeftChan as only single channel for use in WRITEWAV */
+               sLeft = LeftChan;
+               /* Set RightChan to 0 and pass to WRITEWAV */
+               RightChan = 0;
+          }
+          
+     else
+          {
+               /* grab only displayed portion of waveform */
+               
+               /* grab new sound data from displayed portion in Window */
+               /* getxl, getxr require Window ref, xoffset, deltax require series */ 
+               grableft = floor(((getxl(LeftChan))-xoffset(LeftChan))/deltax(LeftChan)+0.5)+1;
+               grabright = floor(((getxr(LeftChan))-xoffset(LeftChan))/deltax(LeftChan)+0.5)+1;
+
+               /*
+               ** input data
+               ** Set sLeft as displayed portion of LeftChan
+               ** as only single channel for use in WRITEWAV
+               */
+               sLeft = extract(LeftChan, grableft, (grabright-grableft)+1, getxl(LeftChan));
+     
+               /* Set RightChan to 0 and pass to WRITEWAV */
+               RightChan = 0;  
+          }               
+
+
+     /* Call function WriteWav to write out WAV file */
+     echo(strcat("Writing WAV File To:  ",fname));
+     wavstatus = WriteWav(nChannels, sLeft, RightChan, fname, nSamplesPerSec, nBitsPerSample, 0);
+
+     if (wavstatus == 0)
+          {
+               message("PlayMono: Check WAV Player", sprintf("Error Writing %s",fname), 4);
+               return(0);
+          }
+        
+     else
+          {
+               /* call WAV Player device to play WAV file */
+               playit = Strcat("Run('",_wavplyr," ", fname, "')");
+    
+               eval(playit);
+               return(1);
+          }
+}
+
+
+
+#if @PLAYSTEREO
+
+    PlayStereo Converts a DADiSP series into a Stereo .WAV file and plays .WAV file.
+  
+  
+    PlayStereo(LeftChan, RightChan, fname, nChannels, nSamplesPerSec, nBitsPerSample, DisplayFlag)
+  
+    LeftChan        - Left Channel input series, defaults to current Window
+    RightChan       - Right Channel input series, defaults to duplicate Left Channel
+    fname           - Optional. A string - .WAV filename in quotes, defaults to DADiSP.WAV
+    nSamplesPerSec  - Optional. Sample rate, defaults to rate of input data
+    nBitsPerSample  - Optional. Resolution, defaults to 8 bits
+    DisplayFlag     - Optonal. Integer flag. Determines on which part of the
+                      waveform the operation will be carried out on.
+                      0: Entire Waveform, 
+                      1: Displayed Waveform.
+                      Defaults to 0.
+  
+    Examples:
+  
+    W1: 200*gcos(11025, 1/11025, 400)
+    W2: 200*gcos(11025, 1/11025, 400)
+  
+    Playstereo(W1,W2,"DADiSP.WAV",2,11025,8)
+  
+    creates a .WAV file named DADiSP.WAV that contains a 400 Hz cosine
+    tone and runs Windows Media Player in order to play DADiSP.WAV file.
+  
+    Playstereo(W1,W2)
+  
+    will default to DADISP.WAV as the destination file selection
+    and will default number of channels to 2, sample rate to rate of input data in Hz,
+    and bit resolution to 8 if not specified by user, and will then run Windows
+    Media Player in order to play DADiSP.WAV file.
+    
+#endif
+
+
+PlayStereo(LeftChan, RightChan, fname, nSamplesPerSec, nBitsPerSample, DisplayFlag)
+{ 
+     local nChannels, sleft, sright, Lgrableft, Lgrabright, Rgrableft, Rgrabright;
+     local wavestatus, playit;
+
+     /*
+     ** Note: isvar("v", 5) returns TRUE if variable v was specified
+     */
+
+     /* mono or stereo */
+     /* default to stereo */
+     nChannels = 2;
+
+
+     /* WAV filename */
+        
+     if (not(isvar("fname", 5)))
+          {
+               fname = Strcat(getlabpath, "DADiSP.WAV");
+          }
+
+
+     /* sample rate */       
+     if (not(isvar("nSamplesPerSec", 5)))
+          {
+               /* default to data rate */
+               nSamplesPerSec = int(rate(LeftChan));
+          }
+
+     /* resolution - 8 or 16 bits */
+     if (not(isvar("nBitsPerSample", 5)))
+          {
+               /* default to ubyte */
+               nBitsPerSample = 8; 
+          }
+          
+     /* DisplayFlag - Integer flag: 0:Entire Waveform or 1: Displayed portion */
+     if (not(isvar("DisplayFlag", 5)))
+          {
+               /* default to 0: Entire Waveform */
+               DisplayFlag = 0; 
+          }
+          
+
+     /* Determine input data dependent on Displayflag value */
+     if (DisplayFlag == 0)
+          {
+               /* grab entire waveform */
+               
+               /* input data */
+               sLeft = LeftChan;
+               sRight = RightChan;
+          }               
+
+     
+     else
+          {
+               /* grab only displayed portion of waveform */
+               
+               /* grab Left Channel data from displayed portion in Window */
+               /* getxl, getxr require Window ref, xoffset, deltax require series */ 
+               Lgrableft = floor(((getxl(LeftChan))-xoffset(LeftChan))/deltax(LeftChan)+0.5)+1;
+               Lgrabright = floor(((getxr(LeftChan))-xoffset(LeftChan))/deltax(LeftChan)+0.5)+1;
+
+               /* grab Right Channel data from displayed portion in Window */
+               /* getxl, getxr require Window ref, xoffset, deltax require series */ 
+               Rgrableft = floor(((getxl(RightChan))-xoffset(RightChan))/deltax(RightChan)+0.5)+1;
+               Rgrabright = floor(((getxr(RightChan))-xoffset(RightChan))/deltax(RightChan)+0.5)+1;
+
+               /*
+               ** input data
+               ** Set sLeft as displayed portion of LeftChan
+               */
+               sLeft = extract(LeftChan, Lgrableft, (Lgrabright-Lgrableft)+1, getxl(LeftChan));
+     
+               /* input data
+               ** Set sRight as displayed portion of RightChan
+               */
+               sRight = extract(RightChan, Rgrableft, (Rgrabright-Rgrableft)+1, getxl(RightChan));
+          }               
+
+          
+
+     /* Call function WriteWav to write out WAV file */
+     echo(strcat("Writing WAV File To:  ",fname));
+     wavstatus = WriteWav(nChannels, sLeft, sRight, fname, nSamplesPerSec, nBitsPerSample, 0);
+
+     if (wavstatus == 0)
+          {
+               message("PlayStereo: Check WAV Player", sprintf("Error Writing %s", fname), 4);
+               return(0);
+          }
+        
+     else
+          {
+               /* call WAV Player device to play WAV file */
+               playit = Strcat("Run('",_wavplyr," ", fname, "')");
+    
+               eval(playit);
+               return(1);
+          }
+}
+
+
+
+#if @HELP_READWAV
+
+    ReadWAV Reads a .WAV file into a DADiSP Window.
+  
+  
+    ReadWav(fname)
+  
+    fname           - string - .WAV filename in quotes, defaults to "DADiSP.WAV"
+                                and places the file in the current directory.
+  
+  
+    Example:
+  
+    Readwav("DADiSP.WAV")
+  
+    Reads the file named DADiSP.WAV and displays the sound data in
+    a DADiSP Window.
+  
+#endif
+
+#define RIFFTAGSIZE 4
+#define RIFFVALSIZE 4
+
+ReadWav(fname)
+{
+     local nChannels, nSamplesPerSec, nBitsPerSample, data_size, data;
+     local LeftChannel, RightChannel, win_num, PutLeftChan, PutRightChan;
+     local data_offset, fmtsize, fmt_offset;
+     extern _readwaverr;
+
+
+     /* error status for menus */
+     _readwaverr = 0;
+
+     /* WAV filename */
+     if (argc < 1)
+          {
+               /* use this to select file from dialog box */
+               fname = pickfile(getlabpath,"Select WAV File", strescape("Wave Files(*.wav)\0\*.wav\0\ALL Files(*.*)\0\*.*\0"),0);
+          }
+
+
+     /* check file existence */
+     if (fstat(fname) <= 0) 
+          {
+          message("ReadWAV: File Not Found", sprintf("Cannot Open File %s", fname), 4);
+          _readwaverr = 1;
+          return(0);
+          }
+
+     /* Check if file is valid WAV file format */
+     if (not(strcmp("WAVE",Strchar(readb(fname, ubyte,4,8))))==0)
+          {
+          message("ReadWav: Unrecognized Format", sprintf("%s Not a Valid WAV Format", fname), 4);
+          _readwaverr = 1;
+          return(0);
+          }
+        
+
+     /* Gather .WAV file info */
+     fmtsize = castint(readb(fname, long, 1, 16));
+     fmt_offset = fmtsize + 20;
+
+     do 
+          {
+          /* find and get data size - actual sound data length */
+          ftag = strchars(readb(fname, ubyte, 4, fmt_offset));
+          if (strlen(ftag) != RIFFTAGSIZE) error("readwav - error reading WAV header");
+          data_size = castint(readb(fname, long, 1, fmt_offset + 4));
+          if (strcmp(ftag, "data") == 0) 
+               {
+               data_offset = fmt_offset + 8;
+               break;
+               }
+          fmt_offset += RIFFTAGSIZE + RIFFVALSIZE + data_size;
+          } 
+     while (1);
+
+
+     /* nChannels - 1=Mono or 2=Stereo */
+     nChannels = castint(readb(fname,sint,1,22));
+
+     /* nSamplesPerSec - sample rate */    
+     nSamplesPerSec = castint(readb(fname,long,1,24));
+
+     /* nBitsPerSample - 8 bit or 16 bit file */
+     nBitsPerSample = castint(readb(fname,sint,1,34));
+
+     /* Return Message to User  */
+     echo(sprintf("Please Wait, Reading %d Samples of %d Data from %s ...", data_size, nBitsPerSample, fname));
+
+
+     /* Determine if data is 8 bit or 16 bit and read appropriate data type */
+     /* data_size necessary since readb returns series */
+     /* MONO FILES ONLY */
+     if (nBitsPerSample <= 8)
+          {
+               data = readb(fname,ubyte,data_size,data_offset);
+          }
+          
+     else
+          {
+               data = readb(fname,sint,data_size,data_offset);
+          }
+
+
+     /* Stereo files have interleaved data. So for stereo 8-bit /*
+     /* first byte is left channel, second byte is right channel */
+     /* all even-numbered bytes are left channel */
+     /* all odd-numbered bytes are right channel */
+
+
+     /* Stereo WAV files */
+     if (nChannels == 2)
+          {
+               calc(0);
+               plotmode(0);
+
+               /* Return Message to User  */
+               echo("Preparing Stereo 2 Channel data ...");
+
+               LeftChannel = Remove(data,2,2);     /* even points */
+               setdeltax(LeftChannel,(1/nSamplesPerSec));
+               RightChannel = Remove(data,2,1);    /* odd points  */
+               setdeltax(RightChannel,(1/nSamplesPerSec));
+
+               if (outargc > 1)
+                    {
+                    return(LeftChannel, RightChannel);
+                    }
+               else
+                    {
+                    /* Check Worksheet for proper destination Windows */
+
+                    if (not((numwin - getwnum) > 0))
+                         {
+                         echo("More Windows Required, Adding ...");
+                         addwin(1);
+                         }
+
+                    /* Output data to two separate Windows */
+                    win_num = getwnum;
+                    PutLeftChan = strcat("SETWFORM(W",STRNUM(win_num),",'LeftChannel')");
+                    PutRightChan = strcat("SETWFORM(W",STRNUM(win_num + 1),",'RightChannel')");
+
+                    /* Return Message to User  */
+                    echo("Preparing Left Channel data ... ");
+                    eval(PutLeftChan);
+                    echo("Preparing Right Channel data ... ");
+                    eval(PutRightChan);
+
+                    plotmode(1);
+                    calc(1);
+                    echo("");
+                    return(1);
+                    }
+          }
+
+     else      /* nChannels = 1  Mono WAV files */
+
+          {
+               /* set series attributes within DADiSP */
+               setdeltax(data,(1/nSamplesPerSec));
+
+               return(data);
+          }
+
+}
+
+
+#if @HELP_NORMALIZE
+
+     Normalize
+  
+   
+     Translates and scales DADiSP series in preparation for write to WAV file.
+     Data is scaled to fit within the full range of the appropriate data type.
+  
+     Normalize(series, nBitsPerSample)
+  
+     series          - Input series, defaults to current Window
+     nBitsPerSample  - Optional. Resolution, defaults to 8 bits
+  
+     Examples:
+  
+     W1: 200*gcos(11025, 1/11025, 400)
+  
+     Normalize(W1,16)
+  
+     Translates and scales data for a 400 Hz cosine tone so that all data
+     is placed within the range of -32768 to +32767 and is suitable for
+     writing out to disk in 16-bit Mono or Stereo WAV file format.
+  
+     W1: 200*gcos(11025, 1/11025, 400)
+  
+     Normalize(W1)
+  
+     Translates and scales data for a 400 Hz cosine tone so that all data
+     is placed (by default) within the range of 0 to 255 and is suitable
+     for writing out to disk in 8-bit Mono or Stereo WAV file format.
+  
+     Normalize Function will translate and scale data appropriate
+     for WAV file creation based on WAV data type dictated by
+     user defined bit resolution.
+     8-bit resolution requires UBYTE data type which falls into the
+     range between 0 and 255 and is the default data type if resolution
+     is not specified by user.
+     16-bit resolution requires SINT data type which falls into the
+     range between -32768 and +32767.
+       
+#endif
+
+
+Normalize(series, nBitsPerSample, signed)
+{
+     local NewSeries;
+
+     if (argc < 3) 
+          {
+          if (argc < 2) 
+               {
+               if (argc < 1) 
+                    {
+                    /* current series */
+                    series = refseries(W0);
+                    }
+               nBitsPerSample = 8;
+               }
+          signed = (nBitsPerSample == 8) ? 0 : 1;
+          }
+
+     /* bit quantize - always unsigend */
+     NewSeries = bitquant(series, nBitsPerSample);
+
+     if (signed) {
+          NewSeries -= 2^(nBitsPerSample - 1);
+     }
+
+     return(NewSeries);
+
+}
+
+
+      /**************************************************
+      *                                                 *
+      *              FUNCTION DEFINITIONS               *
+      *                                                 *
+      **************************************************/
+
+
+// Functions to load the menus
+WAV       _mfw("wav.men");           // invoke main WAV menu
+WR        _mfw("readwav.pan");       // invoke ReadWav menu
+WWS       _mfw("writest.pan");       // invoke WriteStereo menu
+WWM       _mfw("writem.pan");        // invoke WriteMono menu
+WPS       _mfw("playster.pan");      // invoke PlayStereo menu
+WPM       _mfw("playmono.pan");      // invoke PlayMono menu
+WN        _mfw("nrmlwav.pan");       // invoke Normalize menu
+WSR       _mfw("setsrate.pan");      // invoke Set Sample Rate menu
+WCP       _mfw("callplyr.pan");      // invoke Call WAV Player menu
+WVS       _mfw("wavstats.men");      // invoke View WAV Stats menu
+
+// flags
+_wavloaded 1
+
+
+/***          end of wav.spl          ***/
+
+

@@ -1,0 +1,924 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!                                 SERIES.MAC                                 !
+!                                                                            !
+!                                April 5, 1995                               !
+!                                                                            !
+!  Series operations: convert between indexes and x values; generate	     !
+!  indexes; create logical series for intervals; get points based on x	     !
+!  values, including interpolated gets; quantize series; pointwise REPLACE;  !
+!  modifications of EXTRACT, LOOKUP, INTERPOLATE, DELETE, REMOVE, and	     !
+!  RAVEL; compute partial products, differences, and quotients; compute	     !
+!  binned sums and averages; weighted MEAN, adjusted MOVAVG and weighted     !
+!  MOVAVG; outlier replacement; generate straight lines; move and wrap	     !
+!  series to the right and left; embed and overwrite constants into series   !
+!  and series into constants; and performs exponential least square curve    !
+!  fitting.             						     !
+!                                                                            !
+!                   Copyright (C) 1995 DSP Development Corp.                 !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!**********************************************************************!
+!                                                                      !
+!		 CONVERT BETWEEN INDEXES AND X VALUES		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! XLENGTH returns the length of a series in x units rather than points.
+!
+!     S = input series
+
+XLENGTH(S)		LENGTH((S)-1)*DELTAX(S)
+
+!-----------------------------------------------------------------------
+!
+! XLAST returns the last x value in a series.  (The function XOFFSET
+! returns the first x value.)
+!
+!     S = input series
+
+XLAST(S)		GETXS(S,LENGTH(S))
+
+!-----------------------------------------------------------------------
+!
+! SAMEX sets the x values of a series to match the x values of another
+! series.
+!
+!     S = input series
+
+SAMEX(S)		SETDELTAX(DELTAX(S))|SETXOFFSET(XOFFSET(S))
+
+!-----------------------------------------------------------------------
+!
+! IND computes the index (point number) from a given x value of the 
+! current series.  Useful for functions that require indexes, such as 
+! EXTRACT.
+! 
+!     X = x value
+
+IND(X)                  FLOOR(((X)-XOFFSET)/DELTAX+0.5)+1
+
+!-----------------------------------------------------------------------
+!
+! INDS computes the index (point number) from a given x value and 
+! series.  Useful for functions that require indexes, such as EXTRACT.  
+! 
+!     S = series
+!     X = x value
+
+INDS(S,X)               FLOOR(((X)-XOFFSET(S))/DELTAX(S)+0.5)+1
+
+!-----------------------------------------------------------------------
+!
+! GETX computes the x value from a given index (point number) of the
+! current series.  
+! 
+!     N = index
+
+GETX(N)                 ((N)-1)*DELTAX+XOFFSET
+
+!-----------------------------------------------------------------------
+!
+! GETXS computes the x value from a given index (point number) in any
+! series.
+! 
+!     S = series
+!     N = index
+
+GETXS(S,N)              ((N)-1)*DELTAX(S)+XOFFSET(S)
+
+!**********************************************************************!
+!                                                                      !
+!			   GENERATE INDEXES			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! INDEXES makes a series of the point numbers of another series.
+!
+!     S = series
+
+INDEXES(S)		GLINE(LENGTH(S),1,1,1)
+
+!-----------------------------------------------------------------------
+!
+! INDEXEN makes a series in which each point is equal to its point
+! number.
+!
+!     N = number of points
+
+INDEXEN(N)		GLINE(N,1,1,1)
+
+!**********************************************************************!
+!                                                                      !
+!		     LOGICAL SERIES FOR INTERVALS		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! INTERVAL creates a logical series from an input series, which is 1 in
+! an interval of point numbers and 0 elsewhere.  
+!
+!     S     = input series
+!     START = starting point number of interval
+!     N     = length of interval in points
+
+INTERVAL(S,START,N)	CONCAT(GZEROS((START)-1),GONES(N),GZEROS(LENGTH(S)-(N)-(START)+1))|SAMEX(S)
+
+!-----------------------------------------------------------------------
+!
+! INTERVALX creates a logical series from an input series, which is 1
+! in a interval of x values and 0 elsewhere.
+!
+!     S  = input series
+!     XL = left x value of the interval
+!     XR = right x value of the interval
+
+INTERVALX(S,XL,XR)	CONCAT(GZEROS((INDS(S,XL))-1),GONES((INDS(S,XR))-(INDS(S,XL))+1),GZEROS(LENGTH(S)-(INDS(S,XR))))|SAMEX(S)
+
+!**********************************************************************!
+!                                                                      !
+!			     GET Y VALUES			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! GETY gets the y value corresponding to the x value of the current
+! series.  It does not interpolate between y values, but simply rounds
+! the x value to the closest x value that exists in the series and looks
+! up the data.  To interpolate the value, use INTERPY.
+! 
+!     X = x value
+
+GETY(X)                 GETPT(CURR,IND(X))
+
+!-----------------------------------------------------------------------
+!
+! GETYS gets the y value corresponding to the x value of any series.
+! It does not interpolate between y values, but simply rounds the x
+! value to the closest x value that exists in the series and looks up
+! the data.  To interpolate the value, use INTERPYS.
+! 
+!     S = series
+!     X = x value
+!
+
+GETYS(S,X)              GETPT(S,INDS(S,X))
+
+!-----------------------------------------------------------------------
+!
+! INTERPY gets a refined y value, corresponding to an x value of the
+! current series, by doing a linear interpolation between two y values.
+! 
+!     X = x value
+
+INTERPY(X)              ((GETPT(IND(X)+1))-(GETPT(IND(X))))/(DELTAX)*((X)-(GETX(IND(X))))+(GETPT(IND(X)))
+
+!-----------------------------------------------------------------------
+!
+! INTERPYS gets a refined y value, corresponding to an x value of any
+! series, by doing a linear interpolation between two y values.
+! 
+!     S = series
+!     X = x value
+
+INTERPYS(S,X)           ((GETPT(S,INDS(S,X)+1))-(GETPT(S,INDS(S,X))))/(DELTAX(S))*((X)-(GETXS(S,INDS(S,X))))+(GETPT(S,INDS(S,X)))
+
+!-----------------------------------------------------------------------
+!
+! YDELTA returns a series of length(S)-1 which contains the delta y 
+! values, S(i+1) - S(i).
+!
+
+YDELTA(S)  EXTRACT((S)-DELAY(S,1),2,LENGTH(S)-1)
+
+
+!**********************************************************************!
+!                                                                      !
+!                            QUANTIZATION                              !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! QUANT quantizes smooth data to discrete levels.  Input the number of
+! levels, the least significant value, and the most significant value.
+! The data will be clipped between the least and most significant 
+! values.
+!
+!     S   = input series
+!     L   = number of levels
+!     LSV = least significant level, below which data is clipped
+!     MSV = most significant level, above which data is clipped
+
+QUANT(S,L,LSV,MSV)      FLOOR(CLIP((S)-(MSV)/1000,LSV,MSV)/(((MSV)-(LSV))/(L)))*(((MSV)-(LSV))/(L))
+
+!-----------------------------------------------------------------------
+!
+! QUANTS quantizes smooth data to discrete levels and rescales it.
+! Input the number of levels, the least significant value, the most
+! significant value, the scaled minimum, and the scaled maximum.
+! The data will be clipped between the least and most significant
+! values, and then it will be rescaled so that it is between the scaled
+! minimum and maximum.
+!
+!     S   = input series
+!     L   = number of levels
+!     LSV = least significant level, below which data is clipped
+!     MSV = most significant level, above which data is clipped
+!     LO  = scaled minimum of result
+!     HI  = scaled maximum of result
+!
+
+QUANTS(S,L,LSV,MSV,LO,HI)       (LO)+(((HI)-(LO))/(((MSV)-((MSV)/(L)))-(LSV))*(QUANT(S,L,LSV,MSV)))
+
+!-----------------------------------------------------------------------
+!
+! QUANTX quantizes a series based on a reduction of sampling rate, i.e.
+! an increase in delta x.  This means that the series holds a value for
+! the length of a long delta x, regardless of the y value.  This is
+! useful for comparing series of widely varying sampling rates.  The
+! new delta x must be smaller than the delta x of the input series, and
+! for best results should be several times smaller.
+!
+!     S   = input series
+!     DXQ = new delta x to quantize to
+
+QUANTX(S,DSQ)		LOOKUP(INDS(S,QUANT(XVALS(S),(DXQ)/DELTAX(S),MIN(XVALS(S)),MAX(XVALS(S)))),S)
+
+!**********************************************************************!
+!                                                                      !
+!                    ADJUSTED NUMERICAL FUNCTIONS                      !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! REPLACE does a pointwise replace operation, based on a logical
+! condition.  Either series values or a constant value may be replaced
+! into a series.
+! 
+! Examples: 
+!
+! Where W1 is greater than W2, replace points in W1 with 1:
+!     REPLACE(W1, W1>W2, 1).
+!
+! Where W1 is either -1 or +1, replace the points with corresponding
+! points in W2:
+!     REPLACE(W1, ABS(W1)==1, W2).
+!
+!     OSER = original series
+!     COND = logical expression
+!     REPL = replacement series or constant
+
+REPLACE(OSER,COND,REPL)   (OSER)*NOT(COND)+(REPL)*(COND)
+
+!-----------------------------------------------------------------------
+!
+! EXTRACTX does an extract by X values.
+!
+!     S  = input series
+!     XB = starting x value
+!     XE = ending x value
+
+EXTRACTX(S,XB,XE)       EXTRACT(S,INDS(S,XB),(INDS(S,XE))-(INDS(S,XB))+1)
+
+!-----------------------------------------------------------------------
+!
+! EXTRACTEND extracts a signal from a given point to the end of the
+! series.
+!
+!     S     = input series
+!     START = starting point number
+
+EXTRACTEND(S,START)	EXTRACT(S,START,LENGTH(S)-(START)+1)
+
+!-----------------------------------------------------------------------
+!
+! HALF selects the first half of a series.  Useful with FFT's.
+!
+!     S = series to be halved
+
+HALF(S)			EXTRACT(S,1,FLOOR(LENGTH(S)/2))
+
+!-----------------------------------------------------------------------
+!
+! LOOKUPX does a lookup by X values rather than point numbers.
+!
+!     X = series whose y values are looked up as x values in Z
+!     Z = series whose y values are to be looked up
+
+LOOKUPX(X,Z)            LOOKUP(INDS(Z,X),Z)
+
+!-----------------------------------------------------------------------
+! 
+! INTERPR interpolates a series to a given delta x rather than
+! multiplying the number of points by an integer as INTERP does.
+!
+!     S = series to be interpolated
+!     D = delta x of the interpolated series
+
+INTERPR(S,D)            XYINTERP(XVALS(S),YVALS(S),D)
+
+!-----------------------------------------------------------------------
+! 
+! TAKEOUT does the opposite of EXTRACT: it deletes a single block of
+! points from a series.
+! 
+!     S     = series to take points out of
+!     START = index of first point to take out
+!     N     = number of points to take out
+
+TAKEOUT(S,START,N)      REMOVE(S,LENGTH(S),START,N)
+
+!-----------------------------------------------------------------------
+! 
+! KEEP does the opposite of DELETE: it keeps the points of the input
+! series for which the condition is true, and throws away the rest.
+! 
+!     S    = series to take points out of
+!     COND = logical condition involving S
+
+KEEP(S,COND)            DELETE(S,NOT(COND))
+
+!**********************************************************************!
+!                                                                      !
+!			       BINNING				       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! BINRAVEL ravels a series into bins: each row is a group of 
+! neighboring points.
+!
+!     S    = series to be bin-ravelled
+!     NPTS = number of points in each bin
+
+BINRAVEL(SER,NPTS)	TRANSPOSE(RAVEL(SER,NPTS))
+
+!-----------------------------------------------------------------------
+! 
+! BINSUM sums a group of neighboring points into an entry for each bin.
+!
+!     S    = series to be bin-summed
+!     NPTS = number of points in each bin
+
+BINSUM(SER,NPTS)	ROWREDUCE(BINRAVEL(SER,NPTS),'+')
+
+!-----------------------------------------------------------------------
+!
+! BINAVG averages a group of neighboring points into an entry for each
+! bin.
+!
+!     S    = series to be bin-averaged
+!     NPTS = number of points in each bin
+
+BINAVG(SER,NPTS)	(BINSUM(SER,NPTS))/(NPTS)
+
+!-----------------------------------------------------------------------
+!
+! CHBINVAL replaces the value at a given bin location or index with a 
+! given value.
+!
+! This macros is helpful in zeroing out bins of an FFT.
+!
+! Example:
+! W1: sampled data
+! W2: FFT(W1)
+! W3: W2;CHBINVAL(CURR,128,0) 
+! 
+! ZEROS out the 128th bin of W3.
+!
+
+CHBINVAL(S,B,V) REPLACE(S,XVALS(S)==((B)-1)*DELTAX(S),V)
+
+!**********************************************************************!
+!                                                                      !
+!			      AVERAGING				       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! MEANW is a weighted average.  Give a series to be averaged and a
+! weighting series of the same length.
+!
+!     ASER = series to be averaged
+!     WSER = weighting series
+
+MEANW(ASER,WSER)	MEAN((ASER)*(WSER))/MEAN(WSER)
+
+!-----------------------------------------------------------------------
+!
+! MOVAVG2 is an adjusted moving average.  The MOVAVG function averages
+! ZEROS on both ends of the series, which often throws the endpoints
+! off.  MOVAVG2 corrects this situation by doing adding averaging in the
+! initial point and the ending point of the series instead of zeros.
+!
+!     ASER = series to be averaged
+!     N    = number of points to average
+
+MOVAVG2(ASER,N)		EXTRACT(MOVAVG(CONCAT(REPL(ROW(ASER,1),N),ASER,REPL(ROW(ASER,LENGTH(ASER)),N)),N),(N)+FLOOR((N)/2)+1,LENGTH(ASER))|SETXOFFSET(XOFFSET(ASER))
+
+!-----------------------------------------------------------------------
+!
+! MOVAVGWRAP is an adjusted moving average.  It adjusts the MOVAVG
+! function by assuming that the series is periodic, i.e. that it wraps
+! from the right edge to the left edge.  Use only on periodic data
+! where the input series represents one or more periods.
+!
+!     ASER = series to be averaged
+!     N    = number of points to average
+
+MOVAVGWRAP(ASER,N)	EXTRACT(MOVAVG(REPLICATE(ASER,3),N),LENGTH(ASER)+1,LENGTH(ASER))|SAMEX(ASER)
+
+!-----------------------------------------------------------------------
+!
+! MOVAVG2W is a weighted moving average.  It uses a weighting series of
+! any length and does a moving average, with the number of points
+! averaged being the number of points in the weighting series.  It
+! produces a series of the same length as the input series, similar to
+! the output of MOVAVG2 for an unweighted moving average.
+!
+!     ASER = series to be averaged
+!     WSER = weighting series
+
+MOVAVG2W(ASER,WSER)	ROWREDUCE(REGION(RAVEL(UNRAVEL(OUTERPROD(MOVCOL(ASER,WSER),WSER,'*')),LENGTH(WSER)+LENGTH(ASER)+LENGTH(WSER)-1),LENGTH(WSER)+FLOOR(LENGTH(WSER)/2)+1,LENGTH(ASER),1,LENGTH(WSER)),'+')/REDUCE(WSER,'+')
+MOVCOL(ASER,WSER)	CONCAT(GLINE(LENGTH(WSER),DELTAX(ASER),0,GETPT(ASER,1)),ASER,GLINE(LENGTH(WSER),DELTAX(ASER),0,GETPT(ASER,LENGTH(ASER))))
+
+!-----------------------------------------------------------------------
+!
+! MOVVAR is a moving variance.  It calculates the variance of the moving 
+! average of a series.
+! 
+!     ASER = input series
+!     N    = number of points to average  
+!
+
+MOVVAR(S,N) (ABS(1/(N-1) * ((N)*MOVAVG((S)^2,N) - (N) * MOVAVG(S,N)^2)))
+
+!-----------------------------------------------------------------------
+!
+! MOVSTD is a moving standard deviation. It calculates the variance of 
+! the moving average of a series.
+! 
+!     ASER = input series
+!     N    = number of points to average  
+!
+
+MOVSTD(S,N)  SQRT(MOVVAR(S,N))
+
+!**********************************************************************!
+!                                                                      !
+!			 OUTLIER REPLACEMENT			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! TWOPTAVG, for each point in the input series, averages the two points
+! to the immediate left and right of the point.  Use with REPLACE to
+! substitute an averaged value for outliers.
+!
+!     S = input series
+
+TWOPTAVG(S)		(CONCAT(GSERIES(GETPT(S,1)),EXTRACT(S,1,LENGTH(S)-1))+CONCAT(EXTRACT(S,2,LENGTH(S)-1),GSERIES(GETPT(S,LENGTH(S)))))/2|SAMEX(S)
+
+!----------------------------------------------------------------------------
+!
+! OUTLIER replaces values in a series with a linear interpolation of the 
+! the previous and next non-outlier values. An XY series is formed by 
+! removing outliers from both the XVALS and YVALS of the input series. 
+! The outliers are then replaced by a linear (straight line) interpolation
+! using XYINTERP. Any number of outliers may occur in succession. Notice 
+! that traditional looping is not required.
+!
+! Examples
+!
+! W1: GNORM(30, 1)
+! W2: OUTLIER(W1, W1 > 0.1)
+!
+! All values of W1 that exceed 0.1 are replaced by a linear interpolation
+! of the previous and next non-outlier values.                
+!
+!     S    = series to process
+!     COND = binary series that deterimes an outlier
+!
+
+OUTLIER(S,COND) XYINTERP(DELETE(XVALS(S), COND), DELETE(S, COND))
+
+!**********************************************************************!
+!                                                                      !
+!	       GLOBAL AND PARTIAL NUMERICAL OPERATIONS		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! PROD calculates the product of the values of a series.
+!
+!     S = input series
+
+PROD(S)			REDUCE(S,'*')
+
+!-----------------------------------------------------------------------
+!
+! PARTDIFF computes the partial differences of a series, which are the
+! differences between two neighboring points.
+!
+!     S = input series
+
+PARTDIFF(SER)		(SER)-EXTRACT(DELAY(SER,1),1,LENGTH(SER))
+
+!-----------------------------------------------------------------------
+!
+! PARTQUOT computes the partial quotients of a series, which are the
+! quotients between two neighboring points.
+!
+!     S = input series
+
+PARTQUOT(SER)		(SER)/EXTRACT(SETPT(DELAY(SER,1),1,1),1,LENGTH(SER))
+
+!**********************************************************************!
+!                                                                      !
+!			 X OFFSET ADJUSTMENT			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! OFFPLUS adds two series or tables that have different x offsets, so
+! that corresponding x values are added.  X values are normally ignored
+! by numerical functions.  It is assumed that the two series have the
+! same x interval.
+!
+!     S1 = first series
+!     S2 = second series
+
+OFFPLUS(S1,S2)		POFF|IF(XOFFSET(S1)>XOFFSET(S2),DELAY(S1,OFFNUM(S1,S2))+(S2),(S1)+DELAY(S2,OFFNUM(S2,S1)))|IF(XOFFSET(S1)>XOFFSET(S2),SETXOFFSET(XOFFSET(S2)),SETXOFFSET(XOFFSET(S1)))|PON
+OFFNUM(S1,S2)		FLOOR((XOFFSET(S1)-XOFFSET(S2))/DELTAX(S1)+0.5)
+
+!-----------------------------------------------------------------------
+! 
+! INTERPLUS adds two series or tables that have different delta x's and
+! x offsets, so that corresponding x values are added.  X values are
+! normally ignored by numerical functions.  You must specify the delta
+! x that the resultant series should have.
+!
+!     S1 = first series
+!     S2 = second series
+!     D  = delta x of the summed series
+
+INTERPLUS(S1,S2,D)	OFFPLUS(INTERPR(S1,D),INTERPR(S2,D))
+
+!**********************************************************************!
+!                                                                      !
+!		       GENERATE STRAIGHT LINES			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! GONES makes a constant series with an amplitude of one.
+!
+!     N = number of points
+
+GONES(N)			GLINE(N,1,0,1)
+
+!-----------------------------------------------------------------------
+!
+! GZEROS makes a constant series with an amplitude of zero.
+!
+!     N = number of points
+
+GZEROS(N)		GLINE(N,1,0,0)
+
+!-----------------------------------------------------------------------
+!
+! NAVALS makes a series in which each point is NA (NAVALUE).
+!
+!     N = number of points
+
+NAVALS(N)		GLINE(N,1,0,NAVAL)
+
+!-----------------------------------------------------------------------
+!
+! XN generates a straight line x = y over a given x interval, by
+! specifying the x values and the number of points.
+!
+!     LX = extreme left x value
+!     RX = extreme right x value
+!     N  = number of points
+
+XN(LX,RX,N)             GLINE(N,((RX)-(LX))/(N),1,LX)|SETXOFFSET(LX)
+
+!-----------------------------------------------------------------------
+! 
+! XD generates a straight line x = y over a given x interval, by
+! specifying the x values and a delta x.
+!
+!     LX = extreme left x value
+!     RX = extreme right x value
+!     DX = delta x
+
+XD(LX,RX,DX)            GLINE(CEILING(((RX)-(LX))/(DX)),DX,1,LX)|SETXOFFSET(LX)
+
+!**********************************************************************!
+!                                                                      !
+!		     SHIFT SERIES LEFT AND RIGHT		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! MOVELEFT moves a series to the left by N points.  The result has the
+! same length as the input series, with N points lost on the left and
+! zeroes padded on the right.
+!
+!     S = input series
+!     N = number of points to move by
+
+MOVELEFT(S,N)           CONCAT(EXTRACT(S,(N)+1,LENGTH(S)-(N)),GZEROS(N))|SETDELTAX(DELTAX(S))|SETXOFFSET(XOFFSET(S)+(N)*DELTAX(S))
+
+!-----------------------------------------------------------------------
+!
+! MOVERIGHT moves a series to the right by N points.  The result has
+! the same length as the input series, with N points lost on the right
+! and zeroes padded on the left.
+!
+!     S = input series
+!     N = number of points to move by
+
+MOVERIGHT(S,N)          CONCAT(GZEROS(N),EXTRACT(S,1,LENGTH(S)-(N)))|SETDELTAX(DELTAX(S))|SETXOFFSET(XOFFSET(S)+(N)*DELTAX(S))
+
+!-----------------------------------------------------------------------
+!
+! MOVELEFTX moves a series to the left by X units.  The result has the
+! same length as the input series, with X units lost on the left and
+! zeroes padded on the right.
+!
+!     S = input series
+!     X = number of x units to move by
+
+MOVELEFTX(S,X)          MOVELEFT(S,ROUND((X)/DELTAX(S)))
+
+!-----------------------------------------------------------------------
+!
+! MOVERIGHTX moves a series to the right by X units.  The result has
+! the same length as the input series, with X units lost on the right
+! and zeroes padded on the left.
+!
+!     S = input series
+!     X = number of x units to move by
+
+MOVERIGHTX(S,X)         MOVERIGHT(S,ROUND((X)/DELTAX(S)))
+
+!-----------------------------------------------------------------------
+!
+! WRAPLEFT moves a series to the left by N points and wraps them around
+! to the right.  The result has the same length as the input series,
+! with N points brought from the left to the right.
+!
+!     S = input series
+!     N = number of points to move by
+
+WRAPLEFT(S,N)           CONCAT(EXTRACT(S,(N)+1,LENGTH(S)-(N)),EXTRACT(S,1,N))|SETDELTAX(DELTAX(S))|SETXOFFSET(XOFFSET(S)+(N)*DELTAX(S))
+
+!-----------------------------------------------------------------------
+!
+! WRAPRIGHT moves a series to the right by N points and wraps them 
+! around to the left.  The result has the same length as the input
+! series, with N points brought from the right to the left.
+!
+!     S = input series
+!     N = number of points to move by
+
+WRAPRIGHT(S,N)          CONCAT(EXTRACT(S,LENGTH(S)-(N)+1,N),EXTRACT(S,1,LENGTH(S)-(N)))|SETDELTAX(DELTAX(S))|SETXOFFSET(XOFFSET(S)+(N)*DELTAX(S))
+
+!-----------------------------------------------------------------------
+!
+! WRAPLEFTX moves a series to the left by X units and wraps them around
+! to the right.  The result has the same length as the input series,
+! with X units brought from the left to the right.
+!
+!     S = input series
+!     X = number of x units to move by
+
+WRAPLEFTX(S,X)          WRAPLEFT(S,ROUND((X)/DELTAX(S)))
+
+!-----------------------------------------------------------------------
+!
+! WRAPRIGHTX moves a series S to the right by X units and wraps them
+! around to the left.  The result has the same length as the input
+! series, with X units brought from the right to the left.
+!
+!     S = input series
+!     X = number of x units to move by
+
+WRAPRIGHTX(S,X)         WRAPRIGHT(S,ROUND((X)/DELTAX(S)))
+
+!**********************************************************************!
+!                                                                      !
+!		 EMBEDDING OF SERIES AND INTO SERIES		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! PULL duplicates the input series only in an interval based on
+! indexes: it has the same length as the input series but is equal to
+! it only in an interval of point numbers.
+!
+!     S     = input series
+!     START = starting point number of interval
+!     N     = length of interval in points
+
+PULL(S,START,N)         (S)*INTERVAL(S,START,N)
+
+!-----------------------------------------------------------------------
+!
+! PULLX duplicates the input series only in an interval based on x
+! values: it has the same length as the input series but is equal to it
+! only in an interval of x values.
+!
+!     S  = input series
+!     XL = left x value of the interval
+!     XR = right x value of the interval
+
+PULLX(S,XL,XR)          (S)*INTERVALX(S,XL,XR)
+
+!-----------------------------------------------------------------------
+!
+! FILL inserts a constant value into a series for N points.  The length
+! of the series is increased by N.  If the constant value is 0, the
+! series can be prepared for the addition of another series into the
+! gap, e.g. with SPLICE.
+!
+!     S     = input series
+!     START = starting point number of the insertion
+!     N     = number of points to insert
+!     V     = constant value to be inserted
+
+FILL(S,START,N,V)       CONCAT(EXTRACT(S,1,(START)-1),(V)*GONES(N),EXTRACT(S,(START),LENGTH(S)-(START)+1))|SAMEX(S)
+
+!-----------------------------------------------------------------------
+!
+! FILLX inserts a constant value into a series for a number of x units.
+! The length the series is increased by that number of x units.  If the
+! constant value is 0, the series can be prepared for the addition of
+! another series into the gap, e.g. with SPLICEX.
+!
+!     S  = input series
+!     XS = starting x value of the insertion
+!     XI = number of x units to insert
+!     V  = constant value to be inserted
+
+FILLX(S,XS,XI,V)        CONCAT(EXTRACT(S,1,(INDS(S,XS))-1),(V)*GONES(ROUND((XI)/DELTAX(S))),EXTRACT(S,INDS(S,XS),LENGTH(S)-(INDS(S,XS))+1))|SAMEX(S)
+
+!-----------------------------------------------------------------------
+!
+! SUBST substitutes a constant value into a series for N points.  The
+! length of the series is unchanged.  If the constant value is 0, the
+! series can be prepared for the addition of another series into the
+! gap, e.g. with PLACE.
+!
+!     S     = input series
+!     START = starting point number of the substitution
+!     N     = number of points to move by
+!     V     = constant value to be substituted
+
+SUBST(S,START,N,V)      CONCAT(EXTRACT(S,1,(START)-1),(V)*GONES(N),EXTRACT(S,(START)+(N),LENGTH(S)-(START)-(N)+1))|SAMEX(S)
+
+!-----------------------------------------------------------------------
+!
+! SUBSTX substitutes a constant value into a series between x values.
+! The length of the series is unchanged.  If the constant value is 0, 
+! the series can be prepared for the addition of another series into 
+! the gap, e.g. with PLACEX.
+!
+!     S  = input series
+!     XL = left x value for substiution interval
+!     XR = right x value for substitution interval
+!     V  = constant value to be substituted
+
+SUBSTX(S,XL,XR,V)       CONCAT(EXTRACT(S,1,(INDS(S,XL))-1),(V)*GONES((INDS(S,XR))-(INDS(S,XL))),EXTRACT(S,INDS(S,XR),LENGTH(S)-(INDS(S,XR))+1))|SAMEX(S)
+
+!-----------------------------------------------------------------------
+!
+! SPLICE inserts any series into a constant series, based on point
+! numbers.
+!
+!     S     = input series to be spliced
+!     START = starting point number of the input series in resultant
+!             series
+!     N     = number of points of constant series
+!     V     = constant value into which to splice
+
+SPLICE(N,V,START,S)     CONCAT((V)*GONES((START)-1),S,(V)*GONES((N)-((START)-1)))|SETDELTAX(DELTAX(S))|SETXOFFSET(XOFFSET(S)-((START)-1)*DELTAX(S))
+
+!-----------------------------------------------------------------------
+!
+! SPLICEX inserts any series into a constant series, based on x units.
+!
+!     S  = input series to be spliced
+!     XS = starting x value of the resultant series
+!     XI = number of x units to add to the series
+!     V  = constant value into which to splice
+
+SPLICEX(XS,XI,V,S)      CONCAT((V)*GONES(ROUND((XOFFSET(S)-(XS))/DELTAX(S))),S,(V)*GONES(ROUND(((XI)-XOFFSET(S)+(XS))/DELTAX(S))))|SETDELTAX(DELTAX(S))|SETXOFFSET(XS)
+
+!-----------------------------------------------------------------------
+!
+! PLACE overwrites any series into a constant series, based on point
+! numbers.
+!
+!     S     = input series to be placed
+!     START = starting point number of the input series in resultant
+!             series
+!     N     = number of points in resultant series
+!     V     = constant value into which to place
+
+PLACE(N,V,START,S)      CONCAT((V)*GONES((START)-1),S,(V)*GONES((N)-((START)-1)-LENGTH(S)))|SETDELTAX(DELTAX(S))|SETXOFFSET(XOFFSET(S)-((START)-1)*DELTAX(S))
+
+!-----------------------------------------------------------------------
+!
+! PLACEX overwrites any series into a constant series, based on x
+! units.
+!
+!     S  = input series to be placed
+!     XL = left x value of resultant series
+!     XR = right x value of resultant series
+!     V  = constant value into which to place
+
+PLACEX(XL,XR,V,S)       CONCAT((V)*GONES(ROUND((XOFFSET(S)-(XL))/DELTAX(S))),S,(V)*GONES(ROUND(((XR)-(XOFFSET(S)+LENGTH(S)*DELTAX(S)))/DELTAX(S))))|SETDELTAX(DELTAX(S))|SETXOFFSET(XL)
+
+!**********************************************************************!
+!                                                                      !
+!     		 EXPONENTIAL LEAST SQUARES CURVE FITTING               !
+!                                                                      !
+!**********************************************************************!
+
+! These routines fit and graph an exponential and power curve by fitting
+! a straight line to the linearized curve equation.
+
+!-----------------------------------------------------------------------
+!
+! EXPFIT fits an exponential of the form y = Ae^(bx).  The fit is 
+! accomplished by fitting a line to the following equation:
+!
+!                             ln(y) = ln(A) + bx
+!
+!
+!    S = series to fit
+!
+! 
+! Note that y must be positive.
+!
+
+EXPFIT(S)   POLYFIT(LN(S),1,-1);SETPT(CURR, EXP(GETPT(CURR, 1)), 1)
+
+!-----------------------------------------------------------------------------
+! 
+! EXPGRAPH graphs an exponential curve fit.  Yields an XY graph.
+!
+!    ECOEF = exponential fit coefficients
+!    X     = x values
+!
+
+EXPGRAPH(ECOEF, X) (EXPPLOT(GETPT(ECOEF,1), GETPT(ECOEF, 2), X))
+EXPPLOT(A, B, X)   XY(X, (A)*EXP((B)*(X)))
+
+!-----------------------------------------------------------------------------
+!
+! POWFIT fits a power curve of the form y = Ax^b. The fit is accomplished
+! by fitting a line to the following equation:
+! 
+!                            ln(y) = ln(A) + b*ln(x)
+!
+! Note that both x and y must be positive.
+!
+!    S = series to fit
+!
+
+POWFIT(S)  POLYFIT(LN(S),LN(XVALS(S)),1,-1);SETPT(CURR, EXP(GETPT(CURR, 1)), 1)
+
+!-----------------------------------------------------------------------------
+!
+! POWGRAPH graphs a power curve fit.  Yields an XY graph.
+!
+!     PCOEF = power fit coefficients
+!     X     = x values
+!
+
+POWGRAPH(PCOEF, X) (POWPLOT(GETPT(PCOEF,1), GETPT(PCOEF, 2), X))
+POWPLOT(A, B, X)   XY(X, (A)*((X)^(B)))
+
+! -------------------------------- END -----------------------------------

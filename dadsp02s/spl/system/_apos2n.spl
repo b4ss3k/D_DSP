@@ -1,0 +1,33 @@
+/* annotation position to number*/
+_apos2n(pos, skip)
+{
+	local n;
+
+	if (argc < 2) skip = 0;
+
+	pos = castint(pos);
+
+	switch (pos) {
+		case PAPER:
+		default:
+			n = 0;
+			break;
+
+		case GLASS:
+			n = 1;
+			break;
+
+		case WIN_MARGIN:
+			n = 2;
+			break;
+
+		case WS_MARGIN:
+			n = (skip) ? 3 : 4;
+			break;
+
+		case WP_MARGIN:
+			n = 4;
+			break;
+	}
+	return(n);
+}

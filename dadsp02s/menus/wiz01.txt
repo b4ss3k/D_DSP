@@ -1,0 +1,8 @@
+Acorr                  !_PDC_EXEC131  $Auto Correlation
+Acov                   !_PDC_EXEC333  $Auto Covariance
+Conv                   !_PDC_EXEC133  $Convolution
+Covm                   !_PDC_EXEC332  $Covariance Matrix
+Deconv                 !_PDC_EXEC357  $Deconvolution in the Time Domain
+Fdeconv                !_PDC_EXEC357  $Deconvolution using the FFT
+Xcorr                  !_PDC_EXEC132  $Cross Correlation
+Xcov                   !_PDC_EXEC331  $Cross Covariance

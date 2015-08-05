@@ -1,0 +1,31 @@
+@modeless 1
+
+               Kaiser Window Lowpass FIR Filter Parameters
+
+                              Filter Specifications
+
+ Magnitude (dB) |
+                |
+                |                   
+                |                   
+          0  __ |  ____________                       _
+                |              \                       |
+                |               \                      |      
+                |  Pass Band     \   Stop Band         | Attenuation
+                |                 \                    |
+      -Attn  __ |                  \_______________   _|
+                |
+                |________________________________________________________
+                             |     |             |        Frequency (Hz)
+                             f     f             f
+                              cut   stop          rate/2
+
+
+  frate  -  Sample Rate           Hz 
+
+  fcut   -  Cutoff Frequency      Hz
+  fstop  -  Stopband Frequency    Hz
+
+  attn   -  Stopband Attenuation  dB
+
+                        0 < fcut < fstop < frate/2

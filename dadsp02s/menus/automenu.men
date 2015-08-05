@@ -1,0 +1,25 @@
+! main.men -- main menu from DADiSP Worksheet level
+@x1
+@y1
+@b{_bg1}
+@f{_fg1}
+ DADiSP Main Menu 
+__________________
+
+ Help             ~_MF("helpmain.men")
+
+ Load & Save Data ~_MF("dataio.men") 
+ Edit/Reduce Data ~_MF("subedit.men")
+ Graphical Views  ~_MF("gviews.men")
+ Create New View  ~_MF("gen.men")
+ View Controls    ~_MF("grphctrl.men")
+ 
+ Math & Matrices  ~_MF("mathdir.men")
+ Statistics       ~_MF("stats.men")
+ Analyze Peaks    ~_MF("peak.men")
+ FFT Analysis     ~_MF("fft.men")
+
+ Worksheet        ~_MF("wrksht.men")
+ Prints & Plots   ~_MF("hardcopy.men")
+ Optional Modules ~_MF("modules.men")
+ 

@@ -1,0 +1,1774 @@
+
+             DADiSP/2002 (B18) INSTALLATION & RELEASE NOTES
+
+____________________________________________________________________________
+
+ Installing DADiSP/2002 for Windows 9x/2000/NT/XP:
+____________________________________________________________________________
+
+Place the CD or other media into the drive. From the Windows Start
+Bar, click RUN then type:
+
+             D:\SETUP
+
+where D: is the name of the drive with the DADiSP installation media.
+
+The installation procedure will prompt for a destination drive and 
+directory for DADiSP.  Follow the instructions on the screen.
+
+The installer automatically registers .dsp .mac, .men, .hed, .pan,
+.tab and .spl file extensions.  This allows NotePad to treat these
+files as ASCII text.
+
+____________________________________________________________________________
+
+ DADiSP/2002 New Features
+____________________________________________________________________________
+
+DADiSP/2002 includes a number of new features and enhancements.  The majority
+of these changes and improvements are the direct result of customer requests
+and interaction. Below is a list of some of the major enhancements included 
+in DADiSP/2002:
+
+
+ 1) Active Document Server
+
+    DADiSP/2002 now supports external Worksheet Documents or .DWK
+    files (DADiSP Worksheet File).  DWK files are single file,
+    standalone worksheets that can be saved or opened by DADiSP.  In
+    addition, DWK files can be emailed and viewed by anyone running
+    DADiSP 6.0 or higher.  DWK files can be displayed directly
+    from the Web by Internet Explorer if DADiSP/2002 6.0 is
+    installed.
+
+    DADiSP/2002 functions as a full ActiveX Document Server.  DADiSP
+    Worksheets can be embedded, manipulated, saved and printed by any
+    ActiveX Container application such as MS Excel or MS Word.
+
+
+ 2) Extended Automation Server
+
+    DADiSP/2002 adds several data transfer methods to an already
+    powerful Automation server environment.  DADiSP/2002's dual COM
+    automation support allows both interpreted languages such as
+    Visual Basic and compiled languages like C/C++ to make efficient
+    use of DADiSP as an extremely powerful data analysis engine.  Any
+    application supporting Automation can seamlessly connect to
+    DADiSP via standard ActiveX protocols to gain access to over 1000
+    fast and efficient data analysis routines.
+
+    DADiSP/2002 also functions as an Automation Client, allowing any
+    COM based Automation Server to be incorporated into the DADiSP
+    environment via SPL, DADiSP's Series Processing Language.
+
+
+ 3) Just in Time Memory Management
+
+    DADiSP/2002 employs an optimized memory management scheme to make
+    the most of system memory when processing large or small
+    datasets.  Large series are transparently buffered to and from
+    the disk while in memory buffers are sized specifically to the
+    result of the calculation at hand.  The maximum buffer size can
+    be customized to take advantage of today's large memory systems. 
+    Calculations involving smaller series are automatically compacted
+    to conserve total memory space.
+
+
+ 4) Faster Execution
+
+    Combining JIT memory management with code optimizations has
+    resulted in speed improvements of up to 100% for critical signal
+    processing functions such as FFT, SPECTRUM, PSD, CONV and FILTEQ. 
+    Additional core routines have been optimized providing increased
+    performance for several other matrix and series manipulation
+    routines.
+
+
+ 5) New Function Wizard
+
+    DADiSP/2002 provides a new "Function Wizard" to guide you through
+    the selection of appropriate analysis routines in a simple and
+    natural manner. Functions are easily grouped to form any type of 
+    specialized analysis expression or routines can be executed immediately
+    to provide quick and accurate results.
+
+
+ 6) Recursive Window References
+
+    Worksheets can optionally include recursive formulae to support
+    the simulation of discrete and analog feedback based systems.
+
+
+ 7) Direct Annotations
+
+    Text, legends, line and arrow annotations can be directly
+    manipulated with the mouse.  Annotations can be moved, edited or
+    deleted by right clicking or mouse selection.  Full text and line
+    annotation properties are configurable by standard dialogs.
+
+
+ 8) Improved Hardcopy
+
+    DADiSP/2002 automatically adjusts the Worksheet or Window plot to
+    make maximum use of the printer's graphics capabilities.  Plot
+    attributes such as color, margin alignment, borders and text
+    justification can be specified through simple Print Preview
+    dialogs. Print Preview has been enhanced to produce a more realistic
+    rendering of the printed page.
+
+
+ 9) Expanded Documentation
+
+    The DADiSP/2002 Function Reference has been significantly
+    expanded and enhanced.  Examples from the on-line help files can
+    be cut and pasted directly into a DADiSP Worksheet for immediate
+    evaluation.
+
+
+10) SPL Extensions
+
+    DADiSP's Series Processing Language, SPL, has been extended to
+    provide variable function arguments, ternary conditional
+    statements and user defined error handlers.  The new ITERATE
+    modifier allows SPL routines to automatically iterate through each
+    column of an input array, greatly simplifying the task of
+    multi-column data processing.  SPL's C/C++ syntax offers a familiar
+    and clean programming style allowing users to create custom
+    functions and procedures using standard programming techniques.
+
+
+11) More Functions
+
+    DADiSP/2002 includes over 80 new built-in and SPL routines
+    spanning the areas of matrix and series manipulation, signal
+    processing, math, color, series generation, curve fitting and
+    statistics.  DADiSP/2002 now offers over 1000 analysis routines
+    with an intuitive and familiar user interface to provide one of
+    the most complete and easy to use data analysis tools available
+    today.
+
+12) TeX Support
+
+    DADiSP/2002 supports a subset of TeX formatting commands to allow
+    typesetting of Greek symbols and math formulae. TeX formatting
+    is supported in text functions, plot labels, plot titles and units
+    display.
+
+______________________________________________________________________
+
+ Configuration
+__________________________________________________________________________
+
+ 1. The DADiSP.CNF file has been significantly expanded.  See Appendix
+    B in the User Manual, "Modifying the DADiSP.CNF File", for
+    detailed information.
+
+ 2. Configuration parameters are now saved to a session file, 
+    \WINDOWS\DADISP6.SES.  Most of the parameters in the DADiSP.CNF
+    file can be changed via pull-down menus in the Worksheet, under
+    Tools, Configuration.  Changes you make during a session are saved
+    to the session file and are the defaults for your next session. 
+    This can be disabled by setting the IGNORE_SESSION configuration
+    parameter.
+
+ 3. You can select fonts for many aspects of the Worksheet: Window Labels, 
+    Formulas, Text Annotation, etc.  Font selection is done through a
+    common dialog box in Tools, Fonts.  All font changes are saved in
+    the DADISP6.SES file.  Only TrueType fonts rotate on X and Y labels
+    and tic marks.
+
+
+______________________________________________________________________
+
+ GUI Enhancements
+_______________________________________________________________________
+
+ 1. The drawing toolbar now supports legends and arrows. Selection and 
+    configuration buttons have been added. 
+
+    Text, legends, lines and arrows can be directly selected and 
+    manipulated with the mouse when the Window is activated or zoomed.
+
+ 2. A Date/Time tab has been added to the Tools-Options-System 
+    Preferences dialog to configure data/time display of series in a 
+    Window.
+
+ 3. The Window tab of the Tools-Options-System Preferences dialog 
+    includes an "Autoscaling Mode" option. "Peak Centering" centers the 
+    data in the Window based on the extreme values and "Tic Marks" 
+    autoscales the Window such that a tic mark always occurs at the 
+    bottom and top of the Window.
+
+ 4. "Default Horizontal Units" and "Default Vertical Units" have been 
+    added to the Series tab of the Tools-Options-System Preferences 
+    dialog to set the default units of generated series.
+
+ 5. "Global Colors" in the Tools-Options-Settings dialog are now
+    saved in the session file so color settings are now preserved.
+
+    The colors of the Window caption is now configurable in the 
+    Tools-Options-Settings dialog.
+
+ 6. Open Dataset supports loading an entire Dataset into one window 
+    with each series drawn in a different color. The attributes of 
+    these series can be manipulated in the Properties dialog.
+
+ 7. The Tools-Options-Print Preferences-Metafile dialog supports
+    configuration of the clipboard formats. This can optimize clipboard
+    transfers if the desired format of the data or image is known beforehand.
+
+ 8. The Tools-Options-Settings-Calculations dialog supports configuration 
+    of Recursive Window Formulae. Recursive formulae involve Windows 
+    that depend on each other to create a dependency cycle. The number 
+    of evaluations per cycle can be specified.
+
+ 9. Worksheets can be tiled vertically, horizontally, equal sized and
+    automatically. Custom Window layouts can also be specified.
+
+10. The File-Send menu option uses the default MAPI settings to send
+    a Worksheet as an email attachment. The recipient can double
+    click the received attachment to automatically view the Worksheet 
+    if DADiSP 2002 is installed on the recipient's machine.  
+
+    To configure Outlook Express as your default MAPI client, select
+    the "Make Outlook Express my Simple MAPI client" check box under
+    the Tools-Options menu.
+
+11. The Right Click menu now includes a list of the most recently used
+    dialog boxes. This history allows for quick selection of the most
+    often used dialogs. The number of dialog boxes displayed can be 
+    configured with the Tools-Options-System Preferences-Misc dialog.
+
+12. The dependencies of the current Window can be displayed with the
+    Tools-Options-System Preferences-Screen Elements dialog. When selected,
+    the captions of the Windows the current Window depends on ("parents") 
+    and the Windows that depend on the current Window ("children") are 
+    displayed in different colors. The colors can also be configured with
+    the Tools-Options-System Preferences-Screen Elements dialog.
+
+13. TableView supports multiple header lines. Header lines can be 
+    configured with the Tools-Options-System Preferences-Table dialog.
+    A column header can optionally contain a column number, series 
+    name, series comment and/or units.
+
+14. Data cursors can be graphically selected by left clicking on or near
+    the desired cursor. Cursor styles are set with the View-Cursor-Settings
+    dialog.
+
+15. File-Open-Dataset-Multiple Windows will prompt to automatically add
+    the correct number of Windows if the Dataset contains more series 
+    than the number of consecutive Windows.
+
+16. Normal sized analysis Windows display a standard "Maximize" button
+    for zooming.
+
+______________________________________________________________________
+
+ New Functions
+______________________________________________________________________
+
+   Over 100 new functions have been added to DADiSP/2002.  Full
+   descriptions of the functions listed here are included in the
+   on-line help system.
+
+
+ Matrix Manipulation
+______________________________________________________________________
+
+^^                  Matrix Power
+/^                  Matrix Right Divide
+~^                  Matrix Conjugate Transpose
+CHOL                Cholesky Factorization
+COND                Condition Number of a Matrix
+EIG                 Combined Eigenvalue and Eigenvector Computation
+FLIPLR              Reverses the Columns of a Matrix
+FLIPUD              Reverses the Rows of a Matrix
+KRON                Kronecker Tensor Product
+NORM                Matrix Norm
+NULL                Orthogonal Basis for Null Space
+ORTH                Orthogonal Basis using SVD
+PINV                Pseudo-Inverse of a Matrix
+RANK                Number of Independent Rows or Columns
+REPMAT              Repicates a Matrix Down and Across
+TRACE               Diagonal Sum of a Matrix
+TRIL                Lower Triangle of a Matrix
+TRIU                Upper Triangle of a Matrix
+
+
+ Series Manipulation
+______________________________________________________________________
+
+@@                  Concatenate series
+@=                  Append series
+Append              Append series
+BYTE2TYPE           Converts a stream of bytes to a series
+COLEXTRACT          Extract from Columns
+COLIDX              Returns the Indices for each Column
+COLPROD             Returns the Product of each Column
+DELETECOL           Deletes One or More Columns
+DELETEROW           Deletes One or More Rows
+DEMEAN              Removes Mean Value
+IDX                 Returns the Indices of a Series
+IDXTOX              Convert Index Value to X Value
+INSERT              Insert Values into a Series
+NUMEL               Returns the Total Number of Elements
+OUTLIER             Replace Outlier Values with Linear Interpolation
+REPLACE             Replace Values in a Series
+ROWLEN              Number of elements in each row
+ROWMAX              Maximum of row elements
+ROWMEAN             Mean of row elements
+ROWMIN              Minimum of row elements
+ROWSUM              Sum of row elements
+ROWSTDEV            Standard deviation of row elements
+REMOVE              Remove Values from a Series
+SIGN                Returns the Sign of a Value
+TYPE2BYTE           Converts a Series to a stream of Bytes
+VMAX                Return Maximum of Multiple Inputs
+VMIN                Return Minimum of Multiple Inputs
+XTOIDX              Convert X Value to Index
+XYLOOKUP            Interpolate Y Value from Arbitrary X Value
+XYNERGE             Merge Multiple Series by Respecting X Values
+
+
+ Signal Processing
+______________________________________________________________________
+
+CIRCONV             Time Domain Circular Convolution
+EFFBIT              Effective Bit Calculation
+DECONV              Deconvolve two Series
+FCIRCONV            Frequency Domain Circular Convolution
+FDECONV             Deconvolve two Series using the FFT
+FFTP2               2D Polar FFT
+FINTEG              Frequency Domain Integration
+FINTERP             Low Pass Interpolation
+IFFTP2              2D Polar Inverse FFT
+IMPZ                Z Domain Impulse Response
+INVPSD              Returns a Time Series from a PSD
+POWSPEC             Power Spectrum
+RESCALE             Linearly Rescale Amplitude
+RESIDUE             S Domain Partial Fraction Expansion
+RESIDUEZ            Z Domain Partial Fraction Expansion
+ZPFCOEFF            Design Digital Filter from S Domain
+ZPLANE              Pole-Zero Plot
+
+
+ Color Manipulation
+______________________________________________________________________
+
+DEFCOLOR            Define a New Color
+GETCOLORMAP         Retrieve Current Colormap
+GETCRANGE           Retrieve Current Color Range
+RESETMAP            Reset Worksheet Colormap
+SAVECMAP            Save Colormap with Worksheet
+
+
+ Logical
+______________________________________________________________________
+
+ISCOMPLX            Tests for Complex Values
+ISEMPTY             Tests for Empty Series
+ISINF               Tests for Infinite Values
+ISNAN               Tests for NA Values
+ISREAL              Tests for Real Values
+ISSTR               Tests for string
+
+
+ Math Functions
+______________________________________________________________________
+
+ERFCINV             Inverse Incomplete Error Function
+ERFINV              Inverse Error Function
+MAKECARTESIAN       Converts to Complex Cartesian
+MAKEPOLAR           Converts to Complex Polar
+MAXIDX              Index of Maximum Value
+MAXLOC              XY Location of Maximum Value
+MINIDX              Index of Minimum Value
+MINLOC              XY Location of Minimum Value
+POLYROOT            Polynomial Roots
+ROOTS               Polynomial Roots with Coefficients in Descending Powers
+ROUND               Round to Nearest Integer
+VMAX                Maximum of One or More Arguments
+VMIN                Minimum of One or More Arguments
+
+
+ Machine Metrics
+______________________________________________________________________
+
+EPS                 Minimum Positive Tolerance
+INF                 Numeric Representation of Positive Infinity
+REALMAX             Largest Positive Number
+REALMIN             Smallest Positive Number
+
+
+ Curve Fitting
+______________________________________________________________________
+
+EXPFIT              Exponential Fit
+INVDISTANCE         Inverse Distance 2D Griding
+LSINFIT             Known Frequency Sin Fit
+POWFIT              Power Fit
+
+
+ Statistics
+______________________________________________________________________
+
+HIST                Fast Histogram
+INVPROBN            Inverse Normal Cumulative Distribution
+PDFNORM             Normal Probability Density Function
+STD                 Column based standard deviation
+
+
+ Series Generation
+______________________________________________________________________
+
+GIMPULSE            Generate an Impulse with a Sample Rate
+LINSPACE            Generate Linear Spaced Values
+LOGSPACE            Generate Log Spaced Values
+MESHGRID            Generate XY Grid from Series
+
+
+ Utilities
+______________________________________________________________________
+
+COPYDATASET         Copies a Dataset
+COPYSERIES          Copies a Series
+DELETELABBOOK       Deletes an Entire Labbook
+EXPORTWORKSHEET     Save a Worksheet to an External File (DWK)
+IMPORTWORKSHEET     Load an External Worksheet File (DWK)
+OPENLABBOOK         Open a Labbook
+NUMVWINS            Number of Visible Windows
+TIC                 Start Internal Timer
+TOC                 Stop Internal Timer
+WHICH               Returns Path to SPL or Filename
+
+
+ ActiveX
+______________________________________________________________________
+
+EVALUATE            Return the result of a Command as a string
+CASTVARIANT         Convert to explicit Automation variant type
+COMFILESTATUS       Returns the Status of a Command File
+EXCELPIE            Demonstrates Automation of Excel
+GETOBJECT           Connects to a Running ActiveX Server
+MSWORD2             Paste Worksheet into a Word Document
+WS2HTML             Convert Worksheet to HTML via Word
+XLGET               Returns a Range of Values from Excel
+XLINIT              Starts an ActiveX Connection with Excel
+XLPUT               Transfers a Range of Values to Excel
+
+
+ SPL
+______________________________________________________________________
+
+ARGV                Specifies Variable Arguments in an SPL Routine
+GETARGV             Retrieves a Variable Argument
+LOOP                Optimized Simple Loop Processing
+
+
+ Misc
+______________________________________________________________________
+
+DEFUNITS            Define a New Unit
+DELUNITS            Delete a Unit
+DTXY                Returns the Date, Time and Y values of a Series
+GETPLOTSTYLE        Retrieve Series Plotting Style
+GETPLOTTYPE         Retrieve Series Plotting Type
+GOTOURL             Starts Web Browser and Opens the Specified Page
+ONPLOT              Execute Commands when Plotting
+RAT                 Rational approximation of a value
+RTSPIN              Real Time 3D Plot Spin
+SETCOLHEADER        Label a Table Column
+SSCANF              Formatted String Conversion
+TEXT                Arbitrary Text Annotation
+UNOVERLAY           Remove an Overlay
+
+
+ Plot
+______________________________________________________________________
+
+BARCTR              Center Bar Graph Bars on Values
+BARGAP              Specify Gaps between Bars on Values
+BARSTYLE            Specify Bar Graph Reference Line
+STEPCTR             Center Steps Plot on Values
+
+
+
+______________________________________________________________________
+
+ SPL Enhancements
+_______________________________________________________________________
+
+
+ 1. Windows can be Used and Assigned Directly in SPL Routines
+
+    For example:
+
+    wtest()
+    {
+        w1 := gnorm(100, .01);
+        w2 := integ(w1);
+    }
+
+    Sets W1 to a random series and W2 to integrate the contents of W1.
+    This syntax is much simpler than using SETWFORM.
+
+    Note that: 
+
+    W1 := gnorm(100, .01)
+
+    assigns the formula and data to W1 whereas:
+
+    W1 = gnorm(100, .01)
+
+    only assigns the data. The original Window formula is preserved.
+
+
+ 2. Global Hot Variables can be Assigned with the := Operator
+
+    htest(hvar)
+    {
+        a := integ(w1);
+
+        if (argc > 0) {
+            eval(sprintf("%s := deriv(a)"));
+        }
+    }
+
+
+    htest("dadt")
+
+    creates two hot variables, A and DADT. This syntax is a bit
+    simpler than SETHOTVAR.
+
+
+ 3. Ternary Conditional Statements
+
+    SPL supports C/C++ ternary conditionals. For example:
+
+    a = (b > 0) ? b : b*b;
+
+    is equivalent to:
+
+    if (b > 0) {
+        a = b;
+    }
+    else {
+        a = b*b;
+    }
+
+ 4. SPL Error Handlers
+
+    Optional user defined SPL error handlers are supported in the 
+    form:
+
+    func_error(errnum, errmes)
+
+    where func is the original SPL function name, errnum is the
+    supplied error number and errmes is the original error message. 
+    For example:
+
+    myfun(x)
+    {
+        return(x*x);
+    }
+
+    Running:
+    
+    b = myfun();
+
+    terminates execution and displays an error message. Because 
+    execution was discontinued, variable b is not assigned. However, 
+    by specifying an error handler:
+
+    myfun_error(errnum, errmes)
+    {
+        message(sprintf("myfun error %d, %s", errnum, errmes));
+        return(-1);
+    }
+
+    Running:
+
+    b = myfun();
+
+    pops up the message:
+
+    myfun error -102, Line 3 x: Uninitialized Variable
+
+    but variable b is now assigned the value -1, the result of the error 
+    handler. Of course, the error handler is not required to display
+    or process the error number or message.
+
+    An error handler can also terminate execution simply by calling 
+    the ERROR function. For example:
+
+    myfun_error(errnum, errmes)
+    {
+        error(sprintf("myfun error %d, %s", errnum, errmes),1);
+    }
+
+    is identical to the default behavior except in this case the error
+    message is displayed in a pop-up box.
+
+    The errnum and errmes input arguments are optional for an error
+    handler.
+
+
+ 5. Variable SPL Arguments
+
+    SPL functions now accept a variable number of optional arguments. 
+    For example:
+
+    /* maximum of one or more inputs */
+    vmax(argv)
+    {
+        local i, s;
+
+        /* 0 or 1 arg case */
+        if (argc < 2) {
+            if (argc < 1) {
+                s = max();
+            }
+            else {
+                s = max(getargv(1));
+            }
+        }
+        else {
+            /* initialize */
+            s = max(getargv(1), getargv(2));        
+
+            /* compare input args */
+            for (i = 3; i <= argc; i++) {
+                s = max(s, getargv(i));
+            }
+        }
+        return(s);
+    }
+
+    vmax(1, 3, 2, -1, 0)
+
+    returns 3.
+
+    The argv specifier indicates the SPL function accepts variable
+    arguments and GETARGV(i) returns the ith argument.
+
+
+ 6. {} Empty Array Syntax
+
+    x = {}
+
+    defines a variable x that is an empty series.
+
+
+ 7. The == Operator Performs Case Sensitive String Comparison
+
+    For example:
+
+     a = "foo"
+     b = "foo"
+     c = "Foo"
+
+     a == b  returns 1
+     a == c  returns 0
+
+
+ 8. Array Syntax for Strings
+
+    Strings variables can be addressed with the [] syntax. For example:
+
+    a = "Larry";
+    a[1] = 'H';
+
+    Variable a contains the string Harry.
+
+
+ 9. Extern Keyword for Global Variables
+
+    SPL routines can now designate variables as global with the extern
+    keyword. For example:
+
+    myfun(x)
+    {
+    	extern var;
+
+        var = x * x;
+    }
+
+    sets the global variable var to the square of the input. This is 
+    equivalent to
+
+    myfun(x)
+    {
+        setvar("var", x * x);
+    }
+
+    The extern keyword can also be specified as: global, e.g.
+
+    myfun(x)
+    {
+    	global var;
+
+        var = x * x;
+    }
+
+
+10. ITERATE Modifier for SPL Functions
+
+    Any SPL function can automatically iterate through each column
+    of an input array, one by one, by specifying the ITERATE modifier.
+
+    Consider two similar SPL routines:
+
+
+    scale1(x)
+    {
+        y = x / min(x);
+        return(y);
+    }
+
+    ITERATE scale2(x)
+    {
+        y = x / min(x);
+        return(y);
+    }
+
+    A = {{1, 2, 3},
+         {2, 4, 6},
+         {3, 6, 9}}
+
+    y1 = scale1(A);
+    y2 = scale2(A);
+
+    y1 == {{1, 2, 3}, 
+           {2, 4, 6}, 
+           {3, 6, 9}}
+
+    y2 == {{1, 1, 1}, 
+           {2, 2, 2}, 
+           {3, 3, 3}}
+
+
+    scale1 is defined as a standard SPL function and receives the entire
+    array A as input. Consequently, the minimum is calculated as the
+    minimum of the entire array, in this case 1.0.
+
+    Because scale2 is declared as an ITERATE function, it automatically 
+    iterates through each column of the input array one at a time. Since 
+    each iteration only receives a single column of the original input, 
+    the minimum is calculated as the minimum of the current column. Thus, 
+    scale1 behaves as:
+
+       x / min(x)
+
+    but scale2 behaves as:
+
+       x / colmin(x)
+
+    The ITERATE keyword makes it very easy to write a routine to handle
+    each column of an array in the same manner without having to get
+    bogged down in the details of multi-column operations.  Simply
+    write the function as if it will only receive a single column input
+    and DADiSP will automatically apply the function to each column of the
+    input array and accumulate the results.
+
+    The iteration behavior of an SPL function can be temporarily set or 
+    cleared at run time with the ITERATE function. For example:
+
+       iterate("scale1", 1)
+
+    or
+
+       iterate scale1
+
+    converts scale1 to an iterator function such that it operates 
+    identically to scale2. This behavior persists only for the duration
+    of the current session. Use the ITERATE modifier in the function
+    definition to make the behavior permanent.
+
+
+11. SERIES Modifier for SPL Functions
+
+    The SERIES modifier forces an SPL routine to return a series.
+
+    Consider two similar SPL routines:
+
+    smax1(s)
+    {
+       return(max(s));
+    }
+
+    SERIES smax2(s)
+    {
+       return(max(s));
+    }
+
+    a = {{1, 2, 3},
+         {2, 4, 6},
+         {3, 6, 9}}
+
+    m1 = smax1(a);
+    m2 = smax2(a);
+
+    m1 == 9
+    m2 == {9}
+
+    Since the input is an array, smax1 returns the maximum of the entire
+    array as a scalar, but smax2 returns the maximum as a series. This
+    is equivalent to:
+
+        {max(s)}
+
+    The SERIES modifier forces an SPL routine to always return a
+    series.  This behavior optimizes evaluation since the return type
+    is already known before the calculation takes place.  The
+    optimizations are similar to what occurs with internal functions
+    that always return a series such as FFT or INTEG.
+
+    The series mode of an SPL function can be temporarily set or 
+    cleared at run time with the SERIES function. For example:
+
+       series("smax1", 1)
+
+    or
+
+       series smax1
+
+    converts smax1 to a function that always returns a series.  This
+    behavior persists only for the duration of the current session. 
+    Use the SERIES modifier in the function definition to make the
+    behavior permanent.
+
+
+12. END Keyword for Arrays
+
+    If A is an array, A[end] returns the last element. For example:
+
+        a = 1..100
+        b = a[end]
+
+        b == 100
+
+
+13. New @@ Concatenate Operator
+
+    a = b @@ c is more compact and equivalent to a = concat(b, c)
+
+
+14. New @= Append Operator
+
+    a @= b is equivalent to append(a, b). The @= operator appends the
+    series B to the end of series A in place. a @= b is much faster
+    than a = a @@ b for large series because @= operates on the
+    existing series whereas @@ creates and assigns a new series.
+
+
+15. Faster FOR and LOOP iterators
+
+    The for and loop functions have been optimized for more efficient
+    loop variable access, resulting in approximately 30% faster execution.
+
+
+16. Faster ++, += Operators
+
+    The ++, --, +=, -=, *=, /= operators have been optimized by using inplace
+    series and variable assignments. These operators now execute directly on
+    the target argument, avoiding duplicate series and variable creation.
+
+
+16. Automatic .MAC File Includes
+
+    The SPL include statement
+
+    #include mymac.mac
+
+    automatically processes mymac.mac as a macro file. This is useful if
+    you wish to specifically include legacy .MAC files into your SPL code.
+
+
+17. Start Index Specification for SPL Array Access
+
+    The startindex() function sets the start index of an array for the
+    current SPL function. For example:
+
+    func1(a)
+    {
+        local i, b;
+
+        startindex(0);
+        b = 0;
+
+        for (i = 0; i < length(a); i++) {
+            b += a[i] * i;
+        }
+        return(b);
+    }
+
+    The startindex is automatically reset to the configuration parameter
+    SPL_START_INDEX (default 1) when the function exits. The startindex
+    function only effects the current SPL routine, routines called by the
+    current function are not effected.
+
+    Startindex makes it easier to develop routines where a starting index 
+    other than 1 is more natural for the algorithm.
+        	
+    
+______________________________________________________________________
+
+ ActiveX Enhancements
+_______________________________________________________________________
+
+ 1. DADiSP Supports the "visible" Property 
+
+    For example, in Visual Basic:
+
+        DADiSP = CreateObject("dadisp.application")
+        DADiSP.Visible = 1
+
+    establishes a connection with DADiSP and makes it visible. The 
+    visible property accepts the following values:
+
+    0 - hidden
+    1 - normal
+    2 - maximized
+    3 - iconic
+ 
+
+ 2. SPL Supports the ActiveX a.b.c = 1 Syntax
+
+
+ 3. The "Quit" Method Exits DADiSP 
+
+    For example:
+
+        DADiSP = CreateObject("dadisp.application")
+        DADiSP.Quit(1)
+
+    exits with confirmation, and:
+
+        DADiSP.Quit(0)
+
+    exits immediately, without confirmation. Note, the EXIT function
+    is also available:
+
+        DADiSP.Execute("exit(0)")
+
+    behaves as above.
+
+ 
+ 4. GetComplexData and PutComplexData Methods
+
+    GetComplexData("name", real/mag array, imag/phase array, form)
+
+    Retrieves a complex array from a variable or Window.
+
+    "name"          - variable name or Window (in quotes)
+    real/mag array  - destination safearray
+    mag/phase array - destination safearray
+    Form            - integer, 0: real / imaginary form
+                               1: magnitude / phase form
+
+    PutComplexData("name", real/mag array, imag/phase array, form)
+
+    Transfers a complex array to a variable or Window.
+
+    "name"          - variable name or Window (in quotes)
+    real/mag array  - destination safearray
+    mag/phase array - destination safearray
+    Form            - integer, 0: real / imaginary form
+                               1: magnitude / phase form
+
+ 5. CASTVARIANT and CASTVARIANTARRAY
+
+    The CASTVARIANT function converts an input to an explicit 
+    Automation variant type. Consider the following SPL code:
+
+    xl = createobject("Excel.Application");
+    xl.workbooks.add();
+    xl.range("A1").value = "1.11.58";
+    xl.range("B1").value = castvariant("1.11.58", 7);
+    xl.visible = 1;
+
+    Cell A1 of Excel contains the string "1.11.58" whereas cell B1
+    contains the time value 1:11:58 AM. Type:
+
+    help castvariant
+
+    for conversion details.
+
+    CASTVARIANTARRAY converts a normal DADiSP series from an array of
+    doubles to an array of variants.
+
+
+6.  Exec and Evaluate Methods
+
+    Both Exec and Evaluate process a DADiSP command string. Exec returns
+    an integer of value 1 if successful. Evaluate always returns the
+    result or error as a string.
+
+
+7.  Matlab Style Matrix Methods
+
+    The following ActiveX methods work identically to the routines in
+    Matlab and Matlab like products:
+
+    Evaluate
+    GetFullMatrix
+    GetCharArray
+    PutCharArray
+    PutFullMatrix
+
+    These routines greatly simplify the conversion of legacy Matlab ActiveX 
+    code to equivalent SPL functions.
+
+
+______________________________________________________________________
+
+ Command Line Arguments
+______________________________________________________________________
+
+   DADiSP supports the -d command line argument to specify the
+   initial display mode:
+
+   -d=0  - hidden
+   -d=1  - normal
+   -d=2  - maximized
+   -d=3  - iconic
+
+   Running DADiSP in hidden mode (-d=0) is useful when using DADiSP
+   as an analysis engine in conjunction with another program.
+
+   DADiSP also supports the -s command line argument to automatically
+   load and run an SPL file on startup. For example:
+
+   dadispnt -s=process.spl
+
+   starts DADiSP, loads the file process.spl and runs the SPL function
+   process().
+
+
+   Additional command line arguments include:
+
+   -l=labbookpath   - open a specific Labbook
+   -w=worksheet     - open a specific Worksheet
+   -cnf=configfile  - load a session specific configuration file
+   -register        - register as an ActiveX server
+   -unregister      - unregister as an ActiveX server
+
+
+
+______________________________________________________________________
+
+ Read Only Labbooks
+______________________________________________________________________
+
+    DADiSP can process Labbooks that are saved as read-only. 
+    Worksheets, Datasets and Series can be viewed and processed.  Of
+    course, saving and deleting operations are not valid in a
+    read-only Labbook.  The location of read-write temporary files
+    can be specified with the SPILL_FILE_DIR configuration parameter
+    or environment variable.
+
+
+______________________________________________________________________
+
+ SPLPATH                 
+______________________________________________________________________
+
+    SPLPATH configuration parameter or environment variable controls where
+    DADiSP automatically searches for SPL files. 
+
+
+______________________________________________________________________
+
+ Numerical Format 
+______________________________________________________________________
+
+   SETPRECSION and SETFORMAT now also control the format of the
+   axes tic values.
+
+   SETXTICPRECISION and SETYTICPRECISION control the precision of the 
+   X and Y axes independently for a Window.
+
+   Standard C/C++ hex values in SPL routines are recognized. For example,
+   the value 0xFF is equivalent to the integer 255.
+
+   The RAT function or rational format returns a proper fraction. 
+   RAT(1.5) returns 3/2.
+
+
+______________________________________________________________________
+
+ On-line Help
+______________________________________________________________________
+
+   The @h parameter in menus/panels accepts a ~ to indicate the 
+   function following the ~ should be executed when the user presses 
+   the HELP button.  For example:
+
+         @h ~help("SPL Hot Variables", "dspum.hlp")
+
+   invokes the User Guide help for SPL Hot Variables when the help 
+   button is pushed. Whitespace between the @h and ~ doesn't matter.
+
+
+______________________________________________________________________
+
+ Real Time Support
+______________________________________________________________________
+
+   DADiSP includes a preliminary real time task manager to facilitate
+   the execution of SPL functions in the background.  Real time tasks
+   are currently managed via the RTTINIT, RTTTERM and RTTPAUSE
+   functions.  For more information, type: help rttinit.
+
+
+______________________________________________________________________
+
+ TeX Support
+_______________________________________________________________________
+
+
+   DADiSP supports a subset of TeX math and Greek symbol formatting
+   commands. For example:
+
+     W1: 1..100;text(10, 80, "e^{j\omegat} = cos(\omegat) + jsin(\omegat)")
+
+   places the expression for Euler's Formula in W1. TeX commands can be used 
+   in text functions, plot labels and units.
+
+   The following summarizes the current TeX support. Each example string 
+   can be used with the LABEL, SETXLABEL, SETYLABEL or TEXT functions. The
+   {}'s are used to delimit TeX expressions.
+
+   TeX processing can be enabled or disabled with the TEX_PROCESSING
+   configuration parameter. For example, setconf("TEX_PROCESSING", "0")
+   disables TeX processing.
+
+
+   Greek Letters
+   __________________________________________________________________________
+
+   \alpha     \beta      \gamma  \delta    \epsilon  \varepsilon  \zeta  \eta
+   \vartheta  \iota      \kappa  \lambda   \mu       \nu          \xi    \o
+   \sigma     \varsigma  \tau    \upsilon  \phi      \varphi      \chi   \psi
+   \varpi     \rho       \theta  \pi       \omega
+
+   The first letter of each expression can be capitalized to obtain the
+   upper case letter:
+
+   \Alpha, \Beta, \Gamma, etc.
+
+
+   Example: "\alpha and \Omega" 
+
+   Example: "\nu = c / \lambda" 
+
+   Example: "y(t} = cos(2\pift + \theta)" 
+
+
+   Symbols
+   ______________________________________________________________
+
+   \leftrightarrow  \Leftrightarrow  \hookleftarrow  \diamondsuit
+   \rightarrow      \Rightarrow      \backslash      \copyright
+   \downarrow       \Downarrow       \heartsuit      \leftarrow
+   \Leftarrow       \spadesuit       \clubsuit       \subseteq
+   \Diamond         \partial         \uparrow        \Uparrow
+   \Upsilon         \approx          \bullet         \exists
+   \forall          \langle          \lbrace         \lfloor
+   \oslash          \otimes          \propto         \rangle
+   \rbrace          \rfloor          \subset         \supset
+   \aleph           \angle           \cdot           \circ
+   \cong            \equiv           \gets           \infty
+   \land            \lceil           \ldots          \lnot
+   \nabla           \not=            \notin          \oplus
+   \owns            \prep            \prime          \prod
+   \rceil           \surd            \times          \wedge
+   \Box             \cap             \cup            \div
+   \geq             \int             \leq            \lor
+   \mid             \neg             \neq            \sum
+   \vee             \ge              \im             \Im
+   \in              \le              \ne             \ni
+   \pm              \re              \Re             \to
+   \ul              \wp
+
+   Example: "f(x \to \infty) \approx 0"
+
+   Example: "\nabla \times E = -\partialB/\partialt"
+
+   Example: "\angleH(\omega) = 2\cdot\pi"
+
+
+   Superscript & Subscript
+   _______________________
+
+   ^ _
+
+   Example: "E = mc^2" 
+
+   Example: "P(x) = a_0 + a_1x + a_2x^2 + a_3x^3" 
+
+   Example: "\alpha^{\lambda_0 + \lambda_1}" 
+
+
+   Fractions
+   _______________
+
+   \frac{num}{den}
+
+   Example: "\frac{1}{2}"
+
+   Example: "\frac{a^2 + b^2}{a^2 _ b^2}"
+
+   Example: "\Phi_x(\omega) \equiv \frac{|X(e^{j\omega})|^2}{\pi}"
+
+
+   Font Modification
+   ______________________________________________________________
+
+   \fontangle{angle}     text angle
+   \textcolor{color}     text foreground color
+   \colorbox{color}      text background color
+   \fontname{name}       font name
+   \fontsize{size}       font size, pixels if size > 0 else points
+   \color{color}         text foreground color
+   \tex{on_off}          Inline TeX processing mode - 0:disabled, 1:enabled
+   \bf                   Bold font
+   \it                   Italics font
+   \rm                   Normal font
+   \tt                   Courier font
+
+
+   Example: "This is \it{italics} text and this is \bf{bold} text."
+
+   Example: "This is \color{lred}{in red} and \color{green}{green}."   
+
+   Example: "This is \fontsize{32}{big} and \fontsize{12}{small}."   
+
+   Example: "\colorbox{yellow}{F(\sigma) = e^{\frac{\sigma^2}{2\pi}}}"   
+
+   Example: "Raw Units: \tex{0}V^2\tex{1}, TeX Units: V^2"
+
+
+______________________________________________________________________
+
+ SPL Function Listing
+______________________________________________________________________
+
+   DADiSP/2002 includes the following SPL functions located in the SPL 
+   sub-directory:
+
+   List of SPL Routines by Category:
+
+
+Activex .\spl\activex
+
+   dsptest1.txt      Visual Basic Automation example code
+   dsptest2.txt      Visual Basic Automation example code
+   dsptest3.txt      Visual Basic Automation example code
+   msword.spl        Demonstrates ActiveX with MS Word
+   msword2.spl       Copies a Worksheet to MS Word via ActiveX
+   ws2html.spl       Converts a Worksheet to HTML using Word and ActiveX
+   xlclear.spl       Clears an ActiveX connection with Excel
+   xlget.spl         Gets a range of values from Excel
+   xlinit.spl        Initializes an ActiveX connection with Excel
+   xlput.spl         Transfers a series to Excel
+
+
+Colors .\spl\colors
+
+   colorbar.spl      Adds a colorbar legend for color shaded plots
+   cool.spl          Shades of blue colormap
+   copper.spl        Shades of brown colormap
+   getrgb.spl        Returns individual red, green and blue image components
+   gray.spl          Black & White colormap
+   hot.spl           Shades of red colormap
+   pink.spl          Shades of pink colormap
+   rainbow.spl       Colors of rainbow colormap
+   resetmap.spl      Resets colormap in a Worksheet
+   savecmap.spl      Saves a colormap with a Worksheet
+   setcrange.spl     Sets the color range of shaded plots
+   showcmap.spl      Displays current colormap
+
+
+Curvefit .\spl\curvefit
+
+   expfit.spl        Exponential fit, A * exp(B*x)
+   lfit.spl          Fits a line using the end points
+   lsinfit.spl       Fits a sinewave of a known frequency
+   pfit.spl          Polynomial fitting with statistics
+   powfit.spl        Power fit, A * x ^B
+   sinfit.spl        Fits y(x) = A + B * sin(C*x + D) using the FFT
+   sintrend.spl      Fits y(x) = A + B*x + C * sin(D*x + E) using the FFT
+
+
+Debug .\spl\debug
+
+   dbstop            Establish a breakpoint
+   dbcont            Continue debugger execution
+   dbquit            Exit debugger
+   dbstep            Step to next source code line
+   dbclear           Clear a breakpoint
+   dbstatus          Display current debugger status
+   dbstack           List SPL function calls
+   dbup              Move up the call stack
+   dbdown            Move down the call stack
+  
+
+Signal Processing .\spl\dsp
+
+   acorr.spl         Autocorrelation with normalization
+   acov.spl          Autocovariance
+   avgfilt.spl       Nearest neighbor averaging
+   bestpow2.spl      Determines best power of 2 length for FFT processing
+   bilinear.spl      S to Z domain transformation
+   bitquant.spl      Quantize to 2^N discrete levels
+   bitscale.spl      Scales raw A/D counts to engineering units
+   circonv           Time domain circular convolution
+   cceps.spl         Complex Cepstrum
+   clogmag.spl       Frequency response of cascade form IIR filters
+   covm.spl          Covariance matrix
+   dct.spl           Discrete cosine transform
+   demodfm.spl       Demodulates an FM signal
+   effbit.spl        Effective bit calculation
+   endflip.spl       Pads endpoints with reflections of end segments
+   facorr.spl        Autocorrelation using the FFT method
+   facov.spl         Autocovariance using the FFT method
+   fcirconv          Frequency domain circular convolution
+   fconv.spl         Convolution using the FFT method
+   fftshift.spl      Shifts DC frequency to middle of FFT plot
+   filteq.spl        Evaluates a Difference Equation
+   firsamp.spl       Frequency Sampling FIR with XY input
+   freqsamp.spl      Frequency Sampling FIR filter design
+   fxcorr.spl        Cross-correlation using the FFT method
+   fxcov.spl         Cross-covariance using the FFT method
+   fzinterp.spl      Interpolation using FFT zero insertion, factor based
+   grpdelay.spl      Calculates the group delay of a Z transform
+   hamming.spl       Hamming window with optional amplitude correction
+   hanning.spl       Hanning window with optional amplitude correction
+   hilb.spl          Hilbert transformer
+   icceps.spl        Inverse Cepstrum transform
+   idct.spl          Inverse discrete cosine transform
+   impz.spl          Z Domain Impulse Response
+   invpsd.spl        Generate a time series from a PSD
+   kaiser.spl        Kasier window with optional amplitude correction
+   linscale.spl      Linear conversion of series range
+   log2.spl          Log base 2, useful for FFT calculations
+   nextpow2.spl      Get next power of two
+   modfm.spl         Frequency Modulate a series
+   oasfilt.spl       Overlap and save method of filtering
+   padfilt.spl       FIR filtering with end point padding
+   powspec.spl       FFT based power spectrum
+   poly.spl          Characteristic polynomial coefficients
+   quantize.spl      Quantize to N discrete levels
+   rceps.spl         Real cepstrum
+   removena.spl      Remove NA values from a series
+   residue           S Domain Partial Fraction Expansion
+   residuez          Z Domain Partial Fraction Expansion
+   shp.spl           Single pole analog high pass filter emulation
+   slp.spl           Single pole analog low pass filter emulation
+   sonogram.spl      2D B&W Time vs Frequency FFT
+   specgram.spl      2D Color Time vs Frequency FFT
+   starms.spl        Short time averaged RMS series
+   tf2ss.spl         Transfer function to state space conversion
+   winfunc.spl       Generic windowing functions
+   xcorr.spl         Time domain cross-correlation
+   xcov.spl          Time domain covariance
+   zeroflip.spl      Flips endpoints about zero
+   zfreq.spl         Frequency response of a Z transform
+   zinterp.spl       Zero insertion interpolation - rate based
+   zpfcoef.spl       Digital filter design from S domain specs
+   zplane            Pole-Zero Plot
+   
+
+Generation Functions .\spl\generate
+
+   eye.spl           Identity matrix
+   fxyvals.spl       Generates X and Y values for Z = F(x, y) function
+   gimpulse.spl      Generates an impulse with a sample rate
+   grtsqr.spl        Generate square wave with rise time
+   gsweep.spl        Generate a linearly swept sinewave
+   linspace.spl      Generate equally space values
+   logspace.spl      Generate log spaced values
+   meshgrid.spl      generate XY array from XY series
+   ones.spl          Creates an array of all ones
+   rand.spl          Generate NxM random array
+   randn.spl         Generate NxM normally distributed random array
+   zeros.spl         Creates an array of all zeros
+
+
+Image Processing .\spl\image
+
+   brighten.spl      Brightens or darkens an image
+   dct2.spl          2D Discrete cosine transform
+   fft2.spl          2D FFT Cartesian form
+   fftp2.spl         2D FFT Polar form
+   histeq.spl        Histogram equalization
+   idct2.spl         2D inverse discrete cosine transform
+   ifft2.spl         2D inverse FFT Cartesian form
+   ifftp2.sp         2D inverse FFT Polar form
+   image24.spl       Converts an image to 24 bit
+   iminterp.spl      Interpolates an image
+   rgbimage.spl      Creates a 24 bit image from separate rgb components
+
+
+Include .\spl\include
+
+  series.h           Useful constants and macros
+
+
+Iofun .\spl\iofun
+
+   readbmp.spl       Reads a bitmap file
+   readmat.spl       Reads a Matlab 4 matrix
+   readtb.spl        Reads a binary table
+   writebmp.spl      Writes a bitmap
+   writetb.spl       Writes a binary table
+
+
+Math .\spl\math
+
+   dydx.spl          Derivative of XY data
+   movavg2.spl       Moving average with end point padding
+   movrms.spl        Moving RMS series
+   movstd.spl        Moving standard deviation
+   polyroot.spl      Polynomial roots
+   trapz.spl         Integration using the trapezoidal rule
+   unmerge.spl       Demultiplexes an interlaced series
+ 
+
+Math2d .\spl\math2d
+
+   gradient.spl      2D gradient estimation
+   igrid.spl         Grids irregular XYZ data using inverse distance method
+   interp2.spl       2D linear interpolation
+   peaks.spl         Generates a 3D surface
+   sgrid.spl         Grids irregular XYZ data using splines
+   spin.spl          Spins a 3D plot
+   spline2.spl       2D spline interpolation
+   xyz.spl           XYZ help file
+
+
+Matrix .\spl\matrix
+
+   colnos.spl        Generate matrix of column numbers
+   cond.spl          Estimates condition number
+   eig.spl           Returns eigenvalues and eigenvectors
+   lotri.spl         Extract lower triangle
+   lotrix.spl        Extract lower triangle excluding main diagonal
+   norm.spl          Matrix norm
+   null.spl          Orthogonal basis for NULL space
+   orth.spl          Orthogonal basis for an array
+   pinv.spl          Pseudo-inverse of an array
+   qr.spl            QR decomposition
+   rank.spl          Number of independent rows or columns
+   rownos.spl        Generate matrix of row numbers
+   trace.spl         Diagonal sum
+   uptri.spl         Extract upper triangle
+   uptrix.spl        Extract upper triangle excluding main diagonal
+   
+
+Misc .\spl\misc
+
+   examples.spl      SPL code examples
+   ctree.spl         Binary fractal creation
+   numvwins.spl      Number of visible Windows
+
+
+Plot .\spl\plot
+
+   ascale.spl        Turns On/Off autoscaling
+   barctr.spl        Centers bar plots
+   bargap.spl        Specifies gaps between bars
+   barstyle.spl      Sets the vertical reference for a bar plot
+   bartop.spl        Turns On/Off coloring the tops of 3D bar plots
+   cut.spl           Cuts the contents of a window into the current window
+   resetscr.spl      Resets screen display from scr2prt
+   sethatch.spl      Sethatch help file
+   setvport.spl      Sets viewport of the current window to the input window
+   setwlab.spl       Sets a window label
+   scr2prt.spl       Sets screen to appear as print output
+   stepctr.spl       Centers step plots
+   xsubtic.spl       Turns On/Off X subtic labels on log plots
+   ysubtic.spl       Turns On/Off Y subtic labels on log plots
+
+
+Realtime .\spl\realtime
+
+   rtread.spl        Example of reading real time data
+   rttinit.spl       Rttinit help file - real time task initialization
+   rttpause.spl      Rttpause help file - real time task pause/continue
+   rttterm.spl       Rttterm help file - real time task termination
+   rtwrite.spl       Example of writing real time data
+
+
+Series .\spl\series
+
+   all.spl           Returns 1 if all elements of the input are non-zero
+   any.spl           Returns 1 if any element of the input is non-zero
+   colprod.spl       Product of each column in an array
+   findmax.spl       Returns the max and location of the max value
+   findmin.spl       Returns the min and location of the min value
+   findval.spl       Returns the value and location of an arbitrary value
+   fix.spl           Rounds value to zero
+   idxtox.spl        Convert index to X value
+   iscomplx.spl      Checks if value is complex
+   isreal.spl        Checks if value is real
+   markmax.spl       Marks the maximum of a series
+   markmin.spl       Marks the minimum of a series
+   maxval.spl        Returns maximum of two arguments
+   minval.spl        Returns minimum of two arguments
+   nibble.spl        Extract out 4 bit nibble
+   prod.spl          Product of each element of a series
+   rat.spl           Rational approximation of a value
+   rem.spl           Modulo
+   outlier.spl       Replaces outliers with linear interpolation
+   replace.spl       Replaces values in a series based on a condition
+   rowlen.spl        Number of elements in each row
+   rowmax.spl        Maximum of row elements
+   rowmean.spl       Mean of row elements
+   rowmin.spl        Minimum of row elements
+   rowsum.spl        Sum of row elements
+   rowstdev.spl      Standard deviation of row elements
+   sercount.spl      Total number of series in a Window
+   size.spl          Returns dimensions of an array
+   valfill.spl       Replaces a value with previous or next values
+   vmax.spl          Maximum of any number of inputs
+   vmin.spl          Minimum of any number of inputs
+   xtoidx.spl        Convert X value to index
+   xylookup.spl      Interpolate Y value from arbitrary X value
+   xymerge.spl       Merge multiple series by respecting X values
+
+
+Stats .\spl\stats
+
+   a2std.spl         Alpha confidence level to standard deviation
+   cnf2std.spl       Confidence (%) level to standard deviation
+   confx.spl         Confidence level for given density function and x
+   erfcinv.spl       Inverse complementary error function
+   erfinv.spl        Inverse error function
+   pearson.spl       Calculates Pearson's linear correlation coefficient
+   probn.spl         Probability of X <= z for normal distribution
+   stderr.spl        Standard Error
+   svd.spl           Singular Value Decomposition
+   svddiv.spl        Solves for x in A *^ x = b using SVD
+   trend.spl         Least squares best fit line
+   xconf.spl         X value of confidence level for a given density function
+
+
+Timedate .\spl\timedate
+
+   julymd.spl        Converts a series if YMD values to Julian dates
+   dtxy.spl          Returns the date, time and Y values of a series
+
+
+Utils .\spl\utils
+
+   byte2type.spl     Converts a stream of bytes to a series
+   chkfiles.spl      Checks database integrity
+   chr2chr.spl       Replaces a character in a string
+   defvar.spl        Default a variable if not defined
+   dirpath.spl       Returns directory component of a path string
+   fixslash.spl      Fixes \ character in a string
+   formula.spl       Writes out the formulae of a Worksheet
+   hex.spl           Simple hex converter
+   hex2int.spl       Convert hex value to integer
+   int2hex.spl       Convert integer to hex
+   isfunc.spl        returns 1 if SPL function loaded, else 0
+   isunit.spl        Determines if string is a recognized unit
+   mort.spl          Mortgage calculator
+   mpay.spl          Mortgage payment routine
+   type2byte.spl     Converts a series to a stream of bytes
+   writecnf.spl      Writes configuration settings to a file
+
+
+
+   To obtain information on any of the above SPL files, use the help 
+   command. For example, to obtain help on the SPECGRAM function, 
+   type: 
+            help specgram
+
+   at the DADiSP command line.
+
+   
+______________________________________________________________________
+
+ Misc Changes
+_______________________________________________________________________
+
+  1. ANS Result Variable
+
+     The result of the last scalar or string expression is saved in 
+     the global variable ans. Series results are not duplicated (since 
+     they are saved in a Window or variable).
+
+  2. New Command Form Syntax
+
+     Any function that accepts a string can also be entered in
+     command form. For example:
+
+        splload("\functions\myfun.spl")
+
+     can also be specified as:
+
+        splload \functions\myfun.spl
+
+     The command form is only supported at the command line.
+
+
+  3. CLEAR can clear Windows, macros, variables and functions.
+
+     CLEAR can also be specified in command form. For example:
+
+        clear w1
+        clear a
+        clear myfun
+        clear mymac
+
+     are all valid uses of CLEAR.
+
+
+ 4. Ctrl-P Copies Worksheet Bitmap to the Clipboard
+
+
+ 5. Matrix Solve \^ Handles Non-square Matrices
+
+    Over or under determined matrices are solved using QR decomposition.
+
+
+ 6. Tables and Window Scales can Display Hex Values
+
+    See Tools-Options-Preferences-Window to set hex display.
+    
+
+ 7. The colormap is now saved and restored with Worksheets.
+
+ 8. Series math with "No Units" preserves deltax, xoffset, etc.
+
+ 9. The HISTOGRAM function accepts an optional series of bin edges.
+
+10. Importing, READT and WRITET support hex values.
+
+11. LINREG and LINREG2 handle XY series
+
+12. Import supports IGNORE_MISSING, MISSING_VALUE and DELIMITERS keywords.
+
+13. DECIMATE and INTEG support XY series.
+
+14. SETFORMAT(7) sets the display format to rational fraction such that
+    1.5 displays as 3/2.
+
+15. SETXLOG and SETYLOG accept optional 3rd argument to specify 10^n
+    tic values for log plots. SETYLOG(1, 0, 1) sets the Y axis to log
+    with tic labels of the form 10^1, 10^2, 10^3, etc.
+
+16. All internal units and abbreviations now conform to SI standards.
+
+17. TOOLBAR supports user defined bitmap buttons.
+
+18. SETASPECT sets the aspect ratio (width/height) of the plotting area.
+
+19. SETXAUTO, SETYAUTO set the autoscale coordinates.
+
+20. DEFUNITS defines a new unit with expansion.
+
+21. DEFCOLOR defines a new RBG color.
+
+22. VIEW and VIEWFILE use display modeless dialog boxes.
+
+23. Images can be displayed with log scales.
+
+24. $PREINITWKS macro executes before drawing Windows when loading a Worksheet.
+
+25. CASTBYTE accepts "byte stream" flag to cast raw bytes.
+
+26. Better memory management for matrix and multi-column calculations.
+
+27. RESETMACROS clears user defined macros and resets system macros.
+
+28. CALC(-1) breaks circular calculations.
+
+29. AREA uses trapazoidal rule for XY data.
+
+30. SETCOLHEADER accepts multiple header strings a column numbers.
+
+31. READT handles INF infinity values.
+
+32. (a[j], a[k]) = (b[l], b[m]) multiple array assignments supported.
+
+33. ONES and ZEROS use fast built-in GVALARRAY function.
+
+34. READT_INF configuration parameter specifies alternate "inf" string.
+
+35. READT_NA configuration parameter specifies alternate "na" string.
+
+36. SETX and SETY support reversed (high to low) axis values.
+
+37. X_AXIS_DIRECTION and Y_AXIS_DIRECTION configuration parameters
+    specify default scales direction.
+
+
+_______________________________________________________________________
+
+ Bug Fixes
+_______________________________________________________________________
+
+  1. Read-only series load properly.
+
+  2. High density Step plots display correctly.
+
+  3. SPRINTF and PRINTF have no internal string length limitation.
+
+  4. STRJUL uses current LOCALE for date formats.
+
+  5. Eigenvalues now normalized.
+
+  6. XVALS and YVALS return array of values for multi-column data.
+
+  7. Printer device re-initialized for each print.
+
+  8. Autoscale re-scales each synched overlay.
+
+  9. SQRT(-n) can return complex scalar or series.
+
+ 10. Symbol plots clip properly on printer output.
+
+ 11. Butterworth bandpass filters have correct gain scaling.
+
+ 12. Waterfall bar plots print properly.
+
+ 13. RUN handles -1 display mode.
+
+ 14. CreateObject initializes ActiveX Controls (OCX).
+
+ 15. HPGL (pen plotter) clips out of range plots properly.
+
+ 16. Support for deeply nested Labbook directories.
+
+ 17. acos/acosh/acoth/acsc/asec/asech/asin can return complex series.
+
+ 18. Stem plots and circular symbols print properly.
+
+ 19. Long integer divide operations default to double precision.
+
+ 20. Density (image) plots zoom to very large magnification factors.
+
+ 21. Window caption draws properly under XP.
+
+ 22. Keyboard character repeat fixed under Win2K service patch.
+
+ 23. DELETEROW preserves original series units and attributes.
+
+ 24. Import properly increments version number if NXT version is specified.
+
+ 25. MOD and % use integer modulo for integer inputs.
+
+ 26. x % 0 works properly for series and real inputs.
+
+ 27. mymacro(a[1]) works properly for macros.
+
+ 28. a = 10^300 automatically promotes the result to double precision.
+
+_________________________________________________________________________
+  
+                         End of RLSNOTES.TXT
+__________________________________________________________________________

@@ -1,0 +1,21 @@
+_filteq(s1, s2, s3, s4, i4, s5, i5, dwin)
+{
+	local form;
+
+	if (i5) { /* initial x conditions */
+		if (i4) {
+			form = sprintf("Filteq(%s, %s, %s, %s, %s)", s1, s2, s3, s4, s5);
+		}
+		else {
+			form = sprintf("Filteq(%s, %s, %s, {0}, %s)", s1, s2, s3, s5);
+		}
+	}
+	else if (i4) { /* just y initial conditions */
+		form = sprintf("Filteq(%s, %s, %s, %s)", s1, s2, s3, s4);
+	}
+	else {
+		form = sprintf("Filteq(%s, %s, %s)", s1, s2, s3);
+	}
+
+	eval(sprintf("setwf(%s, '%s')", dwin, form));
+}

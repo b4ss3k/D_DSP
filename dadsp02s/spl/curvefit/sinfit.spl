@@ -1,0 +1,106 @@
+/*****************************************************************************
+*                                                                            *
+*   SINFIT.SPL    Copyright (C) 1999 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Fits y(x) = A + B * sin(C*x + D) using the FFT             *
+*                                                                            *
+*   Revisions:    22 Jun 1999  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_SINFIT
+
+    SINFIT
+
+    Purpose: Fits y(x) = A + B * sin(C*x + D) using the FFT
+                                                                        
+    Format:  SINFIT(s)
+
+             s   - input series or array
+
+
+    Returns: A series, the fitted sin curve
+
+             (fit, coef) = sinfit(s)
+
+             returns both the fit and the coefficients as a series
+
+
+    Example:
+             W1: 5 + 3 * gsin(100, .01, 4, pi) + gnorm(100, .01)
+
+             W2: SINFIT(w1);overp(w1, lred)
+
+             Overplots the original data with the calculated sin fit.
+
+
+             (fit, coef) = sinfit(w1)
+
+             fit is the same series as in W2
+
+             coef == {5.0000, 3.0931, 25.1327, 3.1270}
+
+             Note: since C == coef[3] == 2*pi*F, in this case, 
+                   F == 25.1327 / (2*pi) = 4.0
+
+    Remarks:
+             SINFIT uses the FFT to find the dominate frequency present
+             in the series. The phase term, D == coef[4], is in radians.
+
+    See Also:
+             FFT
+             Sintrend
+             Trend
+#endif
+
+
+
+
+/* fit y = A + B * sin(C*x + D) */
+sinfit(s)
+{
+	local A, B, C, D, q, m, p, idx, x;
+	local fit, coef;
+
+	if (argc < 1) error("sinfit - input series required");
+
+	/* get and remove mean */
+	A = mean(s);
+
+	/* first half of FFT */
+	q = extract(fft(s - A), 1, int(length(s)/2));
+
+	/* get magnitude and phase components */
+	m = mag(q);
+	p = phase(q);
+
+	/* B is the magnitude of the primary frequency */
+	B = 2 * max(m) / length(s);
+
+	/* C is the location of the primary frequency */
+	idx =  find(m == max(m));
+	x = xvals(m);
+
+	C = max(x[idx]) * (2*pi);
+
+	/* D is the phase - add pi/2 to reference to sin(x) */
+	D = max(p[idx]) + pi/2;
+
+	/* build fit curve and coefficients */
+	fit = A + B * sin(C*xvals(s) + D);
+	coef = {A, B, C, D};
+
+	/* return fit and coefficients */
+	if (outargc > 1) {
+		return(fit, coef);
+	}
+	else {
+		return(fit);
+	}
+}
+

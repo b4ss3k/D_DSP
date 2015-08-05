@@ -1,0 +1,12 @@
+! Overplot.men -- Menu for Overplot, Overlay, and Remove Series
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+ Overplot & Remove
+
+ Series Overplot    ~_deffname('OVERPLOT Plot a New Series on top of Original')  |_defformat('Overplot(series,color)')|_defxamp('Overplot(W1,RED)')|_getsercolor("Series: ","Color:  ") | _evalserint("Overplot")
+ Overlay Series     ~_deffname('OVERLAY  Overlay a Series with Scaling') | _defformat('Overlay(series,color)') | _defxamp('Overlay(W1,RED)') | _getsercolor("Series: ","Color:  ") | _evalserwint("Overlay")
+! Overlay Series     ~_MF("overlay.pan")
+ Erase All Overplots~_MC | unoverplot
+ Delete 1 Overplot  ~_deffname('UNOVERPLOT  Remove Overplotted Series') | _defformat('Unoverplot(series_index)') | _defxamp('Unoverplot(3)') | _getint1("Overplot Number: ") | _evalint("Unoverplot")

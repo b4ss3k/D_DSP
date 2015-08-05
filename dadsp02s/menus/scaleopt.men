@@ -1,0 +1,25 @@
+! ScaleOpt.men
+@f{_fg1}
+@b{_bg1}
+@x10
+@y0
+@h{cnfhlp("winscale.hlp")}
+    Scale Display Options
+______________________________
+No Scales                    ~defmacro("_axscale",0,2);_ax0
+X bottom Y left              ~defmacro("_axscale",1,2);_ax1
+X bottom Y left with labels  ~defmacro("_axscale",2,2);_ax2
+X bottom Y right with labels ~defmacro("_axscale",3,2);_ax3
+X bottom Y right             ~defmacro("_axscale",4,2);_ax4
+X top Y right                ~defmacro("_axscale",5,2);_ax5
+X top Y left                 ~defmacro("_axscale",6,2);_ax6
+X top Y left with labels     ~defmacro("_axscale",7,2);_ax7
+X top Y right with labels    ~defmacro("_axscale",8,2);_ax8
+Y left                       ~defmacro("_axscale",9,2);_ax9
+Y right                      ~defmacro("_axscale",10,2);_ax10
+X bottom                     ~defmacro("_axscale",11,2);_ax11
+X top                        ~defmacro("_axscale",12,2);_ax12
+Y left with labels           ~defmacro("_axscale",13,2);_ax13
+Y right with labels          ~defmacro("_axscale",14,2);_ax14
+X bottom with labels         ~defmacro("_axscale",15,2);_ax15
+X top with labels            ~defmacro("_axscale",16,2);_ax16

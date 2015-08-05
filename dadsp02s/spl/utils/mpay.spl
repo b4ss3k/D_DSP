@@ -1,0 +1,19 @@
+
+
+
+/* mortgage payment */
+mpay(rate, yterm, amount)
+{
+	local a, m, r, p;
+
+	m = yterm * 12.0;
+	r = (rate/100.0) / 12;
+	if (r == 0.0) {
+		p = amount / m;
+	}
+	else {
+		a = 1.0 + r;
+		p = (amount * a^m * r) / (a^m - 1);
+	}
+	return(p);
+}

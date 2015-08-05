@@ -1,0 +1,62 @@
+/*****************************************************************************
+*                                                                            *
+*   STDERR.SPL     Copyright (C) 1999 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the standard error of a series                   *
+*                                                                            *
+*   Revisions:    7 May 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_STDERR
+
+    STDERR
+
+    Purpose: Calculates the standard error of a series or table
+                                                                        
+    Format:  STDERR(series)
+
+              series - the input series or table
+
+
+    Returns: A series or table
+
+    Example:
+             
+             W1: Gsin(100, .01, 0.8)
+
+             Stderr(w1)
+
+             Returns 0.071384
+
+    Remarks:
+             The standard error of series s is equal to:
+
+             stdev(s)/sqrt(length(s))
+
+
+             If the input is a table, STDERR calculates the standard error 
+             of each column.
+
+
+    See Also:
+             Stats
+             Stdev
+#endif
+
+
+/* calculate standard error */
+stderr(series)
+{
+	if (argc < 1) series = curr; /* default to series in current window */
+
+	if (numcols(series) > 1) { /* input is an array */
+		return(colstdev(series)/sqrt(collength(series)));
+	}
+	else { /* return a scalar */
+		return(stdev(series)/sqrt(length(series)));
+	}
+}

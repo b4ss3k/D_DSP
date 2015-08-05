@@ -1,0 +1,126 @@
+/*****************************************************************************
+*                                                                            *
+*   MARKMAX.SPL   Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Marks the maximum of a series with a symbol                *
+*                                                                            *
+*   Revisions:     7 Mar 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_MARKMAX
+
+    MARKMAX
+
+    Purpose: Marks the maximum of a series with a symbol
+                                                                        
+    Format:  MARKMAX(s, color, symbol)
+
+                s - an optional series, defaults to the current Window
+
+            color - an option integer, the color for the mimimum
+                    marker, defaults to LGREEN
+
+           symbol - an optional integer, the symbol for the maximum
+                    marker, defaults to UP_ARROW
+
+
+
+    Returns: Nothing, overplots the series with a symbol
+
+    Example:
+
+             W1: gnorm(1000,.01);markmax;
+
+             creates 1000 samples of uniformly distributed
+             random noise an marks the maximum with a light
+             green up arrow.
+
+    Example:
+             W1: gnorm(1000,.01);markmax(BLUE, CIRCLE)
+
+             Same as above except the maximum is marked with
+             a blue circle.
+
+    Example:
+             W1: randn(100,100);setplotstyle(2);markmax
+
+             Creates a 100x100 image and marks the maximum.             
+
+
+    Remarks:
+             If the series is XYZ or a LIST (i.e. Z surface, density 
+             or contour), MARKMAX overplots an XYZ series. 
+
+
+    See Also:
+             Find
+             Findmax
+             Findmin
+             Findval
+             Markmin
+             Maxloc
+             Minloc
+
+#endif
+
+
+/* marks the maximum of a series with a symbol */
+markmax(s, color, symbol)
+{
+	local x, y, z, maxser;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) {
+				s = curr;
+			}
+			/* markmax(color) */
+			if (not(IS_ARRAY(s))) {
+				color = castint(s);
+				s = curr;
+			}
+			else {
+				color = LRED;
+			}
+		}
+		if (not(IS_ARRAY(s))) {
+			/* markmax(color, symbol) */
+			symbol = color;
+			color = s;
+			s = curr;
+		}
+		else {
+			symbol = DN_ARROW;
+		}
+	}
+
+	/* get max values */
+	(x, y, z) = maxloc(s);
+
+	if (ISLIST(s) || ISXYZSERIES(s)) { /* has z values */
+		maxser = xyz({x}, {y}, {z});
+		setzunits(maxser, getzunits(s));
+	}
+	else { /* regular series type */
+		/* create XY series */
+		maxser = xy({x}, {y});
+	}
+
+	setcomment(maxser, "Maximum Marker");
+	setvunits(maxser, getvunits(s));
+	sethunits(maxser, gethunits(s));
+
+	/* set symbol type */
+	if (symbol != 0) {
+		setsym(maxser, symbol);
+	}
+
+	/* overplot with no rescaling */
+	overp(maxser, color, 0);
+}

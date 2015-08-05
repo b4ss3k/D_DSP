@@ -1,0 +1,54 @@
+_specwin(func, ser, fwin, len, winc, dc, dwin)
+{
+	local dataser;
+
+	/* undefine old macros if they exist - runtime */
+	undefmacro("kaiser");undefmacro("hamming");undefmacro("hanning");
+
+	/* remove mean */
+	if (dc) {
+		dataser = sprintf("demean(%s)", ser);
+	}
+	else {
+		dataser = ser;
+	}
+
+	if (fwin == _nonestr || fwin == "None") {
+		if (strcmp(len, "-1") == 0) {
+			eval(sprintf("setwf(%s, '%s(%s)')", dwin, func, dataser));
+		}
+		else if (strcmp(len, "-2") == 0) {
+			eval(sprintf("setwf(%s, '%s(%s, bestpow2(%s))')", dwin, func, dataser, ser));
+		}
+		else {
+			eval(sprintf("setwf(%s, '%s(%s, %s)')", dwin, func, dataser, len));
+		}
+	}
+	else {
+		if (strcmp(len, "-1") == 0) {
+			if (winc == 0) {
+				eval(sprintf("setwf(%s, '%s(%s(%s))')", dwin, func, fwin, dataser));
+			}
+			else {
+				eval(sprintf("setwf(%s, '%s(%s(%s,%d))')", dwin, func, fwin, dataser, winc));
+			}
+		}
+		else if (strcmp(len, "-2") == 0) {
+			if (winc == 0) {
+				eval(sprintf("setwf(%s, '%s(%s(%s), bestpow2(%s))')", dwin, func, fwin, dataser, ser));
+			}
+			else {
+				eval(sprintf("setwf(%s, '%s(%s(%s, %d), bestpow2(%s))')", dwin, func, fwin, dataser, winc, ser));
+			}
+		}
+		else {
+			if (winc == 0) {
+				eval(sprintf("setwf(%s, '%s(%s(%s), %s)')", dwin, func, fwin, dataser, len));
+			}
+			else {
+				eval(sprintf("setwf(%s, '%s(%s(%s, %d), %s)')", dwin, func, fwin, dataser, winc, len));
+			}
+		}
+	}
+}
+

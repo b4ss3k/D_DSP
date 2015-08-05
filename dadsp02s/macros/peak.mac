@@ -1,0 +1,812 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!                                 PEAK.MAC                                   !
+!                                                                            !
+!                               April 6, 1995                                !
+!                                                                            !
+!  Process regions of serial data around events such as peaks and valleys:   !
+!  left and right parts of series; left and right event lists; left and      !
+!  right boundaries of event regions; y value differences; width of event    !
+!  regions; left and right boundaries of fractional event regions; width of  !
+!  fraction event regions; extract event regions; list of series of events;  !
+!  and process series of events.                                             !
+!                                                                            !
+!                   Copyright (C) 1995 DSP Development Corp.                 !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!**********************************************************************!
+!                                                                      !
+!                            INTRODUCTION                              !
+!                                                                      !
+!**********************************************************************!
+
+! These macros process regions of data, in series, around peaks,
+! valleys, and any other region which has a central reference point
+! bounded by some kind of condition on the left and right.  The
+! reference point is typically a peak or valley, and the left and right
+! conditions are typically places where a valley or peak occurs, or the
+! series crosses a certain y value.
+!
+! The conditions which exist to the left and right of the reference
+! point are called events, and the region of the series between the
+! left and right events is called the event region.
+!
+! These data areas are processed through an event series, which is a
+! special type of logical series.  A logical series is a series which
+! is always either 0 or 1.  An event series is a logical series which
+! has the same length as the data series and indicates all the events
+! for all intended reference points in the data series.  It is 1 where
+! a left or right event occurs, and it is 0 elsewhere.
+!
+! As an example, suppose you have a data series in W1 with 1024 points
+! and you wish to find areas under the peaks.  The base of the peak is 
+! defined as the place where the series first goes below the value -1.5
+! to the left or to the right of the peak.  You would use 
+! LEVELCROSS(W1,-1.5,0,0) as the event series.
+!
+! If you use LEVELCROSS as an event series, do not use it with the
+! fourth parameter equal to 4, as this returns an x-y series, not a
+! logical series.  If you use GETPEAK or GETVALLEY as an event series,
+! use it only with the fifth parameter equal to 1, which returns a
+! series of zeros and peak values, and then convert it to a logical
+! series by following it with "!=0", which means "not equal to zero".
+! Do not use it with the fifth parameter equal to 0, as this also
+! returns an x-y series, or equal to 2, which returns a linear
+! envelope, and do not use a sixth parameter, which returns nonzero
+! fill values.  An example of a proper event series is
+! GETVALLEY(-1.5,1,0,1)!=0.
+!
+! Since the event series is a logical series, you can construct
+! compound logical conditions, for example LEVELCROSS(W1,-1.5,0,0) &&
+! (LEVELCROSS(W3,22.43,1,0) || INTEG(W5) > 0).
+!
+! It is best to put an event series in a window of its own, since the
+! macros make many references to an event series, and having it in a
+! window avoids constant recalculation.
+!
+! In the event processing macros, the reference point is referred to
+! by its index, also called a point number.  The INDS macro allows
+! you to convert an x value to an index.  The GETEVENTNS allows you
+! convert an event series into a table of indexes, which means they
+! can be used one at a time as reference points for other events.  The
+! BUILDSP macro allows you to process a series of reference points and
+! events and store the results to another series.
+
+!**********************************************************************!
+!                                                                      !
+!            CONVERT BETWEEN INDEX, X VALUE, AND Y VALUE               !
+!                                                                      !
+!**********************************************************************!
+
+! The function GETPT retrieves the y value from a given index.
+
+!-----------------------------------------------------------------------
+!
+! INDS computes the index (point number) from a given x value and 
+! series.
+! 
+!     S = series
+!     X = x value
+
+INDS(S,X)                       FLOOR(((X)-XOFFSET(S))/DELTAX(S)+0.5)+1
+
+!-----------------------------------------------------------------------
+!
+! GETXS computes the x value from a given index (point number) in any
+! series.
+! 
+!     S = series
+!     N = index
+
+GETXS(S,N)                      ((N)-1)*DELTAX(S)+XOFFSET(S)
+
+!-----------------------------------------------------------------------
+!
+! GETYS gets the y value corresponding to the x value of any series.
+! 
+!     S = series
+!     X = x value
+!
+
+GETYS(S,X)                      GETPT(S,INDS(S,X))
+
+!**********************************************************************!
+!                                                                      !
+!                        LEFT AND RIGHT PARTS                          !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! PARTL returns the left part of the data series, which is the part of
+! the data series from the reference point to the beginning of the
+! data series, reversed so that the reference point is the first point.
+!
+!     DATA = data series
+!     N    = index of reference point
+
+PARTL(DATA,N)                   REVERSE(EXTRACT(DATA,1,N))
+
+!-----------------------------------------------------------------------
+!
+! PARTR returns the right part of the data series, which is the part of
+! the data series from the reference point to the end of the data
+! series.
+!
+!     DATA = data series
+!     N    = index of reference point
+
+PARTR(DATA,N)                   EXTRACT(DATA,N,LENGTH(DATA)-(N)+1)
+
+!**********************************************************************!
+!                                                                      !
+!                     LEFT AND RIGHT EVENT LISTS                       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! LISTL returns a list of x values at which events occur to the left of
+! the reference point, in decsending order, so that the first event to
+! the left of the reference point is the first entry in the list.
+!
+!     EVENT = event series
+!     N     = index of reference point
+
+LISTL(EVENT,N)                  -XVALS(GETPEAK(PARTL(EVENT,N),0.9,1,0,0))
+
+!-----------------------------------------------------------------------
+!
+! LISTR returns a list of x values at which events occur to the right
+! of the reference point, in ascending order, so that the first event
+! to the right of the reference point is the first entry in the list.
+!
+!     EVENT = event series
+!     N     = index of reference point
+
+LISTR(EVENT,N)                  XVALS(GETPEAK(PARTR(EVENT,N),0.9,1,0,0))
+
+!**********************************************************************!
+!                                                                      !
+!             LEFT AND RIGHT BOUNDARIES OF EVENT REGION                !
+!                                                                      !
+!**********************************************************************!
+
+! To illustrate the following macros, we use the following examples.
+!
+! Example 1:  There is a data series in W1 which contains a peak at
+! index 250.  The base of the peaks in W1 are the points at which a
+! valley occurs to either side, with the threshold of the valley being
+! -1.5.  We would then enter GETVALLEY(W1,-1.5,1,0,1)!=0 into W2.
+!
+! Example 2:  There is a data series in W1 which contains a peak at
+! index 250.  The base of the peak to the left is defined as the
+! valleys in W2 given by GETVALLEY(W1,-1.5,1,0,1)!=0, but on the right
+! the base of the peak is defined as the place where the data series
+! crosses the threshold of -2.3.  We then enter LEVELCROSS(W1,-2.3,0,0)
+! into W3.  To find the full width of the peak in x units from the left
+! valley to the right threshold, we would then use EVENTXW2(W2,W3,250).
+
+!-----------------------------------------------------------------------
+!
+! EVENTXL returns the x value of the first event to the left of the
+! reference point.
+!
+! In example 1 above, to find the x value of the valley to the left of
+! the peak, use EVENTXL(W2,250).
+!
+!     EVENT = event series
+!     N     = index of reference point
+
+EVENTXL(EVENT,N)                GETPT(LISTL(EVENT,N),1)
+
+!-----------------------------------------------------------------------
+!
+! EVENTXR returns the x value of the first event to the right of the
+! reference point.
+!
+! In example 1 above, to find the x value of the valley to the right of
+! the peak, use EVENTXR(W2,250).
+!
+!     EVENT = event series
+!     N     = index of reference point
+
+EVENTXR(EVENT,N)                GETPT(LISTR(EVENT,N),1)
+
+!-----------------------------------------------------------------------
+!
+! EVENTNL returns the index of the first event to the left of the
+! reference point.
+!
+! In example 1 above, to find the index of the valley to the left of
+! the peak, use EVENTNL(W2,250).
+!
+!     EVENT = event series
+!     N     = index of reference point
+
+EVENTNL(EVENT,N)                INDS(EVENT,EVENTXL(EVENT,N))
+
+!-----------------------------------------------------------------------
+!
+! EVENTNR returns the index of the first event to the right of the
+! reference point.
+!
+! In example 1 above, to find the index of the valley to the right of
+! the peak, use EVENTNR(W2,250).
+!
+!     EVENT = event series
+!     N     = index of reference point
+
+EVENTNR(EVENT,N)                INDS(EVENT,EVENTXR(EVENT,N))
+
+!-----------------------------------------------------------------------
+!
+! EVENTYL returns the y value at the first event to the left of the
+! reference point.
+!     
+! In example 1 above, to find the y value of the valley to the left of
+! the peak, use EVENTYL(W1,W2,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     N     = index of reference point
+
+EVENTYL(DATA,EVENT,N)           GETPT(DATA,EVENTNL(EVENT,N))
+
+!-----------------------------------------------------------------------
+!
+! EVENTYR returns the y value at the first event to the right of the
+! reference point.
+!
+! In example 1 above, to find the y value of the valley to the right of
+! the peak, use EVENTYR(W1,W2,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     N     = index of reference point
+
+EVENTYR(DATA,EVENT,N)           GETPT(DATA,EVENTNR(EVENT,N))
+
+!**********************************************************************!
+!                                                                      !
+!                        Y VALUE DIFFERENCES                           !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! EVENTYLD returns the difference between y values at the reference
+! point and at the first event to the left.  A positive result
+! indicates that the event y is greater than the reference y; a
+! negative result indicates that the event y is less than the reference
+! y.
+!
+! In example 1 above, to find the difference in y values from the peak
+! to the left valley, use EVENTYLD(W1,W2,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     N     = index of reference point
+
+EVENTYLD(DATA,EVENT,N)          (GETPT(DATA,N))-(EVENTYL(DATA,EVENT,N))
+
+!-----------------------------------------------------------------------
+!
+! EVENTYRD returns the difference between y values at the reference point
+! and at the first event to the right.  A positive result indicates that
+! the event y is greater than the reference y; a negative result 
+! indicates that the event y is less than the reference y.
+!
+! In example 1 above, to find the difference in y values from the peak
+! to the right valley, use EVENTYLD(W1,W2,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     N     = index of reference point
+
+EVENTYRD(DATA,EVENT,N)          (GETPT(DATA,N))-(EVENTYR(DATA,EVENT,N))
+
+!**********************************************************************!
+!                                                                      !
+!                       WIDTH OF EVENT REGION                          !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! EVENTXLD returns the width in x units from the first event to the
+! left of the reference point to the reference point itself.
+!
+! In example 1 above, to find the x distance from the left valley to
+! the reference point (the rise time), use EVENTXLD(W2,250).
+!
+!     EVENT = event series
+!     N     = index of reference point
+
+EVENTXLD(EVENT,N)               GETXS(EVENT,N)-EVENTXL(EVENT,N)
+
+!-----------------------------------------------------------------------
+!
+! EVENTXRD returns the width in x units from the reference point to the
+! first event to the right of the reference point.
+!
+! In example 1 above, to find the x distance from the reference point
+! to the right valley (the fall time), use EVENTXRD(W2,250).
+!
+!     EVENT = event series
+!     N     = index of reference point
+
+EVENTXRD(EVENT,N)               EVENTXR(EVENT,N)-GETXS(EVENT,N)
+
+!-----------------------------------------------------------------------
+!
+! EVENTXW returns the width in x units between the first event to the
+! left of the reference point and the first event to the right of the
+! reference point.  The same event series is used to indicate both
+! events.
+!
+! In example 1 above, to find the full width of the peak in x units
+! from the left valley to the right valley, use EVENTXW(W2,250).
+!
+!     EVENT = event series
+!     N     = index of reference point
+
+EVENTXW(EVENT,N)                (EVENTXR(EVENT,N))-(EVENTXL(EVENT,N))
+
+!-----------------------------------------------------------------------
+!
+! EVENTXW2 returns the width in x units between the first event to the
+! left of the reference point and the first event to the right of the
+! reference point.  Two event series are used: one for the left event
+! and one for the right event.
+!
+! In example 2 above, to find the full width of the peak in x units
+! from the left valley to the right threshold, use EVENTXW2(W2,W3,250).
+!
+!     EVENTL = event series defining events on the left
+!     EVENTR = event series defining events on the right
+!     N      = index of reference point
+
+EVENTXW2(EVENTL,EVENTR,N)       (EVENTXR(EVENTR,N))-(EVENTXL(EVENTL,N))
+
+!**********************************************************************!
+!                                                                      !
+!        LEFT AND RIGHT BOUNDARIES OF FRACTIONAL EVENT REGION          !
+!                                                                      !
+!**********************************************************************!
+
+! A fractional event occurs where the y value of the data crosses a
+! level which is a specified fractional distance between the reference
+! y value and the event y value, for instance halfway between the
+! reference y and the event y, or 10% from the event y to the reference
+! y.
+!
+! The convention used in these macros is that the reference y is 100%
+! and the event y is 0%.  The fractional factor is always expressed as
+! a number between 0 and 1, e.g. 0.5 for 50% and 0.1 for 10%.
+
+!-----------------------------------------------------------------------
+!
+! EVENTYLF returns the y value at the fractional event between the
+! reference point and the first event to the left.
+!
+! In example 1 above, to find the y value which is 10% of the way from
+! the y value at the left valley to the y value at the peak, use
+! EVENTYLF(W1,W2,0.1,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EVENTYLF(DATA,EVENT,FAC,N)      (FAC)*(GETPT(DATA,N))+(1-(FAC))*(EVENTYL(DATA,EVENT,N))
+
+!-----------------------------------------------------------------------
+!
+! EVENTYRF returns the y value at the fractional event between the
+! reference point and the first event to the right.
+!
+! In example 1 above, to find the y value which is 10% of the way from
+! the y value at the right valley to the y value at the peak, use
+! EVENTYRF(W1,W2,0.1,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EVENTYRF(DATA,EVENT,FAC,N)      (FAC)*(GETPT(DATA,N))+(1-(FAC))*(EVENTYR(DATA,EVENT,N))
+
+!-----------------------------------------------------------------------
+!
+! EVENTXLF returns the x value of the fractional event between the
+! reference point and the first event to the left.
+!
+! In example 1 above, to find the x value at the point where the y
+! value is 10% of the way from the y value at the left valley to the y
+! value at the peak, use EVENTXLF(W1,W2,0.1,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EVENTXLF(DATA,EVENT,FAC,N)      EVENTXL(LEVELCROSS(DATA,EVENTYLF(DATA,EVENT,FAC,N),0,0),N)
+
+!-----------------------------------------------------------------------
+!
+! EVENTXRF returns the x value of the fractional event between the
+! reference point and the first event to the right.
+!
+! In example 1 above, to find the x value at the point where the y
+! value is 10% of the way from the y value at the right valley to the y
+! value at the peak, use EVENTXRF(W1,W2,0.1,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EVENTXRF(DATA,EVENT,FAC,N)      EVENTXR(LEVELCROSS(DATA,EVENTYRF(DATA,EVENT,FAC,N),0,0),N)
+
+!-----------------------------------------------------------------------
+!
+! EVENTNLF returns the index of the fractional event between the
+! reference point and the first event to the left.
+!
+! In example 1 above, to find the index at the point where the y value
+! is 10% of the way from the y value at the left valley to the y value
+! at the peak, use EVENTNLF(W1,W2,0.1,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EVENTNLF(DATA,EVENT,FAC,N)      INDS(EVENT,EVENTXLF(DATA,EVENT,FAC,N))
+
+!-----------------------------------------------------------------------
+!
+! EVENTNRF returns the index of the fractional event between the
+! reference point and the first event to the right.
+!
+! In example 1 above, to find the index at the point where the y value
+! is 10% of the way from the y value at the right valley to the y value
+! at the peak, use EVENTNRF(W1,W2,0.1,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EVENTNRF(DATA,EVENT,FAC,N)      INDS(EVENT,EVENTXRF(DATA,EVENT,FAC,N))
+
+!**********************************************************************!
+!                                                                      !
+!                  WIDTH OF FRACTIONAL EVENT REGION                    !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! EVENTXLDF returns the width in x units from the first fractional
+! event to the left of the reference point to the reference point
+! itself.
+!
+! In example 1 above, to find the x distance from the point on the left
+! where the y has risen 10% from valley to the peak, to the reference
+! point (the rise time from the 10% level), use 
+! EVENTXLDF(W1,W2,0.1,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EVENTXLD(DATA,EVENT,FAC,N)      GETXS(EVENT,N)-EVENTXLF(DATA,EVENT,FAC,N)
+
+!-----------------------------------------------------------------------
+!
+! EVENTXRDF returns the width in x units from the reference point to
+! the first fractional event to the right of the reference point.
+!
+! In example 1 above, to find the x distance from the reference point
+! to the point on the right where the y has fallen to 10% of the
+! distance from the peak to the valley (the fall time to the 10%
+! level), use EVENTXRDF(W1,W2,0,1,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EVENTXRDF(DATA,EVENT,FAC,N)     EVENTXRF(DATA,EVENT,FAC,N)-GETXS(EVENT,N)
+
+!-----------------------------------------------------------------------
+!
+! EVENTXWF returns the width in x units between the first fractional
+! event to the left of the reference point and the first fractional
+! event to the right of the reference point.  The same event series and
+! factor are used to indicate both fractional events.
+!
+! In example 1 above, to find the full width of the peak in x units,
+! from the point on the left where the y has risen 10% from the valley
+! to the peak, to the corresponding point on the right, use
+! EVENTXWF(W1,W2,0.1,250).
+!
+! To find the full-width-half-max for the data in W1 about point number
+! 250, where the maximum is defined as the distance from the x axis,
+! use EVENTXWF(W1,LEVELCROSS(W1,0.0,0,0),0.5,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EVENTXWF(DATA,EVENT,FAC,N)      (EVENTXRF(DATA,EVENT,FAC,N))-(EVENTXLF(DATA,EVENT,FAC,N))
+
+!-----------------------------------------------------------------------
+!
+! EVENTXWF2 returns the width in x units between the first fractional
+! event to the left of the reference point and the first fractional
+! event to the right of the reference point.  Two event series and two
+! event y value factors are used: one for the left fractional event and
+! one for the right fractional event.
+!
+! In example 2 above, to find the full width of the peak in x units
+! where the y value rises 10% above the base on the left and 30% above
+! the base on the right, use EVENTXWF2(W1,W2,0.1,W3,0.3,250).
+!
+!     DATA   = data series
+!     EVENTL = left event series
+!     FACL   = left event y value factor
+!     EVENTR = right event series
+!     FACR   = right event y value factor
+!     N      = index of reference point
+
+EVENTXWF2(DATA,EVENTL,FACL,EVENTR,FACR,N)       (EVENTXRF(DATA,EVENTR,FACR,N))-(EVENTXLF(DATA,EVENTL,FACL,N))
+
+!**********************************************************************!
+!                                                                      !
+!                       EXTRACT EVENT REGIONS                          !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! EXTRACTL extracts the region of the data series between the first
+! event to the left and the reference point.
+!
+! In example 1 above, to extract the data from the valley on the left
+! to the reference point, use EXTRACTL(W1,W2,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     N     = index of reference point
+
+EXTRACTL(DATA,EVENT,N)          EXTRACT(DATA,EVENTNL(EVENT,N),(N)-(EVENTNL(EVENT,N))+1)
+
+!-----------------------------------------------------------------------
+!
+! EXTRACTR extracts the region of the data series between the reference
+! point and the first event to the right.
+!
+! In example 1 above, to extract the data from the reference point to
+! the valley on the right, use EXTRACTR(W1,W2,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     N     = index of reference point
+
+EXTRACTR(DATA,EVENT,N)          EXTRACT(DATA,N,(EVENTNR(EVENT,N))-(N)+1)
+
+!-----------------------------------------------------------------------
+!
+! EXTRACTW extracts the region of the data series between the first
+! event to the left of the reference point and the first event to the
+! right.  The same event series is used to indicate both events.
+!
+! In example 1 above, to extract the data from the valley on the left
+! to the valley on the right, use EXTRACTW(W1,W2,250).
+!
+! To find the area between this peak and the x-axis: 
+! AREA(EXTRACT(W1,W2,250)).  
+!
+! To find the area between this peak and the horizontal line going
+! through the y value at the left valley:
+! AREA(EXTRACT(W1,W2,250)-EVENTYL(W1,W2,250)).  
+!
+! To find the area between the peak and the line going through the left
+! valley and the right valley: 
+! AREA(EXTRACT(W1,W2,250)-MEAN(GSERIES(EVENTYL(W1,W2,250),
+! EVENTR(W1,W2,250)))).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     N     = index of reference point
+
+EXTRACTW(DATA,EVENT,N)          EXTRACT(DATA,EVENTNL(EVENT,N),(EVENTNR(EVENT,N))-(EVENTNL(EVENT,N))+1)
+
+!-----------------------------------------------------------------------
+!
+! EXTRACTW2 extracts the region of the data series between the first
+! event to the left of the reference point and the first event to the
+! right.  Two event series are used: one for the left event and one for
+! the right event.
+!
+! In example 2 above, to extract the data from the left valley to the
+! right threshold, use EXTRACTW2(W2,W3,250).
+!
+!     DATA   = data series
+!     EVENTL = event series defining events on the left
+!     EVENTR = event series defining events on the right
+!     N      = index of reference point
+
+EXTRACTW2(DATA,EVENTL,EVENTR,N) EXTRACT(DATA,EVENTNL(EVENTL,N),(EVENTNR(EVENTR,N))-(EVENTNL(EVENTL,N))+1)
+
+!-----------------------------------------------------------------------
+!
+! EXTRACTLF extracts the region of the data series between the first
+! fractional event to the left and the reference point.
+!
+! In example 1 above, to extract the data between the point where the y
+! has risen 10% from the left valley to the peak, and the reference
+! point, use EXTRACTLF(W1,W2,0.1,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EXTRACTLF(DATA,EVENT,FAC,N)     EXTRACT(DATA,EVENTNLF(DATA,EVENT,FAC,N),(N)-(EVENTNLF(DATA,EVENT,FAC,N))+1)
+
+!-----------------------------------------------------------------------
+!
+! EXTRACTRF extracts the region of the data series between the reference
+! point and the first fractional event to the right.
+!
+! In example 1 above, to extract the data between the reference point
+! and the point where the y has fallen to 10% of the distance from the
+! right valley to the peak, use EXTRACTRF(W1,W2,0.1,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EXTRACTRF(DATA,EVENT,FAC,N)     EXTRACT(DATA,N,(EVENTNRF(DATA,EVENT,FAC,N))-(N)+1)
+
+!-----------------------------------------------------------------------
+!
+! EXTRACTWF extracts the region of the data series between the first
+! fractional event to the left of the reference point and the first
+! fractional event to the right.  The same event series and factor are
+! used to indicate both fractional events.
+!
+! In example 1 above, to extract the data between the points where the
+! y values have risen 10% from the valleys to the peak, use
+! EXTRACTWF(W1,W2,0.1,250).
+!
+!     DATA  = data series
+!     EVENT = event series
+!     FAC   = event y value factor
+!     N     = index of reference point
+
+EXTRACTWF(DATA,EVENT,FAC,N)     EXTRACT(DATA,EVENTNLF(DATA,EVENT,FAC,N),(EVENTNRF(DATA,EVENT,FAC,N))-(EVENTNLF(DATA,EVENT,FAC,N))+1)
+
+!-----------------------------------------------------------------------
+!
+! EXTRACTWF2 extracts the region of the data series between the first
+! fractional event to the left of the reference point and the first
+! fractional event to the right.  Two event series are used: one for
+! the left fractional event and one for the right fractional event.
+!
+! In example 2 above, to extract the data between the points where the
+! y values rise 10% above the base on the left and 30% above the base
+! on the right, use EXTRACTWF2(W1,W2,0.1,W3,0.3,250).
+!
+!     DATA   = data series
+!     EVENTL = left event series
+!     FACL   = left event y value factor
+!     EVENTR = right event series
+!     FACR   = right event y value factor
+!     N      = index of reference point
+
+EXTRACTWF2(DATA,EVENTL,FACL,EVENTR,FACR,N)      EXTRACT(DATA,EVENTNLF(DATA,EVENTL,FACL,N),(EVENTNRF(DATA,EVENTR,FACR,N))-(EVENTNLF(DATA,EVENTL,FACL,N))+1)
+
+!**********************************************************************!
+!                                                                      !
+!                      LIST OF SERIES OF EVENTS                        !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! GETEVENTNS returns a list of indexes for events occurring in an
+! event series.  This list can be used with the BUILDSP macro for
+! processing a series of event regions occurring at various reference
+! points.
+!
+!     EVENT = event series
+
+GETEVENTNS(EVENT)               DELETE(GLINE(LENGTH(EVENT),DELTAX(EVENT),1,1),NOT(EVENT))
+
+!-----------------------------------------------------------------------
+!
+! GETEVENTXS returns a list of x values for events occurring in an
+! event series.
+!
+!     EVENT = event series
+
+GETEVENTXS(EVENT)               DELETE(XVALS(EVENT),NOT(EVENT))
+
+!-----------------------------------------------------------------------
+!
+! GETEVENTYS returns a list of y values for events occurring in an
+! event series.
+!
+!     DATA  = data series
+!     EVENT = event series
+
+GETEVENTYS(DATA,EVENT)          DELETE(DATA,NOT(EVENT))
+
+!**********************************************************************!
+!                                                                      !
+!                      PROCESS SERIES OF EVENTS                        !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! BUILDSP builds up a series point by point.  It takes one formula,
+! which must evaluate to a scalar, and which involves a variable point
+! number.  It builds the series up as the point number variable loops
+! from 1 to the number of points.  The formula must be an executable
+! expression involving the point number variable, except that all
+! appearances of the point number variable must be replaced by EVAL of
+! the variable.  For more information, see LOOP.MAC.
+!
+! Example 3:  For a data series in W1, we want to find all the rise
+! times.  The peaks are defined by the threshold 3.26, and the bases
+! of the peaks are defined as valleys with the threshold -1.5.  Into
+! W2 we would enter the valley event series
+! GETVALLEY(W1,-1.5,1,0,1)!=0, and into W3 we would enter the peak
+! event series GETPEAK(W1,3.26,1,0,1)!=0.  In W4, we all the reference
+! points with GETEVENTNS(W3).  Finally in W5, we loop on these
+! reference points to find the rise times with
+! BUILDSP('K',LENGTH(W4),EVENTXLD(W2,FLOOR(GETPT(W4,EVAL('K'))))).
+!
+! Example 4:  For the same data and peaks as in example 3, we also want
+! to find the area under the peaks.  Into W6 we would enter
+! BUILDSP('K',LENGTH(W4),AREA(EXTRACTW(W1,W2,FLOOR(GETPT(W4,
+! EVAL('K')))))).
+!
+!     V    = point number variable in quotes
+!     P    = number of points
+!     FORM = formula of scalar to be built
+
+BUILDSP(V,P,FORM)               POFF;GLINE(FLOOR(P),1,0,0);DEFMACRO(V,0,1);WHILE(EVAL(V)<P,LOOP(V,SETPT(CURR,FORM,FLOOR(EVAL(V)))));PON
+LOOP(V,FORM)                    DEFMACRO(V,EVAL(V)+1,1);ECHO(STRCAT(V,' = ',STRNUM(EVAL(V))));FORM
+
+!-----------------------------------------------------------------------
+! 
+! BUILDMC builds up a matrix column by column.  It takes one formula,
+! which must evaluate to a series, and which involves a variable
+! column number.  It builds the matrix up as the column variable loops
+! from 1 to the number of columns.  The formula must be an executable
+! expression involving the column variable, except that all appearances
+! of the column variable must be replaced by EVAL of the variable.  For
+! more information, see LOOP.MAC.
+!
+! In example 3 above, to build a matrix with each peak region in a
+! column, use
+! BUILDMC('K',LENGTH(W4),EXTRACTW(W1,W2,FLOOR(GETPT(W4,EVAL('K'))))).
+! 
+!     V    = column number variable in quotes
+!     P    = number of columns
+!     FORM = formula of column series
+
+BUILDMC(V,P,FORM)       POFF;DEFMACRO(V,0,1);LOOP(V,FORM);WHILE(EVAL(V)<P,LOOP(V,RAVEL(CURR,FORM)));PON
+
+!---------------------------------- END ------------------------------------

@@ -1,0 +1,36 @@
+_setdun(str, mode)
+{
+	local unitstr;
+
+	if (argc < 2) mode = 1;
+
+	switch (mode) {
+		case 1:
+		default:
+			unitstr = "VUNITS";
+			break;
+
+		case 2:
+			unitstr = "HUNITS";
+			break;
+
+		case 3:
+			unitstr = "ZUNITS";
+			break;
+	}
+	if (strlen(str) > 0) {
+		if (strlen(strfind(" ", str)) > 0) {
+			if (strlen(strfind("'", str)) > 0) {
+				str = sprintf('"%s"', str);
+			}
+			else {
+				str = sprintf("'%s'", str);
+			}
+		}
+		setconf(unitstr, str);
+	}
+	else {
+		setconf(unitstr, "");
+	}
+}
+

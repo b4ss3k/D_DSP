@@ -1,0 +1,18 @@
+! wizcat.txt - function wizard categories
+Complex Conversions       ! wiz00.txt
+Correlation & Convolution ! wiz01.txt
+Data I/O                  ! wiz02.txt
+Data Reduction            ! wiz03.txt 
+Error / Bessel / Gamma    ! wiz04.txt
+FFT / Spectral            ! wiz05.txt
+Generate Data             ! wiz06.txt
+Hyperbolic                ! wiz07.txt
+Image Processing          ! wiz08.txt
+Math                      ! wiz09.txt
+Math2D                    ! wiz10.txt
+Matrix Math               ! wiz11.txt
+Peaks and Valleys         ! wiz12.txt
+Reordering                ! wiz13.txt
+Signal Processing         ! wiz14.txt
+Statistics                ! wiz15.txt
+Trigonometric             ! wiz16.txt

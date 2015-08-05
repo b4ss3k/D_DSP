@@ -1,0 +1,62 @@
+/*****************************************************************************
+*                                                                            *
+*   GRADIENT.SPL Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Performs 2D derivative of an array                          *
+*                                                                            *
+*   Revisions:   25 Mar 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_GRADIENT
+
+    GRADIENT
+
+    Purpose: Calculates the 2D derivative of an array
+                                                                        
+    Format:  GRADIENT(array)
+
+              array - a multi-column series
+
+    Returns: An array
+
+    Example:
+             (x, y) = fxyvals(-2, 2, .1, -2, 2, .1);
+             z = cos(x*y);
+             g = gradient(z);
+
+             Calculates the surface derivative of cos(x*y).
+
+             W1: plot3d(g)
+             W2: plot3d(z);shadewith(w1);
+
+             Shades the original surface with it's gradient.
+
+
+    Remarks:
+             If the input is a series, the derivative is returned.
+
+
+    See Also
+             DERIV
+
+#endif
+
+
+gradient(a)
+{
+	if (not(IS_ARRAY(a))) {
+		error("gradient - series or array expected");
+	}
+	if (numcols(a) > 1) {
+		return(sqrt(deriv(a)^2 + transpose(deriv(transpose(a)))^2));
+	}
+	else {
+		return(deriv(a));
+	}
+}

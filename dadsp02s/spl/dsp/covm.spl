@@ -1,0 +1,76 @@
+/*****************************************************************************
+*                                                                            *
+*   COVM.SPL     Copyright (C) 1998-2000 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the covariance matrix                            *
+*                                                                            *
+*   Revisions:   19 Feb 1998  RRR  Creation - from COVM.MAC                  *
+*                 3 May 2000  RRR  optional second array                     *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_COVM
+
+    COVM    
+
+    Purpose: Calculates the covariance matrix of an array
+                                                                        
+    Format:  COVM(m1, m2)
+
+              m1 - an array or series
+
+              m2 - an optional second array or series
+
+    Returns: An array
+
+    Example:
+
+
+            a = {{1.00, 3.00, 2.20},
+                 {1.10, 4.00, 2.40},
+                 {1.20, 5.00, 2.60}}
+
+            b = Covm(a)
+
+            b == {{0.01, 0.10, 0.02},
+                  {0.10, 1.00, 0.20},
+                  {0.02, 0.20, 0.04}}
+
+            c = Diag(sqrt(b))
+            d = Colstdev(a)'
+
+            c == d
+
+
+    Remarks:
+
+            The mean is removed from each column before the
+            covariance is computed.  The standard deviations of each
+            column can be calculated by:
+
+                      diag(sqrt(covm(m)))
+
+    See Also
+             *^
+             Colstdev
+#endif
+
+
+/* calculate covariance matrix */
+covm(m1, m2)
+{
+	if (argc < 2) {
+		if (argc < 1) error("covm - input series or array required");
+	}
+	else {
+		m1 = ravel(m1, m2);
+	}
+
+
+	/* remove mean from each column in a matrix */
+	return(crossprod(m1-colmean(m1))/(length(m1)-1));
+}
+

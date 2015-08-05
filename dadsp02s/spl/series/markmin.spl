@@ -1,0 +1,128 @@
+/*****************************************************************************
+*                                                                            *
+*   MARKMIN.SPL   Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Marks the minimum of a series with a symbol                *
+*                                                                            *
+*   Revisions:     7 Mar 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_MARKMIN
+
+    MARKMIN
+
+    Purpose: Marks the minimum of a series with a symbol
+                                                                        
+    Format:  MARKMIN(s, color, symbol)
+
+                s - an optional series, defaults to the current Window
+
+            color - an option integer, the color for the mimimum
+                    marker, defaults to LGREEN
+
+           symbol - an optional integer, the symbol for the minimum
+                    marker, defaults to UP_ARROW
+
+
+
+    Returns: Nothing, overplots the series with a symbol
+
+    Example:
+
+             W1: gnorm(1000,.01);markmin;
+
+             creates 1000 samples of uniformly distributed
+             random noise an marks the minimum with a light
+             green up arrow.
+
+    Example:
+             W1: gnorm(1000,.01);markmin(BLUE, CIRCLE)
+
+             Same as above except the minimum is marked with
+             a blue circle.
+
+    Example:
+             W1: randn(100,100);setplotstyle(2);markmin
+
+             Creates a 100x100 image and marks the minimum.             
+
+
+    Remarks:
+             If the series is XYZ or a LIST (i.e. Z surface, density 
+             or contour), MARKMIN overplots an XYZ series. 
+
+
+    See Also:
+             Find
+             Findmax
+             Findmin
+             Findval
+             Markmin
+             Maxloc
+             Minloc
+
+#endif
+
+
+/* marks the minimum of a series with a symbol */
+markmin(s, color, symbol)
+{
+	local x, y, z, minser;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) {
+				s = curr;
+			}
+			/* markmin(color) */
+			if (not(IS_ARRAY(s))) {
+				color = castint(s);
+				s = curr;
+			}
+			else {
+				color = LGREEN;
+			}
+		}
+		if (not(IS_ARRAY(s))) {
+			/* markmin(color, symbol) */
+			symbol = color;
+			color = s;
+			s = curr;
+		}
+		else {
+			symbol = UP_ARROW;
+		}
+	}
+
+	/* get min values */
+	(x, y, z) = minloc(s);
+
+	if (ISLIST(s) || ISXYZSERIES(s)) { /* has z values */
+		minser = xyz({x}, {y}, {z});
+		setzunits(minser, getzunits(s));
+	}
+	else { /* series type */
+		/* create XY series */
+		minser = xy({x}, {y});
+	}
+
+	setcomment(minser, "Minimum Marker");
+	setvunits(minser, getvunits(s));
+	sethunits(minser, gethunits(s));
+
+	/* set symbol type */
+	if (symbol != 0) {
+		/* if using a value, force it to print below the symbol */
+		if (symbol > 1000) symbol += 2000;
+		setsym(minser, symbol);
+	}
+
+	/* overplot with no rescaling */
+	overp(minser, color, 0);
+}

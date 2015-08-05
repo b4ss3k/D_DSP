@@ -1,0 +1,8 @@
+
+/* initialization routine for WAV Module */
+modmain()
+{
+	/* redefine WAV directory so only new WAV files are found */
+	defmacro("_wavdir",  strcat("modules", pathchar, "wav"), 2);
+	defmacro("_wavhome", strcat(eval("_wavdir"), pathchar), 2);
+}

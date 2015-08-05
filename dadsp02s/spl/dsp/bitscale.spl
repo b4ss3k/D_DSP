@@ -1,0 +1,72 @@
+/*****************************************************************************
+*                                                                            *
+*   BITSCALE.SPL Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Convents raw counts to engineering units                    *
+*                                                                            *
+*   Revisions:   28 Jul 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_BITSCALE
+
+    BITSCALE
+
+    Purpose: Converts raw AD counts to scales engineering values
+                                                                        
+    Format:  BITSCALE(xi, numbits, yl, yh)
+
+              xi      - input series or scalar
+              numbits - an integer, the number of AD converter bits
+              yl      - a real, low value output range
+              yh      - a real, high value output range
+
+    Returns: A series or real
+
+    Example:
+             Bitscale(4096, 16, -2.5, 2.5)
+
+             returns 0.312543, the corresponding output for input 4096
+             of a 16 bit converter with an output range of +-2.5
+
+             Bitscale(-128..127, 8, 0.0, 10.0)
+
+             returns a series ranging from 0.0 to 10.0
+
+
+    Remarks:
+             Bitscale assumes offset binary input data, i.e the input
+             data ranges from -(2^numbits)/2 to (2^numbits)/2 - 1.
+             Bitscale does not automatically clip out of range values.
+
+    See Also:
+             Linscale
+#endif
+
+
+/* scale bits to output range */
+bitscale(xi, numbits, yl, yh)
+{
+	return(linscale(xi, -(2.0^numbits)/2, (2.0^numbits)/2 - 1.0, yl, yh));
+}
+
+
+/* linear scale input range to output range */
+linscale(xi, xl, xh, yl, yh)
+{
+	local xavg, xspan, yavg, yspan, yi;
+
+	xavg = (xh + xl) / 2.0;
+	xspan = (xh - xl);
+
+	yavg = (yh + yl) / 2.0;
+	yspan = (yh - yl);
+
+	yi = (xi - xavg) * (yspan / xspan) + yavg;
+	return(yi);
+}

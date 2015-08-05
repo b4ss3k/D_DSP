@@ -1,0 +1,21 @@
+! Dataio.men -- Data input/output functions
+@x5
+@y1
+@b{_bg2}
+@f{_fg2}
+  Load & Save Data
+
+ Load DADiSP Series~_MC|PDC(2033)
+ Save DADiSP Series~_MC|PDC(2034)
+
+ Read ASCII Series ~_deffname('READA    Read ASCII Data File')  |_defformat('Reada("filename")')|_defxamp('Reada("ascii.dat")')|_getstr1("ASCII Filename")|_strform("Reada")
+ Read Binary Data  ~_deffname('READB    Read Binary File')  |_defformat('Readb("filename", datatype)')|_defxamp('Readb("binary.dat", SINT)')|defmacro("_rwflg", 0, -1)|_mf("readb.pan")|_strmacform("Readb")
+ Read ASCII Table  ~_deffname('READTABLE  Read ASCII Table File')  |_defformat('Readtable("filename")')|_defxamp('Readtable("table.dat")')|_getstr1("Filename of Table")|_strform("Readtable")
+
+ Write ASCII Series~_deffname('WRITEA   Write ASCII Data File')  |_defformat('Writea("filename")')|_defxamp('Writea("ascii.dat")')|_getstr1("Filename for ASCII Data")|_evalstrform("Writea")
+ Write Binary Data ~_deffname('WRITEB   Write Binary File')  |_defformat('Writeb("filename", datatype)')|_defxamp('Writeb("binary.dat", SINT)')|defmacro("_rwflg", 1, -1)|_mf("readb.pan")|_evalstrmacform("Writeb")
+ Write ASCII Table ~_deffname('WRITETABLE      Write ASCII Table') |_defformat('Writetable("filename")')|_defxamp('Writetable("table.dat")')|_getstr1("Filename of Table")|_evalstrform("Writetable")
+
+ Edit a Table      ~_MC | if (length==0,_lf("editdata.dsp"),Tableview; cursoron)
+ View a File       ~_deffname('VIEWFILE Display an OS File')|_defformat('Viewfile("filename")')|_defxamp('Viewfile("mymac.mac")')|_getstr1("Command Filename")|_evalstrform("Viewfile")
+ Shell to OS       ~_MC | SHELL

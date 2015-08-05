@@ -1,0 +1,18 @@
+! stat.men -- Statistical functions menu
+!@x5
+@!y1
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+     Statistics
+_____________________
+
+ Summary Statistics ~_MF("statsum.men")
+ Histogram          ~_deffname('HISTOGRAM   Amplitude Distribution of a Series')  |_defformat('   Histogram(series, numbins)')|_defxamp('   Histogram(W1,10)')|_getserint1("Input Series:   ", "Number of Bins: ")|_serint1form("Histogram")
+ Polynomial Fit     ~_deffname('POLYFIT  Least Square Polynomial Fit')  |_defformat('Polyfit(series, order)')|_defxamp('Polyfit(W1, 8)')|_getserint1("Input Series:", "Input Order: ")|_serint1form("Polyfit")
+ Linear Regression  ~_deffname('LINREG   Fit a Line to a Series')      |_defformat('Linreg(series)')|_defxamp('Linreg(W1)')|_getser|_serform("Linreg")
+ Regress Two Series ~_deffname('LINREG2  Linearly Regress Series1 vs Series2')  |_defformat('Linreg2(series1, series2)')|_defxamp('Linreg2(W1,W2)')|_getser2("Input Series 1:","Input Series 2:")|_ser2form("Linreg2")
+_____________________
+
+ {_EXITMES}

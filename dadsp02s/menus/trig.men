@@ -1,0 +1,20 @@
+! Trig.men - Basic and Inverse Trig functions.
+@x0
+@y1
+@b{_bg2}
+@f{_fg2}
+ Basic & Inverse
+
+   SIN     ~_deffname('SIN      Sine') | _defformat('Sin(series)') | _defxamp('Sin(W1)') | _getser | _serform("Sin")
+   COS     ~_deffname('COS      Cosine') | _defformat('Cos(series)') | _defxamp('Cos(W1)') | _getser | _serform("Cos")
+   TAN     ~_deffname('TAN      Tangent') | _defformat('Tan(series)') | _defxamp('Tan(W1)') | _getser | _serform("Tan")
+   SEC     ~_deffname('SEC      Secant') | _defformat('Sec(series)') | _defxamp('Sec(W1)') | _getser | _serform("Sec")
+   CSC     ~_deffname('CSC      Cosecant') | _defformat('Csc(series)') | _defxamp('Csc(W1)') | _getser | _serform("Csc")
+   COT     ~_deffname('COT      Cotangent') | _defformat('Cot(series)') | _defxamp('Cot(W1)') | _getser | _serform("Cot")
+   SINC    ~_deffname('SINC     Sin(x)/x') | _defformat('SinC(series)') | _defxamp('SinC(W1)') | _getser | _serform("SinC")
+   ASIN    ~_deffname('ASIN     ArcSine') | _defformat('ASin(series)') | _defxamp('ASin(W1)') | _getser | _serform("ASin")
+   ACOS    ~_deffname('ACOS     ArcCosine') | _defformat('ACos(series)') | _defxamp('ACos(W1)') | _getser | _serform("ACos")
+   ATAN    ~_deffname('ATAN     ArcTangent') | _defformat('ATan(series)') | _defxamp('ATan(W1)') | _getser | _serform("ATan")
+   ASEC    ~_deffname('ASEC     ArcSecant') | _defformat('ASec(series)') | _defxamp('ASec(W1)') | _getser | _serform("ASec")
+   ACSC    ~_deffname('ACSC     ArcCosecant') | _defformat('ACsc(series)') | _defxamp('ACsc(W1)') | _getser | _serform("ACsc")
+   ACOT    ~_deffname('ACOT     ArcCotangent') | _defformat('ACot(series)') | _defxamp('ACot(W1)') | _getser | _serform("ACot")

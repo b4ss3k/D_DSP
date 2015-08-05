@@ -1,0 +1,13 @@
+! fft.men -- FFT functions menu
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+   FFT Analysis
+
+ FFTs                ~_MF("trans.men")
+ Correlations        ~_MF("corr.men")
+ Apply Windows       ~_MF("window.men")
+ Complex Conversions ~_MF("complex.men")
+ Image Processing    ~_MF("imagproc.men")
+

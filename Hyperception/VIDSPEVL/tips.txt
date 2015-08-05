@@ -1,0 +1,24 @@
+Hypersignal VIDSP Studio includes a useful Filter Design tool which can be used to generate FIR and IIR filters.
+Specialized libraries are available for enhancing the standard features of the Hypersignal VIDSP Studio application.
+The Block Wizard tool will generate all source files necessary to create a new custom block function in minutes!
+VIDSP Studio allows for rapid prototyping of DSP-based Instruments.
+The optional ANSI C Source Code Generator can create source code automatically from your visual designs.
+The Hypersignal HAppI Wizard allows you to very quickly create standalone applications from your visual design!
+Hyperception can provide you with a solution for all of your DSP and acquisition hardware needs.
+By using the Project Tabs you can quickly move to any block in the project.
+The Project Tabs display useful information about each block including Block Name, Menu Name, Group Name, Library Name, physical location, and other useful block information.
+The Project Tabs can let you modify the parameters of any block, in the project, without having to double click on that block.
+Pressing the right mouse button in a document will allow you to customize the popup floating menu.
+When connecting blocks, you can use the right mouse button to connect the same source block to multiple destination blocks.
+You can create your own blocks for use in the VIDSP Studio environment.
+The Block Wizard drastically reduces the development time of all new blocks.
+You can create your own stand alone Windows applications with the HAppI Wizard.
+You can set variables in one block by using the output of another block.
+Any block can control the execution of any other block using control connections.
+Any block can set the parameters of any other block using parameter connections.
+The compile order of all the blocks can be set manually.
+You can make notes directly on the worksheet by using the Text Box command on the toolbar.
+You can e-mail worksheets to other users or directly to the technical support department at Hyperception by using the Send command on the File menu.
+You can create your own toolbars which contain the blocks you use most often by selecting the "Customize Toolbars" command from the Options menu.
+Connections between blocks can go from the source block to the destination block or from the destination block to the source block.
+User defined tools can be easily added to the Tools menu using the "Customize Tools" command.

@@ -1,0 +1,127 @@
+@modeless 1
+
+    FILTMAG  
+
+    Purpose: 
+             Evaluates the magnitude response of a direct form or 
+             cascade filter.
+                                                                        
+    Format:  
+             FILTMAG(b, a, N)
+
+                b - a series, numerator (i.e. zero) coefficients
+
+                a - a series, denominator (i.e. pole) coefficients
+
+                N - an optional integer, number of output samples,
+                    defaults to 512
+
+
+    Alternative Format:  
+
+             FILTMAG(c, N)
+
+                c - A series, the system coefficients in cascaded 
+                    biquad form.  If C contains 2 columns, c is assumed
+                    to be in direct form, where the first column is B
+                    and the second column is A.
+
+                N - an optional integer, number of output samples,
+                    defaults to 512
+
+    Returns: 
+             A real series, the magnitude response of the filter in the
+             frequency domain.
+
+    Example:
+             W1: filtmag( {"{1}"}, {"{1, -0.5, 0.2}"} )
+
+             W1 contains 512 uniformly spaced samples of the magnitude 
+             response of the Z transform:
+
+                            1
+             H(z) = ------------------
+                            -1      -2
+                    1 - 0.5z  + 0.2z
+
+             The frequency samples range from 0 to 0.5 Hz. The input
+             filter coefficients are in direct form.
+
+    Example:
+             W1: butterworth(1, 100.0, 10.0)
+             W2: 20*log10(filtmag(w1, 1024))
+
+             creates a 10 Hz lowpass Butterworth filter and displays 1024
+             samples of the magnitude response. The magnitude is displayed
+             in dB. The filter coefficients are in cascade form.
+
+    Example:
+             W1: butterworth(1, 100.0, 10.0)
+             W2: cas2dir(W1)
+             W3: 20*log10(filtmag(w2, 1024))
+
+             Same as the previous example except the filter coefficients
+             are in Direct Form.
+
+    Example:
+             W1: lowpass(100.0, 10.0)
+             W2: 20*log10(filtmag(w1, {"{1}"}, 1024))
+
+             creates a 10 Hz lowpass FIR Remez Exchange filter and
+             displays 1024 samples of the magnitude response.  The
+             magnitude is displayed in dB.  Since the filter
+             coefficients are in FIR form, the denominator coefficient
+             is set to {"{1}"}.
+
+    Remarks:
+             FILTMAG uses ZFREQ to evaluate N uniformly spaced samples over 
+             the unit circle of a Z transform in direct form:
+  
+                                        -1                 -Q
+                    Y(z)   b[1] + b[2]*z   + ... + b[Q+1]*z
+             H(z) = ---- = -------------------------------------
+                                        -1                 -P
+                    X(z)    1   + a[2]*z   + ... + a[P+1]*z
+
+
+                        jw
+             where z = e    unit circle (frequency response)
+                   Q        order of zeros (numerator)
+                   P        order of poles (denominator)
+
+
+             For FILTMAG(c, N), if the input c is a single column, the
+             coefficients are assumed to be in cascaded bi-quad form. 
+             This is the output format of IIR filters designed by
+             DADiSP/Filters.  In this case, FILTMAG uses ZFREQ to
+             evaluate the following Z transform:
+
+                               -1       -2                -1       -2
+                    b10 + b11 z  + b12 z       b20 + b21 z  + b22 z
+         H(z) = G * ________________________ *  ________________________ ...
+                               -1       -2                -1       -2
+                      1 + a11 z  + a12 z         1 + a21 z  + a22 z
+
+             Where the filter coefficients are represented by a single column
+             series in the following order:
+
+             G, b10, b11, b12, a11, a12, b20, b21, b22, a21, a22, ...
+
+             If C contains 2 columns, the coefficients are assumed to
+             be in direct form, where the first column is B and the
+             second column is A.
+
+             The frequency range of the magnitude response is determined
+             by the sample rate of the filter coefficients.
+
+    See Also:
+             Fft
+             Filteq
+             Filtgrpdelay
+             Filtimp
+             Filtphase
+             Fir
+             Iir
+             Mag
+             Phase
+             Zfreq

@@ -1,0 +1,9 @@
+Betai                  !_PDC_EXEC356  $Incomplete Beta Function
+Erf                    !_PDC_EXEC121  $Error Function
+Erfc                   !_PDC_EXEC122  $Complementary Error Function
+Gamm                   !_PDC_EXEC123  $Gamma Function, Generalized Factorial
+Gammln                 !_PDC_EXEC352  $Log of Gamma Function
+Erfinv                 !_PDC_EXEC350  $Inverse Error Function
+Erfcinv                !_PDC_EXEC351  $Inverse Complementary Error Function
+Jn                     !_PDC_EXEC119  $Jn Bessel Function
+Yn                     !_PDC_EXEC120  $Yn Bessel Fucntion

@@ -1,0 +1,39 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                               !
+!                           DSPCOLOR.200                        !
+!                                                               !
+!           Copyright (C) 1991 DSP Development Corp             !
+!                                                               !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+! DADiSP color file for DADiSP 2.0 color scheme
+
+WHITE    !  1 foreground
+BLACK    !  2 background
+YELLOW   !  3 text_foreground
+BLACK    !  4 text_background
+WHITE    !  5 signal_color
+LRED     !  6 window_border_color
+BLUE     !  7 window_color
+RED      !  8 popmes_background_color
+LBLUE    !  9 list_background_color
+WHITE    ! 10 list_text_foreground_color
+LBLUE    ! 11 list_text_background_color
+WHITE    ! 12 poptext_foreground_color
+GREEN    ! 13 infobox_color
+WHITE    ! 14 infobox_text_color
+RED      ! 15 help_color
+WHITE    ! 16 help_text_color
+BLACK    ! 17 window_background_color
+YELLOW   ! 18 window_text_color
+GREEN    ! 19 window_grid_color
+LRED     ! 20 window_hilite
+LRED     ! 21 window_shadow
+WHITE    ! 22 list_hilite
+WHITE    ! 23 list_shadow
+WHITE    ! 24 pop_hilite
+WHITE    ! 25 pop_shadow
+WHITE    ! 26 bar_hilite
+WHITE    ! 27 bar_shadow
+BLACK    ! 28 mono_fg
+WHITE    ! 29 mono_bg

@@ -1,0 +1,17 @@
+/* get clipboard copy format */
+_getcbf(m, use_default)
+{
+	local cbf;
+
+	if (argc < 2) use_default = 0;
+
+	if (use_default) {
+		cbf = castint(getconfdefault("CLIPBOARD_COPYFORMAT"));
+	}
+	else {
+		cbf = castint(getconf("CLIPBOARD_COPYFORMAT"));
+	}
+	
+	return((cbf & m) != 0);
+}
+

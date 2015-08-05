@@ -1,0 +1,77 @@
+/*****************************************************************************
+*                                                                            *
+*   CHKFILES.SPL    Copyright (C) 2000 DSP Development Corporation           *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     performs F9 database cleanup                               *
+*                                                                            *
+*   Revisions:     1 May 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_CHKFILES
+
+    CHKFILES    
+
+    Purpose: Checks the file integrity of a Labbook
+                                                                        
+    Format:  CHKFILES(mode)
+
+              mode - an optional integer, 1: delete orphaned files,
+                     0: do not delete, defaults to 1
+
+    Returns: Nothing, renames unreferenced Labbook files with 
+             extension .ORF and optionally deletes them.
+
+    Example:
+             
+             chkfiles
+             
+             Examines each Worksheet, Dataset and Channel file in the 
+             current Labbook and automatically deletes any unreferenced
+             files.
+
+    Remarks:
+             CHKFILES checks if any Labbook files are no longer referenced 
+             by Labbook objects. For example, temporary files will not be 
+             deleted if the machine improperly shuts down while a Labbook 
+             is open. These temporary files will be unreferened in the 
+             next DADiSP session and CHKFILES can be used to automatically 
+             remove and recover the file space.
+
+    See Also:
+             Eval
+             Run
+#endif
+
+
+/* F9 File check */
+chkfiles(mode)
+{
+	local delcmd, path, cmd;
+
+	if (argc < 1) {
+		mode = 1;
+	}
+
+	/* run file check function to create orphaned files */
+	reserved(1012);
+
+	if (mode) { /* delete the .ORF files */
+		if (pathchar == '\') { /* Windows */
+			delcmd = "del";
+		}
+		else { /* Unix */
+			delcmd = "rm";
+		}
+		path = strcat(getlabpath, getlabname);
+		cmd = sprintf('%s "%s%s*.orf"', delcmd, path, pathchar);
+		eval(sprintf("Run('%s', -1)", cmd));
+	}
+	return;
+}
+		
+	

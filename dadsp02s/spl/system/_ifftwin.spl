@@ -1,0 +1,37 @@
+/* IFFT panel */
+_ifftwin(ser, len, form, dwin)
+{
+	local evalstr;
+
+	/* Real, Cartesian or Polar form */
+	switch (form) {
+		case 0:
+		case 1:
+		default:
+			func = "Ifft";
+			break;
+
+		case 2:
+			func = "Ifftp";
+			break;
+	}
+
+	if (strcmp(len, "-1") == 0) {
+		evalstr = sprintf("%s(%s)", func, ser);
+	}
+	else if (strcmp(len, "-2") == 0) {
+		evalstr = sprintf("%s(%s, bestpow2(%s))", func, ser, ser);
+	}
+	else {
+		evalstr = sprintf("%s(%s, %s)", func, ser, len);
+	}
+	if (form == 0) {
+		evalstr = sprintf("setwf(%s, 'Real(%s)')", _dwin, evalstr);
+	}
+	else {
+		evalstr = sprintf("setwf(%s, '%s')", _dwin, evalstr);
+	}
+
+	eval(evalstr);
+}
+

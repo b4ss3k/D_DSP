@@ -1,0 +1,18 @@
+! Color1.men -- Color Selection Menu
+@x14
+@y1
+@b{_bg3}
+@f{_fg3}
+@panel
+        Menu Color Settings
+
+ Menu Bg Depth 1:  <            >~defmacro("_BG1S",'"<{_bg1s}>"',1)~echo("Enter Menu Background Color") | _COLORMEN
+ Menu Fg Depth 1:  <            >~defmacro("_FG1S",'"<{_fg1s}>"',1)~echo("Enter Menu Foreground Color") | _COLORMEN
+
+ Menu Bg Depth 2:  <            >~defmacro("_BG2S",'"<{_bg2s}>"',1)~echo("Enter Menu Background Color") | _COLORMEN
+ Menu Fg Depth 2:  <            >~defmacro("_FG2S",'"<{_fg2s}>"',1)~echo("Enter Menu Foreground Color") | _COLORMEN
+
+ Help Menu Bg:     <            >~defmacro("_HELPBGS",'"<{_helpbgs}>"',1)~echo("Enter Menu Background Color") | _COLORMEN
+ Help Menu Fg:     <            >~defmacro("_HELPFGS",'"<{_helpfgs}>"',1)~echo("Enter Menu Foreground Color") | _COLORMEN
+
+~_MC

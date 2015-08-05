@@ -1,0 +1,19 @@
+/* convert item, member to column */
+_itm2col(item, member)
+{
+	local col;
+
+	if (*item > numitems) *item = 1;
+
+	if (*member > itemcount(*item)) *member = 1;
+	col = itemcol(*item) + *member - 1;
+	col += (col == 0);
+
+	if (itemtype(*item) != 9 && itemtype(*item) != 2 && getplottype(0) != 6) {
+		*member = 1;
+		col = *item;
+	}
+
+
+	return(col);
+}

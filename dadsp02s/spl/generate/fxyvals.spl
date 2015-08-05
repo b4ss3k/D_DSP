@@ -1,0 +1,109 @@
+/*****************************************************************************
+*                                                                            *
+*   FXYVALS.SPL  Copyright (C) 1997 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Creates X, Y, R and THETA values for 3D plots               *
+*                                                                            *
+*   Revisions:   21 Jun 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+/*
+** generate xy values for Plot3d function
+*/
+
+#if @HELP_FXYVALS
+
+    FXYVALS    
+
+    Purpose: Creates 2D XY values
+                                                                        
+    Format:  FXYVALS(xl, xu, xinc, yl, yu, yinc)
+
+              xl   - a real, lower x value
+              xu   - a real, upper x value
+              xinc - a real, x increment
+              yl   - a real, lower y value
+              yu   - a real, upper y value
+              yinc - a real, y increment
+
+    Returns: Two arrays of X and Y values
+
+    Example:
+             (x, y) = fxyvals(-2, 2, .1, -2, 2, .1);
+             cos(x*y);
+
+             generates an interesting 2D cosine plot
+
+
+    Remarks:
+             FXYVALS is used by the Generate 2D data creation function.
+
+             See MESHGRID to generate XY values from two input series.
+
+    See Also
+             Gline
+             Ravel
+
+#endif
+
+/* undefine old macros - compile time */
+#undef X
+#undef Y
+#undef R
+#undef THETA
+
+
+fxyvals(xl, xu, xinc, yl, yu, yinc)
+{
+	local nrows, ncols, x, y, r, theta;
+
+	/* undefine old macros if they exist - runtime */
+	undefmacro("x");undefmacro("y");undefmacro("r");undefmacro("theta");
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("fxyvals - input series or range required");
+			x = xl;
+			y = xl;
+		}
+		x = xl;
+		y = xu;
+	}
+	else {
+		/* generate values */
+		x = gnumber(xl, xu, xinc, xinc, xl);
+		y = gnumber(yl, yu, yinc, yinc, yl);
+	}
+
+	nrows = length(x);
+	ncols = length(y);
+
+	/* create arrays */
+	x = ravel(rep(x, ncols), nrows);
+	y = ravel(rep(y, nrows), ncols)';
+
+	/* set correct deltas and offsets */
+	setdeltay(x, deltay(y));
+	setdeltax(y, deltax(x));
+	setyoffset(x, yoffset(y));
+	setxoffset(y, xoffset(x));
+
+	if (outargc > 2) {
+		r = sqrt(x*x + y*y);
+		if (outargc > 3) {
+			theta = atan2(y, x);
+			return(x, y, r, theta);
+		}
+		else {
+			return(x, y, r);
+		}
+	}
+	else {
+		return(x, y);
+	}
+}
+

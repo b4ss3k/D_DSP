@@ -1,0 +1,51 @@
+_itype2s(i)
+{
+	local p;
+
+	switch (i) {
+		case SINT:
+			p = _SINTSTR;
+			break;
+
+		case SBYTE:
+		default:
+			p = _SBYTESTR;
+			break;
+
+		case UBYTE:
+			p = _UBYTESTR;
+			break;
+
+		case UINT:
+			p = _UINTSTR;
+			break;
+
+		case LONG:
+			p = _LONGSTR;
+			break;
+
+		case FLOAT:
+			p = _FLOATSTR;
+			break;
+
+		case DOUBLE:
+			p = _DOUBLESTR;
+			break;
+
+		case ULONG:
+			p = _ULONGSTR;
+			break;
+
+		case 0:
+			p = _ASCIISTR;
+			break;
+
+		case 100:
+			p = _EXCELSTR;
+			break;
+
+	}
+
+	return(p);
+}
+

@@ -1,0 +1,4 @@
+_psty2si(p)
+{
+	return(caststring(_psty2i(p)));
+}

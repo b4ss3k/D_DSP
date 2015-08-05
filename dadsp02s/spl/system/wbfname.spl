@@ -1,0 +1,58 @@
+/* gui based writeb */
+wbfname(fname)
+{
+	local orgname, fn, dl, collist;
+
+	/* set default name to appear in dialog box */
+	if (argc > 0) {
+		/* use input filename */
+		setvar("_wbfname", fname);
+		setvar("_wbpickdir", strrev(strfind(pathchar, strrev(_wbfname))));
+	}
+	else {
+		/* just define the variable */
+		defvar("_wbfname", "");
+	}
+
+	/* define start directory if it doesn't already exist */
+	defvar("_wbpickdir", "");
+
+	/* _pickfile_status == 1 if dialog was successful */
+	setvar("_pickfile_status", 0);
+
+	/* series name state */
+	setvar("_wbser", 1);
+
+	/* remember original name */
+	orgname = _wbfname;
+
+	/* datatype */
+	defvar("_wbdtype", "SINT");
+
+	/* define savemode */
+	defvar("_wbsmode", 0);
+
+	/* swap bytes */
+	defvar("_wbswap", 0);
+
+	/* invoke dialog box */
+	_mf("writeb.pan");
+
+	if (_pickfile_status != 0) { /* dialog was successful */
+		/* remember default directory */
+		setvar("_wbpickdir", strrev(strfind(pathchar, strrev(_wbfname))));
+		fn = sprintf('"%s"', _wbfname);
+		if (strlen(_wbfname) > 0) {
+			if (setwfmode == 1) {
+				eval(sprintf("setwf('writeb(%s, %s, %d, %d, %s)')", fn, _wbdtype, _wbsmode, _wbswap, eval('_ser1')));
+			}
+			else {
+				eval(sprintf('writeb(%s, %s, %d, %d, %s)', fn, _wbdtype, _wbsmode, _wbswap, eval('_ser1')));
+			}
+		}
+	}
+	else {
+		/* reset to original name */
+		setvar("_wbfname", orgname);
+	}
+}

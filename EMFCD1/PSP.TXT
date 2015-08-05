@@ -1,0 +1,535 @@
+rem residues
+data
+50
+num = [1 2]
+den = [1 4 3 0]
+[r,p] = residue(num,den)
+rem transformer matching
+data
+49
+Transformer Example
+; Uses dependent sources
+VG 1 0 AC 20
+RG 1 2 10
+FPRI 2 0 VS 4
+VS 3 4 0
+ESEC 3 0 2 0 4
+RL 4 0 100
+.AC LIN 1 1E3 1E3
+.PRINT AC V(RL)
+.END
+rem scope probe
+data
+48
+see probe.msm in esa directory (requires multisim)
+rem differential amplifier
+data
+47
+see diffamp.msm in esa directory (requires multisim)
+rem envelope detector
+data
+46
+see amdet.msm in esa directory (requires multisim)
+rem voltage doubler
+data
+45
+Voltage Doubler
+V1 1 0 SIN (0 5 1000)
+C1 1 2 10.e-6
+D2 2 3 DA
+D1 0 2 DA
+C2 3 0 20e-6
+R 3 0 1E3
+.MODEL DA D(IS=1E-13)
+.TRAN 1e-3 50e-3
+.PROBE
+.END
+rem quickplot
+data
+44
+% simple plot
+x=(1:.01:10);
+y=sin(3*pi*x);
+plot(x,y)
+
+% plot hand entered points for report
+x=[1,2, 4, 6];
+f=[1,1.414,2,2.449];
+f2=[1,4,16,36];
+plot(x,f,'--',x,f2,'-.');
+grid on;
+axis([1 6 0 40])
+xlabel('number')
+ylabel('value')
+title('Plot Title')
+legend('root','square')
+
+%3D Plotting Example
+x=linspace(0,1,100);
+y=x;
+for i=1:100
+   for j=1:100
+      z(i,j)=sin(8*x(i)+y(j));
+   end
+end
+mesh(x,y,z)
+rem frequency response
+data
+43
+Frequency Response
+V 1 0 AC 1 0
+RS 1 2 50
+C 2 0 12.7E-12
+L 2 3 6.36E-9
+R 3 0 10
+.AC LIN 100 100E6 1000E6
+.PROBE
+; Add trace for DB(V(3))
+.END
+rem linear curve fit
+data
+42
+% polynomial fit
+% load x and y with data, n= order
+x=[1 2 3 4];
+y=[1 4 9 16];
+n=2;
+p=polyfit(x,y,n)
+rem partial fractions
+data
+41
+% A = s + 2
+% B = s^3 + 4s^2 + 3s
+a=[1 2];
+b=[1 4 3 0];
+[c,p]=residue(a,b)
+rem polynomial roots
+data
+40
+% s^3 + 4s^2 + 6s + 4 = 0
+d=[1 4 6 4];
+r=roots(d)
+rem statistics basic
+data
+39
+% myvec.dat is a textfile with a column of numbers
+load myvec.dat
+m=mean(myvec)
+s=std(myvec)
+rem laplace transform
+data
+38
+% see also matlab ilaplace(f) for inverse
+syms w t
+f=sin(w*t)
+laplace(f)
+rem fourier transform
+data
+37
+% see also matlab fourier(f)
+syms t w
+f=exp(-2*t)
+g=f*exp(-i*w*t)
+F=int(g,t,0,inf)
+rem quadratic equation
+data
+36
+% this also works for higher order polynomials
+% x^2 + 2x + 3 = 0
+p=[1 2 3]
+roots(p)
+rem taylor series
+data
+35
+% six term Taylor series about x=1
+syms x
+f=sin(x)
+T=taylor(f,6,1)
+rem series rlc (unforced)
+data
+34
+RLC Transient
+V 1 0 PWL(0,0 .1e-6,1)
+R 1 2 50
+L 2 3 10E-3
+C 3 0 .1E-6
+.TRAN 10e-6 2e-3
+.PROBE
+.END
+rem matrix invert
+data
+33
+a=[1 0 5;2 4 3;3 1 2]
+b=inv(a)
+rem parallel impedance
+data
+32
+zp(z1,z2)
+Func
+z1*z2/(z1+z2)
+EndFunc
+rem resonance lc
+data
+31
+replace sqr with appropriate key
+
+lcres(l,c)
+Func
+1/(2*3.14159*sqr(l*c))
+EndFunc
+rem dB
+data
+30
+db(x,n)
+Func
+n*log(abs(x))
+EndFunc
+
+idb(x,n)
+Func
+10^(x/n)
+EndFunc
+rem current divider
+data
+29
+cdiv(is,z1,z2)
+Func
+is*z1/(z1+z2)
+EndFunc
+rem reactance
+data
+28
+xl(f,l)
+Func
+2*3.14159*f*l
+EndFunc
+
+xc(f,c)
+Func
+1/(2*3.14159*f*c)
+EndFunc
+rem voltage divider
+data
+27
+vdiv(v,z1,z2)
+Func
+v*z2/(z1+z2)
+EndFunc
+rem common emitter amp
+data
+26
+CE Amp No Bypass
+VCC 2 0 9
+VI 5 0 SIN(0 .01 1000)
+C 5 1 .1E-6
+R1 2 1 50E3
+R2 1 0 10E3
+RC 2 3 10E3
+RE 4 0 2.2E3
+Q1 3 1 4 Q2N2222
+.LIB EVAL.LIB
+.TRAN .01E-3 3E-3
+.PROBE ; PLOT V(1) AND AC PART OF V(3)
+.END
+rem schmitt trigger
+data
+25
+Schmitt Trigger
+VI 2 0 PWL(0 0 .1 10 .2 -10 .3 10)
+X 3 2 7 4 6 UA741
+V+ 7 0 DC 15
+V- 4 0 DC -15
+R1 6 3 10E3
+R2 3 0 10E3
+.LIB EVAL.LIB
+.TRAN .01 .4
+.IC V(6)=13
+.PROBE ; plot V(2) and V(6)
+.END
+rem op amp slew rate
+data
+24
+Op Amp Pulse Response
+V 1 0 PWL(0,0 1E-9,.1 10E-9,.1)
+RI 2 0 1E3
+RF 2 5 19E3
+V+ 3 0 DC 15
+V- 0 4 DC 15
+X 1 2 3 4 5 UA741
+.LIB EVAL.LIB
+.TRAN .1E-6 20E-6
+.PROBE
+.END
+rem R2R D/A
+data
+23
+R2R 4 bit Example
+* Input word is 1001
+R1 0 1 2E4
+R2 1 5 2E4 ; LSB
+R3 1 2 1E4
+R4 2 0 2E4 ; bit 3
+R5 2 3 1E4
+R6 3 0 2E4 ; bit 2
+R7 3 4 1E4
+R8 4 5 2E4 ; MSB
+RF 4 6 1E4
+V 0 5 DC 10
+E 6 0 0 4 1E9 ; ideal op amp
+.DC V 10 10 1
+.PRINT DC V(6)
+.END
+rem comparator
+data
+22
+Comparator
+V1 1 0 SIN(0 1 100)
+X 1 2 4 5 6 UA741
+VP 4 0 DC 15
+VM 5 0 DC -15
+VREF 2 0 .7
+.LIB EVAL.LIB
+.TRAN 1E-4 20E-3
+.PROBE
+.END
+rem pulse spectrum
+data
+21
+Pulse Example
+*Plot V(1) then do a Fourier Analysis
+V 1 0 PULSE(0 1 0 0 0 .5E-3 1E-3)
+R 1 0 100
+.TRAN 1E-6 1.5E-3
+.PROBE
+.END
+rem multiplier
+data
+20
+Multiplier
+VX 1 0 2
+VY 2 0 3
+E 3 0 POLY(2) (1,0) (2,0) 0 0 0 0 4 ; gain = 4
+.END
+rem VCVS
+data
+19
+VCVS Example
+V 1 0 AC 10E-3
+R1 1 0 10E3
+E 2 0 1 0 50
+R2 2 3 25
+R3 3 0 1e3
+.AC LIN 1 1E3 1E3
+.PRINT AC V(3)
+.END
+rem bridge equivalent
+data
+18
+Bridge Thevenin Equivalent
+V 1 0 10
+R1 1 2 1
+R2 1 3 2
+R3 2 0 3
+R4 3 0 4
+.TF V(3,2) V
+.END
+rem transistor switch
+data
+17
+Transistor Switch
+VCC 1 0 5
+VBB 4 0 1.5
+RC 1 2 330
+RB 4 3 10e3
+Q 2 3 0 NBJT
+.MODEL NBJT NPN(IS=1E-13 BF=100)
+.OP
+.END
+rem series diode
+data
+16
+Series Diode
+V 1 0 DC 5
+D1 1 2 DA
+R 2 0 2E3
+.MODEL DA D(IS=1E-13)
+.OP
+.END
+rem series RLC forced
+data
+15
+Sweep to show resonance
+V 1 0 AC 1
+R 1 2 50
+L 2 3 10E-3
+C 3 0 .001E-6
+.AC LIN 1000 10E3 80E3
+.PROBE
+.END
+rem series DC ckt
+data
+14
+Series DC Ckt
+V 1 0 DC 12
+R1 1 2 100
+R2 2 0 300
+.OP
+.DC V 12 12 1
+.PRINT DC V(1,2)
+.END
+rem JFET bias 2
+data
+13
+JFET Self Bias
+VDD 4 0 18
+RG 1 0 .5E6
+R2 4 1 1E9
+RS 2 0 500
+RD 4 3 10E3
+JFET 3 1 2 JF
+.MODEL JF NJF(RD=10 RS=10 VTO=-3 BETA=.2E-3)
+.DC VDD 18 18 18
+.OP
+.OPT NOPAGE
+.PRINT DC I(RD) I(RS) I(RG)
+.END
+rem transistor action
+data
+12
+Transistor Action
+VCC 2 0 12
+R1 2 1 40E3
+R2 1 0 3.3E3
+RC 2 3 4.7E3
+RE 4 0 220
+Q1 3 1 4 Q2N2222
+.LIB EVAL.LIB
+.DC VCC 12 12 12
+.PRINT DC I(RC) I(R1) I(R2) I(RE)
+.OP
+.OPT NOPAGE
+.END
+rem capacitor charging
+data
+11
+Capacitor Charging
+V 1 0 PWL(0,0 1E-6,1 10E-3,1)
+R 1 2 10E3
+C 2 0 .1E-6
+.TRAN 1E-3 10E-3
+.PROBE
+.END
+rem series AC ckt
+data
+10
+Series AC Ckt
+V 1 0 AC 10 0
+L 1 2 10E-3
+C 2 3 1E-6
+R 3 0 100
+.AC LIN 1 1E3 1E3
+.PRINT AC I(L) V(L) V(C) V(R)
+.PRINT AC IP(L) VP(L) VP(C) VP(R)
+.OPTIONS NOPAGE NOBIAS
+.END
+rem loaded VCVS
+data
+9
+Loaded VCVS DC Example
+VS 1 0 DC .1
+R1 1 2 300
+R2 2 0 1000
+E 3 0 2 0 75
+R3 3 4 500
+R4 4 0 1E3
+.DC VS .1 .1 1
+.PRINT DC V(1) V(2) V(3) V(4)
+.OPTIONS NOPAGE
+.END
+rem RLC stopband
+data
+8
+RLC StopBand
+V 1 0 AC 1
+R 1 2 50
+C 2 3 1e-6
+L 3 0 10e-3
+.AC LIN 100 500 3e3
+.PROBE
+.END
+rem RLC bandpass
+data
+7
+RLC BandPass
+V 1 0 AC 1
+C 1 2 .1e-6
+L 2 3 10e-3
+R 3 0 50
+.AC LIN 100 1e3 10e3
+.PROBE
+.END
+rem RL high pass
+data
+6
+RL High Pass
+V 1 0 AC 1
+R 1 2 1k
+L 2 0 1
+.AC DEC 50 0.1 1000
+.PROBE
+.END
+rem RL low pass
+data
+5
+RL Low Pass
+V 1 0 AC 1
+R 2 0 1k
+L 1 2 1
+.AC DEC 50 0.1 1000
+.PROBE
+.END
+rem RC high pass
+data
+4
+RC High Pass
+V 1 0 AC 1
+R 2 0 1k
+C 1 2 1e-6
+.AC DEC 50 0.1 1000
+.PROBE
+.END
+rem RC low pass
+data
+3
+RC Low Pass
+V 1 0 AC 1
+R 1 2 1k
+C 2 0 1e-6
+.AC DEC 50 0.1 1000
+.PROBE
+.END
+rem opamp inverting
+data
+2
+Input Output Characteristic
+VI 1 0 DC 1
+RI 1 2 1E4
+RF 2 5 1E5
+V+ 3 0 DC 15
+V- 0 4 DC 15
+X 0 2 3 4 5 UA741
+.LIB EVAL.LIB
+.DC VI -2 2 .1
+.PROBE
+.END
+rem half wave rectifier
+data
+1
+Halfwave Rectifier
+v1 1 0 sin(0 5v 1000Hz)
+DA 1 2 D1
+R 2 0 1000
+.MODEL D1 D
+.TRAN .1e-3 3e-3
+.PROBE
+.END

@@ -1,0 +1,125 @@
+/*****************************************************************************
+*                                                                            *
+*   RESETMAP.SPL     Copyright (C) 2001-2002 DSP Development Corporation     *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Reset the colormaps of all windows that contain an image    *
+*                                                                            *
+*   Revisions:   18 Jan 2001  RRR  Creation                                  *
+*                11 Dec 2001  RRR  optional setcrange settings               *
+*                21 Feb 2002  RRR  don't shade 24 bit (RGB) images           *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_RESETMAP
+
+    RESETMAP
+
+    Purpose: Resets the colormaps of all Windows containing an image
+                                                                        
+    Format:  RESETMAP(cmap, clo, chi)
+
+              cmap - an optional array specifying an RGB colormap,
+                     defaults to the current colormap
+
+              clo  - optional real, low value of colormap
+
+              chi  - optional real, high value of colormap
+
+    Returns: Nothing, re-colors all image windows
+
+
+    Example:
+             rgbmap = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}
+             resetmap(rgbmap)
+
+             defines a colormap that consists of only three colors - 
+             pure red, pure green and pure blue. All windows 
+             containing an image are updated with this colormap.
+
+    Remarks:
+             To create a Worksheet that automatically restores the RGB 
+             colormap upon loading, try the following:
+
+             1. Save the colormap to a variable:
+
+                     cmap = getcolormap()
+
+             2. Define the macro $INITWKS that is automatically run
+                when the Worksheet is loaded:
+
+                      #define $INITWKS resetmap(cmap)
+
+
+             3. Save the Worksheet.
+
+             The Worksheet will automatically restore the saved
+             colormap when loaded.
+
+             The SAVECMAP routine performs the above steps.
+
+
+             If clo and chi are specified, RESETMAP uses SETCRANGE
+             to limit the color range.
+
+    See Also:
+             Colorbar
+             Focus
+             Getcolormap
+             Savecmap
+             Setcolormap
+#endif
+
+
+/* reset shading for all image windows */
+resetmap(cmap, clo, chi)
+{
+	local i, f, w, ptype;
+
+	if (argc > 0) {
+		/* set colormap if we have one */
+		setcolormap(cmap);
+
+		if (argc > 2) {
+			/* set color range */
+			setcrange(clo, chi);
+		}
+	}
+
+	/* get original window number */
+	w = getwnum();
+
+	/* loop through the windows */
+	for (i = 1; i <= numwin; i++) {
+		/* move to next window */
+		eval(sprintf("moveto(W%d)", i));
+
+		/* set colormap if it's an image, contour or 3D */
+		ptype = getplottype();
+
+		/* also, don't shade if 24 bit image (rgbimage) */
+		if ((ptype == 5 && not(rgbimage)) || ptype == 2 || ptype == 4 || ptype == 3) {
+			setshading();
+
+			/* now check if we have a color legend */
+			if (getfocus(-1) >= 2) {
+				/* remember original focus */
+				f = getfocus();
+
+				/* set focus to color legend */
+				focus(2);
+				if (getcomment() == "Color Legend") {
+					/* all color legends have this comment string */
+					setshading();
+				}
+
+				/* restore original focus */
+				focus(f);
+			}
+		}
+	}
+	/* now go back to the original window */
+	eval(sprintf("moveto(W%d)", w));
+}

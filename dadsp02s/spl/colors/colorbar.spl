@@ -1,0 +1,128 @@
+/*****************************************************************************
+*                                                                            *
+*   COLORBAR.SPL   Copyright (C) 1999-2004 DSP Development Corporatio        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Displays the current colormap                               *
+*                                                                            *
+*   Revisions:   28 Jul 1999  RRR  Creation                                  *
+*                29 Aug 2002  RRR  full scale parameter                      *
+*                 4 Mar 2004  RRR  autoscale and focus                       *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_COLORBAR
+
+    COLORBAR
+
+    Purpose: Adds a vertical color bar to a window
+                                                                        
+    Format:  COLORBAR(w, fullscale)                           
+
+                 w - optional window to obtain colormap, defaults
+                     the current window or the system colormap if 
+                     the current window is empty
+
+                fs - optional integer, 1: display full scale, 0: autoscale
+                     to Window values, defaults to 0
+
+    Returns: Overlays a vertical colorbar to the right of the current
+             Window.   
+
+    Example:                                                            
+
+             (x, y) = fxyvals(-1, 1, 0.1, -1, 1, 0.1)
+
+             W1: cos(x*y);setplotstyle(0);setplottype(4)
+             W2: 2*W1;rainbow
+
+             colorbar(w2)
+
+             W2 contains a shaded 3D surface. A vertical color bar scaled
+             to the values of W2 is overlayed onto W2.
+
+    Example:                                                            
+             setcrange(0, 2)
+
+             W3: W1
+
+             colorbar
+
+             W4: W1
+
+             colorbar(W4)
+
+             The color range is now scaled to Z values from 0.0 to 2.0.
+             The colorbar added in W3 shows the full color range while the
+             colorbar of W4 is scaled to the values of W4.
+
+     Remarks:                                                            
+             The colorbar is an overlay. Use the FOCUS command to directly
+             manipulate the colorbar and UNOVERPLOT to remove the colorbar.
+
+
+     See Also:
+             Focus
+             Overlay
+             Setcolormap
+             Setcrange
+             Setshading
+             Showcmap
+#endif
+
+
+/* overlay a colorbar onto a window */
+colorbar(w, fs)
+{
+	local zu, cbar, wnum;
+
+	/* is a series in the current window/ */
+	if (length < 1) return; 
+
+	/* parse args */
+	if (argc < 2) {
+		if (argc < 1) {
+			wnum = getshadewith(w0);
+			fs = 0;
+		}
+		else if (IS_SCALAR(w)) {
+			/* see if we have colorbar(1) */
+			fs = w;
+			wnum = getshadewith(w0);
+		}
+		else {
+			fs = 0;
+			wnum = getshadewith(w);
+		}
+	}
+	else {
+		wnum = getshadewith(w);
+	}
+
+	cbar = (fs) ? showcmap() : eval(sprintf("showcmap(w%d)", wnum));
+
+	setcomment(cbar, "Color Legend", -1);
+
+	/* "height" units */		
+	zu = getzunits();
+
+	/* overlay colormap and push to the right */
+	overlay(cbar, BLACK);
+	focus(getfocus(-1));
+	setx(-100, 5);
+
+	setxauto(getxl, getxr);
+	setyauto(getyb, getyt);
+
+	/* set the correct units */
+	setvunits(zu);
+
+	/* set scales to Y Right */
+	scales(10);
+
+	focus(1);
+}

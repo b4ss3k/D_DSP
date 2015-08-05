@@ -1,0 +1,57 @@
+/*****************************************************************************
+*                                                                            *
+*   CUMSUM.SPL     Copyright (C) 2004 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Cumulative sum                                              *
+*                                                                            *
+*   Revisions:   16 Jan 2004  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_CUMSUM
+
+    CUMSUM
+
+    Purpose: Calculates the cumulative sum of a series.
+
+    Format:  CUMSUM(series)
+
+             series	- Any series, multi-series table, or expression 
+             resulting in a series or table.
+
+    Returns: A series or table.
+
+    Example:
+             cumsum({20, 15, 30, 10, 25})
+
+             returns a new series containing the cumulative 
+             sums {20, 35, 65, 75, 100}.
+
+    Remarks:
+             The nth value of the output series is equal to the sum of 
+             the first n points of the input series.
+
+             CUMSUM calculates the cumulative sum of a series. 
+             CUMSUM differs from integration in that the deltax 
+             information is not incorporated into the calculation.
+
+             CUMSUM is identical to PARTSUM.
+
+    See Also:
+             INTEG
+             PARTSUM
+             SUM
+
+#endif
+
+
+/* cumulative sum */
+cumsum(series, d)
+{
+	return(partsum(series));
+}
+

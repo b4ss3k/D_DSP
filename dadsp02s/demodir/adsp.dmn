@@ -1,0 +1,15 @@
+! adsp.dmn -- Advanced DSP functions menu. modified for the demo.
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+    DADiSP/AdvDSP
+
+ FFT Analysis          ~DMF("afft.dmn")
+
+ PSD Estimation        ~DMF("apsd.dmn")
+
+ Cepstrum Analysis     ~DMF("acep.dmn")
+
+ Digital Interpolation ~DMF("ainterp.dmn")
+

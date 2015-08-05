@@ -1,0 +1,20 @@
+! Menu to echo characteristics of bode magnitude and freq. responses
+! This is a DSPTrial menu
+@b{_bg1}
+@f{_fg1}
+! @h{_Controlhelp("fstats")}
+           Frequency Statistics        
+            Mag(W{_dwin1}) Phase(W{_dwin2})
+___________________________________________   
+
+ Magnitude of Peak: {eval(strcat("max(w",strnum(_dwin1),")"))} {eval(strcat("getvunits(w",strnum(_dwin1),")"))}
+ Freq of Peak:      {getpt(eval(strcat("Wpeak(w",strnum(_dwin1),")")),1)} {eval(strcat("getvunits(col(w",strnum(_dwin1),",2))"))}
+ Bandwidth:         {getpt(eval(strcat("Wband(w",strnum(_dwin1),")")),1)} {eval(strcat("getvunits(col(w",strnum(_dwin1),",2))"))}
+
+ Crossover Freq({eval(strcat("getvunits(col(w",strnum(_dwin1),",2))"))}) 
+ {getpt(eval(strcat("Wcross(w",strnum(_dwin1),")")),1)}           
+
+ Phase Margin({eval(strcat("getvunits(w",strnum(_dwin2),")"))})
+ {getpt(eval(strcat("Phasem(w",strnum(_dwin1),",w",strnum(_dwin2),")")),1)}
+ {Echo("Evaluation Complete")}              
+

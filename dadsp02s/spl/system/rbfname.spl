@@ -1,0 +1,61 @@
+rbfname(fname)
+{
+	local orgname, fn;
+
+	/* set default name to appear in dialog box */
+	if (argc > 0) {
+		/* use input filename */
+		setvar("_rbfname", fname);
+		setvar("_rbpickdir", strrev(strfind(pathchar, strrev(_rbfname))));
+	}
+	else {
+		/* just define the variable */
+		defvar("_rbfname", "");
+	}
+
+	/* define start directory if it doesn't already exist */
+	defvar("_rbpickdir", "");
+
+	/* define numpts if it doesn't already exist */
+	defvar("_rbnumpts", "-1");
+
+	/* define offset if it doesn't already exist */
+	defvar("_rboffset", 0);
+
+	/* define datatype if it doesn't already exist */
+	defvar("_rbdtype", "SINT");
+
+	/* define byteswap if it doesn't already exist */
+	defvar("_rbswap", 0);
+
+	/* _pickfile_status == 1 if dialog was successful */
+	setvar("_pickfile_status", 0);
+
+	/* remember original name */
+	orgname = _rbfname;
+
+	/* invoke dialog box */
+	_mf("readb.pan");
+
+	if (_pickfile_status == 1) { /* dialog was successful */
+		/* remember default directory */
+		setvar("_rbpickdir", strrev(strfind(pathchar, strrev(_rbfname))));
+		if (strlen(_rbfname) > 0) {
+			fn = sprintf('"%s"', _rbfname);
+			if (_rbnumpts == "-1" && _rboffset == 0 && _rbswap == 0) {
+				/* short form */
+				eval(sprintf("setwf(%s, 'Readb(%s, %s)')", _dwin, fn, _rbdtype));
+			}
+			else {
+				/* long form */
+				eval(sprintf("setwf(%s, 'Readb(%s, %s, %s, %d, %d)')", _dwin, fn, _rbdtype, _rbnumpts, _rboffset, _rbswap));
+			}
+		}
+	}
+	else {
+		/* reset to original name */
+		if (strlen(orgname) > 0) {
+			setvar("_rbfname", orgname);
+		}
+	}
+}

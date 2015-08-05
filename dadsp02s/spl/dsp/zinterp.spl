@@ -1,0 +1,200 @@
+/*****************************************************************************
+*                                                                            *
+*   ZINTERP.SPL  Copyright (C) 1999 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sinx/sin interpolation of periodic band limited waveforms   *
+*                                                                            *
+*   Revisions:   30 Jun 1999  RRR  Creation - from ZINTERP.MAC               *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_ZINTERP
+
+    ZINTERP
+
+    Purpose: Interpolates a series to a new sample rate by FFT zero insertion
+                                                                        
+    Format:  ZINTERP(s, r)
+
+                   s - input series or array
+
+                   r - real, the new sample rate of the interpolated series,
+                       R > Rate(s), defaults to 2*Rate(s)
+
+    Returns: A series or array
+
+    Example:
+
+             W1: gsin(64, 1/64, 3)
+             W2: zinterp(W1, 4*rate(W1))
+
+             W1 contains 64 samples of a 3 Hz sine wave sampled at
+             64 Hz.
+
+             W2 produces a 3 Hz sine wave with an interpolated sample
+             rate of 64 * 4 = 256 Hz. The length is 253 samples.
+
+
+             W3: zinterp(W1, 100)
+
+             produces a 99 point interpolated 3 Hz sine wave with a
+             sample rate of 100 Hz.
+
+   Remarks:
+             ZINTERP effectively resamples the input series to the
+             higher rate R using ideal sinx/sin interpolation.  The
+             interpolation is calculated by the following remarkably
+             simple and efficient method:
+
+             1. The FFT is calculated.
+
+             2. N zeros are inserted into the FFT starting at the
+                Nyquist frequency, (Fn = .5 * rate(s)).  N is
+                determined such that:
+ 
+                       L / R = length(s) / rate (s)
+
+                where L is the length of the output series. Since:
+
+                       L = length(s) + N
+
+                we have: 
+
+                       N = ((R * length(s)) / rate(s)) - length(s)
+
+             3. The inserted series is IFFT'ed to produce the interpolated 
+                time domain series.
+
+             The zero insertion step is equivalent to convolving the
+             input series with a symmetric "continuous" periodic
+             sinx/sin window of the same length as the output series
+             and then sampling this "continuous" waveform at the new
+             rate.  This is the precise definition of ideal sinx/sin
+             interpolation for a periodic time series.  If the input
+             series is band limited, that is, if the series can be
+             thought of as having been obtained by sampling a
+             continuous time signal at rate Fs and
+ 
+                       X(f) = 0        for f > .5 * Fs 
+
+             where X(f) is the Fourier Transform of the continuous time
+             signal, then the interpolation will be exact (within
+             numerical roundoff errors).
+
+             Although the output rate R is NOT required to be an
+             integer multiple of the input sample rate, the relation:
+
+                       R / rate(s) = L / length(s)
+
+             must hold, so the actual output rate might differ from R.
+
+
+             Sinx/sin interpolation can be thought of as periodic
+             sinx/x interpolation, i.e.  for periodic waveforms, sinx/x
+             interpolation is identical to sinx/sin interpolation.  The
+             sinx/sin function acts as a periodic version of the sinc
+             (sinx/x) function.
+
+             For non-periodic waveforms, sinx/sin interpolation
+             produces the same result as sinx/x interpolation to within
+             a few percent.
+
+             ZINTERP also works on arrays.
+
+    See Also:
+             Fzinterp
+             Fsinterp
+             Interp
+             Polyfit
+             Spline
+#endif
+
+
+
+zinterp(s, r)
+{
+	local even, hlen1, f, d;
+
+	/* hurdles */
+	if (argc < 2) {
+		if (argc < 1) error("zinterp - input series required");
+		r = rate(s) * 2;
+	}
+	if (r <= rate(s)) error(sprintf("zinterp - r must be > %g", rate(s)));
+
+	/* length/2 if even, (length + 1)/2 if odd */
+	hlen1 = (int((1+length(s))/2));
+
+	/* get FFT so we can insert zeros */
+	f = fft(s);
+
+	/* insert zeros at mid point of FFT */
+	d = {f[1..hlen1, ..], gzr(s, r), f[(hlen1+1)..length(s), ..]};
+
+	/* preserve sample rate */
+	setdeltax(d, deltax(f));
+
+	/* transform and scale */
+	d = real(ifft(d))*length(d)/length(s);
+
+	/*
+	**
+	** Interesting note:
+	**   
+	** Because we are only dealing with REAL series, we do not have
+	** to split the FFT value at the Nyquist frequency into conjugate
+	** pairs when the series length is even.  The REAL(IFFT())
+	** operation above performs the equivalent.  For example, if S is
+	** a 6 point real series, with the following FFT:
+	**
+	**       fft(S) == {F0, F1, F2, Fn, conj(F2), conj(F1)}
+	**
+	**  to create a 8 point series, technically we should calculate:
+	**
+	**      ifft({F0, F1, F2, Fn/2, 0, conj(Fn/2), conj(F2), conj(F1)})
+	**
+	**  but:
+	**
+	**       real(ifft( {F0, F1, F2, Fn, 0, 0, conj(F2), conj(F1)} ))
+	**
+	**  is equivalent - RRR
+	*/
+       
+
+	/* now get correct output length */
+	d = extract(d, 1, int(deltax(s)*(length(s)-1)*r+1));
+
+	/* preserve xoffset */
+	setxoffset(d, xoffset(s));
+
+	/* preserve X units */
+	sethunits(d, gethunits(s));
+	setvunits(d, getvunits(s));
+	setzunits(d, getzunits(s)); // sets V units for simple series case
+
+	return(d);
+}
+
+
+
+/* generate zeros with a delta x based on rate r, for zero insertion */
+gzr(s, r)
+{
+	local lr, zl, z;
+
+	/* rate scale */
+	lr =  int(length(s) * (r) / rate(s));
+
+	/* number of zeros to insert */
+	zl =  lr - length(s);
+
+	/* create array of zeros with same number of columns as s */
+	z = ravel(rep(gline(zl,rate(s)/length(s),0,0),numcols(s)),zl);
+
+	return(z);
+}
+

@@ -1,0 +1,110 @@
+! Democtrl.mac
+ccloaded 1
+Radhz   (1/(2*pi))
+Hzrad   (2*pi)
+
+_bodefu (RADpSbfu)
+_bodemu (magbmu)
+_bodepu (Radbpu)
+
+_dbodefu (RADpSdbfu)
+_dbodemu (magbmu)
+_dbodepu (Radbpu)
+_dfrdxc  (hzrad)
+
+Setfunit(frt,magt,pht) echo("Setting Frequency Units...");setcunit(frt,magt,pht);setdunit(frt,magt,pht);echo("Units Set.")
+Setcunit(frt,magt,pht) echo("Setting Continuous Units...");_tstbfrt(int(frt));_tstbmagt(int(magt));_tstbpht(int(pht));eval("_evalbpform");echo("Continuous Units Set.")
+Setdunit(frt,magt,pht) echo("Setting Discrete Units...");_tstdbfrt(frt);_tstdbmagt(magt);_tstdbpht(pht);eval("_evaldbpform");echo("Discrete Units Set.")
+_tstbfrt(frt) (if((frt-1),defmacro("_bodefu","hertzbfu",1),defmacro("_bodefu","RADpSbfu",1)))
+_tstbmagt(magt) (if((magt-1),defmacro("_bodemu","dBbmu",1),defmacro("_bodemu","magbmu",1)))
+_tstbpht(pht) (if((pht-1),defmacro("_bodepu","degbpu",1),defmacro("_bodepu","radbpu",1)))
+_evalbpform _bodefu;_bodemu;_bodepu;
+
+_tstdbfrt(frt) (if((frt-1),defmacro("_dbodefu","hertzdbfu",1),defmacro("_dbodefu","RADpSdbfu",1)))
+_tstdbmagt(magt) (if((magt-1),defmacro("_dbodemu","dBdbmu",1),defmacro("_dbodemu","magdbmu",1)))
+_tstdbpht(pht) (if((pht-1),defmacro("_dbodepu","degdbpu",1),defmacro("_dbodepu","raddbpu",1)))
+_evaldbpform _dbodefu;_dbodemu;_dbodepu
+ 
+RADpSbfu defmacro("_frpc",1,1);defmacro("_frec",1,1);defmacro("frunt","'Rad/Sec'",1)
+Hertzbfu defmacro("_frpc",radhz,1);defmacro("_frec",hzrad,1);defmacro("frunt","'Hz'",1)
+Magbmu   defmacro("_bmagop",1,1);defmacro("bmform","'loglog'",1);defmacro("bmunt","'Mag'",1)
+dBbmu    defmacro("_bmagop",0,1);defmacro("bmform","'semilogx'",1);defmacro("bmunt","'dB'",1)
+Degbpu   defmacro("_bpuc",deg,1);defmacro("bpunt","'Deg'",1)
+
+Hertzdbfu defmacro("_dfrdxc",1,1);defmacro("dfrunt","'Hz'",1)
+dBdbmu    defmacro("_dbmagop",0,1);defmacro("dbmform","'semilogx'",1);defmacro("dbmunt","'dB'",1)
+Degdbpu   defmacro("_dbpuc",deg,1);defmacro("dbpunt","'deg'",1)
+ 
+Fr(n,nd,fi) (i*(10^gline(n,(nd/n),1,(log10(fi*_frec)))))
+Bodedata(num,den,n,nd,fi)  (freqdata(num,den,fr(n,nd,fi)))
+Freqdata(num,den,sr) ((polygraph(num,sr))/(polygraph(den,sr)))
+
+Magbodedat(num,den,n,nd,fi) (if(_bmagop,(mag(bodedata(num,den,n,nd,fi))),(20*log10(mag(bodedata(num,den,n,nd,fi))))))
+Bodemag(num,den,n,nd,fi) xy(_frpc*imag(fr(n,nd,fi)),magbodedat(num,den,n,nd,fi));formbodem
+Phasebodedat(num,den,n,nd,fi) _bpuc*phase(bodedata(num,den,n,nd,fi))
+Bodephase(num,den,n,nd,fi) xy(_frpc*imag(fr(n,nd,fi)),phasebodedat(num,den,n,nd,fi));formbodep
+Putbodemag(num,den,n,nd,fi,dwn)     eval(strcat("setwform(w",strnum(dwn),",'Bodemag(",num,",",den,",",strnum(n),",",strnum(nd),",",strnum(fi),")')"))        
+Putbodephase(num,den,n,nd,fi,dwn)   eval(strcat("setwform(w",strnum(dwn),",'Bodephase(",num,",",den,",",strnum(n),",",strnum(nd),",",strnum(fi),")')"))
+_Bodeplotm(num,den,n,nd,fi,dw1,dw2)  putbodemag(num,den,n,nd,fi,dw1);putbodephase(num,den,n,nd,fi,dw2)
+Bode(num,den,n,nd,fi,dw1,dw2)   echo("Calculating Bode Plots...");putbodemag(strwin(num),strwin(den),n,nd,fi,int(numstr(strwin(dw1))));putbodephase(strwin(num),strwin(den),n,nd,fi,int(numstr(strwin(dw2))))
+Formbodem eval(strcat(bmform,";sethunits('",frunt,"');setvunits('",bmunt,"')"))
+Semilogx (eval("setxlog(1);setylog(0)"))
+Formbodep eval(strcat("semilogx;sethunits('",frunt,"');setvunits('",bpunt,"')"))
+
+Crosval(w,lev,ww,c) (delete(col(ww,c),(not(levelcross((col(w,1)),lev)))))
+Wcross(wm)         (if((charstr(getvunits(wm))-100),crosval(wm,1,wm,2),crosval(wm,0,wm,2)))
+Phasem(wm,wp)      (if((charstr(getvunits(wp))-68),Radpm(wm,wp),Degpm(wm,wp)))
+Radpm(wm,wp)       (if((charstr(getvunits(wm))-100),(pi+crosval(wm,1,wp,1)),(pi+crosval(wm,0,wp,1))))
+Degpm(wm,wp)       (if((charstr(getvunits(wm))-100),(180+crosval(wm,1,wp,1)),(180+crosval(wm,0,wp,1))))
+Mfpeak(wm)         gser(max(wm));setvunits(getvunits(wm))
+Wband(wm)          (if((charstr(getvunits(wm))-100),(extract(crosval(wm,0.707,wm,2),1,1)),(extract(crosval(wm,0.707,wm,2),1,1))))
+Wpeak(wm)          (extract(crosval(wm,(max(wm)*0.999999),wm,2),1,1))
+
+_rtlocusm  (eval(strcat("setwform(w",strnum(getwnum),",'Rtlocus(",_ser1,",",_ser2,",",_ser3,")')")))
+Rtlocus(num,den,ks)  echo("Calculating Root Locus Plot...");_rlmap1(num,den,ks)   
+_rtllen(num,den)     (max(gser(length(num),length(den))))
+_rlmap1(num,den,ks) if((length(num)^2+length(den)^2)<4,echo("Both Num and Den Have No Roots");gser(),_rlmap2(num,den,ks))
+_rlmap2(num,den,ks)   _rtmap3(num,den,ks);overplot(plotrts(num),BLACK);overplot(plotrts(den),LRED);_rlaxis(num,den);_rlsymbol;_pzstyle
+_rtmap3(num,den,ks)   _rtlmp1(num,den,ks);xy(real(curr),imag(curr))
+_rlaxis(nm,dn)   setxy(min(_rlreal(nm,dn))-1,max(_rlreal(nm,dn))+1,min(_rlimag(nm,dn)-1),max(_rlimag(nm,dn)+1))
+_rlreal(nm,dn)   concat(col(curr,2),real(cmroots(nm)),real(cmroots(dn)))
+_rlimag(nm,dn)   concat(col(curr,1),imag(cmroots(nm)),imag(cmroots(dn)))
+_rlsymbol        setsymbol(zerosym,2);setsymbol(polesym,3);setsymbol(rtlsym,1) 
+_rtlcof1(num,den,ks)  unravel(transpose(_rtlcof2(num,den,ks)))
+_rtlcof2(num,den,ks)  (Mmult(ks,transpose(extract(num,1,int(_rtllen(num,den)))))+Mmult(gones(length(ks)),transpose(extract(den,1,int(_rtllen(num,den))))))
+Cmroots(s)      (_croots(s))
+_croots(s)      reserved(1009,s)
+_rtlmp1(num,den,ks)   _rtlocb(num,den,ks)
+Plotrts(s)   (xy(real(cmroots(s)),imag(cmroots(s))))              
+gOnes(n) (gline(n,1,0,1))
+zerosym       (15)
+polesym       (5)        
+symblcol      (lblue)
+Rtlsym        (lred)
+_pzstyle         setcolor(symblcol);setplotstyle(1);setvunits("Imaginary");sethunit("Real")
+
+
+ Num2Ocl Gser(_dsgnolnc)
+ Den2Ocl Gser(_dsgnolnc,_dsgnoldc,1)
+_putdsgn2cl     eval(strcat("setwform(w",strnum(_dwin1),",'Num2Ocl')"));eval(strcat("setwform(w",strnum(_dwin2),",'Den2Ocl')"))
+
+_dsgnwn          10
+_dsgnwnc(n)      defmacro("_dsgnwn",abs(n),1)
+_dsgndamp        0.5
+_dsgndampc(n)    If(abs(n)>1,defmacro("_dsgndamp",1,1),defmacro("_dsgndamp",abs(n),1))
+
+_dsgnmp          If(_dsgndamp>=sqrt(0.5),1,_dsgnmp2)
+_dsgnmp2         If(_dsgndamp==0,99E99,1/(2*_dsgndamp*sqrt(1-_dsgndamp^2)))
+_dsgnwpwn        If(_dsgndamp>=sqrt(0.5),0,sqrt(1-2*(_dsgndamp^2)))
+_dsgnwp          _dsgnwn*_dsgnwpwn
+_dsgnwbwn        sqrt(1 -2*_dsgndamp^2+sqrt(2-4*_dsgndamp^2*(1-_dsgndamp^2)))
+_dsgnwb          _dsgnwn*_dsgnwbwn
+_dsgnwcwn        sqrt(sqrt(4*_dsgndamp^4+1)-2*_dsgndamp^2)
+_dsgnwc          _dsgnwn*_dsgnwcwn
+_dsgnpm          atan(2*_dsgndamp/sqrt(sqrt(4*_dsgndamp^4+1)-2*_dsgndamp^2))
+_dsgnolnc         _dsgnwn^2
+_dsgnoldc         _dsgnwn*_dsgndamp*2
+_dsgnpo           If(_dsgndamp==1,0.0,100*e^(-1*pi*_dsgndamp/sqrt(1-_dsgndamp^2)))
+_dsgntp           If(_dsgndamp==1,99e99,pi/(_dsgnwn*sqrt(1-_dsgndamp^2)))
+_dsgnts2          If(_dsgndamp==0,99e99,4/(_dsgnwn*_dsgndamp)) 
+_dsgnts5          If(_dsgndamp==0,99e99,3/(_dsgnwn*_dsgndamp)) 

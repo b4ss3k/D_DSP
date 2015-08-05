@@ -1,0 +1,115 @@
+/*****************************************************************************
+*                                                                            *
+*   POWSPEC.SPL  Copyright (C) 2004 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the power spectrum of a series                   *
+*                                                                            *
+*   Revisions:    5 May 2004  RRR  Creation                                  *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_POWSPEC
+
+    POWSPEC
+
+    Purpose: Calculates the power spectrum.
+
+    Format:  POWSPEC(ser, len)
+
+                ser -  Any series, multi-series table, or expression 
+                       resulting in a series or table.
+
+                len -  Optional. An integer. Input series length. 
+                       Defaults to the length of the input series.
+
+    Returns: A series or table.
+
+    Example:
+             W1: gsin(100,1.0,0.2)*5;setvunits("V")
+             W2: powspec(W1)
+             W3: spectrum(W1)
+
+             max(W2) occurs at 0.2 Hz. with amplitude (5^2)/2 = 12.5.
+
+             mean(W1*W1) == 12.5
+             sum(W2)     == 12.5
+             max(W2)     == 12.5
+             max(W3)     == 5.0
+
+    Remarks:
+             The power spectrum is calculated by the FFT and has the
+             following form:
+
+             powspec(s) = 2*mag(fft(s)/length(s))^2
+
+             with a total of int(len/2) + 1 frequency values from 0
+             to Fs/2 Hz., where Fs is the sampling rate of the data
+             (i.e.  rate(s)).  The first value (DC component) and the
+             last value (at Fs/2, the Nyquist frequency) are not
+             scaled by 2 to preserve Parseval's theorem.
+
+             For an N term power spectrum where N is the length of
+             the input series, by Parseval's theorem, the sum of the
+             power spectrum terms equals the mean of the series
+             squared, i.e.:
+
+             sum(powspec(s)) == mean(s*s)
+
+             A sinewave of amplitude A, frequency F, sample rate T,
+             and length L, yields a power spectrum with an amplitude
+             of A^2/2 at frequency F.  If the input series is in
+             Volts, the resulting power spectrum has units of V^2.
+
+             If len is larger than the length of ser, the series is
+             zero padded to length len before calculating the power
+             spectrum.  If len is less than the series length, the
+             series is truncated to length len.  If not specified,
+             len defaults to the length of ser.
+
+             See SPECTRUM to compute a magnitude normalized FFT.
+
+             See PSD to compute the power spectral density.
+
+             See WINFUNC for a list of windowing functions.
+
+    See Also:
+              DFT
+              FFT
+              PSD 
+              SPECGRAM 
+              SPECTRUM 
+              WINFUNC 
+#endif
+
+
+/* normalized power spectrum */
+ITERATE powspec(s, len)
+{
+	local usig;
+
+	if (argc < 2) {
+		if (argc < 1) {
+			error("powspec - input series required");
+		}
+
+		/* default to input series length */
+		len = length(s);
+	}
+
+	/* get units from small sample of the input series */
+	usig = extract(s, 1, 2);
+	usig *= usig;
+
+	/* normalize PSD to calculate power spectrum */
+	s = psd(s, len) / (deltax(s) * length(s));
+
+	/* set correct units */
+	setvunits(s, getvunits(usig));
+
+	return(s);
+}
+

@@ -1,0 +1,13 @@
+! SetPrnSc.hlp
+SCREEN PRINTING
+
+OUTPUT FORMAT:
+Create screen dumps in HPGL, PostScript, Bitmap format, or send them
+directly to the "system" printer.  
+
+Screen dumps are sent to the appropriate output File in the current 
+directory:
+
+  HPGL -> HPGL_FILE in DADiSP.CNF or Output File set in config menus
+  PostScript -> POSTSCRIPT_FILE in DADiSP.CNF or Output File set in config 
+     menus

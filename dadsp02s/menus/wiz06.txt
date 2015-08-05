@@ -1,0 +1,13 @@
+Hyperbolic             !_PDC_EXEC005  $Sinh, Cosh, Tanh, etc. $Trignometric Functions
+Inverse Hyperbolic     !_PDC_EXEC006  $Asinh, Acosh, Atanh, etc. $Trignometric Functions
+Inverse Trig           !_PDC_EXEC004  $Asin, Acos Atan, etc. $Trignometric Functions
+Matrix                 !_PDC_EXEC304  $Ones, Zeros, Eye, Rand, Randn $Generate SPL Directory
+Other                  !_PDC_EXEC010  $Square wave, Triangle wave, Impulse, etc. $Generated Series
+Random Noise (Normal)  !_PDC_EXEC192  $Normally Distributed Random Series $Gnorm
+Random Noise (Uniform) !_PDC_EXEC193  $Uniformly Distributed Random Series $Grand
+Trigonometric          !_PDC_EXEC003  $Sin, Cos Tan, etc. $Trignometric Functions
+Windowing Functions    !_PDC_EXEC009  $Blackman, Flattop, Hamming, Hanning, Kaiser Windows $WINFUNC
+XY                     !_PDC_EXEC282  $Arbitrary X vs Y Data or XY Date Time Data
+XYZ                    !_PDC_EXEC284  $Arbitrary XYZ Data
+Y = F(x)               !_PDC_EXEC007  $2D General Curve
+Z = F(x, y)            !_PDC_EXEC008  $3D General Surface

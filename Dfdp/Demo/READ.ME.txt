@@ -1,0 +1,43 @@
+
+                       DEMONSTRATION  DISKETTE  NOTES
+
+                                May 6, 1987
+
+     The demonstration diskette contains a demonstration version of Atlanta 
+Signal Processors, Incorporated's (ASPI's) Digital Filter Design Package 
+(DFDP).  Also included are the solutions to many of the exercises in the
+book  " A DIGITAL SIGNAL PROCESSING LABORATORY USING THE TMS32010 ". ASPI 
+has provided the filter coefficient files (.FLT) as well as the assembly 
+code text files (.ASM) for exercises 12 and 13.  All other exercise solutions 
+have been provided by Dr. Douglas L. Jones of Rice University.
+
+     The assembly code files provide by ASPI were generated with an 
+earlier copy of CGEN to be compatible with this book.  ASPI has and will 
+continue to update and improve DFDP and CGEN to take advantage of the 
+current state of the art in filter design.  A full functioned DFDP and 
+improved code generator (CGEN) are available from:
+
+	 ASPI
+	 Suite 208, 770 Spring Street, NW
+	 Atlanta, Georgia  30327
+	 phone (404)-892-7265.
+
+     The demonstration version of DFDP runs on an IBM PC or IBM PC/AT, under 
+PCDOS, with a CGA video adapter and either a black & white or color monitor 
+or an EGA video adapter and enhanced color monitor.  It has also been run on 
+a variety of IBM PC and IBM PC/AT clones.  The demonstration version of DFDP 
+requires a minimum memory configuration of 384 Kbytes.  If you are using an 
+IBM PC/AT without a 80287 numeric coprocessor you must set the environment 
+variable NO87=8087 or DFDP may not operate properly.  The demonstration DFDP 
+is named DEMO.EXE on the demonstration diskette and is executed by simply 
+typing DEMO followed by a carriage return.  The demonstration diskette does 
+NOT contain PCDOS and therefor is NOT bootable.
+
+     The demonstration DFDP is limited to designing IIR filters and Parks-
+McClellan design FIR filters.  The demonstration DFDP is also limited in 
+that it does not display and can not save the filter coefficients.  However, 
+the characteristics of the designed filter can be graphed and the 
+coefficient files supplied on the demonstration diskette can be read into 
+and manipulated by the demonstration DFDP program.
+
+

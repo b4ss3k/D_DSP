@@ -1,0 +1,16 @@
+/* convert item, member to column */
+_lst2col(lst)
+{
+	local col;
+
+	if (lst > getwcount) lst = 1;
+
+	if (itemtype(lst) != 9 && itemtype(lst) != 2 && getplottype(0) != 6) {
+		col = itemcol(lst);
+	}
+	else {
+		col = lst;
+	}
+
+	return(col);
+}

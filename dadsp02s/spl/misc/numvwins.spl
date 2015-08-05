@@ -1,0 +1,57 @@
+/*****************************************************************************
+*                                                                            *
+*   NUMVWINS.SPL    Copyright (C) 2001 DSP Development Corporation           *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     returns total number of displayed windows                  *
+*                                                                            *
+*   Revisions:    22 Jan 2001  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_NUMVWINS
+
+    NUMVWINS    
+
+    Purpose: Returns number of displayed Windows in the Worksheet
+                                                                        
+    Format:  NUMVWINS
+
+    Returns: An integer, number of visible Windows.
+
+    Example:
+
+             newworksheet(6, 0)
+             display(W1..W4)
+             numvwins
+
+
+             Creates a 6 Window Worksheet, displays W1 through Window 4.
+             NUMVWINS returns 4.             
+
+
+    See Also:
+             Numwindows
+             Winstatus
+#endif
+
+
+
+
+/* returns number of displayed worksheet windows */
+numvwins()
+{
+	local i, num = 0;
+
+	/* for all windows */
+	for (i = 1; i <= numwindows; i++) {
+		/* use Winstatus to check if hidden */
+		if (eval(sprintf("Winstatus(W%d, 3)", i)) == 0) {
+			num++;
+		}
+	}
+	return(num);
+}

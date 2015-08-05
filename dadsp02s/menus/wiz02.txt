@@ -1,0 +1,5 @@
+Multireadb             !_PDC_EXEC249  $Read Interlaced Binary Data
+Reada                  !_PDC_EXEC011  $Read ASCII Table
+Readb                  !_PDC_EXEC013  $Read Binary Data
+Writeb                 !_PDC_EXEC016  $Write Binary Data
+Writet                 !_PDC_EXEC014  $Write ASCII Table

@@ -1,0 +1,36 @@
+/* adds name to _pickliststrs if not already included */
+pickflst(name, list)
+{
+	local i, addit, str, listname;
+
+	if (argc < 2) {
+		if (argc < 1) {
+			name = "";
+		}
+		list = "_pickliststrs";
+	}
+
+	listname = sprintf("'%s'", list);
+
+	defvar(eval(listname), "");
+
+	if (strlen(name) > 0) {
+		addit = 1;
+		i = 1;
+		while (1) {
+			str = strget(i, getvar(eval(listname)), strescape("\n"));
+			if (strlen(str) == 0) break;
+
+			if (strcmp(str, name) == 0) {
+				addit = 0;
+				break;
+			}
+			i++;
+		}
+		if (addit) {
+			setvar(eval(listname), strcat(name, strescape("\n"), getvar(eval(listname))));
+		}
+	}
+	return(getvar(eval(listname)));
+}
+

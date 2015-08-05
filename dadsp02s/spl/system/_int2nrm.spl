@@ -1,0 +1,18 @@
+/* normalization string to integer */
+_int2nrm(ival)
+{
+	switch (ival) {
+		case 0:
+		default:
+			return(_nonestr);
+
+		case 1:		
+			return(_normalizedstr);
+
+		case 2:
+			return(_biasedstr);
+
+		case 3:
+			return(_unbiasedstr);
+	}
+}

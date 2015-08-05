@@ -1,0 +1,87 @@
+/*****************************************************************************
+*                                                                            *
+*   GBLACKMAN.SPL  Copyright (C) 2004 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Generates a Blackman window                                 *
+*                                                                            *
+*   Revisions:   19 Mar 2004  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_GBLACKMAN
+
+    GBLACKMAN
+
+    Purpose: Generates a Blackman Window.
+
+    Format:  GBLACKMAN(points, spacing)
+
+               points  - Number of points to generate.
+
+               spacing - Spacing between points.
+
+
+    Returns: A series.
+
+    Example:
+
+             gblackman(100, .01)
+
+             Creates a 100-point Blackman window with points spaced with an 
+             interval of 0.01 using the following formula:
+
+             w[k] = 0.42 - 0.50 * cos(2*pi*(k-1)/(N-1)) 
+                         + 0.08 * cos(4*pi*(k-1)/(N-1))
+
+             where k is the kth point (1 <= k <= N) and N is 100, the number 
+             of points to generate. The spacing between samples is set 
+             to 0.01.
+
+    Remarks:
+
+             Use the Blackman function to automatically create and multiply 
+             a Blackman Window with a series. For example:
+
+             blackman(W2)
+
+             multiplies Window 2 with a Blackman Window calculated to the same 
+             length and spacing as the series in W2. 
+
+             Blackman, Flattop, Hamming, Hanning, and Kaiser Windows are 
+             useful in creating FIR filters and in preprocessing series 
+             for FFT calculations.
+
+    See Also:
+             Blackman
+             Fft
+             Gflattop
+             Ghamming
+             Ghanning
+             Gkaiser
+             Psd
+             Spectrum
+#endif
+
+
+
+/* generate an N point Blackman window */
+gblackman(n, dx)
+{
+	local w;
+
+	if (argc < 2) {
+		if (argc < 1) error("gblackman - number of points required");
+		dx = 1.0;
+	}
+
+	w = 0.42 - 0.5 * gcos(n, dx, 1 / (dx * (n-1))) +
+	    0.08 * gcos(n, dx, 2 / (dx * (n-1)));
+
+	setdeltax(w, dx);
+
+	return(w);
+}

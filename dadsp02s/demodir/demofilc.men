@@ -1,0 +1,13 @@
+! Menu to design FIR Lowpass Filter
+@panel
+@b{blue}
+      Lowpass FIR Filter
+________________________________
+
+ Sample Rate:       rate(W2)    ~_MC
+ Cutoff Freq:         8.0 Hz 
+ Passband Ripple:     3.0 dB
+ Stopband Atten:     40.0 dB
+ Stopband Edge:      12.0 Hz
+
+ Filter Order:     AUTO       

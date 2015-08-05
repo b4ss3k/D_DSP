@@ -1,0 +1,51 @@
+! demoADSP.mac macro file
+ad              DMF("adsp.dmn") ! quick access to main AdvDSP menu
+adloaded  1
+
+zfft(s, n, f1, f2)   z1fft(s,n,f1,f2);setdeltax(zftdx(n,f1,f2));setxoffset(f1);
+z1fft(s, n, f1, f2)  czt1(extract(s,1,length(s)+(n)),n,(exp(i*2*pi*deltax(s)*zftdx(n,f1,f2))),(exp(-i*2*pi*deltax(s)*(f1))),length(s)+(n))
+zftdx(n, f1, f2)  (((f2)-(f1))/(n))
+zftfo(s, n, f1, f2)  ((f1)+((length(s))*zftdx(s,n,f1,f2)))
+czt(s,k,w,a)     czt1(s,k,w,a,length(s))
+czt1(s,k,w,a,l) (w)^(.5*(gcztn(l)^2));extract(czt2conv((s)*((A)^gline(l,1,-1,0))*(extract(curr,l,l)),1/curr,l,l+(k)),l,k)*extract(curr,l,k)
+czt2conv(s1,s2,l1,l2) (ifft(fft(extract(s1,1,fftlen2(l1,l2)))*fft(extract(s2,1,fftlen2(l1,l2)))))
+lmaxtwo(x,y)       (if((x)>(y), 2*(x), 2*(y)))
+lmaxtwolen(l1, l2) (int(lmaxtwo(l1, l2)))
+fftlen2(l1, l2)    (int(2^(ceil(log2(lmaxtwolen(l1, l2))))))
+
+log2(x)            (log(x)/log(2))
+gcztn(l)           (gline((l)+(l),1,1,1-(l)))
+
+APSD(s,m,flen)  acorpsd(s,m,flen);2*deltax(s)*extract(curr,1,int((flen)/2))
+acorpsd(s,m,flen) rawfacor(s);awin(curr,m);acorfft(curr,m,flen,length(s))
+acorfft(s,m,flen,slen) (real(fft(apzpack(s,m,flen))/(slen)))
+rawfacor(s)          (ifft(mag(fft(extract(s,1,len2(s))))^2))
+awin(s,m)        (awinseg(concat(extract(s,1,m),extract(s,length(s)+1-(m),m)),m,deltax(s)))
+awinseg(s,m,dx)  (ghalfwin(m,dx)*(s))
+ghalfwin(m,dx)   (concat(ghalfbartlett(m,dx),rev(extract(ghalfbartlett(m,dx),2,m))))
+ghalfbartlett(m,dx) gline(m,dx,-1.0/(m*dx),1)
+
+_agetseri1r2(s1,i1,r1,r2)  defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_int1prompt",strcat("'",i1,"'"),1)|defmacro("_real1prompt",strcat("'",r1,"'"),1)|defmacro("_real2prompt",strcat("'",r2,"'"),1)|DMF("seri1r2.dpn")
+_agetserint1(s1,s2)        defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_int1prompt",strcat("'",s2,"'"),1)|DMF("serint1.dpn")
+_seri1r2form(s)     SETWF(strcat(s,"(",eval('_ser1'),",",eval('_int1'),",",eval('_real1'),",",eval('_real2'),")"))
+_oserint1form(s)    eval(Strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_int1'),')")'))
+
+_adefreal1(str1)     defmacro("_REAL1",strnum((str1)),2)
+_adefreal2(str1)     defmacro("_REAL2",strnum((str1)),2)
+_adefreal3(str1)     defmacro("_REAL3",strnum((str1)),2)
+_adefreal4(str1)     defmacro("_REAL4",strnum((str1)),2)
+
+lev(s, n) (levinson(hcorr(s), n))
+levinson(s, n) reserved(1007, s, n)
+hcorr(s) fft(extract(s,1,fft2len(s)))|extract(ifft(curr*conj(curr)),1,length(s))/length(s)|if(isreal(s),real(curr))
+fft2len(l)      (int(2^(ceil(log2(2*length(l))))))
+isreal(s) (not(iscompval(getpt(s,1))))
+iscompval(val) (strlen(strfind("i",strnum(val))))
+arpsd(s, n) (2*deltax(s)*arpw(s)*extract(armag(s, n),1,int((n)/2))^2);setdeltax(rate(s)/(n))
+arpw(arcoef) (real(getpt(arcoef,1)))
+armag(s, n) (mag(1/(nfft(gser(1,extract(s,2,-1)),n))))
+nfft(S, N)      if(N<length(S), tafft(S, N), zpfft(S, N))
+zpfft(S, N)     fft(extract((s), 1, N))              ! zero pad
+tafft(S, N)     fft(rowreduce(ravel((s), N),"+"))    ! time alias
+gdxone(dx) gdxval(1, dx)
+gdxval(val, dx) gline(1,dx,1,val)

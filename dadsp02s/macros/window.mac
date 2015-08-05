@@ -1,0 +1,117 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!                                 WINDOW.MAC                                 !
+!                                                                            !
+!                              March  25, 1995                               !
+!                                                                            !
+!  Macros to generate and multiply a series with a Blackman window and a     ! 
+!  Flattop window.							     !
+!                                                                            !
+!  		  Copyright (C) 1995 DSP Development Corp.                   !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                    !
+!                          BLACKMAN WINDOW                           !
+!                                                                    !
+!                          					     !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+! The Blackman window is given by the following function:
+!
+!     0.42 - .5 * COS(2*PI*N/(L-1)) + 0.08 * COS(4*PI*N/(L-1))
+!
+! where N = sample number, L = length.
+
+!-----------------------------------------------------------------------
+!
+! BLACKMAN multiplies a series with a Blackman window.
+!
+!     S = series to multiply by Blackman window
+
+BLACKMAN(S)             GBLACKMAN(LENGTH(S),DELTAX(S))*(S)
+
+!-----------------------------------------------------------------------
+!
+! GBLACKMAN generates a Blackman window.
+!
+!     N  = number of points or samples
+!     DX = delta x or sampling interval
+
+GBLACKMAN(N,DX)         (.42-.5*GCOS(N,DX,1/((DX)*((N)-1)))+.08*GCOS(N,DX,2/((DX)*((N)-1))))
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                    !
+!                          FLATTOP WINDOW                            !
+!                                                                    !
+!                                                                    !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+! The following macros create and multiply series with a Flattop window.
+
+
+!---------------------------------------------------------------------
+! FLATTOP multiplies a series by a flattop window. The flattop window
+! is constructed by setting the values of a Hamming window that exceed
+! the cut point to unity. In other words, the flattop window is 1.0
+! everywhere except at the tails, where it is identical to the Hamming
+! window. The tails are specified by the cut point and equal to the
+! values of the Hamming window that are less than or equal to the
+! cut point.
+!
+!
+! 	S   = Series to multiply with flattop window
+! 	CUT = Cutpoint of the Hamming window tails
+!
+! Example:
+!
+!     FLATTOP(W1, 0.2)
+!
+! Mulitplies W1 by a flattop window where the tails of the flattop begin
+! at an amplitude of 0.2
+
+
+FLATTOP(S, CUT)      ((S) * GFLATTOP(LENGTH(S), DELTAX(S), CUT))
+
+
+!---------------------------------------------------------------------
+! GFLATTOP generates a flattop window as described above
+!
+! LEN = length of flattop window
+! DX  = delta X (i.e. time interval) between each point
+! CUT = cut point that determines Hamming tails
+!
+! Example:
+!
+!     GFLATTOP(100, 0.01, 0.2)
+!
+! Generates a 100 point flattop window with a delta X of 0.01 
+! and the tails begin at amplitude 0.2
+
+
+GFLATTOP(LEN,DX,CUT) (REPLACE(GHAMMING(LEN,DX),GHAMMING(LEN,DX)>(CUT),1.0))
+
+
+!---------------------------------------------------------------------
+! REPLACE does a pointwise replace operation, based on a logical
+! condition.  Either series values or a constant value may be replaced
+! into a series.
+! 
+! Examples: 
+!
+! Where W1 is greater than W2, replace points in W1 with 1:
+!     REPLACE(W1, W1>W2, 1).
+!
+! Where W1 is either -1 or +1, replace the points with corresponding
+! points in W2:
+!     REPLACE(W1, ABS(W1)==1, W2).
+!
+!     OSER = original series
+!     COND = logical expression
+!     REPL = replacement series or constant
+
+REPLACE(OSER,COND,REPL)   (OSER)*NOT(COND)+(REPL)*(COND)
+
+!--------------------------------- END ----------------------------------

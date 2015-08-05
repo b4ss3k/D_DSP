@@ -1,0 +1,18 @@
+/* get custom legend text template */
+_getcleg(n, txt)
+{
+	switch (n) {
+		case 0:
+		default:
+			return("getcomment(%d)");
+
+		case 1:
+			return("getseriesname(%d)");
+
+		case 2:
+			return("getshortname(%d)");
+
+		case 3:
+			return(txt);
+	}
+}

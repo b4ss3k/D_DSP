@@ -1,0 +1,22 @@
+/* convolution panel */
+_conv(swin1, swin2, time, circ, dwin)
+{
+	if (time) {
+		if (circ) {
+			cmd = sprintf("Circonv(%s, %s)", swin1, swin2);
+		}
+		else {
+			cmd = sprintf("Conv(%s, %s)", swin1, swin2);
+		}
+	}
+	else {
+		if (circ) {
+			cmd = sprintf("Fcirconv(%s, %s)", swin1, swin2);
+		}
+		else {
+			cmd = sprintf("Fconv(%s, %s)", swin1, swin2);
+		}
+	}
+	eval(sprintf("Setwf(%s, '%s')", dwin, cmd));
+}
+

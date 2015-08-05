@@ -1,0 +1,28 @@
+! stats.dmn -- Statistical Options Menu
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+
+	    DADiSP/Statistics
+________________________________________
+
+ Graphical Statistics                 ~dmf("plots1.dmn")
+ Descriptive Statistics               ~echo("Returns a Table with all the Statistics on a Given Dataset")
+ Table Statistics                     ~dmf("tabstats.dmn")
+
+ ChiSquare Goodness of Fit Test - 2x2 ~echo("ChiSquare Goodness of Fit Test for Multiple Catagories")
+ Unpaired ChiSquare Test - 2xK        ~echo("Unpaired ChiSquare Goodness of Fit Test for Multiple Catagories")
+
+ 1-tailed T Test vs. Mean             ~echo("1 Tailed T Distribution Test VS Mean")
+ 2-tailed T Test vs. Mean             ~echo("2 Tailed T Distribution Test VS Mean")
+ Pooled Variance T Test - 2 Series    ~echo("Sample Comparision T Test for Pooled Variances")
+ Separate Variance T Test - 2 Series  ~echo("Sample Comparision T Test for Separate Variances")
+
+ F Test                               ~echo("Performs a F Hypothesis Test")
+ ANOVA                                ~echo("Performs an Analysis of Variance")
+ R and R^2: Correlation               ~echo("R and R^2 Correlations on Ranked or Unranked Data")
+ Multiple Regression                  ~dmf("regress1.men")
+
+ Individual Probability Functions     ~dmf("probs.dmn")
+!~_mc

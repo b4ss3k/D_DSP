@@ -1,0 +1,407 @@
+/*****************************************************************************
+*                                                                            *
+*   ZFREQ.SPL        Copyright (C) 1999-2007 DSP Development Corporation     *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Evaluates the frequency response of a Z transform           *
+*                                                                            *
+*   Revisions:   31 Aug 1999  RRR  Creation                                  *
+*                26 Feb 2003  RRR  default to coefficient rate if equal      *
+*                17 Jul 2004  RRR  support for cascade bi-quad coeffs        *
+*                18 Nov 2004  RRR  zfreq_rate for default sample rate        *
+*                 4 May 2005  RRR  zfreq_nfft for time aliased FFT           *
+*                 1 Aug 2008  RRR  ITERATE for column iteration              *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_ZFREQ
+
+    ZFREQ  
+
+    Purpose: Evaluates the frequency response of a Z transform
+                                                                        
+    Format:  ZFREQ(b, a, N, Fs, whole)
+
+                b - a series, numerator (i.e. zero) coefficients
+
+                a - a series, denominator (i.e. pole) coefficients,
+                    if the first coefficient is not 1.0, the coefficents
+                    are assumed to be in difference equation form
+
+                N - an optional integer, number of output samples,
+                    defaults to 2048
+
+               Fs - an optional real, sample rate of data. If the rates of
+                    the numerator and denominator coefficients are equal,
+                    the rate defaults to the coefficient rate, else the rate
+                    defaults to 1.0.
+
+            whole - an optional integer or string, 
+
+                    0: evaluate the transform only over the upper half 
+                       of the unit circle (default) 
+
+                    1: evaluate the transform over the entire unit circle
+
+                    If whole is a string, the transform is also evaluated
+                    over the entire unit circle.
+
+
+    Alternative Format:  
+
+             ZFREQ(c, N, Fs, whole)
+
+                c - A series, the system coefficients in cascaded 
+                    biquad form.  If c contains 2 columns, c is assumed
+                    to be in direct form, where the first column is b
+                    and the second column is a.
+
+                N - an optional integer, number of output samples,
+                    defaults to 2048
+
+               Fs - an optional real, sample rate of data. Defaults 
+                    to rate(c).
+
+            whole - an optional integer or string, 
+
+                    0: evaluate the transform only over the upper half 
+                       of the unit circle (default) 
+
+                    1: evaluate the transform over the entire unit circle
+
+                    If whole is a string, the transform is also evaluated
+                    over the entire unit circle.
+
+
+    Returns: A complex series
+
+
+    Example:
+
+             W1: zfreq( {1}, {1, -0.5, 0.2} )
+
+             W1 contains 2048 uniformly spaced samples of the frequency 
+             response of the Z transform:
+
+                            1
+             H(z) = ------------------
+                            -1      -2
+                    1 - 0.5z  + 0.2z
+
+
+             The frequency samples range from 0 to 0.5 Hz.
+
+
+    Example:
+
+             W2: zfreq( {1}, {0.5, -0.2} )
+
+             Since the leading pole coefficient is not 1.0, the
+             coefficients are assumed to be in difference equation form, 
+             i.e. the coefficients represent the system:
+
+             y[n] = 1.0*x[n] + 0.5*y[n-1] - 0.2*y[n-2]
+
+             The Z transform of this difference equation is
+             identical to the previous example, so ZFREQ yields the
+             same result.
+
+
+    Example:
+
+             W1: zfreq( {1}, {1, -0.5, 0.2}, 1024, 1.0, 1 )
+
+             Same as the first example, except the 1024 samples of the
+             frequency response are evaluated over the entire unit 
+             circle, i.e. the frequency samples range from 0.0 to 1.0 Hz.
+
+
+    Remarks:
+             ZFREQ uses the FFT method to evaluate N uniformly spaced
+             samples over the unit circle of a Z transform in direct form:
+  
+                                        -1                 -Q
+                    Y(z)   b[1] + b[2]*z   + ... + b[Q+1]*z
+             H(z) = ---- = -------------------------------------
+                                        -1                 -P
+                    X(z)    1   + a[2]*z   + ... + a[P+1]*z
+
+
+                        jw
+             where z = e    unit circle (frequency response)
+                   Q        order of zeros (numerator)
+                   P        order of poles (denominator)
+
+
+            If the leading term of the denominator is not 1.0, the 
+            coefficients are assumed to be in difference equation 
+            form:
+
+             y[n] = a[2]*y[n-1] + a[3]*y[n-2] + ... + a[P+1]*y[n-P] +
+                    b[1]*x[n]   + b[2]*x[n-1] + ... + b[Q+1]*x[n-Q]
+
+             for n >=1 
+
+             For ZFREQ(c, N, Fs, whole), if the input c is a single
+             column, the coefficients are assumed to be in cascaded
+             bi-quad form.  This is the output format of IIR filters
+             designed by DADiSP/Filters.  If c contains 2 columns, the
+             coefficients are assumed to be in direct form, where the
+             first column is b and the second column is a.
+
+             ZFREQ returns a complex series. Use MAG or PHASE to obtain
+             the magnitude and/or phase components separately.
+ 
+
+    See Also:
+             Fft
+             Filteq
+             Fir
+             Iir
+             Mag
+             Phase
+#endif
+
+
+/* frequency response of a Z transform */
+ITERATE zfreq(b, a, N, Fs, whole)
+{
+	local f, cascade;
+
+	/* check args */
+	(b, a, N, Fs, whole, cascade) = zfreq_parse_args(b, a, N, Fs, whole);
+
+	if (cascade) {
+		/* bi-quad cascade form */
+		f = zfreq_cascade(b, N, Fs, whole);
+	}
+	else {
+		/* double samples if evaluating over upper half */
+		if (not(whole)) N *= 2;
+
+		/* check form of a */
+		if (not(zfreq_isequal(a[1], 1.0))) {
+			/* assume coefficients in difference form */
+			a = {1, -a};
+		}
+
+		/* evaluate via FFT */
+		f = zfreq_nfft(b, N) / zfreq_nfft(a, N);
+		setdeltax(f, Fs / N);
+		sethunits(f, "Hertz");
+
+		/* upper half */
+		if (not(whole)) {
+			f = extract(f, 1, int(length(f)/2));
+		}
+	}
+
+	if (outargc == 2) {
+		return(f, xvals(f));
+	}
+	else {
+		return(f);
+	}
+}
+
+/* parse optional args for zfreq */
+zfreq_parse_args(b, a, N, Fs, whole)
+{
+	local oneser, cascade;
+
+	cascade = 0;
+
+	if (argc > 0) {
+		if (argc == 1) {
+			/* one arg - cascade form */
+			whole = 0;
+			Fs = rate(b);
+			N = 2048;
+			cascade = 1;
+		}
+		else {
+			oneser = not(IS_ARRAY(a));
+			/* always cast first arg to series */
+			b = {b};
+
+			if (argc > 2) {
+				if (argc < 5) {
+					if (argc < 4) {
+						/* 3 args */
+						if (oneser) {
+							/* one series and 2 scalars */
+							whole = 0;
+							Fs = N;
+							N = a;
+							cascade = 1;
+						}
+						else {
+							/* 2 series and scalar */
+							whole = 0;
+							Fs = zfreq_rate(b, a);
+						}
+					}
+					else {
+						/* 4 args */
+						if (oneser) {
+							/* one series and 3 scalars */
+							whole = Fs;
+							Fs = N;
+							N = a;
+							if (numcols(b) == 2) {
+								a = col(b, 2);
+								b = col(b, 1);
+							}
+							else {
+								cascade = 1;
+							}
+						}
+						else {
+							/* 2 series and 2 scalars */
+							whole = 0;
+						}
+					}
+				}
+				else { 
+					/* have all 5 args - cast 2nd arg to series */
+					a = {a};
+				}
+			}
+			else {
+				/* 2 args */
+				if (oneser) {
+					/* series and scalar */
+					whole = 0;
+					Fs = rate(b);
+					N = a;
+					if (numcols(b) == 2) {
+						a = col(b, 2);
+						b = col(b, 1);
+					}
+					else {
+						cascade = 1;
+					}
+				}
+				else {
+					/* two series */
+					whole = 0;
+					Fs = zfreq_rate(b, a);
+					N = 2048;
+				}
+			}
+		}
+	}
+	else {
+		error("impz - input series of system coefficients required");
+	}
+
+	if (cascade) {
+		if (numcols(b) == 2) {
+			/* raveled B, A direct form */
+			a = col(b, 2);
+			b = col(b, 1);
+			cascade = 0;
+		}
+		else {
+			a = {};
+			setdeltax(a, deltax(b));
+		}
+	}
+
+	return(b, a, N, Fs, whole, cascade);
+}
+
+
+/* find cascade frequency response by combining responses of each stage */
+zfreq_cascade(c, N, Fs, whole)
+{
+	local f, cs, b, a;
+
+	if (argc < 4) {
+		if (argc < 3) {
+			if (argc < 2) {
+				if (argc < 1) error("zfreq_cascade - input series required");
+				N = 2048;
+			}
+			/* default to rate of filter */
+			Fs = rate(c);
+		}
+		whole = 0;
+	}
+
+	/* get individual stages */
+	cs = ravel(extract(c, 2, -1), 5);
+
+	b = extract(cs, 1, 3);
+	a = {ones(1, numcols(cs)), extract(cs, 4, 2)};
+
+	setdeltax(b, deltax(c));
+	setdeltax(a, deltax(c));
+
+	iterate("zfreq", 0);
+
+	/* evaluate frequency response over the unit circle */
+	f = zfreq(b, a, N, Fs, whole);
+
+	iterate("zfreq", 1);
+
+	/* combine response from each stage */
+	f = c[1] * rowprod(f);
+
+	return(f, b, a);
+}
+
+
+/* get sample rate from coefficients */
+zfreq_rate(b, a)
+{
+	local zrate;
+
+	if (rate(b) == rate(a)) {
+		zrate = rate(b);
+	}
+	else if (length(b) == 1) {
+		zrate = rate(a);
+	}
+	else if (length(a) == 1) {
+		zrate = rate(b);
+	}
+	else {
+		zrate = 1.0;
+	}
+	return(zrate);
+}
+
+
+/* time aliased or normal FFT */
+ITERATE zfreq_nfft(s, n)
+{
+	if (argc < 2) {
+		if (argc < 1) error("zfreq_nfft - input series required");
+		n = length(s);
+	}
+	if (n < length(s)) {
+		/* time alias */
+		s = rowsum(ravel(s, n));
+		return(fft(s));
+	}
+	return(fft(s, n));
+}
+
+
+/* are two values equal within a tolerence */
+zfreq_isequal(d1, d2, tol)
+{
+	local eq;
+
+	if (argc < 3) {
+		tol = 1e-8;
+	}
+	eq = abs(d1 - d2) < abs(d1 * tol);
+
+	return(eq);
+}

@@ -1,0 +1,54 @@
+/*****************************************************************************
+*                                                                            *
+*   FIX.SPL      Copyright (C) 1997 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Rounds a value towards zero                                 *
+*                                                                            *
+*   Revisions:   16 Jun 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_FIX
+
+    FIX     
+
+    Purpose: Rounds a value towards zero
+                                                                        
+    Format:  FIX(val)
+
+              val - a real or series
+
+    Returns: A real or series
+
+    Example:
+             Fix(3.8)
+
+             returns 3
+
+
+             Fix(-3.8)
+
+             returns -3
+
+
+             Fix({1.2, -1.2})
+
+             returns the series {1, -1}
+
+
+    See Also
+             Ceil
+             Floor
+#endif
+
+
+fix(a)
+{
+	return(int((ceil(a)*(a < 0) + floor(a)*(a > 0))));
+}
+

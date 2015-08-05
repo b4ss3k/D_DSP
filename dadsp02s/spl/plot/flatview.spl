@@ -1,0 +1,71 @@
+/*****************************************************************************
+*                                                                            *
+*   FLATVIEW.SPL    Copyright (C) 2007 DSP Development Corporation           *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets display settings to show "flat" windows                *
+*                                                                            *
+*   Revisions:    8 Jan 2007  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_FLATVIEW
+
+    FLATVIEW
+
+    Purpose: Sets Worksheet display settings to show "flat" Windows
+                                                                        
+    Format:  FLATVIEW(mode)
+
+              mode - Optional integer. The display mode.
+                         0: flatview off
+                         1: flatview on (default)
+
+
+    Returns: Nothing, the Worksheet is displayed such that Windows appear
+             in a similar style as a printed Worksheet.
+
+    Example:
+             W1: gnorm(1000,1)
+             W2: integ(w1)
+
+             flatview
+
+             The Worksheet settings are set to a style similar to the 
+             printer settings.
+
+    Remarks:
+             FLATVIEW sets the window color, series color, header
+             justification, margin alignment and header colors. The
+             Windows are also displayed without a GUI frame.
+
+             Use FLATVIEW(0) to restore the original settings.
+             
+    See Also:
+             Resetscr
+             Scr2prt
+#endif
+
+
+/* display non-gui windows */
+flatview(mode)
+{
+	if (argc < 1) mode = 1;
+
+	if (mode) {
+		scr2prt();
+		setgcolor(32, sys_bg_color);
+		setgcolor(17, sys_bg_color);
+		setgcolor(30, sys_bg_color);
+		redrawall(1);
+	}
+	else {
+		setgcolor(30, sys_inner_color);
+		resetscr();
+	}
+}
+
+
+		

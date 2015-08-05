@@ -1,0 +1,80 @@
+/*****************************************************************************
+*                                                                            *
+*   FCONV.SPL   Copyright (C) 2000-2007 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Convolution using FFT's                                     *
+*                                                                            *
+*   Revisions:    2 May 2000  RRR  Creation - from FREQ.MAC                  *
+*                 4 Apr 2003  RRR  set xoffset                               *
+*                 1 Dec 2006  RRR  ITERATE for simple column iteration       *
+*                 6 Aug 2007  RRR  complex input check                       *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_FCONV
+
+    FCONV
+
+    Purpose: Convolution using the FFT method
+                                                                        
+    Format:  FCONV(s1, s2)
+
+                 s1 - input series
+
+                 s2 - input series
+
+
+    Returns: A series
+
+    Example:
+             W1: gsin(1000, .001, 2)
+             W2: gsin(1000, .001, 4, 4)
+             W3: conv(w1, w2)
+             W4: fconv(w1, w2)
+
+             Performs the convolution of two sinewaves. W3 performs
+             direct convolution in the time domain and W4 performs the
+             same convolution using the FFT method.
+
+    Remarks:
+             FCONV performs convolution by computing the FFT's of the 
+             input series. This method is faster than CONV for 
+             large series.
+
+             See CONV for the time domain implementation.
+
+
+    See Also:
+             Acorr
+             Conv
+             Facorr
+             Fxcorr
+             Xcorr
+#endif
+
+
+/* frequency domain convolution */
+ITERATE fconv(s1, s2)
+{
+	local s, maxlen;
+
+	/* find best FFT length */
+	maxlen = 2 * maxval(length(s1), length(s2));
+	maxlen = bestpow2(maxlen);
+
+	/* transform, multiply and inverse transform */
+	s = extract(ifft(fft(s1, maxlen) * fft(s2, maxlen)), 1, length(s1) + length(s2) - 1);
+
+	/* check if result should be purely real */
+	if (not(iscomplx(s1)) && not(iscomplx(s2))) {
+		s = real(s);
+	}
+
+	/* xoffset */
+	setxoffset(s, xoffset(s1) + xoffset(s2));
+
+	return(s);
+}

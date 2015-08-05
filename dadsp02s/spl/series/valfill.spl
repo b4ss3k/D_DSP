@@ -1,0 +1,79 @@
+/*****************************************************************************
+*                                                                            *
+*   VALFILL.SPL  Copyright (C) 1999 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Replaces a value with previous or next value                *
+*                                                                            *
+*   Revisions:   14 May 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_VALFILL
+
+    VALFILL
+
+    Purpose: Replaces a value with previous or next value
+                                                                        
+    Format:  VALFILL(s, val, mode)
+
+              s    - a series or array, the input data
+
+              val  - an optional real, value to replace, defaults to 0.0
+
+              mode - an optional integer, fill mode:
+                     0: no fill,
+                     1: fill forward using last know value
+                     2: fill forward then backward
+                     3: fill backward then forward
+
+                     defaults to 2
+
+
+    Returns: A series or array
+
+    Example:
+             W1: Ravel(gnorm(100, 1), 10)
+             W2: (W1 > 0.4) * W1
+             W3: Valfill(W2)
+
+
+             The zeros of W2 are replaced with the last known
+             value by first searching forward in each column and
+             then searching backwards.
+
+    Remarks: 
+
+             VALFIL is based on NAFILL.
+
+    See Also:
+             Nafill
+#endif
+
+
+/* replaces values is a series with last known value */
+valfill(s, val, mode)
+{
+	local array;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("fillval - input series required");
+			val = 0.0;
+		}
+		mode = 2;
+	}
+
+	/* replace val with NA in array */
+	array = s;
+	array[find(s == val)] = navalue;
+
+	/* now fill NA's based on mode */
+	array = nafill(array, mode);
+
+	return(array);
+}

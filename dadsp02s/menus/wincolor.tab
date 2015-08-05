@@ -1,0 +1,21 @@
+@tabbed
+@apply
+
+{sprintf("Window Colors for W%d", getwnum)} 
+{setvar("_replot", 0);setvar("_rdraw", 0)}
+{defvar("_wincolor_page", 0)}
+
+{setmenupage(_wincolor_page)}
+
+! default colors
+~_mf("wincolor.pan")
+
+! label colors
+~_mf("labcolor.pan")
+
+
+~~setvar("_wincolor_page", getmenupage)
+
+! replot window if necessary
+~~if(_replot, plotmode(1, 2))
+

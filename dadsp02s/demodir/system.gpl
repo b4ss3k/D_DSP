@@ -1,0 +1,13 @@
+! Menu for GPIB Bus System 
+@display
+@x0
+@y0
+ GPIB System
+_______________
+
+ ID            ~ECHO("Digital Oscilloscope")
+ Beeper Mode   ~strnum(input(2,"1 for On, 0 for Off"))
+ EOI Mode      ~strnum(input(2,"1 for On, 0 for Off"))
+ Error         ~  Echo("0")
+ Header Mode   ~strnum(input(2,"1 for On, 0 for Off"))
+ Longform Mode ~strnum(input(2,"1 for On, 0 for Off"))

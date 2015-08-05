@@ -1,0 +1,19 @@
+/* get vertical units */
+_gvunits(s, item, member)
+{
+	local vu;
+
+	if (argc == 2) { /* assume item, member */
+		vu = getvunits(s, item);
+	}
+	else {
+		vu = (argc > 0) ? getvunits(s) : getvunits;
+	}
+
+	if (strlen(vu) == 0) {
+		/* get default units */
+		vu = _getvunits;
+	}
+	return(vu);
+}
+

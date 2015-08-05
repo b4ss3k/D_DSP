@@ -1,0 +1,17 @@
+/* resets to default postscript settings */
+_defpost()
+{
+	setvar("_ps_fnt", getconfdef("POSTSCRIPT_FONT"));
+	setvar("_ps_ort", castint(getconfdef("POSTSCRIPT_LANDSCAPE"))==0);
+	setvar("_ps_lns", getconfdef("POSTSCRIPT_LANDSCAPE"));
+	setvar("_ps_gry", getconfdef("POSTSCRIPT_GREYSCALE"));
+	setvar("_ps_fil", getconfdef("POSTSCRIPT_FILE"));
+	setvar("_ps_xpr", getconfdef("POSTSCRIPT_XPAPER"));
+	setvar("_ps_ypr", getconfdef("POSTSCRIPT_YPAPER"));
+	setvar("_ps_x",   getconfdef("POSTSCRIPT_X"));
+	setvar("_ps_y",   getconfdef("POSTSCRIPT_Y"));
+	setvar("_ps_fs",  getconfdef("POSTSCRIPT_FONT_SCALE"));
+	setvar("_ps_lw",  getconfdef("POSTSCRIPT_LINEWIDTH"));
+	setvar("_ps_alo", getconfdef("POSTSCRIPT_ONEFILE"));
+}
+

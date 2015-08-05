@@ -1,0 +1,12 @@
+@panel
+@b{_bg1}
+@f{_fg1}
+@h{_Controlhelp("dsgn2ord")}
+  Magnitude of Peak Frequency Response         
+________________________________________
+               
+ Magnitude of Peak:  <                >~_dsgnmpc(<{_dsgnmp+0.0}>)~abs(input(1,"Magnitude"))
+ 
+ Constant: Natural Frequency 
+~menuc();DMF("dsgn2ord.men")
+         

@@ -1,0 +1,24 @@
+! grphctrl.men -- Manipulate display coordinates and series scales
+@x0
+@y1
+@b{_bg2}
+@f{_fg2}
+    View Controls
+ Graphical Settings  ~_MF("serctrl.pan")
+ Data Settings       ~_MF("serdata.pan")
+ Window Settings     ~_MF("winatts.pan")
+ Axis Ranges         ~_MF("windisp.pan")
+ Scales Settings     ~_MF("Scales.men")
+
+ Cursoring           ~_MC | cursoron
+ Overplot & Remove   ~_MF("overplot.men")
+ Erase All Overplots ~_MC | unoverplot
+! Remove 1 Overplot   ~_deffname('UNOVERPLOT  Remove Overplotted Series') | _defformat('Unoverplot(series_index)') | _defxamp('Unoverplot(3)') | _getint1("Overplot Number: ") | _evalint("Unoverplot")
+ Legends             ~_MF("legmenu.men")
+ Setting Focus       ~_MF("focus.pan")
+
+ Text Annotations    ~_MF("textann.men")
+ Line Drawing        ~_MF("linann.men")
+ Layout Options      ~_MF("txlayout.men")
+
+ Label Window        ~_deffname('LABEL    Label Window Contents') |_defformat('Label("title")')|_defxamp('Label("My Window")')|_getstr1("Label")|_evalstrform("Label")

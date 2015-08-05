@@ -1,0 +1,9 @@
+! PrmOnOff.men
+!  prompts on or off
+@x40
+@y0
+@f{_fg1}
+@b{_bg1}
+Prompt User       ~_ynm="-1";"Prompt User"
+Reply Yes to All  ~_ynm="1";"Yes to All"
+Reply No to All   ~_ynm="0";"No to All"

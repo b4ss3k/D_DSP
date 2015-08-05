@@ -1,0 +1,8 @@
+
+/* set replot flag if global color has changed */
+_chklcol(gcolor, val)
+{
+	if (getgcolor(gcolor) != val) {
+		setvar("_replot", 1);
+	}
+}

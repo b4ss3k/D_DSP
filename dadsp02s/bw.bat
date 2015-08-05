@@ -1,0 +1,1 @@
+copy dspcolor.bw dspcolor

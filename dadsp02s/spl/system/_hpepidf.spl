@@ -1,0 +1,21 @@
+/* default hpgl epilogue */
+_hpepidf(mode, auto, userstr)
+{
+	local def;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) mode = castint(getconf("HPGL_HPGL2")) > 0;
+			auto = 1;
+		}
+		userstr = "";
+	}
+
+	def = (mode) ? getconf("HPGL_EPILOGUE2") : getconf("HPGL_EPILOGUE1");
+
+	if (not(auto)) {
+		def = userstr;
+	}
+	return(def);
+}
+

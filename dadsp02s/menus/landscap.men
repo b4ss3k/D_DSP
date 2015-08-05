@@ -1,0 +1,10 @@
+! Landscap.men
+! Print Orienation
+@x40
+@y0
+@f{_fg1}
+@b{_bg1}
+ Orientation
+_____________
+Landscape  ~"Landscape"
+Portrait   ~"Portrait"

@@ -1,0 +1,8 @@
+hex()
+{
+
+	_mf("hex.tab");
+
+	/* return integer value */
+	return(hex2int(getvar("_hexval")));
+}

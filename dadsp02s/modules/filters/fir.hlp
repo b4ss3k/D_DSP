@@ -1,0 +1,92 @@
+@modeless 1
+
+                             FIR Filters              
+  ________________________________________________________________________
+
+  Finite Impulse Response (FIR) filters can be modeled with the following
+  difference equation:
+  
+                           N
+                          ---
+                          \
+                y[n]  =    > b[k] x[n-k-1]
+                          /
+                          ---
+                          k=1
+
+  where y[n] is the output data, x[n] the input, b[k] the filter
+  coefficients and N the filter order.
+
+  The filter coefficents can also be converted into Direct Form with the
+  FIR2DIR function. In Direct Form, the filter coefficients represent
+  the following Z transform:
+ 
+                                        -1                 -Q
+                    Y(z)   b[1] + b[2]*z   + ... + b[Q+1]*z
+             H(z) = ---- = ----------------------------------
+                    X(z)                   1
+
+
+                        jw
+             where z = e     unit circle (frequency response)
+                   Q         order of zeros (numerator)
+
+
+  In either case, the FIR filter module determines b[k] given the filter 
+  specifications. Two methods are supported:
+
+         Kaiser Window   -  ideal response multiplied by a Kaiser window.
+         Remez Exchange  -  optimal design, smallest filter order
+
+  Both designs result in linear phase filters throughout the pass band.
+
+  The Kaiser Window method is preferred when the pass or stop band occupies 
+  only a small percentage of the entire filter bandwidth.
+
+  The Remez Exchange (Parks-McClellan) algorithm generates filters with
+  the fewest number of coefficients.  The Remez algorithm can also design
+  differentiators and Hilbert Transformers.
+
+  For the standard FIR form, the resulting filter coefficients also
+  represent the impulse response of the filter.  Use FILTMAG and FILTPHASE
+  or FIRMAG and FIRPHASE to examine the frequency domain characteristics
+  of the filter.  
+
+  Once a filter has been designed, use FILTDATA or FIRFILTER to process data
+  with the filter.
+
+  The FIR filter coefficients be converted into Direct form with the
+  FIR2DIR function. This routine returns the b[k] (numerator) and a[k] 
+  (denominator) coefficients where b[k] are the original FIR coefficients
+  and a[k] = 1 for k = 1 and 0 elsewhere.
+
+  The coefficients can also be converted into bi-quad cascade form with
+  the FIR2CAS function.  However, this conversion is prone to numerical
+  error and not generally recommended.
+
+
+  For more information on the Remez Exchange algorithm, see:
+ 
+  [1] T. W. Parks and C. S. Burrus
+      Digital Filter Design, 1987
+      John Wiley and Sons
+      Section 3.3, Appendix 6
+
+ 
+  For more information on the Kaiser Window method, see:
+
+  [1] Section 3.2
+
+  [2] Oppenheim & Shafer
+      Discrete Time Signal Processing
+      Prentice Hall, 1989
+      pp. 444-462
+ 
+  [3] Bateman & Yates   
+      Digital Signal Processing Design
+      Computer Science Press, 1989
+      pp. 190-195
+ 
+  [4] Programs for Digital Signal Processing
+      IEEE Press, 1979
+      Section 5.2-1 - 5.2-19

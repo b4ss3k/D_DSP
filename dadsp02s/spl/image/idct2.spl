@@ -1,0 +1,85 @@
+/*****************************************************************************
+*                                                                            *
+*   IDCT2.SPL     Copyright (C) 1998 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the 2D Inverse Discrete Cosine Transform         *
+*                                                                            *
+*   Revisions:   16 Mar 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_IDCT2
+
+    IDCT2
+
+    Purpose: Calculates the 2D Inverse Discrete Cosine Transform
+                                                                        
+    Format:  IDCT2(s, nr, nc)
+
+              s  - input array
+              nr - optional integer, transform length of rows (defaults
+                   to row length of input)
+              nc - optional integer, transform length of columns (defaults
+                   to column  length of input)
+
+    Returns: An array
+
+    Example:
+             W1: Ravel(gcos(100, 1/100, 3), 10))
+             W2: Dct2(W1)
+             W3: Idct2(W2)
+
+             returns the original array (within roundoff error)
+
+
+    Remarks:
+             IDCT2 is often used in conjunction with DCT2 to perform
+             image compression.
+
+
+    See Also
+             Dct
+             Dct2
+             Idct
+             Ifft
+
+    For more information, see:
+
+    [1] Jae S. Lim, "Two-dimensional Signal and Image Processing",
+        pp. 148-162.  Implements an even-symmetrical DCT.
+
+    [2] Jain, "Fundamentals of Digital Image Processing", pp. 150-153.
+
+    [3] Wallace, "The JPEG Still Picture Compression Standard",
+        Communications of the ACM, April 1991.
+
+#endif
+
+
+
+/* 2D IDCT */
+idct2(a, nr, nc)
+{
+	local d;
+
+	if (argc < 3) {
+		nc = numcols(a);
+		if (argc < 2) {
+			nr = numrows(a);
+		}
+	}
+
+	/* amazingly simple one liner */
+	d = transpose(idct(transpose(idct(a, nr)), nc));
+
+	// set correct deltax and deltay
+	setdeltay(d, 1/(2*nc*deltay(a)));
+	setdeltax(d, 1/(2*nr*deltax(a)));
+
+	return(d);
+}

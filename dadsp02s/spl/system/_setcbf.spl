@@ -1,0 +1,16 @@
+/* set clipboard copy format */
+_setcbf(m, v)
+{
+	local cbf;
+
+	/* get format */
+	cbf = castint(getconf("CLIPBOARD_COPYFORMAT"));
+
+	/* clear bit */
+	cbf &= ~m;
+
+	/* set bit */
+	if (v) cbf |= m;
+
+	setconf("CLIPBOARD_COPYFORMAT", strnum(cbf));
+}

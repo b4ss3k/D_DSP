@@ -1,0 +1,11 @@
+@panel
+@b{_bg1}
+@f{_fg1}
+              Natural Frequency          
+_________________________________________________
+               
+ Natural Frequency (rad/sec):  <                >~_dsgnwnc(<{_dsgnwn+0.0}>)~abs(input(1,"Rad/Sec"))
+ 
+ Constant: Damping Ratio 
+! ~menuc();DMF("ddsgn2or.men")
+~menuc()         

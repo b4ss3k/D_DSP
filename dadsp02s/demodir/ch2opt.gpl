@@ -1,0 +1,10 @@
+!  Set channel 2 Options
+@display
+ Ch. 2 Options
+________________
+
+ Digitize       ~Echo("DIGITIZE CHANNEL 2")
+ Resume         ~Echo("  ")
+ Probe Gain     ~defmacro("probe2",strnum(input(2,"Probe Gain","1",1,100)),3)
+ Couple: [<  >] ~Defmacro("TCPL","< >",3)~<AC><DC>
+ Autoscale      ~Echo("Autoscale Complete")

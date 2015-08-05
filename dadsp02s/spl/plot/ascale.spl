@@ -1,0 +1,78 @@
+/*****************************************************************************
+*                                                                            *
+*   ASCALE.SPL     Copyright (C) 1998 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets window autoscaling                                     *
+*                                                                            *
+*   Revisions:   31 Aug 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_ASCALE
+
+    ASCALE
+
+    Purpose: Sets window autoscaling
+                                                                        
+    Format:  ASCALE(win, on_off)
+
+              win    - an optional window, defaults to current window
+              on_off - an integer 0:off 1:autoscale on (default 1)
+
+    Returns: Nothing
+
+    Example:
+             W1: Gsin(1000,1/1000,4);ascale(0);
+
+             Turns off autoscaling in W1.
+
+             Ascale(W1, 1)
+
+             Turns on autoscaling for Window 1.
+
+    Remarks:
+             ASCALE is useful for data in real time Windows.
+
+    See Also:
+             Rttinit
+#endif
+
+
+/* turn autoscaling ON/OFF */
+ascale(win, val)
+{
+	local exstyle;
+
+	/* autoscaling is a winexstyle bit */
+	if (argc < 1) {
+		return((winexstyle(W0) & EX_WIN_NOSCALE) == 0);
+	}
+	else if (argc == 1) {
+		if (IS_WINDOW(win)) {
+			return(winexstyle(win) & EX_WIN_NOSCALE);
+		}
+		else {
+			val = win == 0;
+			exstyle = winexstyle(W0);
+			/* clear EX_WIN_NOSCALE bit */
+			exstyle &= ~EX_WIN_NOSCALE;
+
+			/* set EX_WIN_NOSCALE bit */
+			if (val) exstyle |= EX_WIN_NOSCALE;
+			winexstyle(W0, exstyle);
+		}
+	}
+	else {
+		val = val == 0;
+		exstyle = winexstyle(win);
+		/* clear EX_WIN_NOSCALE bit */
+		exstyle &= ~EX_WIN_NOSCALE;
+		if (val) exstyle |= EX_WIN_NOSCALE;
+		winexstyle(win, exstyle);
+	}
+}

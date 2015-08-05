@@ -1,0 +1,65 @@
+/*****************************************************************************
+*                                                                            *
+*   BESTPOW2.SPL Copyright (C) 1997-2002 DSP Development Corporation         *
+*                           All Rights Reserved                              *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Finds largest 2^p                                           *
+*                                                                            *
+*   Revisions:   18 Aug 1997  RRR  Creation                                  *
+*                 9 Oct 2002  RRR  documentation                             *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_BESTPOW2
+
+    Purpose: Finds the power of 2 >= input value or length of the input series.
+
+    Format:  BESTPOW2(s)
+
+              s - An input series or real number.
+
+    Returns: A real number.
+
+    Example:
+
+             bestpow2(30)
+
+             returns 32.
+
+
+             bestpow2(64)
+
+             returns 64.
+
+            
+             W1: 1..200
+             bestpow2(W1)
+
+             returns 256.
+
+    Remarks:
+             If the input is a series or table, the return value is the
+             next power of 2 greater than or equal to the length of the
+             series.
+
+    See Also:
+
+             FFT
+             LOG2 
+             NEXTPOW2 
+#endif
+
+
+
+/* best 2^p for series or integer */
+bestpow2(s)
+{
+	local p;
+
+	p = nextpow2(s);
+
+	return(2^p);
+}

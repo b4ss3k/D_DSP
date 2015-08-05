@@ -1,0 +1,11 @@
+/* text settings */
+_txtset()
+{
+
+	defvar("_textbg",  strcolor(getwcolor()));
+	defvar("_textbgauto",  1);
+
+	if (_textbgauto) setvar("_textbg", strcolor(getwcolor()));
+
+	_mf("txtann.pan");
+}

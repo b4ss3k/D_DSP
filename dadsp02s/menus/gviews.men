@@ -1,0 +1,22 @@
+! gviews.men - Different graph types and control items
+@x0
+@y1
+@b{_bg2}
+@f{_fg2}
+  Graphical Views
+2-D Views    
+ Lines          ~_MC ; setplottype(0) ; setplotstyle(0) 
+ Points         ~_MC ; setplottype(0) ; setplotstyle(1)
+ Sticks         ~_MC ; setplottype(0) ; setplotstyle(2)
+ Bars           ~_MC ; setplottype(0) ; setplotstyle(3)
+ Table          ~_MC ; setplottype(0) ; setplotstyle(4)
+ Steps          ~_MC ; setplottype(0) ; setplotstyle(9)
+
+3-D Views        
+ Z Surface      ~_MC ; setplottype(1) ; setplotstyle(0) 
+ 3-D BarGraph   ~_MC ; setplottype(1) ; setplotstyle(3)
+ Contour        ~_MC ; setplottype(2) ; setplotstyle(0) 
+ Density        ~_MC ; setplottype(3) ; setplotstyle(0) 
+ Matrix         ~_MC ; setmatrix(1)   ; setplotstyle(4)
+
+!  4-D Views         ~if(strcmp(pathchar,"\")==0,_MF("4Dviewpc.pan"),_MF("4dviewws.pan"))

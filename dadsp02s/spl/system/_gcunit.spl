@@ -1,0 +1,13 @@
+/* get units for a column - panel */
+_gcunit(serstr, cnum)
+{
+	local nc, unitstr = "";
+
+	nc = eval(sprintf("numcols(%s)", serstr));
+	cnum = castint(cnum);
+
+	if (nc > 0 && cnum <= nc) {
+		unitstr = getvunits(eval(sprintf("col(%s, %d)", serstr, cnum)));
+	}
+	return(unitstr);
+}

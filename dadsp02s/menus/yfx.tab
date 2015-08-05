@@ -1,0 +1,8 @@
+@tabbed
+Generate y = F(x) Series
+
+~_MF("yfx.pan")
+~_MF("genunits.pan")
+
+~~_formstr = _addhv(_formstr)
+~~if(_chkwin > 0, eval(sprintf('setwf(%s, "%s")', _dwin, _formstr)))

@@ -1,0 +1,202 @@
+/*****************************************************************************
+*                                                                            *
+*   CHIRP.SPL    Copyright (C) 2005 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Generates a swept sinusoid                                  *
+*                                                                            *
+*   Revisions:    5 Oct 2005  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_CHIRP
+
+    CHIRP
+
+    Purpose: 
+             Generates a frequency modulated sinusoid.
+
+    Format:  
+             CHIRP(t, f0, t1, f1, "method", phi, "shape")
+
+                     t - A series, input the time values.
+
+                    f0 - Optional. A real, the instantaneous frequency 
+                         at time 0. Defaults to 0 Hertz.
+
+                    t1 - Optional. A real, the time value where the 
+                         instantaneous frequency is f1. Defaults to
+                         1 Hertz.
+
+                    f1 - Optional. A real, the instantaneous frequency at 
+                         time t1. Defaults to 100 Hertz.
+
+                method - Optional. A string, the modulation method.
+                          "linear"      - a linear sweep (default)
+                          "logarithmic" - a log sweep
+                          "quadratic"   - a parabolic sweep
+
+                   phi - Optional, A real, the starting phase value in
+                         degrees. Defaults to 0.
+
+                 shape - Optional. A string, the slope of the parabolic
+                         sweep if method is "quadratic."        
+
+                         "concave" - parabolic sweep approaches positive
+                                     infinity (default).
+
+                          "convex" - parabolic sweep approaches negative
+                                     infinity.
+    Returns: 
+             A series, a modulated swept sinewave.
+
+             (s, f) = CHIRP(t, f0, t1, f1, "method", phi, "shape")
+             returns both the swept sinewave and the instantaneous frequency 
+             series.
+
+    Example:
+        
+             t = 0..0.001..2;
+             W1: chirp(t, 0, 1, 150);
+             W2: specgram(W1, 256, 250);
+
+             The variable t contains 2 seconds of time data with a sample rate
+             of 1000 Hz. W1 creates a linearly sweept sinewave starting
+             at 0 Hz and reaching 150Hz at t = 1 second. W2 displays the
+             time-frequency specgtrogram of the chirp.
+
+    Example:
+
+             t = -2..0.001..2;
+             W3: chirp(t, 100, 1, 200,'quadratic');
+             W4: specgram(W3, 128, 120);
+
+             The variable t contains 4 seconds of time data with a
+             sample rate of 1000 Hz starting at -2 seconds.  W3 creates
+             a parabolic sweept sinewave starting at 100 Hz and reaching
+             200Hz at t = 1 second.  W4 displays the time-frequency
+             specgtrogram of the chirp.
+
+    Example:
+             t = 0..0.001..2;
+             (y, f) =  chirp(t, 0, 1, 150);
+
+             Same as the first example except variable y contains the swept 
+             sinewave and variable f contains the instantaneous frequency
+             values.
+
+    Remarks:
+             For a logarithmic chirp, f0 must be less than f1.
+
+             Any waveform can be modulated by calculating the cosine 
+             (or sine) of the integrated modulating series:
+
+                y = cos(2*pi*integ(m))
+
+             where:
+
+                m is the modulating signal.
+
+    See Also:
+             Demodfm
+             Gsin
+             Gsweep
+             Integ
+             Modfm
+#endif
+
+
+/* generate a swept sinewave */
+chirp(t, f0, t1, f1, method, phi, shape)
+{
+	local p, a, b, y, f, temp;
+
+	if (argc < 7) shape = {};
+	if (argc < 6) phi = {};
+	if (argc < 5) method = {};
+	if (argc < 4) f1 = {};
+	if (argc < 3) t1 = {};
+	if (argc < 2) f0 = {};
+
+	if (argc < 1) error("chirp - time series input required.");
+
+	if (isempty(shape)) shape = 'concave';
+	if (isempty(phi)) phi = 0;
+	if (isempty(method)) method = 'linear';
+	if (isempty(t1)) t1 = 1;
+	if (isempty(f0)) f0 = 0;
+	if (isempty(f1)) f1 = 100;
+
+	// Parse the method string:
+	// Set p=1 for linear, 2 for quadratic, 3 for logarithmic
+	method=tolower(method);
+	switch (method) {
+		case 'linear':
+			p = 1;
+			break;
+
+		case 'quadratic':
+			p = 2;
+			break;
+
+		case 'logarithmic':
+		case 'logrithmic':
+			p = 3;
+			break;
+
+		default:
+			p = 0;
+			break;
+	}
+
+	if (p == 0) {
+		error('chirp - Unknown method selected.');
+	}
+
+	if (p == 1) {
+		// linear
+		a = pi*(f1 - f0)/t1;
+		b = 2*pi*f0;
+		y = cos(a*t^2 + b*t + phi);
+		if (outargc > 1) {
+			f = (2 * a * t + b) / (2 * pi);
+		}
+	}
+	else if (p == 2) {
+		// quadratic
+		if (((shape == "concave") && (f0 > f1)) || ((shape == "convex") && (f1 > f0))) {
+			/* swap */
+			temp = f1;
+			f1 = f0;
+			f0 = temp;
+		}
+		a = (2/3*pi*(f1-f0)/t1/t1);
+		b = 2*pi*f0;
+		y = cos(a*t^3 + b*t + phi);
+		if (outargc > 1) {
+			f = (3 * a * t^2 + b) / (2 * pi);
+		}
+	}
+	else {
+		// logarithmic
+		if (f1 < f0) error('chirp - f1 > f0 is required for a log-sweep.');
+		a = 2*pi*t1/log(f1-f0);
+		b = 2*pi*f0;
+		x = (f1-f0)^(1/t1);
+		y = cos(a*x^t + b*t + phi);
+		if (outargc > 1) {
+			f = (a * x^t * ln(x) + b) / (2 * pi);
+		}
+	}
+	if (outargc > 1) {
+		// both time and instantaneous frequency
+		return(y, f);
+	}
+	else {
+		// just time waveform
+		return(y);
+	}
+}

@@ -1,0 +1,20 @@
+! demomenu.men - demo menu for DADiSP 4.0 
+@x20
+@y0
+@b{_bg2}
+@f{_fg2}
+       DADiSP Demo Choices
+__________________________________
+
+ Overview of DADiSP              ~_MC; demoload("over4.dsp")
+
+ Analysis and Application Topics ~_MC; DMF("AppTopic.men")
+
+ DADiSP Module Overviews         ~_MC; DMF("DemModul.men")
+
+ Customization & Reporting       ~_MC; demoload("custom.dsp")
+
+ Interactive DADiSP Session      ~_MC; demoload("demottor.dsp")
+
+ Exit Demo                       ~_MC;
+

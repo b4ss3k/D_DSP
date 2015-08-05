@@ -1,0 +1,76 @@
+/*****************************************************************************
+*                                                                            *
+*   RGBIMAGE.SPL Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Creates a 24 bit image from RGB components                  *
+*                                                                            *
+*   Revisions:    7 Jun 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_RGBIMAGE
+
+    RGBIMAGE
+
+    Purpose: Creates a 24 bit image from red, green and blue components
+                                                                        
+    Format:  RGBIMAGE(r, g, b)
+
+              r - an array of red values
+              g - an array of green values
+              b - an array of blue values
+
+
+    Returns: An array, a 24 bit color image
+
+    Example:
+
+             W1: Density(spline2(ravel(gnorm(100,1),10), 8));rainbow()
+
+                 (r, g, b) = Getrgb(w1)
+
+             W2: Rgbimage(r, g*1.1, b);
+
+             W1 contains an image of a random surface shaded with the
+             colors of the spectrum ranging from red to blue.  W2
+             converts the image into a 24 bit color image with the
+             green intensities increased by 10%.
+
+    Remarks:
+             Unlike standard images, a 24 bit image does not
+             reference a separate colormap.  Instead, each pixel of
+             the image is comprised of a composite 24 bit RED, GREEN,
+             BLUE value packed into a long integer (4 bytes). Use 
+
+                           (r, g, b) = GETRGB(image) 
+             
+             to retrieve the separate red, green and blue values from 
+             a composite 24 bit image. 
+
+                           image = RGBIMAGE(r, g, b)
+
+             To construct a 24 bit composite image from separate RGB 
+             values.
+
+             Because 24 bit color images do not require a colormap
+             (the colors are implicit), the image can be saved and
+             restored automatically with the correct colors.
+
+             RGBIMAGE is a built-in function.
+
+
+    See Also:
+             Density
+             Getcolormap
+             Getrgb
+             Image24
+             Iminterp
+             Spline2
+             Interp2
+
+#endif

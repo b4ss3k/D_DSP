@@ -1,0 +1,20 @@
+! MoreInfo.men - 
+! Menu that lets user see more information on that topic 
+! or return to the main demo menu, or, "go interactive" at this point
+! Note: prior to displaying this menu, the calling command file should
+!       define the macro MoreInfoDSPFile to be the name of the command 
+!       file in the demodir subdirectory which will be called, and the
+!       macro DemoTopic to be the topic 
+@x20
+@y0
+@b{_bg2}
+@f{_fg2}
+   Demo Options for {DemoTopic} 
+
+ Continue with More Detail on {DemoTopic}              ~_MC;demoload(MoreInfoDSPFile)
+
+ Enter an Interactive DADiSP Session in this Worksheet ~_MC;demoload("demottor.dsp")
+
+ Return to Application Topics Menu                     ~_MC;DMF("AppTopic.men")
+
+ Return to Main Demo Menu                              ~_MC;dmf("demomenu.men")

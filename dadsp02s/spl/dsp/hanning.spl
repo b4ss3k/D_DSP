@@ -1,0 +1,59 @@
+/*****************************************************************************
+*                                                                            *
+*   HANNING.SPL   Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Multiplies a series with a Hanning Window                  *
+*                                                                            *
+*   Revisions:    17 Feb 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_HANNING
+
+    HANNING    
+
+    Purpose: Multiplies a series with a Hanning window
+                                                                        
+    Format:  HANNING(s, ampflag)
+
+                    s - a series or array
+              ampflag - an optional integer, 0:do not correct amplitude,
+                        1:correct amplitude, defaults to 0.
+
+    Returns: A series or array
+
+    Example:
+             W1: gsin(1000, .001, 45)
+             W2: Spectrum(Hanning(W1))
+             W3: Spectrum(Hanning(W1, 1))
+
+             The MAX of W2 == 0.4995 and the MAX of W3 == 1.0. The amplitude
+             of the spectrum in W3 has been corrected to take into account
+             amplitude effects of the Hanning window.
+ 
+    Remarks:
+             HANNING was implemented as a macro in versions prior to
+             DADiSP 2000. You may need to remove the macro definition
+             with:
+                                undefmacro("hanning")
+
+             from old worksheets.
+
+             The correction factor is is the mean of the Hanning window. 
+
+    See Also
+             Hamming
+             Kaiser
+             Winfunc
+#endif
+
+
+/* multiply series with a hanning window */
+hanning(s, fixamp)
+{
+	return(winfunc(1, s, fixamp));
+}

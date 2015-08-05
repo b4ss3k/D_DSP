@@ -1,0 +1,11 @@
+/* get min marker */
+_gminmk()
+{
+	local i;
+
+	for (i = 1; i <= numitems; i++) {
+		if (getcomment(i) == "Minimum Marker") return(i);
+	}
+	return(-1);
+}
+

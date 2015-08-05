@@ -1,0 +1,27 @@
+@modeless 1
+            Remez Exchange Differentiator FIR Filter Parameters
+ ______________________________________________________________________
+
+
+ Magnitude (dB) |
+                |
+                |                   
+                |
+          0  __ |      ____________
+                |     /             
+                |    /    
+                |   /   / slope
+                |  /
+                | /
+                |
+                |_____________________________________________
+                       |                        Frequency (Hz)
+                       f                    
+                        stop                       
+
+
+  frate  -  Sample Rate           Hz 
+  slope  -  Differentator Slope     
+  fstop  -  Stopband Frequency    Hz
+
+                        0 < fstop <= frate/2

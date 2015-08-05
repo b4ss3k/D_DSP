@@ -1,0 +1,10 @@
+! Random.men -- Generate Random Noise
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+   Generate Noise  
+
+ Normal Distribution  ~_MF("norm.pan")
+
+ Uniform Distribution ~_MF("rand.pan")

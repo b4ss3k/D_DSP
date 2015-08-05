@@ -1,0 +1,79 @@
+/*****************************************************************************
+*                                                                            *
+*   DYDX.SPL     Copyright (C) 1999 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    XY derivative                                               *
+*                                                                            *
+*   Revisions:    2 Feb 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#ifndef ISSERIES
+#define ISSERIES(series)  (itemtype(series) == 0)
+#endif
+
+
+#if @HELP_DYDX
+
+    DYDX    
+
+    Purpose: Performs a derivative on XY data
+                                                                        
+    Format:  Dydx(ysig, xsig)
+
+              ysig - input XY series
+              xsig - optional explicit xvalues
+
+    Returns: An XY series
+
+    Example:
+
+             W1: Xy(gexp(100,.01), gline(100,.01,1,0))
+             W2: Dydx(w1);
+
+             W2 contains the first derivative of the XY data in W1.
+
+
+    Remarks:
+
+             DYDX is similar to DADiSP's built-in RDERIV function and DYDX
+             defaults to RDERIV for non XY series input.
+
+    See Also:
+             Deriv
+             Lderiv
+             Rderiv
+#endif
+
+
+dydx(ysig, xsig)
+{
+	local dx, dy;
+
+	if (argc < 2) {
+		if (argc < 1) {
+			error("dydx - series required");
+		}
+		else if (ISSERIES(ysig)) { /* interval series */
+			return(rderiv(ysig));
+		}
+		else { /* XY series */
+			xsig = xvals(ysig);
+		}
+	}
+
+	dy = delay(ysig, 1) - ysig;
+	dx = delay(xsig, 1) - xsig;
+
+	dy = extract(dy/dx, 2, length(xsig));
+
+	return(xy(xsig, dy));
+}
+
+
+	

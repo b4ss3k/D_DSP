@@ -1,0 +1,115 @@
+/*****************************************************************************
+*                                                                            *
+*   XYDT.SPL     Copyright (C) 1999 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Create an XY plot from date, time and y data                *
+*                                                                            *
+*   Revisions:   26 Jul 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_XYDT
+
+    XYDT
+
+    Purpose: Creates an XY plot from Date, Time and Y series
+                                                                        
+    Format:  XYDT(date, time, y, gap)
+
+              date - A series of date values.
+
+              time - A series of time values.
+
+                 y - A series of y values.
+
+               gap - Optional, a real specifying the length in days of a
+                     time gap to plot as a blank line. Defaults to
+                     0.0 (no gaps).
+
+    Returns: An XY series
+
+    Example:
+             W1: {julstr("1-1-99"), julstr("1-10-99"), julstr("4-2-99")}
+             W2: {todstr("12:00"), todstr("14:00"), todstr("9:35")}
+             W3: {1, 2, .5};setvunits("V")
+             W4: xydt(w1, w2, w3)
+
+             The series in W4 consists of the values:
+
+             1-01-99  12:00,     1.0
+             1-10-99  14:00,     2.0
+             4-02-99  09:35,     0.5
+
+
+    Example:
+             W5: xydt(w1, w2, w3, 20)
+
+             Same as above except a gap appears between the 2nd and 3rd
+             values.
+
+    Remarks:
+             To configure the X Axis to display both date and time values, 
+             use SETCONF("dt_scales_format", "1")
+
+             If GAP > 0, nan values are inserted where the time between
+             successive samples exceeds the gap. This results in a blank
+             line separating time sections.
+
+
+    See Also:
+             Julstr
+             Todstr
+             Julymd
+             XY
+#endif
+
+
+/* create an XY plot from Date, Time and Y data */
+xydt(d, t, y, gap)
+{
+	local di, x, dt, dx;
+
+	if (argc < 4) {
+		if (argc < 3) error("xydt - date, time and y series required");
+		gap = 0.0;
+	}
+
+	/* date intervals */
+	di = d - d[1];
+
+	/* convert days to seconds and add time values */
+	x = di*86400 + t;
+
+	/* make XY plot */
+	dt = xy(x, y);
+
+	if (gap > 0) { /* add nans to create plotting gaps */
+
+		/* find indices of date/time gaps larger than gap * 1 day */
+		dx = lderiv(x);
+		dx[1] = 0;
+		dx = find(dx > 86400 * gap);
+
+		if (length(dx) > 0) {
+			/* create a series of nan's */
+			nanvals = rep({nan}, length(dx));
+
+			/* insert nan's at discontinuities */
+			dt = xy(insert(x, nanvals, dx), insert(dt, nanvals, dx));
+		}
+	}
+
+	/* set starting date */
+	setdate(dt, strjul(int(d[1])));
+	settime(dt, "0:00");
+
+	/* set units */
+	sethunits(dt, "Time");
+	setvunits(dt, getvunits(y));
+
+
+	return(dt);
+}

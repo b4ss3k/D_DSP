@@ -1,0 +1,28 @@
+
+                 Extended Graphics Adapter
+
+DFDP now supports the extended graphics adapter.  Use the
+INSTALL program to access your EGA.
+
+
+                    DFDP on the IBM AT
+
+This handout provides information that allows owners of IBM 
+AT computers that do not have an 80287 numeric coprocessor 
+to use versions 1.10 and 2.12 of DFDP. Those who have 
+the 80287 should not experience any problems with floating 
+point calculations, and DFDP has no floating point problems
+when used on an IBM PC.
+
+ 
+If you do not have a coprocessor, you need to explicitly tell 
+DFDP that there is no coprocessor by issuing the following 
+command in DOS before running the program:
+
+	 SET NO87=8087 Suppressed 
+
+This command forces the use of the floating point emulation 
+software and is necessary because an AT with no coprocessor 
+fools DFDP into thinking that there is a coprocessor 
+present, and DFDP will return incorrect results. 
+

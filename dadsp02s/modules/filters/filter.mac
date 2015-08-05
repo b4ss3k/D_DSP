@@ -1,0 +1,264 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!   FILTER.MAC   Copyright (C) 1989-2005 DSP Development Corporation         !
+!                               All Rights Reserved                          !
+!                                                                            !
+!   Author:      Randy Race                                                  !
+!                                                                            !
+!   Synopsis:    DADiSP/Filters Version 3.0                                  !
+!                                                                            !
+!   Revisions:    9 Dec 1989  RRR  Creation                                  !
+!                 8 Jun 1994  RRR  Kaiser Window FIR Filters                 !
+!                15 Jul 2004  RRR  zplane for pole-zero plot                 !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+! FIR and IIR Digital Filter Design Macros
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!           Filter Menuing Functions              !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+
+_FILTERDIR         strcat("modules", pathchar, "filters")
+_FILTERHOME        strcat(_filterdir, pathchar)
+
+! filter strings
+#include {strcat(_filterhome, "filtstr.mac")}
+
+_MFF(s)            _menuf(strcat(_FILTERHOME, s))
+_FILTFNAME(s)      (strcat(_FILTERHOME, (s)))
+_FILTHELP(s)       _FILTFNAME(strcat(s,_fhelpext))
+
+_filtersloaded     1 
+_filtermes         " "
+_fhelpext          ".hlp"
+
+_deffhelp(s)         defmacro("_helpfile", _FILTHELP(s), 3) 
+
+_fmenu(s, n, t)      eval(s);_pdchist(n, s, t)
+_pdchist(n, s, t)    pdchist(n, s, t)
+
+_initfilt   if(not(isvar("_initfiltflg")), setvar("_initfiltflg", 1);toolbar(1,-1,4, lred, _filterstr,'_MFF("filter.men")', _filtertip))
+
+
+! invoke filters menu
+filters     _mff("filter.men")
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!              Default FIR Parameters             !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+_deffirft          1             ! Low Pass
+_deffirfd          0             ! Kaiser
+
+_deffirfts         1000.0        ! Sample Race
+
+_deffirf1          180.0         ! Freq 1
+_deffirf2          200.0         ! Freq 2
+_deffirf3          280.0         ! Freq 3
+_deffirf4          300.0         ! Freq 4
+
+_deffirfrp         3.0           ! Passband Ripple
+_deffirfrs         40.0          ! Stopband Attenuation
+
+_deffirforg        20            ! Filter Order
+_deffirfoaut       1             ! Automatic Order
+
+_deffiroform       0             ! FIR Output Form
+_deffirudc         0             ! Non-Unity DC Gain
+_deffiruorg        0             ! Original Non-Unity DC Gain
+_deffirflp         0             ! No Full Linaer Phase
+
+_defdifff1         1.0           ! Diff Slope
+_defdifff2         _deffirfts/2  ! Diff Cutoff Freq
+
+_defhilbf1         0.0           ! Hilbert Freq 1
+_defhilbf2         _deffirfts/2  ! Hilbert Freq 2
+
+_deffirf1org       180.0         ! Original Freq 1
+_deffirf2org       200.0         ! Original Freq 2
+_deffirf3org       280.0         ! Original Freq 3
+_deffirf4org       300.0         ! Original Freq 4
+
+_deffirquant       0             ! No Quantization
+_deffirqbits      -1             ! No Quantization Bits
+_deffirqbitsorg    16            ! 16 Bits when set
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!              Default IIR Parameters             !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+_defiirft             1         ! Lowpass
+_defiirfd             0         ! Butterworth
+
+_defiirfts            1000.0    ! Sample Rate
+
+_defiirf1             180.0     ! Freq 1
+_defiirf2             200.0     ! Freq 2
+_defiirf3             280.0     ! Freq 3
+_defiirf4             300.0     ! Freq 4
+
+_defiirfrp            3.0       ! Passband Ripple
+_defiirfrs            40.0      ! Stopband Attenuation
+
+_defiirforg           4         ! Order
+_defiirfoaut          1         ! Automatic Order
+_defiiroform          1         ! Cascade Coefficients
+_defiirtform          0         ! Bilinear Transform
+_defiirudc            1         ! Unity DC Gain
+
+_defiiruorg           1         ! Original Unity DC Gain
+
+_defiirquant          0         ! No Quantization
+_defiirqbits         -1         ! No Quantization Bits
+_defiirqbitsorg       16        ! 16 Bits when set
+
+_deffiltflen          512       ! Filter Response Length
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!              Filter Menuing Macros              !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+_FIRMFD      _fmenu('_MFF("firf.pan")',     _firmenstr,    _firmentip)
+_IIRMFD      _fmenu('_MFF("iirf.pan")',     _iirmenstr,    _iirmentip)
+
+_FILTRESPM   _fmenu('_MFF("filtresp.pan")', _filtrespstr,  _filtresptip)
+_FILTPZM     _fmenu('_MFF("filtpz.pan")',   _filtmiscstr,  _filtmisctip)
+_FILTFILTM   _fmenu('_MFF("filtdata.pan")', _filtfiltstr,  _filtfilttip)
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!          FIR Remez Exchange Macros              !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+! dB Log Magnitude FFT
+LOGMAG(S)        20*LOG10(MAG(EXTRACT(FFT(S),1,INT(LENGTH(S)/2))))
+FLOGMAG(S,N)     20*LOG10(MAG(EXTRACT(FFT(EXTRACT(S,1,N+N)),1,INT(N))))
+FIRMAG(S,N)      (if(numcols(s)==1,FLOGMAG(S, N),DIRLOGMAG(S, N)))
+
+FPHASE(S,N)      (PHASE(EXTRACT(FFT(EXTRACT(S,1,N+N)),1,INT(N))))
+FIRPHASE(S,N)    (if(numcols(s)==1,FPHASE(S, N),DIRPHASE(S, N)))
+
+! Display Specification Files
+LOPASS(N)       menufile(STRCAT("lopass", STRNUM(N), ".fir")) ! load lowpass fir specs
+HIPASS(N)       menufile(STRCAT("hipass", STRNUM(N), ".fir")) ! load highpass fir specs
+BPASS(N)        menufile(STRCAT("bandps", STRNUM(N), ".fir")) ! load bandpass fir specs
+BSTOP(N)        menufile(STRCAT("bandsp", STRNUM(N), ".fir")) ! load bandstop fir specs
+DIFFS(N)        menufile(STRCAT("diff", STRNUM(N), ".fir"))   ! load diff fir specs
+
+NVALS(S)        GLINE(LENGTH(S),1.0,1.0,0.0) ! grabs index values from a signal
+TOHIPASS(S)     S*(-1.0^NVALS(S));SETDELTAX(DELTAX(S)) ! converts lowpass fir to hipass fir filter
+
+FILTER(S,H)     EXTRACT(CONV(S,H), CEIL(LENGTH(H)/2), LENGTH(S)) ! filter signal S with filter H
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!               IIR Misc Macros                   !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+! impulse response
+IIRIMP(S,N)            (if(numcols(s)==1,CASCADE(IMPULSEX(1,N,DELTAX(S)),S), IMPZ(S, N)))
+
+! frequency response
+IIRMAG(S,N)             (if(numcols(s)==1,CLOGMAG(S, N),DIRLOGMAG(S, N)))
+DIRLOGMAG(S, N)         (20*log10(mag(zfreq(s, n))))
+OIIRMAG(S,N)            (20*LOG10(MAG(EXTRACT(FFT(IIRIMP(S,N+N)),1,INT(N)))))
+
+! phase response
+IIRPHASE(S,N)           (if(numcols(s)==1,CPHASE(S, N),DIRPHASE(S, N)))
+DIRPHASE(S, N)          (phase(zfreq(s, n)))
+OIIRPHASE(S,N)          (PHASE(EXTRACT(FFT(IIRIMP(S,N+N)),1,INT(N))))
+
+! impulse generation
+IMPULSEX(POS,LEN,DX)   (SETPT(GLINE(LEN,DX,0.0,0.0),1.0,POS))
+
+! perform IIR filtering
+IIRFILTER(S,H)         (if(numcols(h)==1, CASCADE(S,H), Filteq(col(h,1),col(h,2), s)))
+
+! IIR group delay - from impulse response
+IIRGRPDELAY(S,N)       (filtgrpdelay(s, n))
+
+#undef grpdelay
+
+
+! IIR Pole-Zero Plot
+oIirpz(s)   pzplot(iirpoles(s),iirzeros(s))
+Iirpz(s)    zplane(s)
+
+! Generic Pole-Zero Plot
+Pzplot(p,z) gcircle(1001);overp(xyri(p));overp(xyri(z));setpzplt
+
+! IIR poles and zeros from cascade coefficients
+Iirpoles(s) (if(numcols(s)==1,caspoles(s), dirpoles(s)))
+Iirzeros(s) (if(numcols(s)==1,caszeros(s), dirzeros(s)))
+
+caspoles(s) (roots(polecoef(s)))
+dirpoles(s) (roots(col(s, 2)))
+caszeros(s) (roots(zerocoef(s)))
+dirzeros(s) (roots(col(1, 2)))
+firpoles(s) (zeros(length(s)-1, 1))
+firzeros(s) (roots(s))
+
+
+! number of poles or zeros from a bi-quad iir
+nbiquadpz(s)      (int(1+2*((length(s)-1)/5)))
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!               FIR Misc Macros                   !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+! FIR Zeros and Zero Plot
+Firzeros(s) (roots(s))
+oFirpz(s)   gcircle(1001);overp(xyri(firzeros(s)));setzplt
+Firpz(s)    zplane(s,{1})
+setzplt     setcolor(zerocolor,2);setsym(11,2);setplotstyle(1,2);sethunits("Real");setvunits("Imag")
+
+Firgrpdelay(s,n)  (grpdelay(s, {1}, n))
+
+! Unwrapped FIR phase response
+Firuphase(s, n)   (unwrap(firphase(s, n)))
+
+! FIR filter convolution using the FFT
+fastfilter(s, h)  extract(fftconv(s, h), ceil(length(h)/2), length(s));setxoffset(xoffset(s))
+
+! convolution using the fft
+fftconv(s1,s2) (real(ifft(fft(extract(s1,1,fftconvlen2(s1,s2)))*fft(extract(s2,1,fftconvlen2(s1,s2))))))
+
+! 2 * maximum length of two series
+fmaxtwo(x,y)       int(if((x)>(y), 2*(x), 2*(y)))
+
+fmaxtwolen(s1,s2)  fmaxtwo(length(s1),length(s2))
+
+! find best power of two size for FFT
+fftconvlen2(s1, s2)    (int(2^(ceil(log2(fmaxtwolen(s1, s2))))))
+
+! log base 2
+log2(x)            (log(x)/log(2))
+
+
+! compile spl routines
+#include {splload(strcat(_filterhome,"filters.spl"))}
+
+! compile spl routines
+#include {splload(strcat(_filterhome,"winfilt.spl"))}
+

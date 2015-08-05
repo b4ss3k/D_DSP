@@ -1,0 +1,86 @@
+/*****************************************************************************
+*                                                                            *
+*   GRAY.SPL       Copyright (C) 1997 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Generate a grayscale colormap                               *
+*                                                                            *
+*   Revisions:    6 Nov 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_GRAY
+
+    GRAY
+
+    Purpose: Generates a black & white colormap
+                                                                        
+    Format:  GRAY(len)                           
+
+               len - optional colormap length, defaults to
+                     the length of the current colormap
+                                                                        
+
+    Returns: A table of RGB triples suitable for the SETCOLORMAP function.   
+                                                                        
+    Example:                                                            
+
+             clen = length(getcolormap());
+             density(ravel(rep(0..(clen-1), 32), clen)');
+             gray();
+                                                                        
+             Creates a table of 32 x colormap length RBG values and   
+             displays the resulting colors. The resulting image is a    
+             vertical plot of colors ranging from black (lowest) to   
+             to white (highest).
+
+     Remarks:
+
+             GRAY() by itself sets the colormap and shading.
+
+             a = gray() or setcolormap(gray()) returns the rgb values.
+             In this case, use SETSHADING to make the new colormap
+             take effect on an existing density or 2D plot.
+
+     See Also:
+
+             Cool
+             Hot
+             Rainbow             
+             Setcolormap
+             Setshading
+             Showcmap
+
+#endif
+
+
+gray(mlen)
+{
+	local r, g, b, hmap;
+
+	if (argc < 1) {
+		mlen = length(getcolormap());
+	}
+
+	/* generate black and white rgb values */
+	r = (0..mlen)/mlen;
+	g = (0..mlen)/mlen;
+	b = (0..mlen)/mlen;
+
+	hmap = ravel(r, g, b);
+
+	if (outargc == 0) {
+		setcolormap(hmap);
+		setshading();
+	}
+	else {
+		setvunits(hmap, "Red",   1);
+		setvunits(hmap, "Green", 2);
+		setvunits(hmap, "Blue",  3);
+		return(hmap);
+	}
+}
+

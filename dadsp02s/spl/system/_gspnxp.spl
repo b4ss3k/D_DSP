@@ -1,0 +1,26 @@
+/* get spanx as percentage */
+_gspnxp(w)
+{
+	local xl, xr, sxl, sxr, pct;
+
+	if (argc < 1) {
+		sxr = getspanx(1);
+		sxl = getspanx(0);
+		xr = getxr;
+		xl = getxl;
+	}
+	else {
+		sxr = getspanx(w, 1);
+		sxl = getspanx(w, 0);
+		xr = getxr(w);
+		xl = getxl(w);
+	}
+
+	if (sxr == 0.0 && sxl == 0.0) pct = 1.0;
+	else {
+		pct = (sxr - sxl) / (xr - xl);
+	}
+	if (pct > 1 || pct < 0) pct = 1;
+	return(castint(100*pct+0.5));
+}
+

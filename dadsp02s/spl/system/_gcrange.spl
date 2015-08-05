@@ -1,0 +1,23 @@
+/* color range */
+_gcrange(doset)
+{
+	local lo, hi, set;
+
+	(lo, hi, set) = getcrange();
+
+	if (argc < 1) doset = 1;
+
+	if (not(set) || not(doset)) {
+		lo = min;
+		hi = max;
+	}
+
+	if (argc > 0) set = doset;
+
+	/* set globals used by ser3dctl.pan */
+	setvar("_clrlo",  lo);
+	setvar("_clrhi",  hi);
+	setvar("_clrset", set);
+
+	return(set);
+}

@@ -1,0 +1,28 @@
+! Scales.hlp
+!
+SCALES HELP
+
+LOCATION:
+Axes can be located on the Bottom or Top (X-axis), Left or Right (Y-axis),
+and with or without labels (in any combination).  Choose this option to set
+the scale locations.
+
+AXIS SPAN:
+Axes can extend over the entire plotting area or a portion of the plotting 
+area.  By default, scales appear staggered and extend for the entire plotting
+area.  Choose this option to set the axis ranges as well as their percentage
+of the plotting area.
+
+LABEL ORIENTATION:
+Axis Labels can be shown vertically or horizontally.  By default, all tick 
+labels are shown horizontally, and axis labels are shown horizontally along
+the x-axis and vertically along the y-axis.  Choose this option to set 
+different options for tic and label rotations.
+
+DEFAULT ROTATION:
+When the Y-axis location changes, the default vertical label rotations may 
+be different than what you desire.  Since the vertical label rotation default
+settings persist across changes to the scales, you should set them here, 
+rather than in the Label Orientation option.
+
+   

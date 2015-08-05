@@ -1,0 +1,82 @@
+/*****************************************************************************
+*                                                                            *
+*   BYTE2TYPE.SPL Copyright (C) 2006 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Converts a byte stream to a series of a specified type     *
+*                                                                            *
+*   Revisions:    14 Dec 2006  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_BYTE2TYPE
+
+    BYTE2TYPE    
+
+    Purpose: Converts a raw byte stream to series of a specific data type.
+                                                                        
+    Format:  BYTE2TYPE(series, datatype, byteswap)
+
+                series - Input series, the byte values.
+
+              datatype - An integer code number or name specifying 
+                         the data type. See CASTBYTE for values.
+                         Defaults to DOUBLE.
+
+              swapflag - Optional. An integer. 0:No swap. 1:Swap byte order. 
+                         Defaults to 0.
+
+    Returns: A series
+
+    Example:
+             W1: grand(10, 1)
+             W2: type2byte(w1)
+             W3: byte2type(W2)
+
+             W2 contains a 80 point series where every 8 values is the
+             byte representation of the corresponding double value in W1.
+             W3 converts the byte values of W2 to double precision and
+             recovers the original data.
+
+   Example:
+             W1: grand(10, 1)
+             W2: type2byte(w1, float)
+             W3: byte2type(W2, float)
+
+             Same as above except the data is converted to 4 byte floats. 
+             The series in W2 is 40 bytes long where every 4 values is the
+             byte representation of the corresponding float value in W1.
+             W3 converts the byte values of W2 to float precision and
+             recovers the original data.
+          
+             
+    Remarks:
+             See TYPE2BYTE to convert a series of a specific type to a
+             raw byte stream.
+
+    See Also
+             Castbyte
+             Type2byte
+
+#endif
+
+
+/* Convert byte stream to a series */
+byte2type(series, datatype, swapflag)
+{
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("byte2type - input series required");
+			datatype = DOUBLE
+		}
+		swapflag = 0;
+	}
+
+	/* use castbyte to convert the byte stream */
+	series = castbyte(series, datatype, swapflag, 1);
+
+	return(series);
+}
+

@@ -1,0 +1,63 @@
+/*****************************************************************************
+*                                                                            *
+*   ISEMPTY.SPL Copyright (C) 2002 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns 1 if input series is empty                                 *
+*                                                                            *
+*   Revisions:    9 Aug 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_ISEMPTY
+
+    ISEMPTY
+
+    Purpose: Returns 1 if input series is empty
+                                                                        
+    Format:  ISEMPTY(ser)
+
+              ser - Optional series, defaults to current Window
+
+    Returns: An integer, 1 if the input series is empty (i.e. length == 0),
+             else 0.
+
+    Example:
+             a = {1};
+             b = {};
+             c = a* b;
+
+             isempty(a) returns 0
+             isempty(b) returns 1
+             isempty(c) returns 1
+
+    Remarks:
+             An empty series has a length of 0.
+
+             The syntax a = {} creates an empty series.
+
+             ISEMPTY returns 1 if the input is not a series.
+
+
+    See Also:
+             Finite
+             Isinf
+             Isnan
+#endif
+
+
+/* is input empty? */
+isempty(a)
+{
+	local len;
+
+	/* default to current window if no input */
+	len = (argc < 1) ? length : length(a);
+
+	return(len == 0);
+}

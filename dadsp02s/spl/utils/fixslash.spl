@@ -1,0 +1,31 @@
+#include <series.h>
+
+/* converts \ to \\ in strings */
+fixslash(s)
+{
+	local in, out[], len, i, j, slash;
+
+	if (not(IS_STRING(s))) return(s);
+
+	/* string length */
+	len = strlen(s);
+
+	/* char value of "\" */
+	slash = charstr("\");
+
+	/* convert to array */
+	in = charstrs(s);
+
+	/* double up \'s */
+	for (i = 1, j = 1; i <= len; i++) {
+		if (in[i] == slash) {
+			out[j++] = slash;
+		}
+		out[j++] = in[i];
+	}
+
+	/* convert to string */
+	return(strchars(out));
+}
+
+		

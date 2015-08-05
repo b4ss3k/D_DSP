@@ -1,0 +1,85 @@
+/*****************************************************************************
+*                                                                            *
+*   OASFILT.SPL   Copyright (C) 1998 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Block filtering using the "overlap and save" method         *
+*                                                                            *
+*   Revisions:   11 Jan 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_OASFILT
+
+    OASFILT   
+
+    Purpose: Filters data using the overlap and save method
+                                                                        
+    Format:  OASFILT(s, f, blocksize)
+
+               s - a series, input data
+               f - a series, filter impulse response
+
+       blocksize - optionl integer, size of processing block, defaults
+                   to the best power of two for the filter length
+
+    Returns: A series
+
+    Example:
+             W1: gnorm(1000, .01)
+             W2: gsin(100, .01, 3)
+             W3: oasfilt(W1, W2)
+
+             Block filters the noise in W1 with the sin filter in W2.
+             The blocksize defaults to 128.
+    Remarks:
+             OASFILT uses the overlap and save method of block filtering
+             by computing the FFT of blocks of the input data.
+
+    See Also:
+             CONV
+             FFT
+#endif
+
+
+/* overlap and save method of block filtering */
+
+oasfilt(s, f, blocksize)
+{
+	local fsize, slen, ffilt, outs, outlen, jinc, j, seg, fseg;
+
+	fsize = length(f);
+	slen  = length(s);
+
+	if (argc < 3) { // default blocksize to best power of 2
+		blocksize = bestpow2(fsize + 2);
+	}
+	else if (blocksize < fsize + 2) blocksize = bestpow2(fsize + 2);
+
+	// FFT of filter
+	ffilt  = fft(extract(f, 1, blocksize));
+	outs   = {0};
+	outlen = slen + fsize - 1;
+	jinc   = blocksize - fsize - 1;
+
+	// FFT and CONCAT each segment
+	for (j = 1 - fsize; j < outlen; j += jinc) {
+		seg  = extract(s, j, blocksize, 0);
+		fseg = real(ifft(fft(seg)*ffilt));
+		outs = concat(outs, extract(fseg, fsize+1, jinc));
+	}
+
+	/* match deltax with input */
+	setdeltax(outs, deltax(s));
+
+	return(extract(outs, 2, outlen, 0));
+}
+
+
+/* returns next best power of two length */
+bestpow2(x)
+{
+	return(2^ceil(log(x)/log(2)));
+}

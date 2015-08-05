@@ -1,0 +1,82 @@
+/*****************************************************************************
+*                                                                            *
+*   BARTOP.SPL   Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets bar top coloring                                       *
+*                                                                            *
+*   Revisions:   23 Jun 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_BARTOP
+
+    BARTOP
+
+    Purpose: Sets coloring of the top face of a 3D bar plot
+                                                                        
+    Format:  BARTOP(win, on_off)
+
+              win    - an optional window, defaults to current window
+              on_off - an integer 0:off 1:coloring on (default 0)
+
+    Returns: Nothing
+
+    Example:
+             W1: Xyz(gsin(10,.1),gcos(10,.1),1..10);bars;bartop(1);
+
+             The tops of the resulting 3D barplot are colored with the
+             current axes color (default white).
+
+    Remarks:
+             Coloring the tops of the barplot can help clarify the 
+             orientation if the plot is rotated.
+
+    See Also:
+             Bars
+             Barstyle
+             Rotate3d
+             Spin
+             Xyz
+#endif
+
+
+bartop(win, val)
+{
+	local exstyle;
+
+	/* bartop is a winexstyle bit */
+	if (argc < 1) {
+		return((winexstyle(W0) & EX_BAR_TOPCLR) != 0);
+	}
+	else if (argc == 1) {
+		if (IS_WINDOW(win)) {
+			return((winexstyle(win) & EX_BAR_TOPCLR) != 0);
+		}
+		else {
+			val = win != 0;
+			exstyle = winexstyle(W0);
+			/* clear EX_BAR_TOPCLR bit */
+			exstyle &= ~EX_BAR_TOPCLR;
+
+			/* set EX_BAR_TOPCLR bit */
+			if (val) exstyle |= EX_BAR_TOPCLR;
+			winexstyle(W0, exstyle);
+			plotmode(1, 0);
+		}
+	}
+	else {
+		val = val != 0;
+		exstyle = winexstyle(win);
+		/* clear EX_BAR_TOPCLR bit */
+		exstyle &= ~EX_BAR_TOPCLR;
+		if (val) exstyle |= EX_BAR_TOPCLR;
+		winexstyle(win, exstyle);
+		plotmode(win, 1, 0);
+	}
+}
+

@@ -1,0 +1,62 @@
+@tabbed
+System Settings
+
+{setvar("_replot", 0)}
+
+! system settings
+{setvar("_pbjust", castint(getconf("panel_justify_buttons")))}
+{setvar("_pljust", castint(getconf("panel_justify_labels")))}
+{setvar("_pttips", castint(getconf("panel_tooltips")))}
+{if(_pttips==0,setvar("_ptipst", 0),if(castint(getconf("panel_tooltip_style"))==0x40,setvar("_ptipst", 2), setvar("_ptipst", 1)))}
+
+! global color  menus
+{_setgcol}
+
+! calculations menu 
+{setvar("_cycmode",  getconf("CYCLE_MODE"))}
+{setvar("_cyccnt",   getconf("CYCLE_COUNT"))}
+{setvar("_ptabedit", getconf("TABLE_UPDATE"))}
+
+! activex settings
+{setvar("_axenb",   castint(getconf("ACTIVEX_ENABLED")))}
+{setvar("_axreg",   castint(getconf("ACTIVEX_REGISTER")))}
+{setvar("_axtrn",   castint(getconf("ACTIVEX_ARRAY_TRANSPOSE")))}
+{setvar("_axvrt",   castint(getconf("ACTIVEX_CASTVARIANT")))}
+{setvar("_axebfmt", castint(getconf("ACTIVEX_EMBEDFORMAT")))}
+{setvar("_axprfmt", castint(getconf("ACTIVEX_PRINTFORMAT")))}
+{setvar("_axres",   castint(getconf("ACTIVEX_USE_PRINTER")))}
+{setvar("_eowi",    numstr(getconf("ACTIVEX_EMBEDDED_WIDTH")))}
+{setvar("_eohi",    numstr(getconf("ACTIVEX_EMBEDDED_HEIGHT")))}
+{setvar("_dpauto",  strlen(getconf("ACTIVEX_DOCDIR"))==0)}
+{defvar("_axdp",    getconf("ACTIVEX_DOCDIR"))}
+{setvar("_mpauto",  strlen(getconf("ACTIVEX_TEMPDIR"))==0)}
+{defvar("_axmp",    getconf("ACTIVEX_TEMPDIR"))}
+
+! dde settings 
+
+{setvar("_ddeenb",   castint(getconf("DDE_ENABLED")))}
+{setvar("_ddewst",   castint(getconf("DDE_WORKSHEET_TOPIC")))}
+{setvar("_ddeautos", castint(getconf("DDE_AUTOSCALE")))}
+{setvar("_ddetimeo", castint(getconf("DDE_TIMEOUT")))}
+{setvar("_ddeapnd",  not(castint(getconf("DDE_OVERWRITE"))))}
+{setvar("_ddedauto", castint(getconf("DDE_DATATYPE" ))==-1)}
+{if(_ddedauto, setvar("_ddedtype", _automaticstr), setvar("_ddedtype", _itype2s(castint(getconf("DDE_DATATYPE")))))}
+
+{defvar("_sysset_page", 0)}
+
+! clipboad settings
+{_intcbrd()}
+
+
+{setmenupage(_sysset_page)}
+
+~_mf("sysset.pan")
+~_mf("gcolor.pan")
+~_mf("calcset.pan")
+~_mf("activex.pan")
+~_mf("dde.pan")
+~_mf("clipbrd.pan")
+
+
+~~setvar("_sysset_page", getmenupage)
+~~if(_replot, redrawall(1))

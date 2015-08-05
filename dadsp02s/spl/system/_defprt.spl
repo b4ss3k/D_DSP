@@ -1,0 +1,18 @@
+/* resets to menu to default printer settings */
+_defprt()
+{
+	/* use configurable defaults */
+	setvar("_prnxext", getconfdefault("PRT_X"));
+	setvar("_prnyext", getconfdefault("PRT_Y"));
+	setvar("_prncoe",  castint(getconfdefault("PRT_CHECK_ERROR")));
+	setvar("_prntof",  castint(getconfdefault("PRT_USE_FILE")));
+	setvar("_prnadp",  castint(getconfdefault("PRT_ADJUST_PORTRAIT")));
+	setvar("_prnort",  castint(getconfdefault("PRT_ORIENTATION")));
+	setvar("_prnfn",   getconfdefault("PRT_FILE"));
+	setvar("_prnlw",   castint(getconfdefault("PRT_LINEWIDTH"))+1);
+	setvar("_prnfs",   numstr(getconfdefault("PRT_FONT_SCALE")));
+	setvar("_prnsdg",  castint(getconfdefault("PRT_SETUP_DIALOG")));
+
+	/* hardwired */
+	setconf("_prndec", "1");
+}

@@ -1,0 +1,763 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                   !
+!                           DADISP.CNF                              !
+!                                                                   !
+!                    DADiSP/2002 Configuration File                 !
+!                                                                   !
+!           Copyright (C) 1992-2007 DSP Development Corporation     !
+!                     All Rights Reserved                           !
+!                                                                   !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+CONFIG_VERSION     6                        ! dadisp.cnf Version 6
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!  DADISP.CNF specifies the default values of various configuration !
+!  parameters. This file is automatically read and loaded each time !
+!  DADiSP starts.                                                   !
+!                                                                   !
+!  The parameters follow a KEYWORD KEYVALUE format.  To set a       !
+!  particular parameter, simply specify the desired KEYVALUE for    !
+!  the appropriate KEYWORD in this file. For example, to set the    !
+!  PostScript hardcopy font to Times-Roman, the configuration line  !
+!  would read:                                                      !
+!                                                                   !
+!            POSTSCRIPT_FONT       Times-Roman                      !
+!                                                                   !
+!  A text keyvalue that contains spaces must be enclosed in " ".    !
+!  For example:                                                     !
+!                                                                   !
+!            POSTSCRIPT_EPILOGUE  "stroke showpage"                 !
+!                                                                   !
+!  The \ character in a string is an escape character. For example, !
+!  \x1FA indicates HEX number 1FA. \237 indicates OCTAL number 237. !
+!  Other escapes characters include \n - return, \t - tab, and \\   !
+!  for the \ character itself.                                      !
+!                                                                   !
+!  NOTE: The ! character indicates a comment. All text following    !
+!        an ! is ignored. Some of the parameters listed below are   !
+!        commented out and therefore ignored, but included for      !
+!        informational purposes. The values listed for the          !
+!        commented out parameters are the internal defaults. If     !
+!        you wish to alter these values, make sure to remove the    !
+!        leading ! from the appropriate configuration line.         !
+!                                                                   !
+!  Runtime changes to configuration parameters using dialog boxes   !
+!  or the SETCONF command are placed in \windows\dadisp6.ses.       !
+!  DADISP.CNF is never changed directly by DADiSP. However, by      !
+!  manually editing this file, you essentially specify the default  !
+!  configuration that results from selecting the                    !
+!                                                                   !
+!                Tools-Options-Restore Defaults                     !
+!  menu option.                                                     !
+!                                                                   !
+!  Some configuration items can be overridden by DADiSP commands    !
+!  or by environment variables.  In all cases, DADiSP commands      !
+!  have the highest precedence, followed by environment variables,  !
+!  followed by items in DADISP.CNF.                                 !
+!                                                                   !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                     Screen Fonts                                  !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+
+! line editor font
+NORM_FONT              Arial
+NORM_FONT_HEIGHT       -17
+NORM_FONT_CHARSET        0
+NORM_FONT_PITCH         34
+NORM_FONT_WEIGHT       400
+
+! window caption
+WINLABEL_FONT          Arial
+WINLABEL_FONT_HEIGHT   -13
+WINLABEL_FONT_CHARSET    0
+WINLABEL_FONT_PITCH     34
+WINLABEL_FONT_WEIGHT    700
+
+! axes labels
+WINAXIS_FONT           Arial
+WINAXIS_FONT_HEIGHT    -12
+WINAXIS_FONT_CHARSET     0
+WINAXIS_FONT_PITCH      34
+WINAXIS_FONT_WEIGHT     400
+
+! status line
+STATLINE_FONT          SysDefault    ! use system default
+
+! tabular display
+TABLE_FONT             Fixedsys
+TABLE_FONT_HEIGHT      -11
+TABLE_FONT_CHARSET       0
+TABLE_FONT_PITCH        49
+TABLE_FONT_WEIGHT      400
+
+! list boxes
+LISTBOX_FONT           Arial
+LISTBOX_FONT_HEIGHT    -12
+LISTBOX_FONT_CHARSET     0     
+LISTBOX_FONT_PITCH      34
+LISTBOX_FONT_WEIGHT    400
+
+! window tic labels
+SMALL_FONT             Arial
+SMALL_FONT_HEIGHT      -12
+SMALL_FONT_CHARSET       0
+SMALL_FONT_PITCH        34
+SMALL_FONT_WEIGHT      400
+
+! pop-up menus
+MENU_FONT              Arial
+MENU_FONT_HEIGHT       -12
+MENU_FONT_CHARSET        0
+MENU_FONT_PITCH         34
+MENU_FONT_WEIGHT        400		
+
+! dialog boxes
+PANEL_FONT             Arial
+PANEL_FONT_HEIGHT      -12
+PANEL_FONT_CHARSET       0
+PANEL_FONT_PITCH        34
+PANEL_FONT_WEIGHT       400		
+
+! toolbar
+TOOLBAR_FONT           Arial
+TOOLBAR_FONT_HEIGHT    -11
+TOOLBAR_FONT_CHARSET     0
+TOOLBAR_FONT_PITCH      34
+TOOLBAR_FONT_WEIGHT    400
+
+! popup messages
+POPBOX_FONT            Arial
+POPBOX_FONT_HEIGHT     -13
+POPBOX_FONT_CHARSET      0
+POPBOX_FONT_PITCH       34
+POPBOX_FONT_WEIGHT     400
+
+! view file window
+VIEWFILE_FONT         "Courier New"
+VIEWFILE_FONT_HEIGHT   -13
+VIEWFILE_FONT_CHARSET    0
+VIEWFILE_FONT_PITCH     34
+VIEWFILE_FONT_WEIGHT   400
+
+! user annotation
+USER1_FONT             Arial
+USER1_FONT_HEIGHT      -12
+USER1_FONT_CHARSET       0
+USER1_FONT_PITCH        34
+USER1_FONT_WEIGHT      400
+
+! USER2_FONT       Fixedsys        ! Annotation font 
+! USER3_FONT       Fixedsys        ! Annotation font 
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                     Printer Configuration                         !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! PRT_FONT           Arial         ! TrueType Sans-Serif
+! PRT_FONT_PITCH     49            ! FF_ROMAN
+! PRT_FONT_HEIGHT    -11
+! PRT_FONT_SCALE     1.0           ! Font scaling factor > 0.0
+! PRT_LINEWIDTH      1             ! Linewidth scaling factor 
+
+! PRT_BITPRINT     0               ! 0:Off 1:Screen Dump
+
+! PRT_COLORMODE    0               ! Print Color, 1:Color 0:B&W
+! PRT_DECIMATE     1               ! Decimate data on print, 1:YES 0:NO
+! PRT_SHADING      0               ! "Chiseled" line shading, 1:On 0:Off
+! PRT_EXEC_PRINT   1               ! Automatically run driver, 1:YES, 0:NO
+! PRT_FILE         dsp.prt         ! Meta file name
+! PRT_X            -1              ! X Dimension, -1: Query printer
+! PRT_Y            -1              ! Y Dimension, -1: Query printer
+! PRT_XL           0.75            ! Left X margin in inches
+! PRT_YT           1.00            ! Top Y margin in inches
+! PRT_XR           0.75            ! Right X margin in inches
+! PRT_YB           1.00            ! Bottom Y margin in inches
+! PRT_CHECK_ERROR          1       ! Cancel print on error 1:Yes, 0:No
+! PRT_ALIGN_MARGINS        1       ! Align window margins on print
+! PRT_ADJUST_PORTRAIT      1       ! Adjust portrait 0:no 1:H&W 2:Height only
+
+! PRT_PRINTSCREEN_OUTPUT   0       ! Print Screen Dest 0:clipboard, 1:printer
+! PRT_PRINTSCREEN_MODE     0       ! Print Screen Capture mode 0:worksheet,
+                                   ! 1:window, 2:entire application
+! PRT_USE_FILE             0       ! Print to file 0:Off, 1:On
+! PRT_SETUP_DIALOG         1       ! Show Print Setup dialog on 1st print
+! PRT_FULL_WORKSHEET       1       ! Print full Worksheet including borders
+! PRT_ORIENTATION          0       ! Default page orientation, 0:Landscape,
+                                   ! 1:Portrait
+! PRT_LABEL_POS            0       ! Window label position 0:auto 1:ymax
+
+! PRT_CONTINUOUS           0       ! Continuous print without page break
+! PRT_PAGE_WIDTH          -1       ! Page width in mm, -1: Query printer
+! PRT_PAGE_HEIGHT         -1       ! Page height in mm, -1: Query printer
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                     PostScript Configuration                      !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+POSTSCRIPT_FONT        Helvetica                 ! PostScript Font
+
+! POSTSCRIPT_X         10000                     ! X Dimension
+! POSTSCRIPT_Y         10000                     ! Y Dimension
+! POSTSCRIPT_FILE      post.eps                  ! Output File
+! POSTSCRIPT_PROLOGUE  "%!PS-Adobe-2.0 EPSF-2.0" ! First line - any PS Commands
+! POSTSCRIPT_EPILOGUE  "stroke showpage"         ! Last  line - any PS Commands
+! POSTSCRIPT_GREYSCALE 0                         ! 0:color, 1:force greyscale  
+! POSTSCRIPT_XPAPER    11.0                      ! Paper width                 
+! POSTSCRIPT_YPAPER    8.5                       ! Paper height                
+! POSTSCRIPT_XPOSITION 1.0                       ! Lower X position            
+! POSTSCRIPT_YPOSITION 0.5                       ! Lower Y postion             
+! POSTSCRIPT_LANDSCAPE 1                         ! Landscape, 1:On 0:Portrait
+! POSTSCRIPT_LINEWIDTH 1                         ! Linewidth scaling factor 
+! POSTSCRIPT_ONEFILE   0                         ! Psall into one file
+
+! Note: For color PostSript screen dumps, set the following parameters:
+
+! PRNSCREEN_MODE      1
+! PRT_COLORMODE       1
+! PRT_SHADING         1
+
+! Pressing Shift Print Scrn or Ctrl P or using the PRNSCREEN function
+! will create a PostScript file (default name post.eps) of the entire screen.
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                     HPGL (Plotter) Configuration                  !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! HPGL_FONT        ""          ! Font Command - defaults to internal font
+! HPGL_FONT_WIDTH  1.0         ! Font width scaling factor
+! HPGL_FONT_HEIGHT 0.8         ! Font width scaling factor
+! HPGL_X           10000       ! X Dimension
+! HPGL_Y           10000       ! Y Dimension
+! HPGL_FILE        hpgl.out    ! Output File (file name, COM1, LPT1, etc.)
+! HPGL_PROLOGUE   "IN;"        ! First line - any valid HPGL Command(s)
+! HPGL_EPILOGUE   "PU;SP0;PG;" ! Last  line - any valid HPGL Command(s)
+! HPGL_WHITE       0           ! HPGL pen color
+! HPGL_BLACK       1           ! HPGL pen color
+! HPGL_RED         2           ! HPGL pen color
+! HPGL_GREEN       3           ! HPGL pen color
+! HPGL_YELLOW      4           ! HPGL pen color
+! HPGL_BLUE        5           ! HPGL pen color
+! HPGL_MAGENTA     6           ! HPGL pen color
+! HPGL_CYAN        7           ! HPGL pen color
+! HPGL_ONEFILE     0           ! Plotall into one file 0:Off 1:On
+! HPGL_NUM_PENS    8           ! Total number of plotter pens
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!          Clipboard Metafile (Picture) Configuration               !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! METAFILE_X           -1            ! X Dimension, screen default
+! METAFILE_Y           -1            ! Y Dimension, screen default
+! METAFILE_WIDTH       -1            ! Width in inches,  -1: use screen
+! METAFILE_HEIGHT      -1            ! Height in inches, -1: use screen
+! METAFILE_USE_PRINTER  0            ! Use printer resolution, 0:use screen
+! METAFILE_USE_FILE     0            ! Copy metafile to file
+! METAFILE_FILENAME  "dspmeta.pic"   ! Output metafile filename
+! CLIPBOARD_METAFILE    1            ! 0:Off, 1:BW, 2:Color
+! CLIPBOARD_AUTOCOL     1            ! Scan paste text for number of cols
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                       GPIB Configuration                          !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! GPIB_BUFSIZE         32768         ! GPIB data transfer buffer size
+! GPIB_BUFFERED_READ   0             ! GPIB BUFFERed binary transfer
+! GPIB_BOARD_NAME      "gpib0"       ! Name of GPIB device
+! GPIB_DLL_NAME        "gpib.dll"    ! Name of GPIB DLL
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                    Worksheet Configuration                        !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! SAVE_MACROS          1             ! Save macros with Worksheet
+! SAVE_VARIABLES       1             ! Save variables with Worksheet
+! SAVE_FUNCTIONS       0             ! Save SPL functions with Worksheet
+! SAVE_AS_VERSION      4.1           ! Worksheet storage format
+! CHECK_OLD_DY         1             ! Autocheck for old delta_y worksheets
+
+! DEPENDENCIES_DISPLAY 0             ! Display window dependencies,
+                                     ! 0:Off, 1:All dependencies, 
+                                     ! 2:Immediate dependencies only
+
+! DEPENDENCIES_STYLE   0             ! Which Dependencies to Display,
+                                     ! 0:Parents & Children, 1:Children Only, 
+                                     ! 2:Parents Only
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                     Window Configuration                          !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! LABEL_ORIENT         1             ! Axes label orientation 0:Off 1:ROTATE
+
+! VERT_CURSOR          0             ! Vertical data cursor 0:Off 1:On
+! VERT_CURSOR_STYLE    4             ! 0:in window, 4:use gui window
+! CURSOR1_MEMORY       1             ! Restore cursor1 to previous position
+! CURSOR2_MEMORY       1             ! Restore cursor2 to previous position
+! CURSOR1_STICKS       0             ! Need initial mouse click to move
+! CURSOR2_STICKS       0             ! Need initial mouse click to move
+
+! RESIZE_WINDOWS       1             ! Move/resize windows via mouse/keyboard
+
+! X_GRID_ON            0             ! X grid 1:On 0:Off
+! Y_GRID_ON            0             ! Y grid 1:On 0:Off
+
+! X_LOG_SCALE          0             ! X log plot 1:On 0:Off
+! Y_LOG_SCALE          0             ! Y log plot 1:On 0:Off
+
+! X_GRID_STYLE         0             ! 0:Off 1:SOLID 2:DASHED 3:DOTTED
+! Y_GRID_STYLE         0             ! 0:Off 1:SOLID 2:DASHED 3:DOTTED
+
+! DEFAULT_ASPECT       0.0           ! Aspect ratio 0:auto, > 0 width/height
+! DEFAULT_SCALES       1             ! Axes scales:
+                                     ! 1:XBYL (X Bottom, Y Left)
+                                     ! 2:XBYL_XY_LABELS as above with labels
+                                     ! 3:XBYR_XY_LABELS 4:XBYR 5:XTYR
+                                     ! 6:XTYL 7:XTYL_XY_LABELS 8:XTYR_XY_LABELS
+                                     ! 9:YL 10:YR 11:XB 12:XT
+
+! X_AXIS_DIRECTION      0            ! default x scales direction, 
+                                     ! 0:normal (low to high)  1:reversed
+! Y_AXIS_DIRECTION      0            ! default y scales direction, 
+                                     ! 0:normal (low to high)  1:reversed
+! Z_AXIS_DIRECTION      0            ! default y scales direction, 
+                                     ! 0:normal (low to high)  1:reversed
+
+! NUM_X_SUBTICS        10            ! Number of X subtics for log plot
+! NUM_Y_SUBTICS        10            ! Number of Y subtics for log plot
+! X_LABEL_SUBTICS       0            ! Label X log subtics
+! Y_LABEL_SUBTICS       0            ! Label Y log subtics
+! X_EXP_LOGTICS         0            ! Use 10^n for X log tics
+! Y_EXP_LOGTICS         0            ! Use 10^n for Y log tics
+! EXP_LOGTICS           1            ! Enable 10^n log tics
+! EXP_LOGFORMAT         0            ! Log tic display 1:10^0==1 2:10^1==10
+
+! XTIC_FORMAT          "%g"          ! Xtic format string
+! YTIC_FORMAT          "%g"          ! Ytic format string
+
+! NUM_DEFAULT_WINDOWS  4             ! Number of Windows for NEW Worksheet
+
+! GUI_ZOOMED_WINDOW    2             ! Zoomed window style, 0:Internal
+                                     ! 1:Simple, 2:Fancy, 3:No Scroll
+                                     ! 4:Button 5:StandAlone 6:Small
+
+! GUI_WINDOW           6             ! Window style, 0:Internal
+                                     ! 1:Simple, 2:Fancy, 3:No Scroll
+                                     ! 4:Button 5:StandAlone 6:Small
+
+! ZOOM_AUTOSIZE        4             ! Automatically size zoomed window
+                                     ! 0:last size 1:auto 2:image size
+                                     ! 4:full size, can be bit "or'ed"
+! X_SCROLL_FACTOR      0.1           ! Horz scroll factor - window length
+! Y_SCROLL_FACTOR      0.1           ! Vert scroll factor - window height
+
+! DENSITY_METHOD       1             ! Density plot algorithm, 0:Bars 1:Bitmap
+! IMAGE_DISPLAY_METHOD 3             ! Mode for bitmap density plots,
+                                     ! 1:BlackOnWhite, 2:WhiteOnBlack,
+                                     ! 3:ColorOnColor, 4:Halftone
+! SYNC_MODE            0             ! Default overlay sync mode
+
+! PLOT_NA              1             ! Plot nan values as gaps
+! PLOT_INF             0             ! Plot inf values as gaps
+
+! XY_DECIMATE          1             ! Decimation XY plots for fast display
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                     Series Configuration                          !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! BUFSIZE              32768         ! Series cache size
+! LINEWIDTH            0             ! Linewidth for line plot
+! PLOT_STYLE           0             ! Default plot type:
+                                     ! 0:Line   1:Points 2:Sticks   3:Bars
+                                     ! 4:Table  5:Hilo   6:Reserved 7:Stack 
+                                     ! 8:PCT    9:Step
+
+! DATA_TYPE            25            ! File storage data type: 
+                                     ! FLOAT:20, DOUBLE:25, INT:30  UINT:35
+                                     ! BYTE:40,  UBYTE:45,  LONG:50
+
+! SPILL_FILE_DIR       C:\\DSP2002   ! Location of temporary series files
+! SPILL_FILE_MODE      1             ! 0:user specified dir, 1:system temp dir
+
+! LABBOOK_DIR          0             ! Automatic location of user labbooks
+                                     ! 0:exe dir, 1:system defined data dir
+
+! COMMENT              ""            ! Default series comment, "" implies
+                                     ! internal default
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                    Import Configuration                           !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! IMP_SILENT_FLAG       0            ! Import error display              
+! IMP_RESET_DEFAULTS    0            ! Reset parameters for each import
+! IMP_SKIP_HEADER       0            ! Don't search for DADiSP Header
+! IMP_ENABLE_COMMENTS   1            ! Use '!' for single line comments
+! IMP_BUFSIZE           65536        ! Size in bytes of internal import 
+! IMP_UNITS_WITH_SPACES 1            ! Units in header can include spaces
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                 SPL - Series Processing Language                  !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! SPL_EXPAND_TEXT       0             ! Evaluate {} expressions in SPL files
+! SPL_EXPAND_INCLUDE    1             ! Evaluate {} in #include directives
+! SPL_LINE_NUMBERS      1             ! Display line numbers on errors   
+! SPLPATH               C:\\DSP2002   ! SPL search path
+! SPL_GUI_ERROR         0             ! error() function uses gui box
+! SPL_VIEW_ERRFILE      1             ! Automatically display .err file  
+! SPL_AUTO_LOAD         1             ! 0:Off 1:Autoload 2:Always load 
+! SPL_SAVE_LINE_NUMBERS 0             ! Save line numbers in OPL files   
+! SPL_FOR_STATEMENT     1             ! FOR statement syntax 0:Old 1:C-style
+! SPL_ERROR_HANDLING    1             ! Run xxx_error(err) SPL on error
+! SPL_BUFFER_READ       1             ! Buffered reads for .OPL files
+! SPL_START_INDEX       1             ! Base index for a[n] references
+! SPL_USE_WINDOW_REF    1             ! SPL functions use Window references
+! SPL_COMMANDS          1             ! Auto-convert foo x to foo("x")
+! SPL_TERNARY           1             ! Allow a ? b : c expressions
+! SPL_SAVE_ANSWER       1             ! Save last result to ANS variable
+! SPL_EDITOR            "Notepad"     ! SPL editor path and name
+! SPL_LOAD_DLL          1             ! Autoload DLL functions
+! SPL_COMPLEX_J         0             ! Use j as sqrt(-1)
+! SPL_ARRAY_INHERIT     1             ! a[n,m] inherits units, deltax, xoffset
+! SPL_CONCAT_OP         1             ! enable a @@ b concatenate operator
+! SPL_APPEND_OP         1             ! enable a @= b append operator
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                    Date / Time Configuration                      !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! LOCALE_IDATE         0             ! Date ordering 0:mdy, 1:dmy, 2:ymd
+! DT_Y2K_FORMAT        0             ! Year 2000 two digit year handling,
+                                     ! 0:current century, 1:50 year window
+! DT_Y2K_OFFSET        50            ! Y2K mode 1 year window
+! DT_SCALES_FORMAT     0             ! Date/Time scales 0:short, 1:long
+! DT_DECIMAL_MSEC      0             ! mSec separator must be a .
+! TIME_PRECISION       3             ! mSec decimal places for axes display
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                     Tabular Display                               !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! TABLE_STYLE       1                ! 0:Simple, 1:Spreadsheet like
+! TABLE_COLHEADER   0                ! Column header text 0:units or
+                                     ! series comment, 1:units only
+                                     ! 2:comment only, 3:units & comment
+! TABLE_COL_JUSTIFY 0                ! Justify column label 0:left, 
+                                     ! 1:center, 2:right
+! TABLE_NAME        "table.prn"      ! F2 table command
+! TABLES_NAME       "tables.prn"     ! F2 tables command
+! TABLE_UPDATE      1                ! Edit propogation 0:Off, 1:immediate
+                                     ! 2:after all edits
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                TeX Greek and Math Font Processing                 !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! TEX_PROCESSING           1         ! Enable TeX formatting in strings
+! TEX_INLINE_FONT          2         ! Font for $ $ inline strings (italics)
+! TEX_SUPER_FACTOR       0.75        ! Size of TeX superscript
+! TEX_SUB_FACTOR         0.75        ! Size of TeX subrscript
+! TEX_SYMBOLFONT      "Symbol"       ! Font for Greek & math characters
+! TEX_COURIERFONT     "Courier New"  ! TeX typewriter font (\tt)
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                       Misc Configuration                          !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! DISPLAY_PRECISION    6             ! Digits displayed after decimal point
+! DEFAULT_PRECISION    6             ! Setprecision(-1) default value
+! BEEP                 0             ! Beeper 0:Off 1:On
+! DSPPATHNAME          DSPPATH       ! Name of search path environment variable
+! DSPPATH              C:\\DSP2002   ! Default search path if no env variable
+
+! SESSION_FILENAME     "dadisp6.ses" ! Name of configuration session file
+! SESSION_PATH         "\\windows"   ! Specified location of session file
+! SESSION_DIR          0             ! Automatic location of session file
+                                     ! 0:\windows 1:\user\appdata
+ 
+! FORCE_DEFAULT_PATH   1             ! Always search exe directory first
+
+! STATUS_PROCESSING    1             ! Status line display, 0:Off 1:On
+! STATUS_JUSTIFY       1             ! Status line, 0:right 1:left 2:center
+! MORE_PROCESSING      0             ! Status line <more> processing 0:Off 1:On
+! INPUT_PROCESSING     1             ! Input command line display, 0:Off 1:On
+! YN_PROCESSING        -1            ! Yes/No reply, -1:prompt user, 0:No 1:Yes
+
+! MESSAGE_LOGGING      0             ! Log messages, -1:ALL 0:Off 1:Info 2:Errs
+! MESSAGE_LOGNAME      "message.txt" ! Message logfile name
+! GUI_MESSAGES         0             ! Message style 1:popup messages
+                                     ! 2:popup errors, 4:status line messages
+                                     ! 8:status line errors, style can be "or"d
+                                     ! 0:status line messages & errors
+
+! MATH_REPORT_INTERVAL 1000          ! Calculation progress counter
+! MATH_REPORT_TIMEOUT  1000          ! Progress wait cursor in msec (< 0 : Off)
+
+! DEFAULT_MATH_VALUE     0.0         ! Math exception return value (real or inf)
+! USE_DEFAULT_MATH_VALUE 0           ! Use DEFAULT_MATH_VALUE (0:natural value)
+
+! NUM_CHECKFILES       5000          ! Max number of files for F9 dbase check
+! LOCKS_ENABLED        0             ! Internal file locking enabled
+! LOCKS_REQUIRED       0             ! File locking required
+! LOCK_TIMEOUT         5             ! Retry time (seconds) for locked files
+! COMFILE_INPUT_PROCESSING     1     ! Editor display during command files
+! COMFILE_MESSAGE      0x00FF0000    ! Message LPARAM for command files
+
+! READT_BUFSIZE        32768         ! Line length for READTABLE function
+! READT_DT_AUTO        1             ! Try reading date/times in READTABLE
+! READT_SERIESSIZE     256           ! Initial series length for READTABLE
+! READT_AUTOCOL        0             ! Scan file to determine number of cols
+! READT_NA             "nan"         ! nan string for READT
+! READT_INF            "inf"         ! inf string for READT
+! READT_COMMENT_LINE   -1            ! Comment line processing: -1:automatic,
+                                     ! 0:ignore, >=1:specific line
+! READT_UNITS_LINE     -1            ! Units line processing: -1:automatic,
+                                     ! 0:ignore, >=1:specific line
+
+! READB_BUFSIZE        32768         ! Buffer size for READB function
+
+! MATRIX_TOLERANCE     2.2204460492503131e-16 ! Tolerance for Matrix Functions
+! EIGEN_EPS_COMPARE    0             ! Use eps to compare small eigenvalues
+! RAT_TOLERANCE        1.0e-6        ! Tolerance for rational approximation
+
+! STATE_BASED           0            ! DADiSP 3.0 menu mode
+! FOCUS_FOLLOWS_MOUSE   1            ! Mouse "Click to Stick"
+! MOUSE_SELECT_FOCUS    0            ! Mouse Mode
+! MOUSE_EDITS_EMPTY_WIN 0            ! Left click edits empty window
+! MAX_HOTVARIABLES      200          ! Total number of Hot Variables
+
+! RUN_BAT_FILE    DSPRUN.BAT         ! Temp .BAT file for RUN
+! RUN_PIF_FILE    DSPRUN.PIF         ! .PIF file for RUN
+! RUN_PAUSE       1.0                ! Delay for RUN
+
+! CNTL_BREAK_CHECK         1         ! Break out of calculation if BREAK key
+! CNTL_BREAK_YIELD         0         ! Yield to other apps during BREAK check
+
+! SORT_MACROS              1         ! Sort macro list, 0:Off, 1:On
+! SORT_VARIABLES           1         ! Sort variable list, 0:Off, 1:On
+! SORT_FUNCTIONS           1         ! Sort SPL function list, 0:Off, 1:On
+
+! NUM_SHADES             256         ! Number of colors for shaded plots
+                                     ! 0 < NUM_SHADES <= 256
+! SCAN_MINMAX              1         ! Scan series for min/max 0:Off, 1:On
+! SYMBOL_SIZE              4         ! Size of symbols in pixels
+! STEM_SYMBOL             14         ! Symbol for stem plots
+
+! PLOT3D_ASPECT            0         ! 3D aspect ratio 0:square, 1:natural
+! X_ROTATE3D              20         ! 3D default X rotation degrees
+! Y_ROTATE3D             -15         ! 3D default Y rotation degrees
+! Z_ROTATE3D              35         ! 3D default Z rotation degrees
+
+! UPPERCASE_FIRST_CHAR     0         ! Capitalize first editor char 0:Off, 1:On
+! COLUMN_SEPARATOR        "\t"       ! Separator for table cut & paste
+! ACCEPT_EQUALSIGN         1         ! Allow leading '=' for input
+! ACCEPT_WINCOLON          1         ! Allow : for Window formula assignment
+! ACCEPT_CONTINUATION      1         ! Allow , for editor line continuation
+! UNARY_NEGATE             1         ! -x^2 parses as negate(pow(x, 2))
+! NUM_EDIT_HISTORY       256         ! Number of editor recall lines
+
+! WARNING_SRCEQDES         1         ! Source = Destination warning message
+! WARNING_OVERWRITE_WIN    1         ! Overwrite window warning message
+
+! LEGEND_TEXT      "getcomment(%d)"  ! Text function for legend cursor, must 
+                                     ! include the substring %d
+! FFT_OPTIMIZE_REAL        1         ! Use optimized real FFT algorithm
+! OPTIMIZE_MEMORY          1         ! Use optimized series buffering
+
+! CYCLE_MODE               1         ! Recursive Worksheet formulae mode:
+                                     ! 0:no, 1:prompt user, 2:accept
+! CYCLE_COUNT              10        ! Number of recursive iterations if
+                                     ! CYCLE_MODE > 0
+! UNITS_CONVERT_HUNITS     1         ! X base unit conversion 0:Off, 1:On
+! UNITS_FORMAT             1         ! Units, 0:plain text, 1:TeX formatting
+! UNITS_NAME_FORM          0         ! Units name display 0:auto 1:abbreviate
+                                     ! 2:full name
+! UNITS_MULTIPLY_STR      \\cdot     ! String for * character for A * B units                                   
+
+! EMPTY_COMPARISON         0         ! Method for comparison with empty 
+                                     ! series, 0:{}==k -> 0, 1:{}==k -> {}
+! NUM_MRU_FILES            5         ! File Menu Worksheet list
+! PDC_NUM_PANELS           5         ! Right Click Menu dialog list
+! OPEN_LAST_WORKHEET       1         ! Load last internal Worksheet on startup
+
+! MODULES_ENABLED          1         ! Enable autorun of module.spl (modmain)
+
+! ICACHESIZE            1024         ! Number of list objects in dbase cache
+! JCACHESIZE           65536         ! Number of series objects in dbase cache
+
+! HOSTID_DRIVE            -2         ! Network Drive
+
+! OS_AUTOCONFIG            1         ! configure for OS, sets labbook_path,
+                                     ! session_dir, spl_opl_dir and
+                                     ! spill_file_mode all to 1
+                                     ! 0:no, 1:only if >= Vista, 2:always
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                      ActiveX &  DDE                               !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! DDE_ENABLED          0             ! DDE services On:1 Off:0
+! DDE_TIMEOUT          3000          ! DDE transaction timeout in mSec
+
+! ACTIVEX_ENABLED      1             ! Enable ActiveX
+! ACTIVEX_REGISTER     1             ! Automatically register ActiveX
+! ACTIVEX_ERRORS       1             ! Display ActiveX errors
+! ACTIVEX_SAVEOPEN     0             ! Prompt Save/Open Browser .dwk files
+! ACTIVEX_MISCDOCS     "miscdocs"    ! Misc file storage name for .dwk files
+! ACTIVEX_TEMPDIR      ""            ! Runtime location of misc files
+                                     ! "" implies use system default
+! ACTIVEX_DOCDIR       ""            ! \My Documents location and name
+                                     ! "" implies use system default
+! ACTIVEX_REGCLS      -1             ! Automation Server Mode: -1:default, 
+                                     ! 0:single, 1:multiple, 2:separate
+! ACTIVEX_START_INDEX  0             ! Base index for ActiveX arrays
+
+! ACTIVEX_CASTVARIANT  0             ! Cast series array to array of variants
+                                     ! 0:normal double array, 1:variant array
+                                     ! of ACTIVEX_VARIANT_TYPE values
+
+! ACTIVEX_VARIANT_TYPE 0             ! type if casting to array of variants,
+                                     ! 0:automatic, 1:empty (VT_NULL), 
+                                     ! 2:short (VT_I2), 3:long (VT_I4), 
+                                     ! 4:float (VT_R4), 5:double (VT_R8) 
+
+! ACTIVEX_PTRVARIANT   0             ! Cast series pointer to variant pointer
+
+! ACTIVEX_INVOKEMETHOD 3             ! Invoke (dispatch) syntax, modes can be 
+                                     ! or'ed, 1:METHOD, 2:PROPERTYGET
+                                     ! 4:PROPERTYPUT, 8:PROPERTYPUTREF
+
+! ACTIVEX_EMBEDDED_WIDTH    6.0      ! Width of embedded Worksheet in inches
+! ACTIVEX_EMBEDDED_HEIGHT   4.0      ! Height of embedded Worksheet in inches
+! ACTIVEX_METAFILE_X   -1            ! Metafile dimensions: width           
+! ACTIVEX_METAFILE_Y   -1            ! Metafile dimensions: height          
+                                     ! Metafile dimensions -1:same as embed,
+                                     ! 0:let container decide, > 0: size in
+                                     ! HIMETRIC (2450 == 1 inch)
+! ACTIVEX_EMBEDFORMAT  0             ! Embedded format, 0: metafile 2: bitmap
+! ACTIVEX_PRINTFORMAT  0             ! Printer format,  0: metafile 2: bitmap
+
+! ACTIVEX_ARRAY_TRANSPOSE   0        ! Swap rows & cols on array transfers
+! ACTIVEX_MESSAGE_REFLECT   0        ! Control container reflect messages
+! ACTIVEX_FREEZE_EVENTS     0        ! Do not fire source events         
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                       Screen Display                              !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! MIN_HEIGHT               200       ! Minimun main window height
+! MIN_WIDTH                300       ! Minimum main window width
+
+! CANVAS_AUTOSIZE          1         ! Automatically size screen at startup
+                                     ! 0: last size 1: auto
+
+! CANVAS_SHOW              1         ! Startup size 0:icon 1:normal 2:max
+                                     ! 3:hidden
+
+! BACKING_STORE            1         ! Bitmap based screen refresh 0:Off 1:On
+! CLOCK_ENABLED            1         ! Real time clock display
+
+! GUI_LINE_EDITOR          2         ! Native command line editor
+                                     ! 0:Off, 1:Simple, 2:ComboBox
+! GUI_3D                   1         ! 3D look and feel, 0:Off, 1:On 
+! GUI_3D_DLL        "CTL3DV2.DLL"    ! 3D look and feel DLL file name
+
+! GUI_SYSTEM_FONT_CAPTION      1     ! Use system caption font
+! GUI_CAPTION_FONTSTYLE        1     ! Normal caption font 0:normal 1:bold
+                                     ! 2:italic, can be or'ed
+! GUI_ACTIVE_CAPTION_FONTSTYLE 1     ! Active caption font 0:normal 1:bold
+                                     ! 2:italic, can be or'ed
+! GUI_ZOOMED_CAPTION_FONTSTYLE 0     ! Zoomed caption font 0:normal 1:bold
+                                     ! 2:italic, can be or'ed
+! GUI_HIGHLIGHT_CAPTION        1     ! Highlight active (i.e. entered) window
+
+! TOOLBAR_ENABLED          1         ! Worksheet buttons 0:Off 1:On
+! TOOLBAR_TIP_DELAY        800       ! Popup tip delay in msec (< 0 : Off)
+! TOOLBAR_LOCATION         1         ! 0:Bottom, 1:Top
+! TOOLBAR_BM_ASPECT        0.88      ! Toolbar bitmap aspect ratio
+! TOOLBAR_BM_FASTMATCH     1         ! Toolbar colors match screen colors
+! STOP_BUTTON_ENABLED      1         ! Stop calc button 0:Off 1:On
+
+! SMOOTH_PLOT              1         ! Offscreen plotting, 0:Off, 1:On
+! PLOT_TIMEOUT             1000      ! Plotting wait cursor in msec (< 0 : Off)
+
+! HOURGLASS_TIMEOUT        1000      ! Wait cursor delay in msec (< 0 : Off)
+
+
+!-------------------------------------------------------------------!
+!                                                                   !
+!                       Troubleshooting                             !
+!                                                                   !
+!-------------------------------------------------------------------!
+
+! DEBUG_CONFIG         0            ! Monitor processing of dadisp.cnf
+                                    ! To monitor, place this parameter at the
+                                    ! beginning of this file and set to 1
+
+! DEBUG_FILE           0            ! Monitor file searching
+                                    ! 0: Off 
+                                    ! 1: Show successful opens 
+                                    ! 2: Show failed opens
+                                    ! 3: Show all searches
+
+! PANEL_SHOW_NAME      0            ! Display current dialog box filename
+                                    ! 0:Off, 1:show panel filename
+                                    ! 2:show panel & tabbed (parent) filename
+
+!----------------------- End of dadisp.cnf -------------------------!

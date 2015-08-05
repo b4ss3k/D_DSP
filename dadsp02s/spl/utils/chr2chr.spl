@@ -1,0 +1,18 @@
+
+/* replace inchr with outchr in str */
+chr2chr(str, inchr, outchr)
+{
+	local s, cond;
+
+	/* convert to series */
+	s = charstrs(str);
+
+	/* find inchr in s */
+	cond = (s == charstr(inchr));
+
+	/* replace inchr with outchr */
+	s = s * not(cond) + cond * charstr(outchr);
+
+	/* convert to string */
+	return(strchars(s));
+}

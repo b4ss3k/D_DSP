@@ -1,0 +1,86 @@
+! demo.mac - MACROS for the DADiSP Demo   
+
+! get demo menu
+demo     dmf("demomenu.men")
+demomenu dmf("demomenu.men")
+demoloaded 1
+
+! redefine it to look into the Modules subdirectory for the modules.
+_pdc_Exec041 DMF("modules.dmn")
+
+scmt(s,n)  setcomment(s,1,n)
+
+
+! outlier macro 
+outlier(s, cond) xyinterp(delete(xvals(s), cond), delete(s, cond))
+
+! filter signal S with filter H
+FILTER(S,H)     EXTRACT(CONV(S,H), CEIL(LENGTH(H)/2), LENGTH(S))
+
+! mag response of fir filter
+FIRMAG(S,N)      20*LOG10(MAG(EXTRACT(FFT(EXTRACT(S,1,N+N)),1,INT(N))))
+
+! impulse response
+IIRIMP(S,N)            (CASCADE(IMPULSEX(1,N,DELTAX(S)),S))
+
+! frequency response
+IIRMAG(S,N)             (CLOGMAG(S, N))
+
+! phase response
+IIRPHASE(S,N)           (CPHASE(S, N))
+
+! impulse generation
+IMPULSEX(POS,LEN,DX)   (SETPT(GLINE(LEN,DX,0.0,0.0),1.0,POS))
+
+! perform IIR filtering
+IIRFILTER(S,H)         (CASCADE(S,H))
+
+! IIR Pole-Zero Plot
+Iirpz(s)    zplane(s)
+
+
+! Evaluate z = f(x,y), where x, y sweep from lo to hi by incr
+fyvals(lo,hi,incr) transpose(rev(fxvals((lo),(hi),(incr))))
+fxvals(lo,hi,incr) ravel(repl(sweep((lo),(hi),(incr)),nsteps((lo),(hi),(incr))),nsteps((lo),(hi),(incr)))
+sweep(lo,hi,incr) gline(nsteps((lo),(hi),(incr)),(incr),1,(lo))
+nsteps(lo,hi,incr) int((round(((hi)-(lo))/(incr))+1))
+round(r) floor(r+0.5)
+
+! An f(x,y) example, the famous "Sombrero(-5,5,0.25)"
+sombrero(lo,hi,incr) water(sinc(frvals(lo,hi,incr)))
+frvals(lo,hi,incr) sqrt((fxvals(lo,hi,incr)^2)+(fyvals(lo,hi,incr)^2))
+
+! acquisition macros
+
+d488a	GSIN(1000,.01,1,0) | label("Channel 1 - Raw Data") 
+d488b	GSQRWAVE(1000,.01,1,0) | label("Channel 2 - Raw Data")
+acq1 	GSIN(1000,.01,1,0)*GRAND(1000,.01) | label("Channel 1") 
+acq2    GTRIWAVE(1000,.01,1,0)*GNORM(1000,.01,1,0) | label("Channel 2") 
+trig    defmacro("trigstr","Immediate",2) 
+lt1 	dmf("demolt1.pan") 
+
+! Controls macros for demo
+cc   DMF("DControl.men")
+
+
+! utilities
+
+demoload(s) load(strcat(DEMOHOME, s))
+demomr(s) macread(strcat(DEMOHOME, s))
+
+! DEMO Directory Location
+dmf(n)      MENUFILE(strcat(DEMOHOME, n))
+DEMODIR     "demodir"
+DEMOHOME    strcat(demodir, pathchar)
+
+navy        blue
+medium_blue blue
+setbw setpalette(BLACK, GREY, LGREY, WHITE)
+
+! set these to 1 after the macros for the demo are loaded.
+nnloaded 0
+adloaded 0
+ccloaded 0
+stloaded 0
+gpibloaded 0
+floaded 0

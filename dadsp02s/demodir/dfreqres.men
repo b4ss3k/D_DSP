@@ -1,0 +1,19 @@
+! This is a DSPTrial menu
+@x10
+@y5
+@f{_fg1}
+@b{_bg1}
+! @h{_Controlhelp("freqres")}
+ Frequency Response
+_____________________ 
+
+ Bode                ~DMF("dbode.men")
+ Nyquist             ~echo("Calculate & Display Nyquist Plots of Continuous Models in DADiSP/Controls.")
+ Frequency Stats     ~DMF("dfstatsp.men")
+
+ Disc Bode           ~echo("Calculate & Display Bode Plots of Discrete Models in DADiSP/Controls.")
+ Disc Nyquist        ~echo("Calculate & Display Nyquist Plots of Discrete Models in DADiSP/Controls.")
+ Disc Freq. Stats    ~echo("Calculate & Display Frequency Statistics of Discrete Models in DADiSP/Controls.")
+
+ Set Units           ~echo("Choose default units in DADiSP/Controls.")
+

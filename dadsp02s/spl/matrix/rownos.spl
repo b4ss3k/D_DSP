@@ -1,0 +1,67 @@
+/*****************************************************************************
+*                                                                            *
+*   ROWNOS.SPL  Copyright (C) 2000 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns an array of row numbers                             *
+*                                                                            *
+*   Revisions:    3 Apr 2000  RRR  Creation - from MATRIX.MAC by             *
+*                                             Kevin Carmondy                 *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_ROWNOS
+
+    ROWNOS  
+
+    Purpose: Returns an array of row numbers
+                                                                        
+    Format:  ROWNOS(m)
+
+                  m -  array, the size of m determines the size of the
+                       output array
+
+
+    Returns: An array of size(m)
+
+    Example:
+             W1: ones(3)
+             W2: rownos(W1)
+
+             W2 == {{1, 1, 1},
+                    {2, 2, 2},
+                    {3, 3, 3}}
+
+    Example:
+             W1: zeros(3, 2)
+             W2: rownos(W1)
+
+             W2 == {{1, 1},
+                    {2, 2},
+                    {3, 3}}
+
+
+    Remarks:
+             ROWNOS is used by several of the matrix disection routines
+             to select specific regions of an array.
+
+    See Also:
+             Colnos
+             Lotri
+             Lotrix
+             Uptri  
+             Uptrix
+
+#endif
+
+
+/* returns a matrix of the row numbers of the input matrix */
+rownos(M)
+{
+	return(ravel(rep(gline(numrows(M),1,1,1),numcols(M)),numrows(M)));
+}
+
+
+

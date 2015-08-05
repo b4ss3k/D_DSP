@@ -1,0 +1,616 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!   FILTER.MAC   Copyright (C) 1989-1994 DSP Development Corporation         !
+!                               All Rights Reserved                          !
+!                                                                            !
+!   Author:      Randy Race                                                  !
+!                                                                            !
+!   Synopsis:    DADiSP/Filters Version 3.0                                  !
+!                                                                            !
+!   Revisions:    9 Dec 1989  RRR  Creation                                  !
+!                 8 Jun 1994  RRR  Kaiser Window FIR Filters                 !
+!                15 Jul 2004  RRR  zplane for pole-zero plot                 !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+! FIR and IIR Digital Filter Design Macros
+
+! Menus Functions
+_FILTERDIR        "filters"
+_FILTERHOME        strcat(_filterdir, pathchar)
+_MFF(s)            menufile(strcat(_FILTERHOME, s))
+_FILTFNAME(s)      (strcat(_FILTERHOME, (s)))
+_FILTHELP(s)       _FILTFNAME(strcat(s,_fhelpext))
+
+_filtersloaded     1 
+_filtermes         " "
+_fhelpext          ".hlp"
+
+_deffhelp(s)         defmacro("_helpfile", _FILTHELP(s), 3) 
+_getfserint1(s1,s2)  defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_int1prompt",strcat("'",s2,"'"),1)|_mff("fserint1.pan")
+!_fserint1form(s)     SETWF(strcat(s, "(",eval('_ser1'),",", eval('_fint1'),")"))
+_fserint1form(s)     eval(strcat('SETWF(', eval('_dwin'), ",", "'", strcat(s, "(",eval('_ser1'),",", eval('_fint1'),")'"), ")"))
+_fint1               512
+_getfser1(s1)        defmacro("_serprompt",strcat("'",s1,"'"),1)|_mff("fser1.pan")
+_fgetser2(s1,s2)     defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|_mff("ser2.pan")
+_setdwin1            if(strcmp(_ser1,_dwin)==0,_DEFSER1("'curr'"))
+_setdwin2            if(strcmp(_ser1,_dwin)==0,_DEFSER1("'curr'"));if(strcmp(_ser2,_dwin)==0,_DEFSER2("'curr'"))
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!          FIR Remez Exchange Macros              !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+! Lowpass Default Parameters
+LTS        1000.0             ! Default lowpass sample period
+LFP        200.0              ! Default lowpass pass frequency (cutoff freq)
+LRP        3.0                ! Default lowpass pass band ripple (in dB)
+LRS        40.0               ! Default lowpass stop band ripple (in dB)
+LFS        LFP+DEF*LTS        ! Default lowpass stopband freq
+DEF        0.05               ! Default transition width        
+LPO        AUTO               ! Default lowpass order - 0 = Automatic
+
+_LPARM1           _PARMSTR5(LTS,LFP,LRP,LRS,LFS)
+_LPARM2           _PARMSTR6(LPO,LTS,LFP,LRP,LRS,LFS)
+_SETLPARM1        eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Lowpass(", _LPARM1, ")')")))
+_SETLPARM2        eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Lowpass(", _LPARM2, ")')")))
+DESIGNLP          menuc() | _setdwin1 | oif(lessereq(LPO,0),"_SETLPARM1", "_SETLPARM2")
+
+! Highpass Default Parameters
+HTS        1000.0             ! Default highpass sample period
+HFP        200.0              ! Default highpass pass frequency
+HRP        3.0                ! Default highpass pass band ripple (in dB)
+HRS        40.0               ! Default highpass stop band ripple (in dB)
+HFS        HFP-DEF*HTS        ! Default highpass stopband freq
+HPO        AUTO               ! Default highpass order - 0 = Automatic
+
+_HPARM1           _PARMSTR5(HTS,HFP,HRP,HRS,HFS)
+_HPARM2           _PARMSTR6(HPO,HTS,HFP,HRP,HRS,HFS)
+_SETHPARM1        eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Highpass(", _HPARM1, ")')")))
+_SETHPARM2        eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Highpass(", _HPARM2, ")')")))
+DESIGNHP          menuc() | _setdwin1 | oif(lessereq(HPO,0),"_SETHPARM1", "_SETHPARM2")
+
+
+! Bandpass Default Parameters
+BPTS        1000.0               ! Default bandpass sample period
+BPS1        180.0                ! Default bandpass band 1 stop freq
+BPP1        200.0                ! Default bandpass passband (band 2) start freq
+BPP2        280.0                ! Default bandpass passband (band 2) stop freq
+BPS2        300.0                ! Default bandpass band 3 start freq
+BPRP        3.0                  ! Default bandpass pass ripple (in dB)
+BPRS        40.0                 ! Default lowpass stop band ripple (in dB)
+BPO         AUTO                 ! Default lowpass order - 0 = Automatic
+
+_BPPARM1           _PARMSTR7(BPTS,BPP1,BPP2,BPRP,BPRS,BPS1,BPS2)
+_BPPARM2           _PARMSTR8(BPO,BPTS,BPP1,BPP2,BPRP,BPRS,BPS1,BPS2)
+_SETBPPARM1        eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Bandpass(", _BPPARM1, ")')")))
+_SETBPPARM2        eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Bandpass(", _BPPARM2, ")')")))
+DESIGNBP           menuc() | _setdwin1 | oif(lessereq(BPO,0),"_SETBPPARM1", "_SETBPPARM2")
+
+! Bandstop Default Parameters
+BSTS        1000.0               ! Default bandstop sample period
+BSP1        180.0                ! Default bandstop band 1 stop freq
+BSS1        200.0                ! Default bandstop stopband (band 2) start freq
+BSS2        280.0                ! Default bandstop stopband (band 2) stop freq
+BSP2        300.0                ! Default bandstop band 3 start freq
+BSRP        3.0                  ! Default bandstop pass ripple (in dB)
+BSRS        40.0                 ! Default bandstop stop band ripple (in dB)
+BSO         AUTO                 ! Default bandstop order - 0 = Automatic
+
+_BSPARM1           _PARMSTR7(BSTS,BSS1,BSS2,BSRP,BSRS,BSP1,BSP2)
+_BSPARM2           _PARMSTR8(BSO,BSTS,BSS1,BSS2,BSRP,BSRS,BSP1,BSP2)
+_SETBSPARM1        eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Bandstop(", _BSPARM1, ")')")))
+_SETBSPARM2        eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Bandstop(", _BSPARM2, ")')")))
+DESIGNBS           menuc() | _setdwin1 | oif(lessereq(BSO,0),"_SETBSPARM1", "_SETBSPARM2")
+
+
+! Differentiator Default Parameters
+DTS        1000.0             ! Default differentiator sample period
+DSL        1.0                ! Default differentiator slope
+DFP        500.0              ! Default differentiator cutoff freq
+DPO        AUTO               ! Default differentiator order - 0 = Automatic
+
+_DPARM1          _PARMSTR3(DTS,DSL,DFP)
+_DPARM2          _PARMSTR4(DPO,DTS,DSL,DFP)
+_SETDPARM1       eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Diff(", _DPARM1, ")')")))
+_SETDPARM2       eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Diff(", _DPARM2, ")')")))
+DESIGNDF         menuc() | _setdwin1 | oif(lessereq(DPO,0),"_SETDPARM1", "_SETDPARM2")
+
+! Hilbert Transformer
+HILTS        1000.0           ! Default Hilbert sample period
+HILP1        0.0              ! Default Hilbert passband 1 frequency
+HILP2        500.0            ! Default Hilbert passband 2 frequency
+HILORDER     AUTO             ! Default Hilbert order - 0 = Automatic
+
+_HILPARM1         _PARMSTR3(HILTS,HILP1,HILP2)
+_HILPARM2         _PARMSTR4(HILORDER,HILTS,HILP1,HILP2)
+_SETHILPARM1      eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Hilbert(", _HILPARM1, ")')")))
+_SETHILPARM2      eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Hilbert(", _HILPARM2, ")')")))
+DESIGNHIL         menuc() | _setdwin1 | oif(lessereq(HILORDER,0),"_SETHILPARM1", "_SETHILPARM2")
+
+
+! Macros to load the menus
+F         _mff("filter.men")       ! invoke main filter menu
+LP        _mff("lpfir.men")        ! invoke lowpass fir menu
+HP        _mff("hpfir.men")        ! invoke highpass fir menu
+BP        _mff("bpfir.men")        ! invoke bandpass fir menu
+BS        _mff("bsfir.men")        ! invoke bandstop fir menu
+DF        _mff("dffir.men")        ! invoke diff fir menu
+
+! dB Log Magnitude FFT
+LOGMAG(S)        20*LOG10(MAG(EXTRACT(FFT(S),1,INT(LENGTH(S)/2))))
+FIRMAG(S,N)      20*LOG10(MAG(EXTRACT(FFT(EXTRACT(S,1,N+N)),1,INT(N))))
+FIRPHASE(S,N)    (PHASE(EXTRACT(FFT(EXTRACT(S,1,N+N)),1,INT(N))))
+
+! Display Specification Files
+LOPASS(N)       menufile(STRCAT("lopass", STRNUM(N), ".fir")) ! load lowpass fir specs
+HIPASS(N)       menufile(STRCAT("hipass", STRNUM(N), ".fir")) ! load highpass fir specs
+BPASS(N)        menufile(STRCAT("bandps", STRNUM(N), ".fir")) ! load bandpass fir specs
+BSTOP(N)        menufile(STRCAT("bandsp", STRNUM(N), ".fir")) ! load bandstop fir specs
+DIFFS(N)        menufile(STRCAT("diff", STRNUM(N), ".fir"))   ! load diff fir specs
+
+AUTOORDER        'AUTO'      ! Automatic Filter Order Estimate
+AUTO                0        ! Auto Estimation
+
+NVALS(S)        GLINE(LENGTH(S),1.0,1.0,0.0) ! grabs index values from a signal
+TOHIPASS(S)     PLOTMODE(0)|S*(-1.0^NVALS(S))|SETDELTAX(DELTAX(S))|PLOTMODE(1) ! converts lowpass fir to hipass fir filter
+
+FILTER(S,H)     EXTRACT(CONV(S,H), CEIL(LENGTH(H)/2), LENGTH(S)) ! filter signal S with filter H
+FIRFILTER(S,H)  FILTER(S,H)
+
+_PARMSTR3(A,B,C)             STRCAT(STRNUM(A),",",STRNUM(B),",",STRNUM(C))
+_PARMSTR4(A,B,C,D)           STRCAT(STRNUM(A),",",STRNUM(B),",",STRNUM(C),",",STRNUM(D))
+_PARMSTR5(A,B,C,D,E)         STRCAT(STRNUM(A),",",STRNUM(B),",",STRNUM(C),",",STRNUM(D),",",STRNUM(E))
+_PARMSTR6(A,B,C,D,E,F)       STRCAT(STRNUM(A),",",STRNUM(B),",",STRNUM(C),",",STRNUM(D),",",STRNUM(E),",",STRNUM(F))
+_PARMSTR7(A,B,C,D,E,F,G)     STRCAT(STRNUM(A),",",STRNUM(B),",",STRNUM(C),",",STRNUM(D),",",STRNUM(E),",",STRNUM(F),",",STRNUM(G))
+_PARMSTR8(A,B,C,D,E,F,G,H)   STRCAT(STRNUM(A),",",STRNUM(B),",",STRNUM(C),",",STRNUM(D),",",STRNUM(E),",",STRNUM(F),",",STRNUM(G),",",STRNUM(H))
+_PARMSTR9(A,B,C,D,E,F,G,H,K) STRCAT(STRNUM(A),",",STRNUM(B),",",STRNUM(C),",",STRNUM(D),",",STRNUM(E),",",STRNUM(F),",",STRNUM(G),",",STRNUM(H),",",STRNUM(K)) 
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!         Kaiser Window FIR Macros                !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+! Kaiser Lowpass Default Parameters
+KLTS         1000.0             ! Default LP sample rate
+KLFP         200.0              ! Default LP pass frequency (cutoff freq)
+KLRS         40.0               ! Default LP stop band attn (in dB)
+KLFS         KLFP+KDEF*KLTS     ! Default LP stopband freq
+KDEF         0.05               ! Default transition width        
+_KLPARM      _PARMSTR4(KLTS,KLFP,KLFS,KLRS)
+_SETKLPARM   eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Klpass(", _KLPARM, ")')")))
+DESIGNKLP    menuc() | _setdwin1 | _SETKLPARM
+
+! Kaiser Highpass Default Parameters
+KHTS         1000.0             ! Default HP sample rate
+KHFP         200.0              ! Default HP stopband frequency
+KHRS         40.0               ! Default HP stop band attn (in dB)
+KHFS         KHFP+KDEF*KHTS     ! Default HP passband freq (cutoff freq)
+_KHPARM      _PARMSTR4(KHTS,KHFP,KHFS,KHRS)
+_SETKHPARM   eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Khpass(", _KHPARM, ")')")))
+DESIGNKHP    menuc() | _SETKHPARM
+
+! Kaiser Bandpass Default Parameters
+KBPTS         1000.0               ! Default BP sample period
+KBPS1         180.0                ! Default BP band 1 stop freq
+KBPP1         200.0                ! Default BP passband (band 2) start freq
+KBPP2         280.0                ! Default BP passband (band 2) stop freq
+KBPS2         300.0                ! Default BP band 3 start freq
+KBPRS         40.0                 ! Default BP stop band ripple (in dB)
+
+_KBPPARM      _PARMSTR6(KBPTS,KBPS1,KBPP1,KBPP2,KBPS2,KBPRS)
+_SETKBPPARM   eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Kbpass(", _KBPPARM, ")')")))
+DESIGNKBP     menuc() | _setdwin1 | _SETKBPPARM
+
+! Kaiser Bandstop Default Parameters
+KBSTS        1000.0               ! Default BS sample period
+KBSS1        180.0                ! Default BS band 1 pass freq
+KBSP1        200.0                ! Default BS stopband (band 2) start freq
+KBSP2        280.0                ! Default BS stopband (band 2) stop freq
+KBSS2        300.0                ! Default BS band 3 pass freq
+KBSRS        40.0                 ! Default BS stop band ripple (in dB)
+
+_KBSPARM     _PARMSTR6(KBSTS,KBSS1,KBSP1,KBSP2,KBSS2,KBSRS)
+_SETKBSPARM  eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Kbstop(", _KBSPARM, ")')")))
+DESIGNKBS    menuc() | _setdwin1 | _SETKBSPARM
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!          IIR Bilinear Transform Macros          !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+! Butterworth Lowpass Default Parameters
+BLTS    1000.0          ! Default lowpass sample period
+BLFP    200.0           ! Default lowpass pass frequency(cutoff freq)
+BLFS    BLFP+DEF*BLTS   ! Default lowpass stopband freq.
+DEF     0.05            ! Default transition width
+BLRS    40.0            ! Default lowpass stop band ripple (in dB)
+BLRP    3.0             ! Default lowpass passband ripple(in DB)
+BLO     AUTO            ! Default lowpass order-0 = automatic
+
+_BLPAR1          _PARMSTR6(1,BLTS,BLFP,BLRP,BLRS,BLFS)
+_BLPAR2          _PARMSTR4(1,BLO,BLTS,BLFP)
+_SETBLPAR1       eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Butterworth(", _BLPAR1, ")')")))
+_SETBLPAR2       eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Butterworth(", _BLPAR2, ")')")))
+DESIGNBL         menuc() | _setdwin1 | oif (lessereq(BLO,0),"_SETBLPAR1","_SETBLPAR2")
+
+! Chebysev1 Lowpass Default Parameters
+C1LTS   1000.0          ! Default lowpass sample period
+C1LFP   200.0           ! Default lowpass pass frequency
+C1LFS   C1LFP+DEF*C1LTS ! Default lowpass stop band freq
+DEF     0.05            ! Default transition width  
+C1LRP   3.0             ! Default lowpass passband ripple(in DB)
+C1LRS   40.0            ! Default lowpass stopband atten. (in dB)
+C1LO    AUTO            ! Default lowpass order-0 = Automatic
+
+_C1LPAR1         _PARMSTR6(1,C1LTS,C1LFP,C1LRP,C1LRS,C1LFS)
+_C1LPAR2         _PARMSTR5(1,C1LO,C1LTS,C1LFP,C1LRP)
+_SETC1LPAR1     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby1(", _C1LPAR1, ")')")))
+_SETC1LPAR2     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby1(", _C1LPAR2, ")')")))
+DESIGNC1L        menuc() | _setdwin1 | oif(lessereq(C1LO,0),"_SETC1LPAR1","_SETC1LPAR2")
+
+! Chebysev2 Lowpass Default Parameters
+C2LTS    1000.0          ! Default lowpass sample period  
+C2LFP    200.0           ! Default lowpass pass frequency
+C2LFS    C2LFP+DEF*C2LTS ! Default lowpass stop freq
+DEF      0.05            ! Default transition width
+C2LRS    40.0            ! Default lowpass stopband attenuation (in dB)
+C2LRP    3.0             ! Default lowpass band ripple
+C2LO     AUTO            ! Default lowpass order - 0 = Automatic
+
+_C2LPAR1         _PARMSTR6(1,C2LTS,C2LFP,C2LRS,C2LRP,C2LFS)
+_C2LPAR2         _PARMSTR5(1,C2LO,C2LTS,C2LFP,C2LRS)
+_SETC2LPAR1     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby2(", _C2LPAR1, ")')")))
+_SETC2LPAR2     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby2(", _C2LPAR2, ")')")))
+DESIGNC2L        menuc() | _setdwin1 | oif(lessereq(C2LO,0),"_SETC2LPAR1","_SETC2LPAR2")
+
+! Elliptic Lowpass Default Parameters
+ELTS    1000.0          ! Default lowpass sample period
+ELRP    3.0             ! Default lowpass pass band ripple(in DB)
+ELRS    40.0            ! Default lowpass stop band ripple(in DB)
+ELFP    200.0           ! Default lowpass pass frequency
+ELFS    ELFP+DEF*ELTS   ! Default lowpass stop frequency
+DEF     0.05            ! width
+ELO     AUTO            ! Default lowpass order - 0 = Automatic
+
+_ELPAR1          _PARMSTR6(1,ELTS,ELFP,ELRP,ELRS,ELFS)
+_ELPAR2          _PARMSTR7(1,ELO,ELTS,ELFP,ELRP,ELRS,ELFS)
+_SETELPAR1       eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Elliptic(", _ELPAR1, ")')")))
+_SETELPAR2       eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Elliptic(", _ELPAR2, ")')")))
+DESIGNEL         menuc() | _setdwin1 | oif(lessereq(ELO,0),"_SETELPAR1","_SETELPAR2")
+  
+
+! Butterworth Highpass Default Parameters
+BHTS    1000.0          ! Default highpass sample period
+BHFP    200.0           ! Default highpass pass frequency
+BHFS    BHFP-DEF*BHTS   ! Default highpass stopband frequency
+DEF     0.05            ! Default transition width
+BHRS    40.0            ! Default highpass stopband attenuation (in dB)
+BHRP    3.0             ! Default highpass passband ripple(in DB)
+BHO     AUTO            ! Default highpass order - 0 = Automatic
+
+_BHPAR1         _PARMSTR6(2,BHTS,BHFP,BHRP,BHRS,BHFS)
+_BHPAR2         _PARMSTR4(2,BHO,BHTS,BHFP)
+_SETBHPAR1      eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Butterworth(", _BHPAR1, ")')")))
+_SETBHPAR2      eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Butterworth(", _BHPAR2, ")')")))
+DESIGNBH        menuc() | _setdwin1 | oif (lessereq(BHO,0),"_SETBHPAR1","_SETBHPAR2")
+
+! Chebysev1 Highpass Default Parameters
+C1HTS   1000.0          ! Default highpass sample period
+C1HRP   3.0             ! Default highpass pass band ripple
+C1HFP   200.0           ! Default highpass pass frequency
+C1HFS   C1HFP-DEF*C1HTS ! Default highpass stop frequency
+DEF     0.05            ! Default transition width
+C1HRS   60.0            ! Default stopband Attenuation
+C1HO    AUTO            ! Default highpass order - 0 = Automatic
+
+_C1HPAR1        _PARMSTR6(2,C1HTS,C1HFP,C1HRP,C1HRS,C1HFS)
+_C1HPAR2        _PARMSTR5(2,C1HO,C1HTS,C1HFP,C1HRP)
+_SETC1HPAR1     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby1(", _C1HPAR1, ")')")))
+_SETC1HPAR2     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby1(", _C1HPAR2, ")')")))
+DESIGNC1H       menuc() | _setdwin1 | oif (lessereq(C1HO,0),"_SETC1HPAR1","_SETC1HPAR2")
+
+! Chebysev2 Highpass Default Parameters
+C2HTS   1000.0          ! Default highpass sample period 
+C2HRP   1.0             ! Default highpass pass band ripple
+C2HFP   200.0           ! Default highpass pass frequency
+C2HFS   C2HFP-DEF*C2HTS ! Default highpass stop frequency
+DEF     0.05            ! Default transition width
+C2HRS   60.0            ! Default highpass stopband Attenuation
+C2HO    AUTO            ! Default highpass order - 0 = Automatic
+
+_C2HPAR1        _PARMSTR6(2,C2HTS,C2HFP,C2HRS,C2HRP,C2HFS)
+_C2HPAR2        _PARMSTR5(2,C2HO,C2HTS,C2HFP,C2HRS)
+_SETC2HPAR1     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby2(", _C2HPAR1, ")')")))
+_SETC2HPAR2     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby2(", _C2HPAR2, ")')")))
+DESIGNC2H       menuc() | _setdwin1 | oif(lessereq(C2HO,0),"_SETC2HPAR1","_SETC2HPAR2")
+
+! Elliptic Highpass Default Parameters
+EHTS    1000.0          ! Default highpass sample period
+EHRP    3.0             ! Default highpass pass band ripple(in DB)
+EHRS    60.0            ! Default highpass stop band ripple(in DB) 
+EHFP    200.0           ! Default highpass pass frequency
+EHFS    EHFP-DEF*EHTS   ! Default highpass stopband freq
+DEF     0.05            ! width
+EHO     AUTO            ! Default highpass order - 0 = Automatic
+
+_EHPAR1         _PARMSTR6(2,EHTS,EHFP,EHRP,EHRS,EHFS)
+_EHPAR2         _PARMSTR7(2,EHO,EHTS,EHFP,EHRP,EHRS,EHFS)
+_SETEHPAR1      eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Elliptic(", _EHPAR1, ")')")))
+_SETEHPAR2      eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Elliptic(", _EHPAR2, ")')")))
+DESIGNEH        menuc()  | _setdwin1 | oif(lessereq(EHO,0),"_SETEHPAR1","_SETEHPAR2")
+       
+! Butterworth Bandpass Default Parameters
+BBPTS   1000.0          ! Default bandpass sample period
+BBPFS1  180.0           ! Default bandpass band1 stop freq.
+BBPFP1  200.0           ! Default bandpass passband start frequency
+BBPFP2  280.0           ! Default bandpass passband stop freq
+BBPFS2  300.0           ! Default bandpass stop freq.
+BBPRS   40.0            ! Default bandpass stopband attenuation
+BBPRP   3.0             ! Default bandpass passband ripple
+BBPO    AUTO            ! Default bandpass order - 0 = Automatic
+
+_BBPPAR1          _PARMSTR8(3,BBPTS,BBPFP1,BBPFP2,BBPRP,BBPRS,BBPFS1,BBPFS2)
+_BBPPAR2          _PARMSTR5(3,BBPO,BBPTS,BBPFP1,BBPFP2)
+_SETBBPPAR1       eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Butterworth(", _BBPPAR1, ")')")))
+_SETBBPPAR2       eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Butterworth(", _BBPPAR2, ")')")))
+DESIGNBBP         menuc() | _setdwin1 | oif (lessereq(BBPO,0),"_SETBBPPAR1", "_SETBBPPAR2")
+
+! Chebysev1 Bandpass Default Parameters
+C1BPTS   1000.0         ! Default bandpass sample period
+C1BPS1   180.0          ! Default bandpass band 1 stop freq.
+C1BPP1   200.0          ! Default bandpass passband start freq.
+C1BPP2   280.0          ! Default bandpass passband stop freq
+C1BPS2   300.0          ! Default bandpass stop freq.
+C1BPRP   3.0            ! Default bandpass pass ripple(in DB)
+C1BPRS   40.0           ! Default bandpass stopband attenuation (in dB)
+C1BPO    AUTO           ! Default bandpass order - 0 = Automatic
+
+_C1BPPAR1        _PARMSTR8(3,C1BPTS,C1BPP1,C1BPP2,C1BPRP,C1BPRS,C1BPS1,C1BPS2)
+_C1BPPAR2        _PARMSTR6(3,C1BPO,C1BPTS,C1BPP1,C1BPP2,C1BPRP)
+_SETC1BPPAR1     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby1(", _C1BPPAR1, ")')")))
+_SETC1BPPAR2     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby1(", _C1BPPAR2, ")')")))
+DESIGNC1BP       menuc() | _setdwin1 | oif (lessereq(C1BPO,0),"_SETC1BPPAR1","_SETC1BPPAR2")
+
+! Chebysev2 Bandpass Default Parameters
+C2BPTS   1000.0         ! Default bandpass sample period
+C2BPS1   180.0          ! Default bandpass band 1 stop freq.
+C2BPP1   200.0          ! Default bandpass passband start freq
+C2BPP2   280.0          ! Default bandpass passband stop freq
+C2BPS2   300.0          ! Default bandpass stop freq.
+C2BPRP   3.0            ! Default bandpass pass ripple(in DB)
+C2BPRS   40.0           ! Default bandpass stopband attenuation (in DB)
+C2BPO    AUTO           ! Default bandpass order - 0 = Automatic
+
+_C2BPPAR1        _PARMSTR8(3,C2BPTS,C2BPP1,C2BPP2,C2BPRS,C2BPRP,C2BPS1,C2BPS2)
+_C2BPPAR2        _PARMSTR6(3,C2BPO,C2BPTS,C2BPP1,C2BPP2,C2BPRS)
+_SETC2BPPAR1     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby2(", _C2BPPAR1, ")')")))
+_SETC2BPPAR2     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby2(", _C2BPPAR2, ")')")))
+DESIGNC2BP       menuc() | _setdwin1 | oif(lessereq(C2BPO,0),"_SETC2BPPAR1","_SETC2BPPAR2")
+     
+! Elliptic Bandpass Default Parameters
+EBPTS   1000.0        ! Default bandpass sample period
+EBPS1   180.0         ! Default bandpass low stopband edge freq
+EBPP1   200.0         ! Default bandpass low passband edge freq
+EBPP2   280.0         ! Default bandpass upper passband edge freq
+EBPS2   300.0         ! Default bandpass upper stopband edger freq
+EBPRP   3.0           ! Default bandpass pass ripple (in dB)
+EBPRS   40.0          ! Default lowpass stop band ripple (in dB)
+EBPO    AUTO          ! Default lowpass order - 0 = Automatic
+
+_EBPPAR1          _PARMSTR8(3,EBPTS,EBPP1,EBPP2,EBPRP,EBPRS,EBPS1,EBPS2)
+_EBPPAR2          _PARMSTR9(3,EBPO,EBPTS,EBPP1,EBPP2,EBPRP,EBPRS,EBPS1,EBPS2)
+_SETEBPPAR1       eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Elliptic(", _EBPPAR1, ")')")))
+_SETEBPPAR2       eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Elliptic(", _EBPPAR2, ")')")))
+DESIGNEBP         menuc() | _setdwin1 | oif(lessereq(EBPO,0),"_SETEBPPAR1", "_SETEBPPAR2")
+
+! Butterworth Bandstop Default Parameters
+BBSTS    1000.0         ! Default bandstop sample period
+BBSP1    180.0          ! Default bandstop passband stop freq
+BBSS1    200.0          ! Default bandstop stopband start freq.
+BBSS2    280.0          ! Default bandstop stopband stop freq
+BBSP2    300.0          ! Default bandstop passband start freq
+BBSRS    40.0           ! Default bandstop stopband Attenuation (in DB)
+BBSRP    3.0            ! Default bandstop passband Ripple (in DB)
+BBSO     AUTO           ! Default bandstop order - 0 = Automatic
+
+_BBSPAR1         _PARMSTR8(4,BBSTS,BBSP1,BBSP2,BBSRP,BBSRS,BBSS1,BBSS2)
+_BBSPAR2         _PARMSTR5(4,BBSO,BBSTS,BBSP1,BBSP2)
+_SETBBSPAR1      eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Butterworth(", _BBSPAR1, ")')")))
+_SETBBSPAR2      eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Butterworth(", _BBSPAR2, ")')")))
+DESIGNBBS        menuc() | _setdwin1 | oif (lessereq(BBSO,0),"_SETBBSPAR1","_SETBBSPAR2")
+  
+! Chebysev1 Bandstop Default Parameters
+C1BSTS   1000.0         ! Default bandstop sample period
+C1BSS1   200.0          ! Default bandstop stopband start freq.
+C1BSP1   180.0          ! Default bandstop passband stop freq
+C1BSP2   300.0          ! Default bandstop passband start freq
+C1BSS2   280.0          ! Default bandstop stopband stop freq.  
+C1BSRP   3.0            ! Default bandstop pass ripple (in DB)
+C1BSRS   40.0           ! Default bandstop stop attenuation (in DB)
+C1BSO    AUTO           ! Default bandstop order - 0 = Automatic
+
+_C1BSPAR1        _PARMSTR8(4,C1BSTS,C1BSP1,C1BSP2,C1BSRP,C1BSRS,C1BSS1,C1BSS2)
+_C1BSPAR2        _PARMSTR6(4,C1BSO,C1BSTS,C1BSP1,C1BSP2,C1BSRP)
+_SETC1BSPAR1     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby1(", _C1BSPAR1, ")')")))
+_SETC1BSPAR2     eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby1(", _C1BSPAR2, ")')")))
+DESIGNC1BS       menuc() | _setdwin1 | oif (lessereq(C1BSO,0),"_SETC1BSPAR1","_SETC1BSPAR2")
+
+! Chebysev2 Bandstop Default Parameters
+C2BSTS    1000.0        ! Default bandstop sample period
+C2BSS1    200.0         ! Default bandstop stopband start freq
+C2BSP1    180.0         ! Default Bandstop passband stop freq
+C2BSP2    300.0         ! Default Bandstop passband start freq
+C2BSS2    280.0         ! Default bandstop stopband stop freq
+C2BSRP    3.0           ! Default Bandstop pass ripple(in DB)
+C2BSRS    40.0          ! Default Bandstop stopband Attenuation (in DB)
+C2BSO     AUTO          ! Default Bandstop order - 0 = Automatic
+
+
+_C2BSPAR1         _PARMSTR8(4,C2BSTS,C2BSP1,C2BSP2,C2BSRS,C2BSRP,C2BSS1,C2BSS2)
+_C2BSPAR2         _PARMSTR6(4,C2BSO,C2BSTS,C2BSP1,C2BSP2,C2BSRS)
+_SETC2BSPAR1      eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby2(", _C2BSPAR1, ")')")))
+_SETC2BSPAR2      eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Cheby2(", _C2BSPAR2, ")')")))
+DESIGNC2BS        menuc()| _setdwin1 | oif(lessereq(C2BSO,0),"_SETC2BSPAR1","_SETC2BSPAR2")
+    
+! Elliptic Bandstop Default Parameters
+EBSTS        1000.0     ! Default bandstop sample period
+EBSP1        180.0      ! Default bandstop low passband edge freq
+EBSS1        200.0      ! Default bandstop low stopband edge freq
+EBSS2        280.0      ! Default bandstop upper stopband edge freq
+EBSP2        300.0      ! Default bandstop upper passband edge freq
+EBSRP        3.0        ! Default bandstop pass ripple (in dB)
+EBSRS        40.0       ! Default bandstop stop band ripple (in dB)
+EBSO         AUTO       ! Default bandstop order - 0 = Automatic
+
+_EBSPAR1           _PARMSTR8(4,EBSTS,EBSP1,EBSP2,EBSRP,EBSRS,EBSS1,EBSS2)
+_EBSPAR2           _PARMSTR9(4,EBSO,EBSTS,EBSP1,EBSP2,EBSRP,EBSRS,EBSS1,EBSS2)
+_SETEBSPAR1        eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Elliptic(", _EBSPAR1, ")')")))
+_SETEBSPAR2        eval(strcat('SETWFORM(', eval('_dwin'), ',',STRCAT("'Elliptic(", _EBSPAR2, ")')")))
+DESIGNEBS          menuc() | _setdwin1 | oif(lessereq(EBSO,0),"_SETEBSPAR1", "_SETEBSPAR2")
+
+! Macros to load the menus
+
+IIRMEN  _mff("iir.men")     ! invoke main iir menu
+  
+LPT     _mff("lowtype.men") ! invoke lowpass iir name menu
+HPT     _mff("hightype.men")! invoke highpass iir name menu
+BPT     _mff("bptype.men")  ! invoke bandpass iir name menu
+BST     _mff("bstype.men")  ! invoke bandstop iir name menu
+
+BLP     _mff("blpiir.men")  ! invoke butterworth lowwpass iir menu
+BHP     _mff("bhpiir.men")  ! invoke butterwirth highpass iir menu
+BBP     _mff("bbpiir.men")  ! invoke butterworth bandpass iir menu
+BBS     _mff("bbsiir.men")  ! invoke butterworth bandpass iir menu
+C1LP    _mff("c1lpiir.men") ! invoke chebysev1 lowpass iir menu
+C1HP    _mff("c1hpiir.men") ! invoke chebysev1 highpass iir menu
+C1BP    _mff("c1bpiir.men") ! invoke chebysev1 bandpass iir menu
+C1BS    _mff("c1bsiir.men") ! invoke chebysev1 bandstop iir menu
+C2LP    _mff("c2lpiir.men") ! invoke chebysev2 lowpass iir menu
+C2HP    _mff("c2hpiir.men") ! invoke chebysev2 highpass iir menu
+C2BP    _mff("c2bpiir.men") ! invoke chebysev2 bandpass iir menu
+C2BS    _mff("c2bsiir.men") ! invoke chebysev2 bandstop iir menu
+ELP     _mff("elpiir.men")  ! invoke elliptic lowpass iir menu
+EHP     _mff("ehpiir.men")  ! invoke elliptic highpass iir menu
+EBP     _mff("ebpiir.men")  ! invoke elliptic bandpass iir menu
+EBS     _mff("ebsiir.men")  ! invoke elliptic bandstop iir menu
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!               IIR Misc Macros                   !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+IIRMISC _mff("iirmisc.men") ! invoke misc functions menu
+
+! impulse response
+IIRIMP(S,N)            (CASCADE(IMPULSEX(1,N,DELTAX(S)),S))
+
+! frequency response
+IIRMAG(S,N)             (CLOGMAG(S, N))
+OIIRMAG(S,N)            (20*LOG10(MAG(EXTRACT(FFT(IIRIMP(S,N+N)),1,INT(N)))))
+
+! phase response
+IIRPHASE(S,N)           (CPHASE(S, N))
+OIIRPHASE(S,N)          (PHASE(EXTRACT(FFT(IIRIMP(S,N+N)),1,INT(N))))
+
+! impulse generation
+IMPULSEX(POS,LEN,DX)   (SETPT(GLINE(LEN,DX,0.0,0.0),1.0,POS))
+
+! perform IIR filtering
+IIRFILTER(S,H)         (CASCADE(S,H))
+
+! IIR group delay - from impulse response
+IIRGRPDELAY(S,N)       ((iirimp(s,(n+n));Extract(2*grpdelay(curr),1,n);setvunits("Samples");Setcomment("Group Delay in Samples")))
+
+! group delay using FFT
+GRPDELAY(S)             REAL(FFT(XVALS(S)*(S))/FFT(S))
+
+! IIR Pole-Zero Plot
+oIirpz(s)   pzplot(iirpoles(s),iirzeros(s))
+Iirpz(s)    zplane(s)
+
+! Generic Pole-Zero Plot
+Pzplot(p,z) gcircle(1001);overp(xyri(p));overp(xyri(z));setpzplt
+
+! polynomial root finding
+!
+! Note: use CROOTS for quick and dirty root finding or EROOTS for more
+!       accuracy, but longer processing
+
+  polyroots(s,l) eroots(s,l)
+! polyroots(s,l) croots(s)
+
+! polynomial roots by finding eigenvalues of the companion matrix
+eroots(s,l)    eigval(transpose(ravel(errow1(s),erones(l))))
+erones(l)      region(diag(gline((l)-1,1,0,1)),1,(l)-1,1,(l)-2)
+errow1(s)      Ravel(extract(-rev((s)/getpt(s,length(s))),2,-1))
+
+! Laguare root finding
+croots(s)    (reserved(1009, s))
+
+! Pole-Zero plot support
+polecolor    BLACK
+zerocolor    LRED  
+gcircle(n)   (xy(gsin((n)+1,1/(n),1),gcos((n)+1,1/(n),1)))
+xyri(s)      (xy(real(s),imag(s)))
+setpzplt     setcolor(polecolor,2);setcolor(zerocolor,3);setsym(5,2);setsym(15,3);setplotstyle(1,2);setplotstyle(1,3);setpzunits
+setpzunits   sethunits("Real");setvunits("Imag");setcomment("Unit Circle", 1);setcomment("Poles", 2);setcomment("Zeros", 3)
+
+
+! IIR poles and zeros from cascade coefficients
+Iirpoles(s) (polyroots(rev(polecoef(s)),nbiquadpz(s)))
+Iirzeros(s) (polyroots(rev(zerocoef(s)),nbiquadpz(s)))
+
+! number of poles or zeros from a bi-quad iir
+nbiquadpz(s)      (int(1+2*((length(s)-1)/5)))
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!               FIR Misc Macros                   !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+FIRMISC _mff("firmisc.men") ! invoke misc functions menu
+
+! FIR Zeros and Zero Plot
+Firzeros(s) (polyroots(rev(s),length(s)))
+oFirpz(s)   gcircle(1001);overp(xyri(firzeros(s)));setzplt
+Firpz(s)    zplane(s,{1})
+setzplt     setcolor(zerocolor,2);setsym(11,2);setplotstyle(1,2);sethunits("Real");setvunits("Imag")
+
+Firgrpdelay(s,n)  (Extract(grpdelay(extract(s,1,n+n)),1,n))
+
+! FIR filter with linear phase throughout entire filter bandwidth
+Fullfir(s)        (conv(s, rev(s)))
+
+! Unwrapped FIR phase response
+Firuphase(s, n)   (unwrap(firphase(s, n)))
+
+! FIR filter convolution using the FFT
+fastfilter(s, h)  extract(fftconv(s, h), ceil(length(h)/2), length(s));setxoffset(xoffset(s))
+
+! convolution using the fft
+fftconv(s1,s2) (real(ifft(fft(extract(s1,1,fftconvlen2(s1,s2)))*fft(extract(s2,1,fftconvlen2(s1,s2))))))
+
+! 2 * maximum length of two series
+fmaxtwo(x,y)       int(if((x)>(y), 2*(x), 2*(y)))
+
+fmaxtwolen(s1,s2)  fmaxtwo(length(s1),length(s2))
+
+! find best power of two size for FFT
+fftconvlen2(s1, s2)    (int(2^(ceil(log2(fmaxtwolen(s1, s2))))))
+
+! log base 2
+log2(x)            (log(x)/log(2))
+
+! Kaiser filter macros
+#include {strcat(_filterhome, "winfilt.mac")}

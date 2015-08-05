@@ -1,0 +1,60 @@
+/*****************************************************************************
+*                                                                            *
+*   CNF2STD.SPL   Copyright (C) 2000-2001 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Converts an alpha confidence level to standard deviations   *
+*                                                                            *
+*   Revisions:    3 Apr 2000  RRR  Creation                                  *
+*                 7 Dec 2001  RRR  Use better INVPROBN function              *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_CNF2STD
+
+    CNF2STD  
+
+    Purpose: Converts a confidence level (%) to a standard deviation range
+                                                                        
+    Format:  CNF2STD(alpha)
+
+              alpha - real or series, the confidence level(s) in %, defaults
+                      to, 99, a 99% confidence level.
+
+
+    Returns: a real or series, standard deviation range for the 
+             given confidence level(s).
+
+
+    Example:
+             cnf2std(99)
+
+             returns 2.5758 the standard deviation range for a 
+             confidence level of 99%
+
+
+    Example:
+             W1: {99, 98, 97, 96, 95}
+             W2: cnf2std(w1)
+
+             W2 == {2.5758, 2.3263, 2.1701, 2.0537, 1.9600}
+
+             the standard deviation ranges for confidence levels
+             99%, 98%, 97%, 96%, and 95%
+
+    Remarks:
+             CNF2STD uses the built-in INVPROBN function to lookup a Z value
+             for a given probability.
+
+    See Also:
+             Ivsnormpb
+#endif
+
+
+/* confidence level to standard deviation range */
+cnf2std(cnf)
+{
+	return(invprobn(0.5 + cnf / 200));
+}

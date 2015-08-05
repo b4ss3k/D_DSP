@@ -1,0 +1,34 @@
+
+/* sets formula for xylookup */
+_xylform(s1, c1, s2, c2, s3, mode, intp, oor)
+{
+	local xystr, formstr;
+
+	if (mode != 0) { /* x y */
+		xystr = sprintf("Xylookup(col(%s, %d), col(%s, %d), %s", s1, c1, s2, c2, s3);
+	}
+	else {
+ 		xystr = sprintf("Xylookup(%s, %s", s1, s3);
+ 	}
+ 	if (intp == 0) {
+		formstr = sprintf('%s, "none")', xystr);
+ 	}
+ 	else if (intp == 1) {
+ 		if (oor == 0) {
+	 		formstr = sprintf("%s)", xystr);
+	 	}
+	 	else {
+	 		formstr = sprintf('%s, "linear", %d)', xystr, oor);
+	 	}
+ 	}
+ 	else {
+ 		if (oor == 0) {
+	 		formstr = sprintf('%s, "spline")', xystr);
+	 	}
+	 	else {
+	 		formstr = sprintf('%s, "spline", %d)', xystr, oor);
+	 	}
+ 	}
+ 	return(formstr);
+ }
+

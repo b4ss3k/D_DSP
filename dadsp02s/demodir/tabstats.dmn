@@ -1,0 +1,14 @@
+! tabstats.dmn -- Column-wise math functions
+@x0
+@y0
+   Column Statistics
+_____________________
+ 
+ Average             ~_deffname('COLMEAN  Column Mean')      |_defformat('Colmean(series)')|_defxamp('Colmean(W1)')|_gettables|_oserform("Colmean")
+ Standard Deviation  ~_deffname('COLSTDEV Column Stdev')     |_defformat('Colstdev(series)')|_defxamp('Colstdev(W1)')|_gettables|_oserform("Colstdev")
+ Median              ~_deffname('COLMEDIAN  Column Median')   |_defformat('Colmedian(series)')|_defxamp('Colmedian(W1)')|_gettables|_oserform("Colmedian")
+ Minimum             ~_deffname('COLMIN   Column Minimum')   |_defformat('Colmin(series)')|_defxamp('Colmin(W1)')|_gettables|_oserform("Colmin")
+ Maximum             ~_deffname('COLMAX   Column Maximum')   |_defformat('Colmax(series)')|_defxamp('Colmax(W1)')|_gettables|_oserform("Colmax")
+! Range              ~_deffname('COLRANGE Column Range')     |_defformat('Colrange(series)')|_defxamp('Colrange(W1)')|_gettables|_oserform("Colrange")
+ Total               ~_deffname('COLTOTAL Column Total')     |_defformat('Coltotal(series)')|_defxamp('Coltotal(W1)')|_gettables|_oserform("Coltotal")
+ Count               ~_deffname('COLLENGTH  Column Sample Count')   |_defformat('Collength(series)')|_defxamp('Collength(W1)')|_gettables|_oserform("Collength")

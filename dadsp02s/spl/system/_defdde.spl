@@ -1,0 +1,18 @@
+/* reset dde menu parameters to defaults */
+_defdde()
+{
+	setvar("_ddeenb",   castint(getconfdefault("DDE_ENABLED")));
+	setvar("_ddewst",   castint(getconfdefault("DDE_WORKSHEET_TOPIC")));
+	setvar("_ddeautos", castint(getconfdefault("DDE_AUTOSCALE")));
+	setvar("_ddetimeo", castint(getconfdefault("DDE_TIMEOUT")));
+	setvar("_ddeapnd",  not(castint(getconfdefault("DDE_OVERWRITE"))));
+
+	setvar("_ddedauto", castint(getconfdefault("DDE_DATATYPE" ))==-1);
+	if (_ddedauto) {
+		setvar("_ddedtype", _automaticstr);
+	}
+	else {
+		setvar("_ddedtype", _itype2s(castint(getconfdefault("DDE_DATATYPE"))));
+	}
+}
+

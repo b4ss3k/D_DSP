@@ -1,0 +1,16 @@
+/* shows correct units menu based on data in current window */
+_mfunits()
+{
+	if (_is2d(1)) { // all 2D but not XYZ
+		_mf("units2d.pan");
+	}
+	else if (_is3d()) { // XYZ
+		_MF("unitsxyz.pan");
+	}
+	else if (_isxy()) { // XY
+		_MF("serxy.pan");
+	}
+	else { // series 
+		_MF("serdata.pan");
+	}
+}

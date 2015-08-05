@@ -1,0 +1,130 @@
+/*****************************************************************************
+*                                                                            *
+*   PEAKS.SPL     Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Generates a function of two variables                       *
+*                                                                            *
+*   Revisions:    5 Jan 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_PEAKS
+
+    PEAKS   
+
+    Purpose: Generates a Gaussian function of two variables, z = f(x, y)
+                                                                        
+    Format:  PEAKS(n) or PEAKS(x, y)
+
+               n - an optional integer, n x n output array size
+
+               x - an optional real, x value  
+               y - an optional real, y value  
+ 
+    Returns: 
+             Peaks(n) returns an array
+
+             Peaks(x, y) returns a scalar
+
+    Example:
+
+             W1: peaks()
+             W2: peaks(30)
+
+             W1 contains the default 49 x 49 surface
+             W2 contains a 30 x 30 surface
+
+             Peaks(1, 1) returns 2.433789, the value of Z at
+             X = 1.0, Y = 1.0
+
+
+    Remarks:
+             Peaks generates a Z surface of scaled and translated Guassians.
+             The function of X and Y is :
+
+              z =  3*(1-x)^2*exp(-(x^2) - (y+1)^2) 
+                   - 10*(x/5 - x^3 - y^5)*exp(-(x^2)-(y^2)) 
+                   - 1/3*exp(-((x+1)^2) - y^2);
+
+
+              where the default X and Y range is -3..(1/8)..3
+
+
+    See Also
+             Fxyvals
+#endif
+
+
+peaks(arg1, arg2)
+{
+	local dx, x, y, z;
+
+	if (argc == 0) {
+		dx = 1/8;
+		(x, y) = fxyvals(-3, 3, dx, -3, 3, dx);
+	}
+	else if (argc == 1) {
+	    if (length(arg1) == 1) {
+			(x, y) = fxyvals(-3, 3, 6/(arg1-1), -3, 3, 6/(arg1-1));
+		}
+	    else {
+			(x, y) = fxyvals(-3, 3, 6/(arg1[1]-1), -3, 3, 6/(arg1[2]-1));
+		}
+	}
+	else {
+		x = arg1; y = arg2;
+	}
+
+	// generate peaks data
+	z =  3*(1-x)^2*exp(-(x^2) - (y+1)^2) 
+	   - 10*(x/5 - x^3 - y^5)*exp(-(x^2)-(y^2)) 
+	   - 1/3*exp(-((x+1)^2) - y^2);
+
+	// set to Z surface
+	if (length(z) > 1) {
+		setplottype(z, 4);
+		setplotstyle(z, 0);
+	}
+
+	if (outargc > 1) {
+		return(x, y, z);
+	}
+	else if (outargc == 1) {
+		return(z);
+	}
+	else {
+		if (length(z) > 1) {
+			// Create a shaded surface
+
+			// turn off plotting and set plot attributes
+			poff;
+
+			// place surface in current window
+			z;
+
+			// labels
+			setxlabel("x"); setylabel("y"); setzunits("z");
+
+			// dotted grids
+			setgridstyle(1, 3);
+			setgridstyle(2, 3);
+
+			// scales with labels
+			scales(2);
+
+			// RBG color shading
+			rainbow();
+
+			// draw the plot
+			pon;
+		}
+		else {
+			// just return scalar result
+			return(z);
+		}
+	}
+}

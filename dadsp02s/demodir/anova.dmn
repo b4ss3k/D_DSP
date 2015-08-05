@@ -1,0 +1,42 @@
+! anova.dmn -- Anova Results menu
+!modified for the demo
+@panel
+@focus 1
+@{defmacro("_sp",setprecision,2)}
+           Analysis of Variance Summary for {_ser1}
+
+Variation           <w{25}>
+Sum of Squares      <x{-1} y{-1} w{25}>
+Degrees of Freedom  <x{-1} y{-1} w{25}>
+Mean Square         <x{-1} y{-1} w{25}>
+
+
+Average             <w{25}            >
+                    <x{-1} y{-1} w{25}>~<{real(acor)}>~
+                    <x{-1} y{-1} w{25}>~<{avgdf}>~
+                    <x{-1} y{-1} w{25}>~<{real(ams)}>~
+
+ Between Groups     <w{25}            >
+                    <x{-1} y{-1} w{25}>~<{real(tss)}>~
+                    <x{-1} y{-1} w{25}>~<{tdf}>~
+                    <x{-1} y{-1} w{25}>~<{real(tms)}>~
+
+ Within Groups      <w{25}            >
+                    <x{-1} y{-1} w{25}>~<{real(rss)}>~
+                    <x{-1} y{-1} w{25}>~<{rdf}>~
+                    <x{-1} y{-1} w{25}>~<{real(resms)}>~
+<L>
+
+ 
+F Ratio                 <w{25}            > 
+                        <x{-1} y{-1} w{25}>~<{real(tms/resms)}>~
+Between MS/Within MS    <x{-1} y{-1}> 
+
+F Probability           <w{25}>
+                        <x{-1} y{-1} w{25}>~<{fpr}>~
+<L>
+
+  At a Significance Level of {siglev}: 
+             {ftestcurr;eval("f_phrase1")}
+             {eval("f_phrase2")}
+~_mc

@@ -1,0 +1,16 @@
+/* legend settings */
+_legset()
+{
+
+	setvar("_legtxn", _getlegt);
+	defvar("_legtxt", getconf("legend_text"));
+	defvar("_legfg",  strcolor(getwcolor(1)));
+	defvar("_legbg",  strcolor(getwcolor()));
+	defvar("_legfgauto",  1);
+	defvar("_legbgauto",  1);
+
+	if (_legfgauto) setvar("_legfg", strcolor(getwcolor(1)));
+	if (_legbgauto) setvar("_legbg", strcolor(getwcolor()));
+
+	_mf("legann.pan");
+}

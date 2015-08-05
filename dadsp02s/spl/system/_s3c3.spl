@@ -1,0 +1,35 @@
+_s3c3(form, ser1, col1, ser2, col2, ser3, col3, nc1, nc2, nc3)
+{
+	local s, s1, s2, s3;
+
+	/* X series */
+	if (numstr(col1) == 1 && nc1 == 1) {
+		s1 = sprintf("%s", ser1);
+	}
+	else {
+		s1 = sprintf("col(%s, %s)", ser1, col1);
+	}
+
+	/* Y series */
+	if (numstr(col2) == 1 && nc2 == 1) {
+		s2 = sprintf("%s", ser2);
+	}
+	else {
+		s2 = sprintf("col(%s, %s)", ser2, col2);
+	}
+
+	/* Z series */
+	if (numstr(col3) == 1 && nc3 == 1) {
+		s3 = sprintf("%s", ser3);
+	}
+	else {
+		s3 = sprintf("col(%s, %s)", ser3, col3);
+	}
+
+	/* formula */
+	s = sprintf("%s(%s, %s, %s)", form, s1, s2, s3);
+
+	return(s);	
+}
+
+		

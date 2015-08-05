@@ -1,0 +1,222 @@
+/*****************************************************************************
+*                                                                            *
+*   SETWLAB.SPL  Copyright (C) 1998-2000 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets Window, horizontal or vertical label                   *
+*                                                                            *
+*   Revisions:   10 Mar 1998  RRR  Creation                                  *
+*                15 Mar 2000  RRR  added return value                        *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_SETWLAB
+
+    SETWLAB 
+
+    Purpose: Sets the label of a Window
+                                                                        
+    Format:  SETWLAB(win, label)
+
+              win   - an optional window, defaults to current window
+              label - string
+
+    Returns: 1 if label was changed, else 0
+
+    Example:
+             Setwlab("This is my label")
+
+    Remarks:
+             Setwlab, sethlab and setvlab are used by the menu system.
+
+
+    See Also
+             Label
+             Setxlabel
+             Setylabel
+
+#endif
+
+
+
+/* sets the window label */
+setwlab(win, str)
+{
+	local nowin = FALSE, status = FALSE;
+
+	if (argc < 2) {
+		str = win;
+		nowin = TRUE;
+	}
+	else if (not(IS_WINDOW(win))) {
+		nowin = TRUE;
+	}
+	if (not(IS_STRING(str))) {
+		str = caststring(str);
+	}
+
+	/* set label to str if it differs from the current label */
+	if (nowin) {
+		if (strcmp(str, getlabel(), 1) != 0) {
+			label(str);
+			status = TRUE;
+		}
+	}
+	else {
+		if (strcmp(str, getlabel(win), 1) != 0) {
+			label(win, str);
+			status = TRUE;
+		}
+	}
+	return(status);
+}
+
+
+
+/* sets the horizontal label */
+sethlab(win, str)
+{
+	local nowin = FALSE, status = FALSE;
+
+	if (argc < 2) {
+		str = win;
+		nowin = TRUE;
+	}
+	else if (not(IS_WINDOW(win))) {
+		nowin = TRUE;
+	}
+	if (not(IS_STRING(str))) {
+		str = caststring(str);
+	}
+
+	/* set xlabel to str if it differs from the current label */
+	if (nowin) {
+		if (strcmp(getxlabel(), gethunits()) == 0) {
+			clearxlabel();
+			status = TRUE;
+		}
+		if (strcmp(str, gethunits()) == 0) {
+			clearxlabel();
+			status = TRUE;
+		}
+		if (isunit(str)) {
+			clearxlabel();
+			status = TRUE;
+		}
+		else if (strcmp(str, getxlabel(), 1) != 0) {
+			setxlabel(str);
+			status = TRUE;
+		}
+	}
+	else {
+		if (strcmp(getxlabel(win), gethunits(win)) == 0) {
+			clearxlabel();
+			status = TRUE;
+		}
+		if (strcmp(str, gethunits(win)) == 0) {
+			clearxlabel(win);
+			status = TRUE;
+		}
+		if (isunit(str)) {
+			clearxlabel(win);
+			status = TRUE;
+		}
+		else if (strcmp(str, getxlabel(win), 1) != 0) {
+			setxlabel(win, str);
+			status = TRUE;
+		}
+	}
+	return(status);
+}
+
+/* sets the vertical label */
+setvlab(win, str)
+{
+	local nowin = FALSE, status = FALSE;
+
+	if (argc < 2) {
+		str = win;
+		nowin = TRUE;
+	}
+	else if (not(IS_WINDOW(win))) {
+		nowin = TRUE;
+	}
+	if (not(IS_STRING(str))) {
+		str = caststring(str);
+	}
+
+	/* set ylabel to str if it differs from the current label */
+	if (nowin) {
+		if (strcmp(getylabel(), getvunits()) == 0) {
+			clearylabel();
+			status = TRUE;
+		}
+		if (strcmp(str, getvunits()) == 0) {
+			clearylabel();
+			status = TRUE;
+		}
+		if (isunit(str)) {
+			clearylabel();
+			status = TRUE;
+		}
+		else if (strcmp(str, getylabel(), 1) != 0) {
+			setylabel(str);
+			status = TRUE;
+		}
+	}
+	else {
+		if (strcmp(getylabel(win), getvunits(win)) == 0) {
+			clearylabel();
+			status = TRUE;
+		}
+		if (strcmp(str, getvunits(win)) == 0) {
+			clearylabel(win);
+			status = TRUE;
+		}
+		if (isunit(str)) {
+			clearylabel(win);
+			status = TRUE;
+		}
+		else if (strcmp(str, getylabel(win), 1) != 0) {
+			setylabel(win, str);
+			status = TRUE;
+		}
+	}
+}
+
+/* sets the height label */
+setzlab(win, str)
+{
+	local nowin = FALSE, status = FALSE;
+
+	if (argc < 2) {
+		str = win;
+		nowin = TRUE;
+	}
+	else if (not(IS_WINDOW(win))) {
+		nowin = TRUE;
+	}
+	if (not(IS_STRING(str))) {
+		str = caststring(str);
+	}
+
+	/* set zlabel to str if it differs from the current label */
+	if (nowin) {
+		if (strcmp(str, getzunits(), 1) != 0) {
+			setzunits(str);
+			status = TRUE;
+		}
+	}
+	else {
+		if (strcmp(str, getzunits(win), 1) != 0) {
+			setzunits(win, str);
+			status = TRUE;
+		}
+	}
+	return(status);
+}
+

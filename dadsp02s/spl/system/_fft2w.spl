@@ -1,0 +1,104 @@
+/* FFT2 panel */
+_fft2w(ser, fwin, rlen, clen, form, winc, fftshft, dc, dwin)
+{
+	local evalstr, dataser, rlenstr, clenstr;
+
+	/* undefine old macros if they exist - runtime */
+	undefmacro("kaiser");undefmacro("hamming");undefmacro("hanning");
+
+	/* Cartesian or Polar form */
+	if (form) {
+		func = "Fftp2";
+	}
+	else {
+		func = "Fft2";
+	}
+
+	/* remove mean */
+	if (dc) {
+		dataser = sprintf("demean(%s)", ser);
+	}
+	else {
+		dataser = ser;
+	}
+
+	/* row mode */
+	if (strcmp(rlen, "-1") == 0) {
+		if (strcmp(clen, "-1") == 0) {
+			rlenstr = "";
+		}
+		else {
+			rlenstr = sprintf("numrows(%s)", ser);
+		}
+	}
+	else if (strcmp(rlen, "-2") == 0) {
+		rlenstr = sprintf("bestpow2(numrows(%s))", ser);
+	}
+	else {
+		rlenstr = sprintf("%s", rlen);
+	}
+
+	/* column mode */
+	if (strcmp(clen, "-1") == 0) {
+		clenstr = "";
+	}
+	else if (strcmp(clen, "-2") == 0) {
+		clenstr = sprintf("bestpow2(numcols(%s))", ser);
+	}
+	else {
+		clenstr = sprintf("%s", clen);
+	}
+
+
+	if (fwin == _nonestr || fwin == "None") {
+		if (strlen(clenstr) == 0) {
+			if (strlen(rlenstr) == 0) {
+				evalstr = sprintf("%s(%s)", func, dataser);
+			}
+			else {
+				evalstr = sprintf("%s(%s, %s)", func, dataser, rlenstr);
+			}
+		}
+		else {
+			evalstr = sprintf("%s(%s, %s, %s)", func, dataser, rlenstr, clenstr);
+		}
+	}
+	else {
+		if (winc == 0) {
+			if (strlen(clenstr) == 0) {
+				if (strlen(rlenstr) == 0) {
+					evalstr = sprintf("%s(%s(%s))", func, fwin, dataser);
+				}
+				else {
+					evalstr = sprintf("%s(%s(%s), %s)", func, fwin, dataser, rlenstr);
+				}
+			}
+			else {
+				evalstr = sprintf("%s(%s(%s), %s, %s)", func, fwin, dataser, rlenstr, clenstr);
+			}
+		}
+		else {
+			if (strlen(clenstr) == 0) {
+				if (strlen(rlenstr) == 0) {
+					evalstr = sprintf("%s(%s(%s, 1))", func, fwin, dataser);
+				}
+				else {
+					evalstr = sprintf("%s(%s(%s, 1), %s)", func, fwin, dataser, rlenstr);
+				}
+			}
+			else {
+				evalstr = sprintf("%s(%s(%s, 1), %s, %s)", func, fwin, dataser, rlenstr, clenstr);
+			}
+		}
+	}
+
+	if (fftshft == 0) {
+		evalstr = sprintf("setwf(%s, '%s')", _dwin, evalstr);
+	}
+	else {
+		evalstr = sprintf("setwf(%s, 'Fftshift(%s)')", _dwin, evalstr);
+	}
+
+	eval(evalstr);
+}
+

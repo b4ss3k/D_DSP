@@ -1,0 +1,107 @@
+/*****************************************************************************
+*                                                                            *
+*   GRTSQR.SPL   Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Generates a squarewave with a specified rise time           *
+*                                                                            *
+*   Revisions:   12 Feb 1998  RRR  Creation - from SPOLE.MAC                 *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_GRTSQR
+
+    GRTSQR 
+
+    Purpose: Generates a squarewave with a specified rise time.
+                                                                        
+    Format:  GRTSQR(len, dx, f, p, rt)
+
+              len - An integer, number of samples
+  
+               dx - A real, sample interval
+   
+                f - An optional  real, squarewave frequency in Hertz, 
+                    defaults to 1.0
+
+                p - An optional real, phase in radians, defaults to 0.0
+
+               rt - An optional real, rise time in seconds, defaults 
+                    to 0.1
+
+
+    Returns: A series
+
+    Example:
+             grtsqr(100, .01, 3, .04)
+
+             Generates 100 points of a 3 Hz squarewave with a rise
+             time of 0.04 seconds.
+
+    Remarks:
+
+             Low pass filters an ideal squarewave with a single pole
+             analog filter to produce a squarewave with a specified
+             rise time.  The rise time is defined as the time
+             required for a step to go from 10% to 90% of final
+             value.  The desired rise time specifies the low pass
+             cutoff frequency of the filter as follows:
+
+                    fc = 2.2 / (2 * pi * rt)
+
+             The squarewave is normalized with an amplitude of 0.0 to
+             1.0 Volts.
+
+             The single pole analog lowpass filter is implemented in
+             the digital domain using the impulse invariance
+             technique.
+
+
+    See Also
+             Iir
+             Slp
+
+
+    For further information, see:
+
+    [1] J. K. Roberge              
+        Operational Amplifiers: Theory and Practice
+        John Wiley & Sons Inc., 1975
+        pp. 92-97  
+
+#endif
+
+
+/* generate a squarewave with a specified rise time */
+grtsqr(len, dx, f, p, rt)
+{
+	local s;
+
+	if (argc < 5) {
+		if (argc < 4) {
+			if (argc < 3) {
+				if (argc < 2) {
+					help("Grtsqr");
+					return;
+				}
+				f = 1.0;
+			}
+			p = 0.0;
+		}
+		rt = 0.1;
+	}
+
+
+	/* create an ideal squarewave */
+	s = gsqrwave(len, dx, f, p)-0.5;
+
+	/* single pole low pass filter to achieve rise time */
+	s = slp(s, 1.1/(rt*pi));
+
+	/* normalize from 0.0 to 1.0 */
+	s = s - min(s);
+
+	return(s);
+}

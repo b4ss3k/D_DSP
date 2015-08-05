@@ -1,0 +1,250 @@
+/*****************************************************************************
+*                                                                            *
+*   POLYDER.SPL    Copyright (C) 2003 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the derivative of a polynomial                   *
+*                                                                            *
+*   Revisions:   25 Sep 2003  RRR  Creation from PD source (John Eaton)      *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_POLYDER
+
+    POLYDER
+
+    Purpose: Calculates the derivative of a polynomial.
+
+    Format:  POLYDER(p, form)
+             r = POLYDER(p, q, form)
+             (n, d) = POLYDER(p, q, form)
+
+                 p - A series, the coefficients of the polynomial.
+
+                 q - A series, the coefficients of a polynomial to
+                     multiply with P or divide into P depending on the
+                     number of the output arguments.
+
+              form - Optional. An integer, the form of the polynomial 
+                     coefficients, 0: ascending powers, 1: decreasing powers. 
+                     Defaults to 1 (highest degree to lowest).
+
+
+    Returns: A series.
+
+             r = POLYDER(p) returns the coefficients of the derivative
+             of p.
+
+             r = POLYDER(p, q) returns the coefficients of the derivative
+             of p * q.
+             
+             (n, d) = POLYDER(p, q) returns the numerator (n) and 
+             denominator (d) coefficients of (p / q).
+
+    Example:
+             polyder({1, 2, 3})
+
+             returns the series {2, 2} representing the polynomial
+             2x + 2 as the derivative of x^2 + 2x + 3.
+
+    Example:
+             polyder({1, 2, 3}, 0)
+
+             returns the series {2, 6} representing the polynomial
+             2 + 6x as the derivative of 1 + 2x + 3x^2.
+
+    Example:
+             polyder({1, 2, 3}, {1, 2})
+
+             returns the series {3, 8, 7} representing the polynomial
+             3x^2 + 8x + 7 as the derivative of the polynomial
+             (x^2 + 2x + 3) * (x + 2) = x^3 + 4x^2 + 7x + 6.
+
+    Example:
+             (n, d) = polyder({1, 2, 3}, {1, 2})
+
+             n == {1, 4, 1}
+             d == {1, 4, 4}
+
+             representing the polynomial (x^2 + 4x + 1) / (x^2 + 4x + 4)
+             as the derivative of (x^2 + 2x + 3) / (x + 2)
+
+    Remarks:
+             If the input is a matrix, POLYDER considers each column
+             to represent the polynomial coefficients with the result
+             having the same number of columns as the input.
+
+    See Also:
+             Poly
+             Polyfit
+             Polygraph
+             Polyval
+             Roots
+#endif
+
+
+/* evaluate the derivative of a polynomial */
+ITERATE polyder(p, q, form)
+{
+	local pcnt, pr, pc, qr, qc, d, num, den, pq1, qp1, p1, q1, z;
+
+	/* parse args */
+	if (argc < 3) {
+		form = 1;
+		if (argc == 2) {
+			if (IS_SCALAR(q)) {
+				/* polyder(p, form) */
+				form = q;
+				pcnt = 1;
+			}
+			else {
+				/* polyder(p, q) */
+				pcnt = 2;
+			}
+		}
+		else {
+			pcnt = 1;
+		}
+	}
+	else {
+		/* polyder(p, q, form) */
+		pcnt = 2;
+	}
+
+	if (pcnt == 1) {
+		/* simple polynomial case */
+		if (not(IS_ARRAY(p))) error("polyder - input series required");
+
+		(pr, pc) = size(p);
+		if (pc > 1) {
+			/* convert array to series */
+			p = unravel(p);
+			pr = length(p);
+		}
+		if (pr == 1) {
+			/* polynomial is a constant */
+			d = {0};
+		}
+		else {
+			if (form == 0) {
+				p = rev(p);
+			}
+
+			/* powers * coefficients */
+			d = p[1..(pr - 1)] * ((pr - 1)..-1..1);
+
+			if (form == 0) {
+				d = rev(d);
+			}
+		}
+		return(d);
+	}
+	else if (pcnt == 2) {
+		/* polynomial quotient or product */
+
+		if (not(IS_ARRAY(p)) || not(IS_ARRAY(q))) {
+			error("polyder - input coefficients must be series");
+		}
+
+		(pr, pc) = size(p);
+		(qr, qc) = size(q);
+
+		if (pc > 1) {
+			/* convert array to series */
+			p = unravel(p);
+			pr = length(p);
+		}
+
+		if (qc > 1) {
+			/* convert array to series */
+			q = unravel(q);
+			qr = length(q);
+		}
+
+		if (form == 0) {
+			p = rev(p);
+			q = rev(q);
+		}
+
+		p1 = {0};
+		if (pr > 1) {
+			/* powers * coefficients */
+			p1 = p[1..(pr - 1)] * ((pr - 1)..-1..1);
+		}
+
+		q1 = {0};
+		if (qr > 1) {
+			/* powers * coefficients */
+			q1 = q[1..(qr - 1)] * ((qr - 1)..-1..1);
+		}
+
+		pq1 = conv(p, q1);
+		qp1 = conv(q, p1);
+
+		if (length(pq1) > length(qp1)) {
+			qp1 = prepad(qp1, length(pq1));
+		}
+		else if (length(pq1) < length(qp1)) {
+			pq1 = prepad(pq1, length(qp1));
+		}
+
+		if (outargc < 2) {
+			/* return product */
+			d = pq1 + qp1;
+
+			/* remove leading zeros */
+			z = find(d != 0);
+			if (length(z) > 0) {
+				d = d[z[1]..length(d)];
+			}
+			else {
+				d = {0};
+			}
+
+			if (form == 0) {
+				d = rev(d);
+			}
+			return(d);
+		}
+		else {
+			/* quotient */
+			num = qp1 - pq1;
+			den = conv(q, q);
+
+			/* remove leading zeros */
+			z = find(num != 0);
+			if (length(z) > 0) {
+				num = num[z[1]..length(num)];
+			}
+			else {
+				num = {0};
+			}
+			z = find(den != 0);
+			if (length(z) > 0) {
+				den = den[z[1]..length(den)];
+			}
+			else {
+				den = {0};
+			}
+			
+			if (form == 0) {
+				num = rev(num);
+				den = rev(den);
+			}
+
+			return(num, den);
+		}
+	}
+}
+
+
+/* prepad with zeros */
+prepad(s, len)
+{
+	s = extract(s, 1 - len, length(s) + len);
+	return(s);
+}

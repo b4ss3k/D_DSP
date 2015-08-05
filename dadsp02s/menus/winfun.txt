@@ -1,0 +1,5 @@
+Hamming
+Hanning
+Kaiser
+Flattop
+Blackman

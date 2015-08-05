@@ -1,0 +1,110 @@
+/*****************************************************************************
+*                                                                            *
+*   HISTEQ.SPL   Copyright (C) 1998-2000 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Performs histogram equalization of an image                 *
+*                                                                            *
+*   Revisions:   16 Mar 1998  RRR  Creation                                  *
+*                 3 May 2000  RRR  rgb2mono conversion                       *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_HISTEQ
+
+    HISTEQ  
+
+    Purpose: Performs histogram equalization of an image
+                                                                        
+    Format:  HISTEQ(array, intflag)
+
+              array   - input image
+
+              intflag - an optional integer, cast result to
+                        integer values (default 0)
+
+    Returns: An array
+
+    Example:
+             W1: Density(Ravel(gsin(400, 1/400, 4), 20))
+             W2: Histeq(W1)
+
+             returns an equalized image
+
+    Remarks:
+             Histeq expects an image of integer values. If the input 
+             image is 24 bit (RGB values), the image is automatically
+             converted to 8 bit monochrome. 
+
+
+    See Also:
+             Ampdist
+             Histogram
+             Image24
+             Partsum
+             Rgb2mono
+
+#endif
+
+
+/* histogram equalization - for integer images */
+histeq(a, intflag)
+{
+	local n, m, ua, heq;
+
+	if (argc < 2) {
+		if (argc < 1) error("histeq - input array required");
+		intflag = FALSE;
+	}
+
+	(n, m) = size(a);
+
+	if (n < 2 || m < 2) error("histeq - input array required");
+
+	if (rgbimage(a)) {
+		printf("histeq - converting 24 bit image to 8 bit ...");
+		a = rgb2mono(a);
+	}
+
+	printf("histeq - equalizing ...");
+
+	ua = a[..];
+
+	/* get image max and min */
+	umin = min(ua); umax = max(ua);
+
+	/* produce normalized histogram lookup table */
+	htable = umax*partsum(ampdist(ua, 1))/length(ua);
+	
+	/* lookup new values - indices start at 1 */
+	heq = htable[ua-umin+1];
+
+	/* scale to original image */
+	heq = normeq(heq, umin, umax);
+
+	if (intflag) heq = int(heq);
+
+	/* shape */
+	heq = ravel(heq, n);
+
+	/* set deltax and deltay */
+	setdeltax(heq, deltax(a));
+	setdeltay(heq, deltay(a));
+
+	/* convert to density plot */
+	setplottype(heq, 3);
+	setplotstyle(heq, 0);
+
+	return(heq);
+}
+
+
+/* normalize a series from newmin to newmax */
+normeq(a, newmin, newmax)	
+{
+	return(((a - min(a))/(max(a)-min(a))) * (newmax - newmin) + newmin);
+}

@@ -1,0 +1,58 @@
+/*****************************************************************************
+*                                                                            *
+*   ROWSTDEV.SPL     Copyright (C) 2004 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Produces a column of the stdev of each row of an array      *
+*                                                                            *
+*   Revisions:   30 Mar 2004  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_ROWSTDEV
+
+    ROWSTDEV
+
+    Purpose: Produces a column of standard deviations of each row of a table.
+                                                                        
+    Format:  ROWSTDEV(table)
+
+              table - A series, table or expression evaluating to a series
+                      or table.
+
+    Returns: A single column series with the same number of rows as the
+             input table.
+
+    Example:
+             a = {{2,  4,  6}, 
+                  {8, 10, 12}}
+
+             b = rowstdev(a)
+
+             b == {2, 2} 
+
+    Remarks:
+             ROWSTDEV does not assume the number of columns for each row is
+             the same.
+
+    See Also:
+             Colstdev
+             Row
+             Rowlen
+             Rowmax
+             Rowmean
+             Rowmin
+             Rowreduce
+             Rowsum
+             Stdev
+             Transpose
+#endif
+
+/* calculate standard deviation of each row */
+rowstdev(a)
+{
+	return(sqrt(rowsum((a - rowmean(a))^2) / (rowlen(a) - 1)));
+}

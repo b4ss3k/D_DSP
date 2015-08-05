@@ -1,0 +1,23 @@
+! WinScale.men
+@f{_fg1}
+@b{_bg1}
+@x10
+@y0
+@h {hlp("winscale.hlp")}
+No Scales                    ~_mc;Scales(0)   
+X bottom Y left              ~_mc;Scales(1)
+X bottom Y left with labels  ~_mc;Scales(2)
+X bottom Y right with labels ~_mc;Scales(3)
+X bottom Y right             ~_mc;Scales(4)
+X top Y right                ~_mc;Scales(5)
+X top Y left                 ~_mc;Scales(6)
+X top Y left with labels     ~_mc;Scales(7)
+X top Y right with labels    ~_mc;Scales(8)
+Y left                       ~_mc;Scales(9)
+Y right                      ~_mc;Scales(10)
+X bottom                     ~_mc;Scales(11)
+X top                        ~_mc;Scales(12)
+Y left with labels           ~_mc;Scales(13)
+Y right with labels          ~_mc;Scales(14)
+X bottom with labels         ~_mc;Scales(15)
+X top with labels            ~_mc;Scales(16)

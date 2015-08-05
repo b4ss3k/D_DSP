@@ -1,0 +1,13 @@
+/* domain string to integer */
+_dom2int(n)
+{
+	switch (n) {
+		case _fdomainstr:
+		default:
+			return(0);
+		
+		case _tdomainstr:
+			return(1);
+
+	}
+}

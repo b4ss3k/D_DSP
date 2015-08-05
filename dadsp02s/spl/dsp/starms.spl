@@ -1,0 +1,84 @@
+/*****************************************************************************
+*                                                                            *
+*   STARMS.SPL  Copyright (C) 2000 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the short time averaged RMS series               *
+*                                                                            *
+*   Revisions:    3 Apr 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_STARMS
+
+    STARMS  
+
+    Purpose: Calculates the short time averaged RMS series
+                                                                        
+    Format:  STARMS(s, interval)
+
+                     s -  input series
+   
+              interval - an optional integer, duration of each RMS segment,
+                         defaults to 1.0 second
+
+    Returns: A series, the short time averaged RMS series
+
+
+    Example:
+             W1: gsin(1000, .01, 1)
+             W2: starms(w1)
+
+             W2 consists of a 10 point series where each point has a 
+             value of 0.707107, the RMS value of each 1 second segment
+             of W1.
+
+    Example:
+             W4: starms(w1, 0.1)
+
+             W4 consists of a 10 point series where the values now vary
+             since the RMS value of W1 varies over a 0.1 second interval.
+
+    Remarks:
+             The number of segments used to calculate the RMS value is
+             
+                     segsize = int(interval / deltax(s))
+
+              where s is the input series.
+
+              The segments are non-overlapping.
+
+
+    See Also:
+             Colmean
+             RMS
+#endif
+
+
+/* short time averaged RMS series */
+starms(s, interval)
+{
+	local segsize;
+
+	if (argc < 2) {
+		if (argc < 1) error("starms - input series required");
+		interval = 1;
+	}
+
+	/* number of points per segment */
+	segsize = int(interval / deltax(s));
+
+	/* divide into segments */
+	s = ravel(s, segsize);
+
+	/* calculate rms on each column and transpose to get single series */
+	s = transpose(sqrt(colmean(s*s)));
+
+	return(s);
+}
+
+	
+	
+	

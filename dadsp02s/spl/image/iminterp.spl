@@ -1,0 +1,104 @@
+/*****************************************************************************
+*                                                                            *
+*   IMINTERP.SPL Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Interpolates an image                                       *
+*                                                                            *
+*   Revisions:    8 Jun 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_IMINTERP
+
+    IMINTERP
+
+    Purpose: Interpolates an image
+                                                                        
+    Format:  IMINTERP(image, factor, method)
+
+              image  - an array, the input image
+              factor - an optional integer, the interpolation factor (default 2)
+              method - an optional integer, the interpolation method, 0:linear,
+                       1:cubic spline (default 0)
+
+    Returns: An array
+
+    Example:
+             W1: Readbmp("\windows\circles.bmp")
+             W2: Iminterp(w1, 4, 0)
+             W3: Iminterp(w1, 4, 1)
+
+             W2 produces a linearly interpolated image and W3 contains a
+             cubic spline interpolated image. The both images are interpolated
+             by a factor of 4.
+
+    Remarks:
+             If the image is an RGBIMAGE (i.e. a 24 bit image), IMINTERP
+             automatically interpolates each R, G, B component.
+
+
+    See Also:
+             Getrgb
+             Interp2
+             Readbmp
+             Spline2
+#endif
+
+
+iminterp(im, n, mode)
+{
+	local out, r, g, b;
+
+	if (argc < 3) {
+		mode = 0;
+		if (argc < 2) {
+			n = 2;
+			if (argc < 1) {
+				error("iminterp - array required");
+			}
+		}
+	}
+
+
+	if (mode == 0) {
+		if (rgbimage(im)) { /* 24 bit image */
+			(r, g, b) = getrgb(im);
+			/* interpolate each rgb component */
+			r = clip(interp2(r, n), 0.0, 1.0);
+			g = clip(interp2(g, n), 0.0, 1.0);
+			b = clip(interp2(b, n), 0.0, 1.0);
+
+			/* re-combine to 24 bit image */
+			out = rgbimage(r, g, b);
+			setdeltax(out, deltax(r));
+			setdeltay(out, deltay(r));
+		}
+		else {
+			out = interp2(im, n);
+		}
+	}
+	else { /* spline interpolation */
+		if (rgbimage(im)) { /* 24 bit image */
+			(r, g, b) = getrgb(im);
+			/* spline each rgb component */
+			r = clip(spline2(r, n), 0.0, 1.0);
+			g = clip(spline2(g, n), 0.0, 1.0);
+			b = clip(spline2(b, n), 0.0, 1.0);
+
+			/* re-combine to 24 bit image */
+			out = rgbimage(r, g, b);
+			setdeltax(out, deltax(r));
+			setdeltay(out, deltay(r));
+		}
+		else {
+			out = spline2(im, n);
+		}
+	}
+
+	return(out);
+}

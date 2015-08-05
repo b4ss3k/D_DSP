@@ -1,0 +1,71 @@
+/* FFT panel */
+_fftwin(ser, fwin, len, form, winc, fftshft, dc, dwin)
+{
+	local evalstr, dataser;
+
+	/* undefine old macros if they exist - runtime */
+	undefmacro("kaiser");undefmacro("hamming");undefmacro("hanning");
+
+	/* Cartesian or Polar form */
+	if (form) {
+		func = "Fftp";
+	}
+	else {
+		func = "Fft";
+	}
+
+	/* remove mean */
+	if (dc) {
+		dataser = sprintf("demean(%s)", ser);
+	}
+	else {
+		dataser = ser;
+	}
+
+	if (fwin == _nonestr || fwin == "None") {
+		if (strcmp(len, "-1") == 0) {
+			evalstr = sprintf("%s(%s)", func, dataser);
+		}
+		else if (strcmp(len, "-2") == 0) {
+			evalstr = sprintf("%s(%s, bestpow2(%s))", func, dataser, ser);
+		}
+		else {
+			evalstr = sprintf("%s(%s, %s)", func, dataser, len);
+		}
+	}
+	else {
+		if (strcmp(len, "-1") == 0) {
+			if (winc == 0) {
+				evalstr = sprintf("%s(%s(%s))", func, fwin, dataser);
+			}
+			else {
+				evalstr = sprintf("%s(%s(%s,%d))", func, fwin, dataser, winc);
+			}
+		}
+		else if (strcmp(len, "-2") == 0) {
+			if (winc == 0) {
+				evalstr = sprintf("%s(%s(%s), bestpow2(%s))", func, fwin, dataser, ser);
+			}
+			else {
+				evalstr = sprintf("%s(%s(%s, %d), bestpow2(%s))", func, fwin, dataser, winc, ser);
+			}
+		}
+		else {
+			if (winc == 0) {
+				evalstr = sprintf("%s(%s(%s), %s)", func, fwin, dataser, len);
+			}
+			else {
+				evalstr = sprintf("%s(%s(%s, %d), %s)", func, fwin, dataser, winc, len);
+			}
+		}
+	}
+	if (fftshft == 0) {
+		evalstr = sprintf("setwf(%s, '%s')", _dwin, evalstr);
+	}
+	else {
+		evalstr = sprintf("setwf(%s, 'Fftshift(%s)')", _dwin, evalstr);
+	}
+
+	eval(evalstr);
+}
+

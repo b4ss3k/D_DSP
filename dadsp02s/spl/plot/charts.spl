@@ -1,0 +1,9 @@
+charts(s)
+{
+	if (argc > 0) {
+		setplottype(s, 6);
+	}
+	else {
+		setplottype(6);
+	}
+}

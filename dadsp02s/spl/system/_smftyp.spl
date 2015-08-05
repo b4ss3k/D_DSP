@@ -1,0 +1,23 @@
+/* set metafile type from dialog value */
+_smftyp(val)
+{
+	local type;
+
+	if (argc < 1) type = 0;
+	else {
+		switch (val) {
+			case 1:
+				type = 14;
+				break;
+
+			case 2:
+				type = 2;
+				break;
+
+			default:
+				type = 0;
+				break;
+		}
+	}
+	return(type);
+}

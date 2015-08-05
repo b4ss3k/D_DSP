@@ -1,0 +1,96 @@
+/*****************************************************************************
+*                                                                            *
+*   RAND.SPL      Copyright (C) 2000-2006 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Generates a uniformly distributed random array             *
+*                                                                            *
+*   Revisions:     7 Feb 2000  RRR  Creation                                 *
+*                 10 Aug 2001  RRR  single column check                      *
+*                 14 Feb 2006  RRR  use builtin grandarray for speed         *
+*                                                                            *
+*****************************************************************************/
+
+
+
+#if @HELP_RAND
+
+    RAND
+
+    Purpose: Generates a uniformly distributed random array
+
+    Format:  Rand(numrows, numcols)
+
+               numrows - An integer, number of output rows
+
+               numcols - An optional integer, number of output columns,
+                         defaults to numrows
+
+             Rand with no input arguments returns a scalar
+    
+    Returns: A scalar, series or array
+
+    Example:
+
+             Rand(20, 5)
+
+             Generates a 20 row by 5 column array of uniformly 
+             distributed random numbers with values between 0.0 and 
+             1.0.
+
+    Example:
+             Rand(20)
+
+             Generates a 20 x 20 random array
+
+
+    Example:
+
+             Rand
+
+             Returns a random real value between 0.0 and 1.0.
+
+
+Remarks:
+
+             Rand uses Grand to generate the random values. The SEEDRAND 
+             function determines the initial seed of the random number 
+             generator.
+
+
+See Also:
+             Gnormal
+             Grand
+             Randn
+             Seedrand
+
+#endif
+
+
+rand(n, m)
+{
+	local r;
+
+	if (argc < 2) {
+		if (argc < 1) {
+			return(castreal(grand(1, 1)));
+		}
+		m = n;
+	}
+	m = castint(m);
+	n = castint(n);
+
+	if (m <= 0 || n <= 0) return({}); /* empty series */
+
+	if (m == 1) {
+		/* no need for array */
+		r = grand(n, 1);
+	}
+	else {
+		r = grandarray(n, m);
+	}
+
+	return(r);
+}

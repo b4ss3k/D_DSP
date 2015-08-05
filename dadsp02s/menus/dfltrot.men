@@ -1,0 +1,13 @@
+! linstyl.pan - panel for line style & thickness control in a window
+@panel
+@h
+SETLINEWIDTH Line Width & Style
+
+Data Series: <= #           >  ~_DEFTRACE(<{_gettrace}>) ~_serlist 
+<>
+  Line Style <r             >  ~defmacro("_line",'"<{_getlinestyle(getlinestyle(_trace))}>"',1) ~<SOLID><DASHED><DOTTED>
+ Line Width: <d{1}          >  ~defmacro("_lwd",<{getlinewidth(_trace)}>,1)~input(2,"Line Thickness", 1)
+<>
+
+~_MC
+~eval(sprintf("setline(%s, %d);setlinewidth(%d, %d)", _line, _trace, _lwd, _trace))

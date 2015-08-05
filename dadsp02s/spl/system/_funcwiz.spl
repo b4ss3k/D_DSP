@@ -1,0 +1,5 @@
+/* start function wizard */
+_funcwiz()
+{
+	_mf("wiz.pan");
+}

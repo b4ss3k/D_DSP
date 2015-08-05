@@ -1,0 +1,105 @@
+/*****************************************************************************
+*                                                                            *
+*   FINDMIN.SPL   Copyright (C) 1999-2000 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Finds the min value of a series                            *
+*                                                                            *
+*   Revisions:    15 Jun 1999  RRR  Creation                                 *
+*                  7 Mar 2000  RRR  Uses MINLOC, handles XYZ                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_FINDMIN
+
+    FINDMIN
+
+    Purpose: Returns X and Y value of the minimum of a series
+                                                                        
+    Format:  FINDMIN(s)
+
+             s - a series
+
+
+    Returns: An XY series or separate scalars:
+
+             b = findmin(s)
+
+             returns an XY series
+
+
+             (x, y) = findmin(s)
+
+             returns the X and Y values as separate scalars
+
+
+    Example:
+             a = {1, 12, 0, 5};
+             b = findmin(a);
+             (x, y) = findmin(a, 0);
+
+             b == xy({1}, {12})
+             x == 1.0
+             y == 12.0
+
+
+    Example:
+             W1: gnorm(100,.1):overp(findmin(curr),lred);setsym(CIRCLE,2)
+
+             marks the min of W1 with a red circle
+
+    Remarks:
+             FINDMIN returns an XY series with the same units as the
+             input series. If the series is XYZ or a LIST (i.e. Z
+             surface, density or contour), FINDMIN returns an XYZ 
+             series. 
+
+             (x, y) = findmin(s) returns the first occurence of the
+             maximum in s.
+
+    See Also:
+             Find
+             Findmax
+             Findval
+             Markmax
+             Markmin
+             Maxloc
+             Minloc
+
+#endif
+
+
+/* finds the min of a series */
+findmin(s)
+{
+	local x, y, z, minser;
+
+	if (argc < 1) {
+		error("findmin - input series required");
+	}
+
+	/* get min values */
+	(x, y, z) = minloc(s);
+
+	if (outargc < 2) {
+		if (ISLIST(s) || ISXYZSERIES(s)) {
+			minser = xyz({x}, {y}, {z});
+			setzunits(minser, getzunits(s));
+		}
+		else {
+			minser = xy({x}, {y});
+		}
+		setvunits(minser, getvunits(s));
+		sethunits(minser, gethunits(s));
+
+		return(minser);
+
+	}
+	else {
+		return(x, y, z);
+	}
+}

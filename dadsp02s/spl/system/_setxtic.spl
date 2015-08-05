@@ -1,0 +1,6 @@
+/* sets x tic from string value */
+_setxtic(ticstr, auto)
+{
+	if (auto) setxtic(-1);
+	else setxtic(castreal(ticstr));
+}

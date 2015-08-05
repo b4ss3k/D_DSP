@@ -1,0 +1,41 @@
+_dtt2fmt(t)
+{
+	local fmt;
+
+	switch (t) {
+		case 1:
+			fmt = 8;
+			break;
+
+		case 2:
+			fmt = 9;
+			break;
+
+		case 3:
+			fmt = 10;
+			break;
+
+		case 4:
+			fmt = 13;
+			break;
+
+		case 5:
+			fmt = 23;
+			break;
+
+		case 6:
+			fmt = 24;
+			break;
+
+		case 7:
+			fmt = 25;
+			break;
+
+		default:
+			fmt = 0;
+			break;
+	}
+	return(fmt);
+}
+
+

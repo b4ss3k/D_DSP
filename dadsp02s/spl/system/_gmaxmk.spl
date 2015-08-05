@@ -1,0 +1,12 @@
+
+/* get max marker */
+_gmaxmk()
+{
+	local i;
+
+	for (i = 1; i <= numitems; i++) {
+		if (getcomment(i) == "Maximum Marker") return(i);
+	}
+	return(-1);
+}
+

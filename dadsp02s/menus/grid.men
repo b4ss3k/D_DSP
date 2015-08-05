@@ -1,0 +1,15 @@
+! grid.men
+@x0
+@y0
+@f{_fg1}
+@b{_bg1}
+GRIDS
+Horizontal Only            ~_mc;defmacro("_CURGRIDORIENT","GRIDH",1);_DOGRID
+Vertical Only              ~_mc;defmacro("_CURGRIDORIENT","GRIDV",1);_DOGRID
+Both Horizontal & Vertical ~_mc;defmacro("_CURGRIDORIENT","GRIDHV",1);_DOGRID
+
+Solid                      ~_mc;defmacro("_CURGRIDSTYLE","GRIDSOL",1);_DOGRID
+Dashed                     ~_mc;defmacro("_CURGRIDSTYLE","GRIDDASH",1);_DOGRID
+Dotted                     ~_mc;defmacro("_CURGRIDSTYLE","GRIDDOT",1);_DOGRID
+
+Off                        ~_mc;gridoff

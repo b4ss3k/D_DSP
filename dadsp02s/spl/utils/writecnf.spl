@@ -1,0 +1,95 @@
+/*****************************************************************************
+*                                                                            *
+*   WRITECNF.SPL Copyright (C) 1997-2000 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Writes configuration table to an ASCII file                 *
+*                                                                            *
+*   Revisions:    2 Dec 1997  RRR  Creation                                  *
+*                20 Jun 2000  RRR  addversion                                *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_WRITECNF
+
+    WRITECNF
+
+    Purpose: Writes the configuration table to an ASCII file
+                                                                        
+    Format:  WRITECNF(fname)
+
+              fname - an optional string specifying the filename, defaults
+                      to "config.txt"
+
+    Returns: 1 if successful
+
+    Example:
+             Writecnf();
+             Viewfile("config.txt")
+
+             Writes the current configuration table to "config.txt" and
+             displays the table in a pop-up box.
+
+
+    See Also
+             Fclose
+             Fopen
+             Fputs
+
+#endif
+
+
+
+writecnf(fname, addversion, addsnum, addcomputer, dwkcnf)
+{
+	local cnf, str;
+
+	if (argc < 5) {
+		if (argc < 4) {
+			if (argc < 3) {
+				if (argc < 2) {
+					if (argc < 1) {
+						fname = "config.txt";
+					}
+					addversion = TRUE;
+				}
+				addsnum = TRUE;
+			}
+			addcomputer = TRUE;
+		}
+		dwkcnf = 0;
+	}
+	if (fopen(fname, "w") != TRUE) {
+		error(sprintf("writecnf - cannot open %s", fname));
+	}
+
+	if (addversion) {
+		str = strescape(sprintf("! %s\n", version));
+		fputs(str, fname);
+	}
+	if (addsnum) {
+		str = strescape(sprintf("! Serial Number: %s\n", version(7)));
+		fputs(str, fname);
+	}
+	if (addcomputer) {
+		str = strescape(sprintf("! Platform: %s\n", getcomputer(1)));
+		fputs(str, fname);
+	}
+	cnf = reserved(1001, dwkcnf); /* gets configuration table as string */
+	fputs(cnf, fname);
+	fclose(fname);
+
+	return(TRUE);
+}
+
+
+/* executes if we have an error */
+writecnf_error(errnum)
+{
+	/* close open files */
+	fcloseall();
+}

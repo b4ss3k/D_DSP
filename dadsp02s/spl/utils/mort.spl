@@ -1,0 +1,10 @@
+mort()
+{
+
+	_mf("mort.tab");
+
+	/* return integer value */
+	if (getvar("_mort") > 0) {
+		return(mpay(getvar("_rateval"), getvar("_yterm"), getvar("_amount")));
+	}
+}

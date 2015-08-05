@@ -1,0 +1,8 @@
+/* convert integer to hex string */
+int2hex(ival)
+{
+	local hval;
+
+	hval = sprintf("0x%04X", ival);
+	return(hval);
+}

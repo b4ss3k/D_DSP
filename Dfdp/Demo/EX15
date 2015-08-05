@@ -1,0 +1,167 @@
+*          EXERCISE 15
+
+        IDT     'EX15'
+*
+*    THIS PROGRAM IMPLEMENTS A GENERAL SECOND-ORDER SYSTEM
+*    WITH WHICH MINIMUM NOISE BLOCKS CAN BE CONSTRUCTED.
+*
+*    THIS PROGRAM COURTESY OF BILL WALL AND GAUTAM BISWAS.
+*
+*
+*
+*
+*       DATA MEMORY LOCATION ASSIGNMENTS
+*
+        IDT     'MINNOISE'
+
+*
+RATE    EQU     0               CLOCK RATE
+MODE    EQU     1               AIB MODE
+INMSK   EQU     2               INPUT CONVERSION MASK
+*
+ONE     EQU     3
+INPUT   EQU     4
+Y       EQU     5
+ZERO    EQU     6
+*
+C1      EQU     7               FILTER COEFFICIENTS
+C2      EQU     8
+D       EQU     9
+A11     EQU     10
+A12     EQU     11
+B1      EQU     12
+A21     EQU     13
+A22     EQU     14
+B2      EQU     15
+*
+X1      EQU     16
+X2      EQU     17
+*
+TEMP    EQU     20
+*
+*
+*   THE CODE
+*
+        AORG    0               START PROGRAM AT ADDRESS 0
+        B       START
+*
+*
+*   DATA MEMORY INITIALIZATION VALUES
+*
+DRATE   DATA    >0200           SAMPLING RATE
+DMODE   DATA    >000A           MODE
+DINMSK  DATA    >7FFF           MASK VALUE
+*
+DC1     DATA    >0000           FILTER COEFFICIENTS
+DC2     DATA    >0000
+DD      DATA    >0000
+DA11    DATA    >0000
+DA12    DATA    >0000
+DB1     DATA    >0000
+DA21    DATA    >0000
+DA22    DATA    >0000
+DB2     DATA    >0000
+*
+*
+*   INITIALIZE PERIPHERALS
+*
+START   LDPK    0               SET DATA PAGE POINTER TO 0
+        DINT
+        SOVM
+        LACK    DRATE           MOVE
+
+        TBLR    RATE                CLOCK RATE,
+        LACK    DMODE                   A/D MODE,
+        TBLR    MODE                        AND
+        LACK    DINMSK                          MASK
+        TBLR    INMSK                               INTO DATA MEMORY
+*
+        OUT     MODE,PA0        SET A/D CONVERTER MODE
+        OUT     RATE,PA1        AND SAMPLING RATE
+*
+*
+*   INITIALIZE STATE VARIABLES AND CONSTANTS
+*
+        LACK    1
+        SACL    ONE
+        ZAC
+        SACL    ZERO
+        SACL    X1
+        SACL    X2
+*
+*   LOAD COEFFICIENTS    
+*
+        LACK    DC1             LOAD POINTER TO COEFFICIENTS
+        LARK    AR0,8           LOAD LOOP COUNTER
+        LARK    AR1,C1          LOAD POINTER TO COEFF. DATA MEMORY
+*
+RDCOF1  LARP    AR1             READ IN COEFFICIENTS
+        TBLR    *+,AR0
+        ADD     ONE
+        BANZ    RDCOF1
+*
+*   *****************
+*   *  OUTPUT LOOP  *
+*   *****************
+*
+LOOP    BIOZ    GET             CONVERSION COMPLETE?
+        B       LOOP            WAIT UNTIL CONVERSION COMPLETE
+*
+*
+GET     IN      INPUT,PA2       GET DATA
+        ZALS    INPUT           LOAD INPUT VALUE
+        XOR     INMSK           CONVERT TO 2'S COMPL.
+        SACL    INPUT
+*
+*   COMPUTE OUTPUT
+*
+        ZAC                     Y = C1*X1 + C2*X2 + D*INPUT
+        LT      C1
+        MPY     X1
+        LTA     C2
+        MPY     X2
+        LTA     D
+        MPY     INPUT
+        APAC
+        ADD     ONE,14          ROUND OFF TO 16 BITS
+        SACH    Y,1             STORE RESULT
+
+*
+*   OUTPUT Y
+*
+        ZALS    Y               LOAD OUTPUT VALUE
+        ADD     ONE,15          CONVERT TO BINARY FORMAT
+        SACL    Y
+        OUT     Y,PA2           SEND OUTPUT DATA
+*
+*       COMPUTE NEW X1
+*
+        ZAC                     X1 = A11*X1 + A12*X2 + B1*INPUT
+        LT      A11
+        MPY     X1
+        LTA     A12
+        MPY     X2
+        LT      B1
+        MPY     INPUT
+        LTA     A21             PRELOAD A21 FOR X2 CALC. & ACCUM. RES.
+
+        ADD     ONE,14          ROUND OFF NEW X1 TO 16 BITS
+        SACH    TEMP,1
+*
+*       COMPUTE X2
+*
+        ZAC                     X2 = A21*X1 + A22*X2 + B2*INPUT
+        MPY     X1
+        LTA     A22
+        MPY     X2
+        LTA     B2
+        MPY     INPUT
+        APAC
+        ADD     ONE,14          ROUND OFF NEW X2
+        SACH    X2,1            STORE NEW X2
+*
+        LAC     TEMP            STORE NEW X1
+        SACL    X1
+*
+        B       LOOP
+

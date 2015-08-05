@@ -1,0 +1,26 @@
+! Colors.men -- Select colors
+!@x13
+!@y1
+@x43
+@y4
+@b{_bg2}
+@f{_fg2}
+  Color Selection
+
+{STRCOLOR(0)}      ~"{STRCOLOR(0)}"
+{STRCOLOR(1)}      ~"{STRCOLOR(1)}"
+{STRCOLOR(2)}      ~"{STRCOLOR(2)}"
+{STRCOLOR(3)}      ~"{STRCOLOR(3)}"
+{STRCOLOR(4)}      ~"{STRCOLOR(4)}"
+{STRCOLOR(5)}      ~"{STRCOLOR(5)}"
+{STRCOLOR(6)}      ~"{STRCOLOR(6)}"
+{STRCOLOR(7)}      ~"{STRCOLOR(7)}"
+{STRCOLOR(8)}      ~"{STRCOLOR(8)}"
+{STRCOLOR(9)}      ~"{STRCOLOR(9)}"
+{STRCOLOR(10)}     ~"{STRCOLOR(10)}"
+{STRCOLOR(11)}     ~"{STRCOLOR(11)}"
+{STRCOLOR(12)}     ~"{STRCOLOR(12)}"
+{STRCOLOR(13)}     ~"{STRCOLOR(13)}"
+{STRCOLOR(14)}     ~"{STRCOLOR(14)}"
+{STRCOLOR(15)}     ~"{STRCOLOR(15)}"
+ 

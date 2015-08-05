@@ -1,0 +1,61 @@
+/*****************************************************************************
+*                                                                            *
+*   SIGN.SPL      Copyright (C) 2003 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns positive, zero or negative based on sign of data    *
+*                                                                            *
+*   Revisions:   29 Mar 2003  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_SIGN
+
+    SIGN     
+
+    Purpose: Returns +1, 0 or -1 based on the sign of the input
+                                                                        
+    Format:  SIGN(x)
+
+              x - a real or series
+
+    Returns: A real or series
+
+    Example:
+             sign({10, 0, -10})
+
+             returns {1, 0, -1}
+
+
+    Remarks:
+             If the input x is complex, SIGN returns x / mag(x).
+             For example:
+
+             sign(3 + 4i)
+
+             return 0.6 + 0.8i
+
+    See Also:
+             Abs
+             Mag
+#endif
+
+
+
+/* return +1, 0, or -1 based on sign of input */
+sign(x)
+{
+	local s;
+
+	if (iscomplx(x)) {
+		s = x / mag(x);
+	}
+	else {
+		s = (x > 0) - (x < 0);
+	}
+
+	return(s);
+}

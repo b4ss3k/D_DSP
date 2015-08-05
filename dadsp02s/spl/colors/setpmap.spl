@@ -1,0 +1,82 @@
+/*****************************************************************************
+*                                                                            *
+*   SETPMAP.SPL  Copyright (C) 2002 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets colormap using palette colors                          *
+*                                                                            *
+*   Revisions:    8 May 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_SETPMAP
+
+    SETPMAP
+
+    Purpose: Converts palette colors to colormap values.           
+                                                                        
+    Format:  SETPMAP(c1, c2, c3, ..., cN)                           
+
+                 cN - list of integers, the palette colors
+
+    Returns: A Nx3 colormap or if no return value is requested, shades the   
+             current Window with the specified colors.
+                                                                        
+    Example:                                                            
+             W1: density(spline2(rand(10), 5))
+             W1: setpmap(blue, lblue, red, lred, yellow)
+             W1: colorbar
+
+             Creates a 46x46 density plot and shades the image with colors
+             of blue, light blue, red, light red and yellow. The image is 
+             divided into 5 equal slices and shaded with the specified colors.
+             The COLORBAR function adds a color legend to the plot.
+
+
+     Remarks:                                                            
+             SETPMAP accepts the same color values as SETPALETTE, however
+             SETPMAP creates an RGB colormap that can be used to shade images,
+             surface and 2D plots.
+
+             Palette colors are specified in the file PALETTE.MAC.
+
+
+     See Also:
+             Setcolormap
+             Setpalette
+             Setshading
+
+#endif
+
+
+/* palette colors to colormap */
+setpmap(argv)
+{
+	local i, map[], cmap;
+
+	for (i = 1; i <= argc; i++) {
+		/* concat color values to create a series */
+		map = {map, getargv(i)};
+	}
+	/* convert to Nx3 color map */
+	cmap = rgbcolor(map);
+
+	/* either return or set the new colormap */
+	if (outargc > 0) {
+		return(cmap);
+	}
+	else {
+		/* set new colormap */
+		setcolormap(cmap);
+
+		if (length > 0) {
+			/* shade current window */
+			setshading();
+
+			/* show it */
+			pon;
+		}
+	}
+}

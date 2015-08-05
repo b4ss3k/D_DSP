@@ -1,0 +1,15 @@
+
+/* produce list of windowing strings */
+_lwinfun(addnone)
+{
+	local s;
+
+	if (argc < 1) addnone = 1;
+
+	s = strfile(_mh("winfun.txt"));
+
+	if (addnone) {
+		s = strcat(_nonestr, strescape("\n"), s);
+	}
+	return(s);
+}

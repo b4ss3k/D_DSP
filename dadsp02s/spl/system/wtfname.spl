@@ -1,0 +1,88 @@
+/* gui based writet */
+wtfname(fname)
+{
+	local orgname, fn, dl, collist, hformat;
+
+	/* set default name to appear in dialog box */
+	if (argc > 0) {
+		/* use input filename */
+		setvar("_wtfname", fname);
+		setvar("_wtpickdir", strrev(strfind(pathchar, strrev(_wtfname))));
+	}
+	else {
+		/* just define the variable */
+		defvar("_wtfname", "");
+	}
+
+	/* define start directory if it doesn't already exist */
+	defvar("_wtpickdir", "");
+
+	/* define savemode */
+	defvar("_wtsmode", 0);
+
+	/* precision */
+	defvar("_wtprec", castint(getconf("DISPLAY_PRECISION")));
+	defvar("_wtdprec", 1);
+
+	/* hex */
+	defvar("_wthex", 0);
+
+	/* header */
+	defvar("_wtcheader", 0);
+	defvar("_wtuheader", 0);
+
+	/* _pickfile_status == 1 if dialog was successful */
+	setvar("_pickfile_status", 0);
+
+	/* series name state */
+	setvar("_wtser", 1);
+
+	/* remember original name */
+	orgname = _wtfname;
+
+	/* delimiters */
+	defvar("_wttab",     "0");
+	defvar("_wtspace",   "1");
+	defvar("_wtcomma",   "0");
+	defvar("_wtsemi",    "0");
+	defvar("_wtother",   "0");
+	defvar("_wtotherstr", "");
+
+	/* invoke dialog box */
+	_mf("writet.tab");
+
+	if (_pickfile_status != 0) { /* dialog was successful */
+		/* set delimiters */
+		_setwtdl(_wttab, _wtspace, _wtcomma, _wtsemi, _wtother, _wtotherstr);
+
+		/* remember default directory */
+		setvar("_wtpickdir", strrev(strfind(pathchar, strrev(_wtfname))));
+		fn = sprintf('"%s"', _wtfname);
+		dl = sprintf('"%s"', _writet_delimiters);
+		header = bitor(_wtcheader, _wtuheader);
+		if (strlen(_wtfname) > 0) {
+			if (setwfmode == 1) {
+				if (_wthex) {
+					hformat = sprintf('"%s%d.%dx"', "%", _wtprec, _wtprec);
+					eval(sprintf("setwf('writet(%s, %s, %d, %s, %s, %d, %d)')", fn, eval('_ser1'), _wtsmode, dl, hformat, -1, header));
+				}
+				else {
+					eval(sprintf("setwf('writet(%s, %s, %d, %s, %d, %d)')", fn, eval('_ser1'), _wtsmode, dl, _wtprec, header));
+				}
+			}
+			else {
+				if (_wthex) {
+					hformat = sprintf('"%s%d.%dx"', "%", _wtprec, _wtprec);
+					eval(sprintf('writet(%s, %s, %d, %s, %s, %d, %d)', fn, eval('_ser1'), _wtsmode, dl, hformat, -1, header));
+				}
+				else {
+					eval(sprintf('writet(%s, %s, %d, %s, %d, %d)', fn, eval('_ser1'), _wtsmode, dl, _wtprec, header));
+				}
+			}
+		}
+	}
+	else {
+		/* reset to original name */
+		setvar("_wtfname", orgname);
+	}
+}

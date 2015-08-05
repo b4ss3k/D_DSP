@@ -1,0 +1,14 @@
+/* sets canvas show mode for panels */
+_scshow(modestr)
+{
+	/* normal show and use last size */
+	if (modestr == "4") {
+		setconf("CANVAS_SHOW", "1");
+		setconf("CANVAS_AUTOSIZE", "0");
+	}
+	else {
+		setconf("CANVAS_SHOW", modestr);
+		setconf("CANVAS_AUTOSIZE", "1");
+	}
+}
+

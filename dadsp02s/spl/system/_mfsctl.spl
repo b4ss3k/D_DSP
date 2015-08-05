@@ -1,0 +1,17 @@
+/* shows correct serctl menu based on data in current window */
+_mfsctl()
+{
+	if (_is2d(1)) { // 2D or XYZ
+		setvar("_fxycol", getwcolor(1));
+		setvar("_fxyptype", _pty2str(_getptyp));
+		setvar("_hatch", gethatch);
+
+		// color range parameters 
+		_gcrange();
+
+		_MF("ser3dctl.pan");
+	}
+	else {
+		_MF("serctrl.pan");
+	}
+}

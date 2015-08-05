@@ -1,0 +1,59 @@
+/*****************************************************************************
+*                                                                            *
+*   NUMEL.SPL  Copyright (C) 2002 DSP Development Corporation                *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Total number of elements                                    *
+*                                                                            *
+*   Revisions:   13 Aug 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_NUMEL
+
+    NUMEL  
+
+    Purpose: Returns the total number of array elements
+                                                                        
+    Format:  NUMEL(a)
+
+                  a -  Optional, an array. Defaults to the current
+                       Window.
+
+
+    Returns: An integer, the total number of array elements.
+
+    Example:
+             a = rand(20, 3)
+
+             numel(a) == 60
+
+
+             b = {{1..10, 2, 1..2}}
+
+             numel(b) == 13
+
+    Remarks:
+             For a series, NUMEL(a) is equivalent to LENGTH(a).
+
+    See Also:
+             Collength
+             Length
+             Size
+#endif
+
+
+/* total number of elements */
+numel(a)
+{
+	/* use current series if no input */
+	if (argc < 1) a = refseries();
+
+	if (not(IS_ARRAY(a))) a = castseries(a);
+
+	return(castint(sum(collength(a))));
+}

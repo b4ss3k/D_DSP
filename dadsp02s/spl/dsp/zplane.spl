@@ -1,0 +1,421 @@
+/*****************************************************************************
+*                                                                            *
+*   ZPLANE.SPL   Copyright (C) 2003-2004 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Pole-Zero plot of a Z transform                             *
+*                                                                            *
+*   Revisions:   15 Oct 2003  RRR  Creation                                  *
+*                17 Jul 2004  RRR  support for cascaded bi-quad coeffs       *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_ZPLANE
+
+    ZPLANE
+
+    Purpose: Displays a Pole-Zero plot of a Z transform.
+
+    Format:  ZPLANE(b, a)
+
+                 b - A series, the numerator coefficients in ascending
+                     powers of z^(-1).
+
+                 a - A series, the denominator coefficients in ascending
+                     powers of z^(-1).
+
+
+             Alternate Format:  ZPLANE(z, p, gain)
+
+                 z - A series, the zeros of the Z transform.
+
+                 p - A series, the poles of the Z transform.
+
+              gain - A scalar, the gain of the system.
+
+
+             Alternate Format:  ZPLANE(c)
+
+                 c - A series, the system coefficients in cascaded 
+                     biquad form.  If c contains 2 columns, c is
+                     assumed to be in direct form, where the first
+                     column is b and the second column is a.
+
+    Returns: An XY series, the poles are plotted as light red "x"s and the 
+             zeros are plotted as "o"s. The unit circle is displayed as 
+             a dashed circle.
+
+    Example:
+                             z          1
+             Given H(z) = ------- = ----------
+                          z - 0.5   1 - 0.5z^-1
+
+             W1: zplane({1}, {1, -0.5})
+
+             Displays the unit circle with a single pole at z = 0.5.
+             The input is given as a system function in ascending terms 
+             of z^(-1).
+
+    Example:
+             W1: zplane({0}, {0.5}, 1)
+
+             Displays the same plot as above. The input is given in terms
+             of zeros and poles.
+
+    Example:
+
+                              z^2 - 2z
+             Given H(z) = ----------------
+                          z^2 - 0.7z + 0.1
+
+             z = roots({1, -2, 0})
+             p = roots({1, -0.7, 0.1})
+             zplane(z, p, 1)
+
+             Displays two real poles and two zeros in the current Window.
+
+
+    Remarks:
+             For ZPLANE(b, a), the input series represent the 
+             terms of the rational polynomial H(z) = b(z)/a(z) where:
+
+             N = length(b) and M = length(a):
+        
+                     b(z)    b[1] + b[2] z^(-1) + ... + b[N] z^(-N+1) 
+             H(z) = ------ = ----------------------------------------
+                     a(z)    a[1] + a[2] z^(-1) + ... + a[N] z^(-M+1)
+
+             For ZPLANE(z, p, gain), the gain term must be present, but it
+             does not effect the resulting plot.
+             
+             The aspect ratio of the window is set to square to preserve
+             a circular unit circle.
+
+             The poles are plotted as light red x's and the zeros as black
+             circles. The unit circle is displayed as a dashed line
+             in the current series color. Dashed lines are also drawn 
+             through the origin.
+
+             Multiple zeros and poles are labeled with a multiplicity
+             number to the upper right of the symbol.
+
+             For ZPLANE(c), if the input c is a single column, the
+             coefficients are assumed to be in cascaded bi-quad form. 
+             This is the output format of IIR filters designed by
+             DADiSP/Filters.  If c contains 2 columns, the coefficients
+             are assumed to be in direct form, where the first column
+             is b and the second column is a.
+
+    See Also:
+             Filteq
+             Gimpulse
+             Impz
+             Residuez
+             Zfreq
+
+#endif
+
+
+/* Z domain pole-zero plot */
+zplane(b, a, gain)
+{
+	local z, p, t, x, y, tol, ymin, ymax, xmin, xmax;
+	local pxy, zxy, i, v1, v2, fac, len, m, item, lstyle;
+	extern _zplane_pmode;
+
+	if (argc < 1) {
+		error("zplane - input coefficient series requied");
+	}
+
+	/* plotting off */
+	_zplane_pmode = plotmode();
+	plotmode(0);
+
+	/* set to square aspect so unit circle remains circular */
+	if (setaspect() != 1.0) {
+		setaspect(1.0);
+		setplotstyle(0);
+	}
+
+	if (argc == 3) {
+		/* zeros, poles, gain */
+		z = {b};
+		p = {a};
+	}
+	else {
+		if (argc < 2) {
+			if (numcols(b) == 2) {
+				/* raveled B(z), A(z) */
+				a = col(b, 2);
+				b = col(b, 1);
+			}
+			else {
+				/* assume cascaded bi-quad coefficients ala Filters Module */
+				a = polecoef({b});
+				b = zerocoef({b});
+			}
+		}
+		else {
+			/* cast to series so we can enter a scalar */
+			a = {a};
+			b = {b};
+		}
+
+		len = max(length(a), length(b));
+
+		/* get zeros, if any */
+		if (length(b) > 0) {
+			if (length(b) == 1 && length(a) > 1) {
+				/* IIR case */
+				z = zeros(length(a) - 1, 1);
+			}
+			else {
+				z = roots(extract(b, 1, len));
+			}
+		}
+		else {
+			z = {};
+		}
+
+		/* get poles, if any */
+		if (length(a) > 0) {
+			if (length(a) == 1 && length(b) > 1) {
+				/* FIR case */
+				p = zeros(length(b) - 1, 1);
+			}
+			else {
+				p = roots(extract(a, 1, len));
+			}
+		}
+		else {
+			p = {};
+		}
+	}
+
+	/* convert zeros and poles to XY series */
+	if (length(z) > 0) {
+		zxy = xy(real(z), imag(z));
+		setcomment(zxy, "Zeros");
+	}
+
+	if (length(p) > 0) {
+		pxy = xy(real(p), imag(p));
+		setcomment(pxy, "Poles");
+	}
+
+	/* draw unit circle as primary series */
+	t = 0..(2*pi/100)..(2*pi);
+	x = cos(t);
+	y = sin(t);
+	xy(x, y);
+	setcomment("Unit Circle");
+
+	/*
+	** line style for unit circle and axes:
+	** unfortunately, it seems dotted style (3) doesn't work very 
+	** well under Windows XP 
+	*/
+	lstyle = 1; 
+	setline(lstyle);
+
+	/* labels */
+	setxlabel("Real Part");
+	setylabel("Imaginary Part");
+	label("Pole-Zero Plot");
+
+	/* zeros and poles will be overplots - start at item 2 */
+	item = 2;
+
+	/* expansion factor for axes */
+	tol = 0.15;
+	ymax =  1.2;
+	ymin = -1.2;
+	xmax =  1.2;
+	xmin = -1.2;
+
+	/* handle zeros */
+	if (length(z) > 0) {
+
+		/* overplot zeros in black */
+		overp(zxy, black);
+	
+		/* point plot for zeros and poles */
+		setplotstyle(1, item);
+
+		/* set symbols - circle for zeros */
+		setsymbol(15, item);
+
+		/* get Y coordinates */
+		(ymin, ymax) = zplane_coords(yvals(zxy), ymin, ymax, tol);
+
+		/* get X coordinates */
+		(xmin, xmax) = zplane_coords(xvals(zxy), xmin, xmax, tol);
+
+		item++;
+	}
+
+	/* handle poles  */
+	if (length(p) > 0) {
+
+		/* overplot poles in lred */
+		overp(pxy, lred);
+	
+		/* point plot for poles */
+		setplotstyle(1, item);
+
+		/* set symbols - cross for poles */
+		setsymbol(5, item);
+
+		/* get Y coordinates */
+		(ymin, ymax) = zplane_coords(yvals(pxy), ymin, ymax, tol);
+
+		/* get X coordinates */
+		(xmin, xmax) = zplane_coords(xvals(pxy), xmin, xmax, tol);
+	}
+
+	/* get largest coord range */
+	v1 = xmax - xmin;
+	v2 = ymax - ymin;
+
+	if (v1 > v2) {
+		/* adjust vertical range */
+		v1 = (v1 - v2) / 2;
+		ymin -= v1;
+		ymax += v1;
+	}
+	else {
+		/* adjust horizontal range */
+		v2 = (v2 - v1) / 2;
+		xmin -= v2;
+		xmax += v2;
+	}
+
+	/* set axes */
+	setx(xmin, xmax);
+	sety(ymin, ymax);
+
+	/* set autoscale coordinates */
+	setxauto(getxl, getxr);
+	setyauto(getyb, getyt);
+
+	/* set tic intervals */
+	setytic(-1);
+	setxtic(getytic);
+
+	/* anotate multiple poles */
+	if (length(p) > 0) {
+		(p, m) = zplane_mpoles(p);
+		if ((len = length(p)) > 0) {
+			for (i = 1; i <= len; i++) {
+				x = real(p[i]);
+				y = imag(p[i]);
+				text(x, y, PAPER, lred, -1, 1, sprintf("%d", (m[i])));
+			}
+		}
+	}
+
+	/* anotate multiple zeros */
+	if (length(z) > 0) {
+		(z, m) = zplane_mpoles(z);
+		if ((len = length(z)) > 0) {
+			for (i = 1; i <= len; i++) {
+				x = real(z[i]);
+				y = imag(z[i]);
+				text(x, y, PAPER, black, -1, 1, sprintf("%d", (m[i])));
+			}
+		}
+	}
+
+	/* draw crosshair through the origin (-10 to +10 range) */
+	fac = 10.0;
+	linedraw(getwcolor(1, 1), lstyle, PAPER, 1, 1, 1, getxl - fac * abs(getxl), 0.0, getxr + fac * abs(getxr), 0.0);
+	linedraw(getwcolor(1, 1), lstyle, PAPER, 1, 1, 1, 0.0, getyt + fac * abs(getyt), 0.0, getyb - fac *abs(getyb));
+
+	/* add axes labels */
+	scales(2);
+
+	/* now plot it */
+	plotmode(_zplane_pmode);
+}
+
+/* determine axis coords */
+zplane_coords(vals, valmin, valmax, tol)
+{
+	local vmax, vmin, v1, v2;
+
+	/* see if max|min * (1 +- tol) > valmax|min */
+	vmax = max(vals);
+	vmin = min(vals);
+
+	v1 = vmax + abs(vmax * tol);
+	v2 = vmin - abs(vmin * tol);
+
+	if (v1 > valmax) valmax = v1;
+	if (v2 < valmin) valmin = v2;
+
+	return(valmin, valmax);
+}
+
+/* returns poles and multiplicity */
+zplane_mpoles(p, tol)
+{
+	local i, j, pp, pm, mcnt, idx;
+
+	if (argc < 2) tol = 1e-3;
+
+	tol2 = 1e-3;
+
+	/* sort in descending order */
+	p = sort(p, 0);
+
+	/* search for repeated poles and record multiplicity */
+	if (length(p) > 1) {
+
+		idx = find(mag(real(p)) < tol2 && mag(imag(p)) < tol2);
+		p[idx] = real(p[idx]);
+
+		/* initial poles and multiplicity */
+		pm = ones(length(p), 1);
+		pp = ones(length(p), 1);
+
+		j = 1;
+		mcnt = 0;
+		loop (i = 2..length(p)) {
+			if (mag(p[i] - p[i-1]) <= (tol * mag(p[i-1]))) {
+				/* repeated root - accumulate multiplicity */
+				if (pm[j] == 1) {
+					pp[j] = p[i];
+					mcnt++;
+				}
+				pm[j]++;
+			}
+			else if (pm[j] > 1) {
+				j++;
+			}
+		}
+		if (mcnt > 0) {
+			pm = extract(pm, 1, mcnt);
+			pp = extract(pp, 1, mcnt);
+		}
+		else {
+			pm = {};
+			pp = {};
+		}
+	}
+	else {
+		pm = {};
+		pp = {};
+	}
+	return(pp, pm);
+}
+
+
+zplane_error(errno, errmes)
+{
+	/* make sure plotting is restored */
+	plotmode(_zplane_pmode);
+
+	error(errmes);
+}

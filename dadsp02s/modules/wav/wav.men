@@ -1,0 +1,24 @@
+! WAV.MEN
+! Main Wave File Options Menu
+@x10
+@y0
+@popmenu
+@h ~help('contents',strcat(_WAVHOME, 'dspwav.hlp'))
+
+{if(NOT(_wavloaded),echo('Loading DADiSP/WAV ...');splload(strcat(_WAVHOME,'wav'));eval('_initwav'))}
+
+
+    Select WAV Operation
+
+  Play Data       ~_wavmenu('_MFW("playwav.pan")',  'PlayWav',    'Play a Series as a WAV File')
+<L>
+  Read WAV File   ~_wavmenu('_MFW("readwav.pan")',  'ReadWav',    'Read a WAV File')
+<L>
+  Write WAV File  ~_wavmenu('_MFW("writewav.pan")', 'WriteWav',   'Write a WAV File')
+<L>
+  Set WAV Player  ~_wavmenu('_MFW("callplyr.pan")', 'Wav Player', 'Set and Invoke WAV Player')
+<L>
+  Normalize Data  ~_wavmenu('_MFW("nrmlwav.pan")',  'Normalize',  'Normal Series for WAV Output')
+<L>
+  View Statistics ~_wavmenu('_MFW("wavstats.men")', 'WavStats',   'View Statistics on WAV Series')
+

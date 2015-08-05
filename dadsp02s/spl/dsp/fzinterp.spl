@@ -1,0 +1,90 @@
+/*****************************************************************************
+*                                                                            *
+*   FZINTERP.SPL Copyright (C) 1999 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sinx/sin interpolation of periodic band limited waveforms   *
+*                                                                            *
+*   Revisions:   30 Jun 1999  RRR  Creation - from ZINTERP.MAC               *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_FZINTERP
+
+    FZINTERP
+
+    Purpose: Interpolates a series by a factor using FFT zero insertion
+                                                                        
+    Format:  FZINTERP(s, n)
+
+                   s - input series or array
+
+                   n - real, the interpolation factor, N > 1.0, 
+                       defaults to 2.0
+
+    Returns: A series or array
+
+    Example:
+
+             W1: gsin(64, 1/64, 3)
+             W2: fzinterp(W1, 4)
+
+             W1 contains 64 samples of a 3 Hz sine wave sampled at
+             64 Hz.
+
+             W2 produces a 253 point interpolated 3 Hz sine wave with a
+             sample rate of 64 * 4 = 256 Hz.
+
+
+             W3: fzinterp(W1, 3.5)
+
+             produces a 221 point interpolated 3 Hz sinewave with a
+             sample rate of 64 * 3.5 = 224 Hz
+
+   Remarks:
+
+             FZINTERP is identical to ZINTERP except that the
+             interpolation factor (i.e. the multiple of the original
+             sampling rate) is specified instead of the new rate. 
+
+             Although the interpolation factor N is NOT required to be
+             an integer, for an output length L, the relation:
+
+                        N = L / length(s)
+
+             must hold, so the actual interpolation factor might differ
+             from N. See ZINTERP for algorithm details.
+
+    See Also:
+             Fsinterp
+             Interp
+             Polyfit
+             Spline
+             Zinterp
+#endif
+
+
+/* interpolate by a factor using zero insertion */
+fzinterp(s, n)
+{
+
+	/* hurdles */
+	if (argc < 2) {
+		if (argc < 1) error("fzinterp - input series required");
+		n = 2.0;
+	}
+	if (n == 1.0) {
+		return(s);
+	}
+	else if (n < 1.0) {
+		error("fzinterp - n must be > 1");
+	}
+	else {
+		return(zinterp(s, n*rate(s)));
+	}
+}
+
+

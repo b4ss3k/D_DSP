@@ -1,0 +1,20 @@
+/* get writet delimiter, returns 1, or 0 */
+_getwtdl(chr, fromcnf)
+{
+	local delim, status = 0;
+
+	if (argc < 2) {
+		fromcnf = 0;
+	}
+	if (fromcnf) { /* from configuration file */
+		delim = getconf("column_separator");
+	}
+	else {
+		delim = getvar("_writet_delimiters");
+	}
+
+	if (strlen(delim) > 0) {
+		status = strlen(strfind(chr, delim)) > 0;
+	}
+	return(status);
+}

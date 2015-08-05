@@ -1,0 +1,18 @@
+!  Commands to enter & leave remote mode
+@x40
+@y4
+@b{_bg1}
+@f{_fg1}
+  Remote Commands
+ 
+ Abort             ~ABORT|echo("ABORT")
+ Clear             ~CLEAR488(input(2,"Device Address",0,31))|echo("Device cleared")
+ Buffered          ~BUFFERED
+ Local             ~LOCAL(input(2,"Device Address",0,31))|echo("Device in local mode")
+ Local Lock        ~LOL|echo("Front panel locked")
+ Pass Control      ~PASSCONTROL(input(2,"Device Address",0,31))|echo("Control passed")
+ Remote            ~REMOTE(input(2,"Device Address",0,31))|echo("Device in remote")
+ Reset             ~RESET|echo("RESET")
+ Resume            ~RESUME|echo("RESUME")
+ Spoll             ~SPOLL(input(2,"Device Address",0,31))
+ Trigger           ~TRIGGER(input(2,"Device Address",0,31))|echo("Trigger sent")

@@ -1,0 +1,7 @@
+/* returns number of input args */
+_numargs(argv)
+{
+	return(argc);
+}
+
+

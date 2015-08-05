@@ -1,0 +1,96 @@
+/*****************************************************************************
+*                                                                            *
+*   LINSCALE.SPL Copyright (C) 1998-2001 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Linearly rescales an input series                           *
+*                                                                            *
+*   Revisions:   28 Jul 1998  RRR  Creation                                  *
+*                 1 Mar 2000  RRR  added clip flag                           *
+*                23 Feb 2001  RRR  simplification                            *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_LINSCALE
+
+    LINSCALE
+
+    Purpose: Linearly rescales an input series
+                                                                        
+    Format:  LINSCALE(xi, xl, xh, yl, yh, clipflag)
+
+                   xi  - input series or scalar
+
+                   xl  - a real, low value input range
+
+                   xh  - a real, high value input  range
+
+                   yl  - a real, low value output range
+
+                   yh  - a real, high value output range
+
+              clipflag - an optional integer, 1:clip input
+                         to xl and xh, 0:do not clip, defaults
+                         to 1.
+
+    Returns: A series or real
+
+    Example:
+             Linscale(10, 0, 100, -1, 1)
+
+             returns -0.8, the corresponding output for an input
+             value of 10.0 on a 0 to 100 input range and a 
+             corresponding -1.0 to 1.0 output range.
+
+    Example:
+             Linscale(0..100, 0.0, 100, -5, 5)
+
+             returns a series ranging from -5 to 5
+
+
+    Remarks:
+             By default, linscale automatically clips out of range
+             input values.
+
+    See Also:
+             Bitscale
+             Rescale
+             Quantize
+#endif
+
+
+/* linear scale input range to output range */
+linscale(xi, xl, xh, yl, yh, clipflag)
+{
+	local delta, xspan, yo;
+
+	/* check input args */
+	if (argc < 6) {
+		if (argc < 5) error("linscale: input value and ranges required");
+		clipflag = 1;
+	}
+	if ((xspan = (xh - xl)) == 0.0) {
+		xspan = 1.0;
+	}
+
+	delta = (yh - yl) / xspan;
+
+	if (clipflag) {
+		if (IS_ARRAY(xi)) {
+			xi = clip(xi, xl, xh);
+		}
+		else { /* scalar */
+			if (xi > xh) xi = xh;
+			if (xi < xl) xi = xl;
+		}
+	}
+
+	/* y = m * x + b */
+	yo = delta * (xi - xh) + yh;
+
+	return(yo);
+}

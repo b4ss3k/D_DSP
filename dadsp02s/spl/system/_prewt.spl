@@ -1,0 +1,34 @@
+/* show first few lines of translated ASCII Table */
+
+#define NUMRTLINES 50
+
+_prewt(ser, delim, prec, hex, header)
+{
+	local hformat, dl;
+
+	if (eval(sprintf("length(%s)", ser)) > 0) {
+
+		/* check if double quote a delimiter */
+		if (strlen(strfind('"', delim)) > 0) {
+			dl = sprintf("'%s'", delim);
+		}
+		else {
+			dl = sprintf('"%s"', delim);
+		}
+
+		if (hex) {
+			hformat = sprintf('"%s%d.%dx"', "%", _wtprec, _wtprec);
+			eval(sprintf("writet('preview.txt', %s, %d, %s, %s, %d, %d)", ser, NUMRTLINES, dl, hformat, -1, header));
+		}
+		else {
+			eval(sprintf("writet('preview.txt', %s, %d, %s, %d, %d)", ser, NUMRTLINES, dl, prec, header));
+		}
+		viewfile("preview.txt", 1, NUMRTLINES);
+		delfile("preview.txt");
+	}
+	else {
+		message("Preview ASCII Data", sprintf(_nodatastr, ser), 8);
+	}
+
+}
+

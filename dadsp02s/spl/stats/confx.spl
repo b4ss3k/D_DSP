@@ -1,0 +1,83 @@
+/*****************************************************************************
+*                                                                            *
+*   CONFX.SPL   Copyright (C) 1999 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates confidence level from x and density function     *
+*                                                                            *
+*   Revisions:    1 Apr 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_CONFX
+
+    CONFX 
+
+    Purpose: Returns confidence level for a given density function and x value
+                                                                        
+    Format:  CONFX(pdens, x)
+
+             pdens - series, probability density function or histogram series
+
+                 x - real, x value
+
+
+    Returns: A real
+
+
+    Example:
+             W1: gnorm(10000,1) + 10
+             W2: histogram(w1, 1000)
+
+             Confx(w2, 10)
+
+             returns 0.496275, a confidence level of approximately 50%.
+
+    Remarks:
+             The input density function or histogram is automatically 
+             normalized between 0 and 1. CONFX returns NA if the 
+             x value is out of range.
+
+    See Also:
+             Find
+             Gnorm
+             Grand
+             Integ
+             Xconf
+#endif
+
+
+
+confx(pdens, x)
+{
+	local cum, idx, xv, c;
+
+	if (argc < 2) error("confx - density and confidence level  required");
+
+	/* initialize x */
+	c = navalue();
+
+	/* generate cumulative probability curve from density */
+	cum = integ(pdens);
+
+	/* normalize to 0.0 to 1.0 */
+	cum /= max(cum);
+
+	xv = xvals(cum);
+
+	/* limits */
+	if (x < min(xv)) return(0.0);
+	if (x > max(xv)) return(1.0);
+
+	/* find index of xvals */
+	idx = find(xv >= x);
+
+	/* lookup confidence value */
+	if (not(isnavalue(idx[1]))) {
+		c = cum[idx[1]];
+	}
+	return(c);
+}

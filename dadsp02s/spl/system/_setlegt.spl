@@ -1,0 +1,30 @@
+/* set legend text template from a number */
+_setlegt(n, str)
+{
+	switch (n) {
+		case 0:
+		default:
+			setconf("LEGEND_TEXT", "getcomment(%d)");
+			break;
+
+		case 1:
+			setconf("LEGEND_TEXT", "getseriesname(%d)");
+			break;
+
+		case 2:
+			setconf("LEGEND_TEXT", "getshortname(%d)");
+			break;
+
+		case 3:
+			if (strlen(strfind(" ", str)) > 0) {
+				if (strlen(strfind("'", str)) > 0) {
+					str = sprintf('"%s"', str);
+				}
+				else {
+					str = sprintf("'%s'", str);
+				}
+			}
+			setconf("LEGEND_TEXT", str);
+			break;
+	}
+}

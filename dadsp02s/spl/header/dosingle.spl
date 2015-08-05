@@ -1,0 +1,18 @@
+/*****************************************************************************
+*                                                                            *
+*   DOSINGLE      Copyright (C) 1997 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      DSP Development Corporation                                 *
+*                                                                            *
+*   Synopsis:    Supports single channel header creation from pull down menu *
+*                                                                            *
+*   Revisions:   17 Jul 1997  DSP  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+/* write_header() and other support routines */ 
+#include <writehed.spl>
+
+dosingle _mf("scheader.pan")|_mf("chaninfo.pan")|_mf("axis_mod.pan")|_mf("dataskip.pan")|write_header(_headfile)
+

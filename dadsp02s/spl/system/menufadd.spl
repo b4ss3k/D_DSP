@@ -1,0 +1,27 @@
+/* add string to a menu file */
+menufadd(s, menu, separator)
+{
+	local mod;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) return();
+			/* defaults to "modules.men" in temp directory */
+			menu = getmiscpath(1, 1)+"modules.men";
+		}
+		separator = 1;
+	}
+
+	/* check if string already in file */
+	mstr = strfile(menu);
+	if (strlen(strfind(s, mstr)) == 0) {
+		/* not in file, add string */
+		fopen(menu, "a");
+		fseek(menu, 0, 2);
+		if (separator) {
+			fputs("<L>\n", menu);
+		}
+		fputs(s+"\n", menu);
+		fclose(menu);
+	}
+}

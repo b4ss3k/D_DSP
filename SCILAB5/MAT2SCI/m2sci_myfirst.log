@@ -1,0 +1,16 @@
+   ****** Beginning of mfile2sci() session ******
+   File to convert: C:/Users/dilane/workspace/freemat/myfirst.m
+   Result file path: C:/Users/dilane/workspace/D_DSP/SCILAB5/
+   Recursive mode: OFF
+   Only double values used in M-file: NO
+   Verbose mode: 3
+   Generate formated code: NO
+   M-file reading...
+   M-file reading: Done
+   Syntax modification...
+   Syntax modification: Done
+   Macro to tree conversion...
+   Conversion of M-tree...
+   Conversion of M-tree: Done
+   Macro to tree conversion: Done
+   ****** End of mfile2sci() session ******

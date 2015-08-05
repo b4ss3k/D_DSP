@@ -1,0 +1,56 @@
+/*****************************************************************************
+*                                                                            *
+*   ISSTR.SPL   Copyright (C) 2002 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns 1 if input a string                                 *
+*                                                                            *
+*   Revisions:    9 Aug 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_ISSTR
+
+    ISSTR
+
+    Purpose: Returns 1 if input is a string
+                                                                        
+    Format:  ISSTR(a)
+
+              a - Any input
+
+    Returns: An integer, 1 if the input is a string, else 0.
+
+    Example:
+             a = {1};
+             b = {};
+             c = "yes";
+
+             isstr(a) returns 0
+             isstr(b) returns 0
+             isstr(c) returns 1
+
+    Remarks:
+
+             ISSTR always returns an integer.
+
+    See Also:
+             Finite
+             Isempty
+             Isinf
+             Isnan
+#endif
+
+
+/* is input a string? */
+isstr(a)
+{
+	if (argc < 1) error("isstr - input required");
+
+	return(IS_STRING(a));
+}

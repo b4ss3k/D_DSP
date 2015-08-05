@@ -1,0 +1,18 @@
+!!  this file is the first panel in the controls pull down menu structure
+! this is a DSPTrial menu for Controls module demo
+@x0                     
+@y0
+@b{_bg1}
+@f{_fg1}
+! @h{_Controlhelp("control")}
+  DADiSP/Controls
+____________________
+
+ Model Building     ~DMF("dmodlbld.men")
+ Frequency Response ~DMF("dfreqres.men")
+ PZ-Root Locus      ~DMF("dpzrootl.men")
+ Time Response      ~DMF("dtimeres.men")
+
+ Controllers        ~DMF("dcontlrs.men")
+ Design 2nd Order   ~DMF("ddsgn2or.men")
+

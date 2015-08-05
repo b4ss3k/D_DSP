@@ -1,0 +1,29 @@
+! stats.men -- Statistical Options Menu
+! modified for the demo.
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+
+	    DADiSP/Statistics
+________________________________________
+
+ Graphical Statistics                 ~dmf("plots1.dmn")
+ Descriptive Statistics               ~echo("provides summary stats")
+ Table Statistics                     ~dmf("tabstats.dmn")
+
+ ChiSquare Goodness of Fit Test - 2x2 ~echo("Calculates 2x2 ChiSquare")
+ Unpaired ChiSquare Test - 2xK        ~echo("Calculates 2xK ChiSquare")
+
+ 1-tailed T Test vs. Mean             ~echo("Calculates T-Test")
+ 2-tailed T Test vs. Mean             ~echo("Calculates Two-tailed T-Test")
+ Pooled Variance T Test - 2 Series    ~echo("Calculates Pooled Variance T-Test")
+ Separate Variance T Test - 2 Series  ~echo("Calculates Separate Pooled Variance T-Test")
+
+ F Test                               ~echo("Calculates F Ratio Test")
+ ANOVA                                ~_deffname('ANOVASUM Analysis of Variance') | _defformat('Anovasum(table)') | _defxamp('Anovasum(W1)') | ANOVAMEN
+ R and R^2: Correlation               ~echo("Calculates R and R^2 Correlation")
+ Multiple Regression                  ~dmf("regress.dmn")
+
+ Individual Probability Functions     ~echo("Calculates Probability Functions")
+!~_mc

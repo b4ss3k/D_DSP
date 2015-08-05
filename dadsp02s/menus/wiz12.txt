@@ -1,0 +1,10 @@
+Fmax         !_PDC_EXEC344  $Find Maximum
+Fmin         !_PDC_EXEC345  $Find Minimum
+Fpeak        !_PDC_EXEC169  $Find First Peak
+Fpeakn       !_PDC_EXEC170  $Find Next Peak
+Fpeakp       !_PDC_EXEC171  $Find Previous Peak
+Getpeak      !_PDC_EXEC172  $Get Peak Values
+Getvalley    !_PDC_EXEC176  $Get Valley Values
+Fvall        !_PDC_EXEC173  $Find First Valley
+Fvalln       !_PDC_EXEC174  $Find Next Valley     
+Fvallp       !_PDC_EXEC175  $Find Previous Valley

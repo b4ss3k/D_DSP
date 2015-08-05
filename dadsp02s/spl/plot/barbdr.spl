@@ -1,0 +1,95 @@
+/*****************************************************************************
+*                                                                            *
+*   BARBDR.SPL  Copyright (C) 2003 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets bar outlnes                                            *
+*                                                                            *
+*   Revisions:   25 Mar 2003  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_BARBDR
+
+    BARBDR
+
+    Purpose: Sets the outline of a 2D bar plot
+                                                                        
+    Format:  BARBDR(win, on_off)
+
+              win    - an optional window, defaults to current window
+              on_off - An integer, 0: do not draw outline, 1: draw outline
+                       (default 1)
+
+    Returns: Nothing
+
+    Example:
+             W1: sort(gnorm(10, 1), 1)
+             W2: xy(W1, abs(gnorm(10, 1)));bars;rainbow;bargap(0);barbdr(1)
+             W3: W2;bars;rainbow;bargap(0);barbdr(0)
+
+             The bars in W2 are of variable widths, shaded and drawm with
+             an outline. The bars in W3 are identical but not draw with 
+             an outline.
+
+    Remarks: 
+             BARBDR only effects XY bar charts.
+
+             BARBDR is a Window property. All step plots plotted in the
+             Window will be drawn in the current BARBDR mode.
+
+             A border will not be drawn if the width of a bar plot becomes
+             too narrow.
+
+    See Also:
+             Barctr
+             Bargap
+             Bars
+             Steps
+#endif
+
+
+/* toggle outline for bar plots */
+barbdr(win, val)
+{
+	local exstyle;
+
+	/* barbdr is the complement of a winexstyle bit */
+	if (argc < 1) {
+		return((winexstyle(W0) & EX_BAR_NOBORDER) == 0);
+	}
+	else if (argc == 1) {
+		if (IS_WINDOW(win)) {
+			return((winexstyle(win) & EX_BAR_NOBORDER) == 0);
+		}
+		else {
+			val = win != 0;
+			exstyle = winexstyle(W0);
+			/* clear EX_BAR_NOBORDER bit */
+			exstyle &= ~EX_BAR_NOBORDER;
+
+			/* set EX_BAR_NOBORDER bit */
+			if (not(val)) exstyle |= EX_BAR_NOBORDER;
+			winexstyle(W0, exstyle);
+
+			/* indicate window should plot */
+			plotmode(1, 0);
+		}
+	}
+	else {
+		val = val != 0;
+		exstyle = winexstyle(win);
+		/* clear EX_BAR_NOBORDER bit */
+		exstyle &= ~EX_BAR_NOBORDER;
+		if (not(val)) exstyle |= EX_BAR_NOBORDER;
+		winexstyle(win, exstyle);
+
+		/* indicate window should plot */
+		plotmode(win, 1, 0);
+
+	}
+}

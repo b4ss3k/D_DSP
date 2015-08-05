@@ -1,0 +1,11 @@
+! SubEdit.men -- main menu from automenu command
+@x0
+@y0
+@b{_bg1}
+@f{_fg1}
+    Edit/Reduce Data
+
+ Edit a Table           ~_MC | if (length==0,_lf("editdata.dsp"),_lf("editdat2.dsp"))
+ Copy Window Regions    ~_MF("edcopy.men")
+ Data Reduction         ~_MF("edreduce.men")
+ Reordering & Misc.     ~_MF("edspec.men")

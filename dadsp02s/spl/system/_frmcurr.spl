@@ -1,0 +1,12 @@
+_frmcurr(s) 
+{
+	/* handle "current" */
+	if ((strcmp(s, 'curr') == 0) || (strcmp(s, 'current') == 0)) {
+		s = strcat("W",strnum(getwnum));
+	}
+	/* make sure we are still in range */
+	if (numstr(s) > numwindows) {
+		s = strcat("W",strnum(getwnum));
+	}
+	return(s);
+}

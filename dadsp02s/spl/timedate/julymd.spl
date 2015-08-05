@@ -1,0 +1,182 @@
+/*****************************************************************************
+*                                                                            *
+*   JULYMD.SPL   Copyright (C) 1998-2005 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Converts a series to Julian dates                           *
+*                                                                            *
+*   Revisions:    9 Jul 1998  RRR  Creation                                  *
+*                17 Mar 2005  RRR  julvec iyyy assignment fix                *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#define IGREG (15+31*(10+12*1582))
+#define JGREG 2299161
+
+
+#if @HELP_JULYMD
+
+    JULYMD  
+
+    Purpose: Converts a series of yymmdd values to Julian dates
+                                                                        
+    Format:  Julymd(dtser, format)
+
+              dtser  - a series containing date/time values
+
+              format - an optional integer, 0:yymmdd (default) 
+              1:yyyymmdd
+
+    Returns: A series or array of Julian integers
+
+    Example:
+             W1: {980101, 980102, 980103, 980112}
+             W2: Julymd(w1);
+             W3: xy(w2, {1, 2, 3, 4})
+
+             W2 contains the series {2450815, 2450816, 2450817, 2450826} 
+             Each value is the Julian representation of the original
+             date/time values of W1.  In this case, W1 is specified in
+             yymmdd format.
+
+             W1: {19980101, 19980102, 19980103, 19980112}
+             W2: Julymd(w1, 1);
+             W3: xy(w2, {1, 2, 3, 4})
+
+             Same as the first example, but the date/time format is 
+             yyyymmdd.
+
+
+    Remarks:
+             Julymd attempts to recognizes the yyyymmdd and yymmdd
+             date/time formats and returns a 0 for any date/time
+             values that cannot be converted.
+
+
+    See Also:
+             Julstr
+
+#endif
+
+
+julymd(s, format)
+{
+	local iyyy, mm, id, val, jmd;
+
+	if (IS_STRING(s)) {
+		return(julstr(s));
+	}
+	else if (not(IS_ARRAY(s))) {
+		error("julymd - series required");
+	}
+
+	/* figure out format */
+	if (argc < 2) {
+		val = castint(s[1]);
+		str = sprintf("%ld", castint(s[1]));
+		if (strlen(str) == 8) {
+			format = 1;
+		}
+		else {
+			format = 0;
+		}
+	}
+
+	/* get individual yy mm dd series */
+	if (format == 0) { /* yymmdd */
+
+		/* convert 2 digit year to 4 digit */
+		iyyy = int(s / 10000);
+		iyyy = yytoyyyy(iyyy);
+
+		mm = int(s / 100) % 100;
+		id = int(s % 100);
+	}
+	else if (format == 1) {
+		/* yyyymmdd */
+		iyyy = int(s / 10000);
+		mm = int(s / 100) % 100;
+		id = int(s % 100);
+	}
+	else {
+		error(sprintf("julymd - invalid format %d", format));
+	}
+	jmd = julvec(mm, id, iyyy);
+	return(jmd);
+}
+
+		
+/* vectorized Julian conversion */
+julvec(mm, id, iyyy)
+{
+	local jul;
+	local ja, jy, jm;
+	local t;
+
+	if (not(all(mm) && all(id) && all(iyyy))) {
+		return(zeros(length(mm), 1));
+	}
+
+	t = iyyy == 0;
+	iyyy = iyyy * not(t) + t; // no Julian year 0 
+
+	t = iyyy < 0;
+	iyyy = iyyy * not(t) + (iyyy + 1) * t;
+
+	t = mm > 2;
+
+	jy = t * iyyy + (iyyy - 1) * not(t);
+	jm = t * (mm + 1) + not(t) * (mm + 13);
+
+	jul = int((floor(365.25*jy)+floor(30.6001*jm)+id+1720995));
+
+	t = (id + 31 * (mm+12*iyyy)) >= IGREG;
+
+	ja = int(0.01 * jy);
+	inc = 2-ja+int(0.25*ja);
+
+	jul = int(t * (jul + inc) + not(t) * jul);
+
+	setvunits(jul, "Daily");
+
+	return(jul);
+}
+
+
+/* convert two digit year to four digit year */
+yytoyyyy(yy)
+{
+	local y2kmode, locale, y2kmode, dt_y2k_offset;
+	local current_century, base_century, year;
+
+	y2kmode = getconf("dt_y2k_format") == "1";
+	dt_y2k_offset = numstr(getconf("dt_y2k_offset"));
+	locale = getconf("locale_idate");
+
+	/* use yyyy-mm-dd to get current year */
+	setconf("locale_idate", "2");
+	year = numstr(getdate());
+	setconf("locale_idate", locale);
+
+	if (y2kmode) { /* use 50 year window */
+		locale = getconf("locale_idate");
+
+		base_century = int(100 * int((year + dt_y2k_offset) / 100));
+		if (yy <= dt_y2k_offset) {
+			yy += base_century;
+		}
+		else {
+			yy += base_century - 100;
+		}
+	}
+	else { /* just use current century */
+		current_century = int(100 * int(year / 100));
+		yy += current_century;
+	}
+	return(yy);
+}
+

@@ -1,0 +1,85 @@
+/*****************************************************************************
+*                                                                            *
+*   NIBBLE.SPL   Copyright (C) 1998-1999 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Grabs 4 bit nibble from a number                            *
+*                                                                            *
+*   Revisions:    1 Oct 1998  RRR  Creation                                  *
+*                24 May 1999  RRR  Optional bit position flag                *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_NIBBLE
+
+    NIBBLE
+
+    Purpose: Extracts a 4 bit nibble from a value
+                                                                        
+    Format:  NIBBLE(val, num, bitpos)
+
+             val    - input series or number
+
+             num    - optional integer specifying the nibble to retrieve,
+                      defaults to 1 (the first four bits)
+
+             bitpos - optional integer, bitpos:1 then num refers to 
+                      starting LSB BIT position, else num refers to 4 bit 
+                      nibble boundary, defaults to 0.
+                      
+                      
+
+    Returns: A series or number
+
+    Example:
+             Nibble(7+16)
+
+             Returns 7, the value of the first 4 bits.
+
+             Nibble(7+16, 2)
+
+             Returns 1, the value of the second 4 bits.
+
+             Nibble(7+16, 2, 1)
+
+             Returns 11, the value of the 4 bits starting at
+             the 2nd bit, where the 2nd bit is the least 
+             significant bit - i.e. the value of bits 2 through
+             6.
+
+
+    Remarks:
+             Nibble also operates on series.
+
+    See Also:
+             >>
+             <<
+             &
+             ~
+             Bit Operators
+#endif
+
+
+nibble(val, num, bitpos)
+{
+	local nib, bit;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			num = 1;
+		}
+		bitpos = 0;
+	}
+	if (bitpos) { /* nibble position */
+		bit = num - 1;
+	}
+	else { /* bit postion - LSB */
+		bit = ((num - 1) * 4);
+	} 
+
+	/* shift bits to first position and mask */
+	nib = (val >> bit) & 15; 
+	return(nib);
+}

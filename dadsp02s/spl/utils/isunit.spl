@@ -1,0 +1,74 @@
+/*****************************************************************************
+*                                                                            *
+*   ISUNIT.SPL    Copyright (C) 1999 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Determines if a string is a recognized unit                *
+*                                                                            *
+*   Revisions:    11 Nov 1999  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_ISUNIT
+
+    ISUNIT    
+
+    Purpose: Returns 1 if string is a recognized engineering unit, else 0
+                                                                        
+    Format:  ISUNIT(str)
+
+              str - a string
+
+    Returns: an integer, 1 if str is a unit, else 0
+
+    Example:
+
+             a = isunit("Volts")
+             b = isunit("xxx")
+
+             a == 1
+             b == 0
+
+    Remarks:
+             The recognizable unit list can change if units were defined
+             with the SETHUNITS, SETVUNITS or SETZUNITS function.
+
+    See Also:
+             Sethunits
+             Setvunits
+             Setzunits
+
+#endif
+
+
+/* determine if input string represents a unit */
+isunit(str)
+{
+	local status, ustr;
+
+	if (argc < 1) {
+		return(0);
+	}
+
+	if (not(IS_STRING(str))) {
+		return(0);
+	}
+
+	/* find text in unit list */
+	ustr = strfind(str, objectlist(5, 0, 1));
+
+	if (strlen(ustr) > 0) {
+		ustr = strget(1, ustr, strescape("\n"));
+		status = strcmp(str, ustr) == 0;
+	}
+	else {
+		status = 0;
+	}
+	return(castint(status));
+}
+

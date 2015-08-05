@@ -1,0 +1,534 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!                                 BITS.MAC                                   !
+!                                                                            !
+!			       March 25, 1995				     !
+!                                                                            !
+!  Bit and radix math: extract individual bits, decimal digits, and non-     !
+!  decimal digits; convert between signed and unsigned integers; convert     !
+!  among octal digits, decimal digits, hexadecimal digits, bytes, 16-bit     !
+!  integers, and 32-bit integers; byte-float conversion; byte folding.       !
+!                                                                            !
+!                 Copyright (C) 1995 DSP Development Corp.             	     !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!**********************************************************************!
+!                                                                      !
+!			     INTRODUCTION			       !
+!                                                                      !
+!**********************************************************************!
+
+! These macros translate a series into a matrix which contains the
+! representation of the entries in the series in various bases,
+! including binary, octal, hexadecimal, and BCD.
+!
+! Example: HEX16(GSER(301)) generates a row vector 0, 1, 2, 13,
+! corresponding to the hexadecimal representation of 301 as 012D.
+! There are four entries in the vector because HEX16 assumes that the
+! number is a 16-bit integer, which has a maximum of four hexadecimal
+! digits.
+!
+! Example: HEX8(GSER(12,20,181)) generates a 3 by 2 matrix:
+!                   0  12
+!                   1   4
+!                  11   5
+! HEX8 assumes that each input entry is an 8-bit integer, which can
+! have a maximum of two hex digits.  The matrix says that the hex
+! representations of 12, 20, and 181 are 0C, 14, and B5, respectively.
+!
+! The binary macros can be used for bitwise arithmetic.  Although
+! DADiSP does not support direct bitwise arithmetic, it does have
+! logical operators for series composed of 0's and 1's.  To do bitwise
+! arithmetic, use the binary macros to convert a series of integers
+! into bits and back.
+!
+! Example: To do a bitwise AND between corresponding integer values in
+! window 1 and window 2:
+!
+! W1: First input series
+! W2: Second input series
+! W3: UNBITS16(BITS16(W1)&&BITS16(W2))
+!
+! Window 3 contains the desired bitwise AND.
+
+!**********************************************************************!
+!                                                                      !
+!			     BASIC MACROS			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! BIT generates the n-th bit from a scalar, series, or table, which may
+! be integer or floating.  If a number contains k bits, the bits are
+! numbered from 0 to k-1, with the 0-th bit being least significant.  
+! Example: BIT(8,3) = 1.
+!
+!     S = scalar, series, or table to compute bit from
+!     N = bit position
+
+BIT(S,N)                (S)/2.^(N+1)-FLOOR((S)/2.^(N+1))>=0.5
+
+!-----------------------------------------------------------------------
+!
+! DIGIT generates the n-th digit relative to a given base from a
+! scalar, series, or table, which may be integer or floating.  If a
+! number contains k digits, the digits are numbered from 0 to k-1, with
+! the 0-th digit being least significant.  Example: DIGIT(172,10.,2) = 
+! 7.
+!
+!     S = scalar, series, or table to compute digit from
+!     B = base
+!     N = digit number
+
+DIGIT(S,B,N)            FLOOR(((S)/B^(N+1)-FLOOR((S)/B^(N+1)))*(B))
+
+!-----------------------------------------------------------------------
+!
+! UND constructs a place summand from a digit.  Several of these
+! summands are added together to reconstruct a number from its digits,
+! with reference to a given base.
+!
+!     M = digit matrix
+!     B = base
+!     F = total number of digits
+!     N = digit number
+
+UND(M,B,F,N)            ((B)^(N))*COL(M,(F)-(N))
+
+!**********************************************************************!
+!                                                                      !
+!		      SIGNED-UNSIGNED CONVERSION		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! UNSIGN8 converts a signed 8-bit integer (byte) to an unsigned 8-bit
+! integer.
+!
+!     S = 8-bit signed scalar, series, or table to be converted
+
+UNSIGN8(S)		(S)*((S)>=0)+((S)+2.^8)*((S)<0)
+
+!-----------------------------------------------------------------------
+!
+! SIGN8 converts an unsigned 8-bit integer (byte) to a signed 8-bit
+! integer.
+!
+!     S = 8-bit unsigned scalar, series, or table to be converted
+
+SIGN8(S)		(S)*((S)<2.^7)+((S)-2.^8)*((S)>=2.^7)
+
+!-----------------------------------------------------------------------
+!
+! UNSIGN16 converts a signed 16-bit integer to an unsigned 16-bit
+! integer.
+!
+!     S = scalar, series, or table to be converted
+
+UNSIGN16(S)		(S)*((S)>=0)+((S)+2.^16)*((S)<0)
+
+!-----------------------------------------------------------------------
+!
+! SIGN16 converts an unsigned 16-bit integer to a signed 16-bit
+! integer.
+!
+!     S = 16-bit unsigned scalar, series, or table to be converted
+
+SIGN16(S)		(S)*((S)<2.^15)+((S)-2.^16)*((S)>=2.^15)
+
+!-----------------------------------------------------------------------
+!
+! UNSIGN32 converts a signed 32-bit integer to an unsigned 32-bit
+! integer.
+!
+!     S = scalar, series, or table to be converted
+
+UNSIGN32(S)		(S)*((S)>=0)+((S)+2.^32)*((S)<0)
+
+!-----------------------------------------------------------------------
+!
+! SIGN32 converts an unsigned 32-bit integer to a signed 32-bit
+! integer.
+!
+!     S = 32-bit unsigned scalar, series, or table to be converted
+
+SIGN32(S)		(S)*((S)<2.^15)+((S)-2.^32)*((S)>=2.^15)
+
+!**********************************************************************!
+!                                                                      !
+!			    BIT CONVERSION			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! BITS3 converts a series of 3-bit integers (octal digits) to a 
+! 3-column matrix of bits.
+!
+!     S = series of 3-bit integers (octal digits)
+
+BITS3(S)                RAVEL(BIT(S,2),BIT(S,1),BIT(S,0))
+
+!-----------------------------------------------------------------------
+!
+! UNBITS3 converts a 3-column matrix of bits to a series of 3-bit
+! integers (octal digits).
+!
+!     M = 3-column matrix of bits
+
+UNBITS3(M)              UND(M,2.,3,2)+UND(M,2.,3,1)+UND(M,2.,3,0)
+
+!-----------------------------------------------------------------------
+!
+! BITS4 converts a series of 4-bit integers (hexadecimal digits) to a
+! 4-column matrix of bits.
+!
+!     S = series of 4-bit integers (hexadecimal digits)
+
+BITS4(S)                RAVEL(BIT(S,3),BIT(S,2),BIT(S,1),BIT(S,0))
+
+!-----------------------------------------------------------------------
+!
+! UNBITS4 converts a 4-column matrix of bits to a series of 4-bit
+! integers (hexadecimal digits).
+!
+!     M = 4-column matrix of bits
+
+UNBITS4(M)              UND(M,2.,4,3)+UND(M,2.,4,2)+UND(M,2.,4,1)+UND(M,2.,4,0)
+
+!-----------------------------------------------------------------------
+!
+! BITS8 converts a series of unsigned 8-bit integers (bytes) to an
+! 8-column matrix of bits.
+!
+!     S = series of unsigned 8-bit integers (bytes)
+
+BITS8(S)                RAVEL(BIT(S,7),BIT(S,6),BIT(S,5),BIT(S,4),BIT(S,3),BIT(S,2),BIT(S,1),BIT(S,0))
+
+!-----------------------------------------------------------------------
+!
+! UNBITS8 converts an 8-column matrix of bits to a series of unsigned
+! 8-bit integers (bytes).
+!
+!     M = 8-column matrix of bits
+
+UNBITS8(M)              UND(M,2.,8,7)+UND(M,2.,8,6)+UND(M,2.,8,5)+UND(M,2.,8,4)+UND(M,2.,8,3)+UND(M,2.,8,2)+UND(M,2.,8,1)+UND(M,2.,8,0)
+
+!-----------------------------------------------------------------------
+!
+! BITS16 converts a series of unsigned 16-bit integers to a 16-column
+! matrix of bits.
+!
+!     S = series of unsigned 16-bit integers
+
+BITS16(S)               RAVEL(BIT(S,15),BIT(S,14),BIT(S,13),BIT(S,12),BIT(S,11),BIT(S,10),BIT(S,9),BIT(S,8),BIT(S,7),BIT(S,6),BIT(S,5),BIT(S,4),BIT(S,3),BIT(S,2),BIT(S,1),BIT(S,0))
+
+!-----------------------------------------------------------------------
+!
+! UNBITS16 converts a 16-column matrix of bits to a series of unsigned
+! 16-bit integers.
+!
+!     M = 16-column matrix of bits
+
+UNBITS16(M)             UND(M,2.,16,15)+UND(M,2.,16,14)+UND(M,2.,16,13)+UND(M,2.,16,12)+UND(M,2.,16,11)+UND(M,2.,16,10)+UND(M,2.,16,9)+UND(M,2.,16,8)+UND(M,2.,16,7)+UND(M,2.,16,6)+UND(M,2.,16,5)+UND(M,2.,16,4)+UND(M,2.,16,3)+UND(M,2.,16,2)+UND(M,2.,16,1)+UND(M,2.,16,0)
+ 
+!-----------------------------------------------------------------------
+!
+! BITS32 converts a series of signed 32-bit integers to a 32-column
+! matrix of bits.
+!
+!     S = series of signed 32-bit integers
+
+BITS32(S)               RAVEL(Y(S,31),Y(S,30),Y(S,29),Y(S,28),Y(S,27),Y(S,26),Y(S,25),Y(S,24),Y(S,23),Y(S,22),Y(S,21),Y(S,20),Y(S,19),Y(S,18),Y(S,17),Y(S,16),Y(S,15),Y(S,14),Y(S,13),Y(S,12),Y(S,11),Y(S,10),Y(S,9),Y(S,8),Y(S,7),Y(S,6),Y(S,5),Y(S,4),Y(S,3),Y(S,2),Y(S,1),Y(S,0))
+Y(S,N)                  BIT(S,N)
+
+!-----------------------------------------------------------------------
+!
+! UNBITS32 converts a 32-column matrix of bits to a series of signed
+! 32-bit integers.
+!
+!     S = series of 32-tuple bits
+
+UNBITS32(M)             Z(M,31)+Z(M,30)+Z(M,29)+Z(M,28)+Z(M,27)+Z(M,26)+Z(M,25)+Z(M,24)+Z(M,23)+Z(M,22)+Z(M,21)+Z(M,20)+Z(M,19)+Z(M,18)+Z(M,17)+Z(M,16)+Z(M,15)+Z(M,14)+Z(M,13)+Z(M,12)+Z(M,11)+Z(M,10)+Z(M,9)+Z(M,8)+Z(M,7)+Z(M,6)+Z(M,5)+Z(M,4)+Z(M,3)+Z(M,2)+Z(M,1)+Z(M,0) 
+Z(M,N)                  UND(M,2.,32,N)
+
+!**********************************************************************!
+!                                                                      !
+!			   OCTAL CONVERSION			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! OCT8 converts a series of unsigned 8-bit integers (bytes) to a
+! 3-column matrix of octal digits.
+!
+!     S = series of unsigned 8-bit integers (bytes)
+
+OCT8(S)                 RAVEL(DIGIT(S,8.,2),DIGIT(S,8.,1),DIGIT(S,8.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNOCT8 converts a 3-column matrix of octal digits to a series of
+! unsigned 8-bit integers (bytes).
+!
+!     M = 3-column matrix of octal digits
+
+UNOCT8(M)               UND(M,8.,3,2)+UND(M,8.,3,1)+UND(M,8.,3,0)
+
+!-----------------------------------------------------------------------
+!
+! OCT16 converts a series of unsigned 16-bit integers to a 6-column
+! matrix of octal digits.
+!
+!     S = series of unsigned 16-bit integers
+
+OCT16(S)                RAVEL(DIGIT(S,8.,5),DIGIT(S,8.,4),DIGIT(S,8.,3),DIGIT(S,8.,2),DIGIT(S,8.,1),DIGIT(S,8.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNOCT16 converts a 6-column matrix of octal digits to a series of 
+! unsigned 16-bit integers.
+!
+!     M = 6-column matrix of octal digits
+
+UNOCT16(M)              UND(M,8.,6,5)+UND(M,8.,6,4)+UND(M,8.,6,3)+UND(M,8.,6,2)+UND(M,8.,6,1)+UND(M,8.,6,0)
+
+!-----------------------------------------------------------------------
+!
+! OCT32 converts a series of signed 32-bit integers to an 11-column
+! matrix of octal digits.
+!
+!     S = series of signed 32-bit integers
+
+OCT32(S)                RAVEL(DIGIT(S,8.,10),DIGIT(S,8.,9),DIGIT(S,8.,8),DIGIT(S,8.,7),DIGIT(S,8.,6),DIGIT(S,8.,5),DIGIT(S,8.,4),DIGIT(S,8.,3),DIGIT(S,8.,2),DIGIT(S,8.,1),DIGIT(S,8.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNOCT32 converts an 11-column matrix of octal digits to a series of 
+! signed 32-bit integers.
+!
+!     M = 11-column matrix of octal digits
+
+UNOCT32(M)              UND(M,8.,11,10)+UND(M,8.,11,9)+UND(M,8.,11,8)+UND(M,8.,11,7)+UND(M,8.,11,6)+UND(M,8.,11,5)+UND(M,8.,11,4)+UND(M,8.,11,3)+UND(M,8.,11,2)+UND(M,8.,11,1)+UND(M,8.,11,0)
+
+!**********************************************************************!
+!                                                                      !
+!			  DECIMAL CONVERSION			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! DEC8 converts a series of unsigned 8-bit integers (bytes) to a
+! 3-column matrix of decimal digits.
+!
+!     S = series of unsigned 8-bit integers (bytes)
+
+DEC8(S)                 RAVEL(DIGIT(S,10.,2),DIGIT(S,10.,1),DIGIT(S,10.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNDEC8 converts a 3-column matrix of decimal digits to a series of
+! unsigned 8-bit integers (bytes).
+!
+!     M = 3-column matrix of decimal digits
+
+UNDEC8(M)               UND(M,10.,3,2)+UND(M,10.,3,1)+UND(M,10.,3,0)
+
+!-----------------------------------------------------------------------
+!
+! DEC16 converts a series of unsigned 16-bit integers to a 6-column
+! matrix of decimal digits.
+!
+!     S = series of unsigned 16-bit integers
+
+DEC16(S)                RAVEL(DIGIT(S,10.,4),DIGIT(S,10.,3),DIGIT(S,10.,2),DIGIT(S,10.,1),DIGIT(S,10.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNDEC16 converts a 5-column matrix of decimal digits to a series of 
+! unsigned 16-bit integers.
+!
+!     M = 5-column matrix of decimal digits
+
+UNDEC16(M)              UND(M,10.,5,4)+UND(M,10.,5,3)+UND(M,10.,5,2)+UND(M,10.,5,1)+UND(M,10.,5,0) 
+
+!-----------------------------------------------------------------------
+!
+! DEC32 converts a series of signed 32-bit integers to a 10-column
+! matrix of decimal digits.
+!
+!     S = series of signed 32-bit integers
+
+DEC32(S)                RAVEL(DIGIT(S,10.,9),DIGIT(S,10.,8),DIGIT(S,10.,7),DIGIT(S,10.,6),DIGIT(S,10.,5),DIGIT(S,10.,4),DIGIT(S,10.,3),DIGIT(S,10.,2),DIGIT(S,10.,1),DIGIT(S,10.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNDEC32 converts a 10-column matrix of decimal digits to a series of 
+! signed 32-bit integers.
+!
+!     M = 10-column matrix of decimal digits
+
+UNDEC32(M)              UND(M,10.,10,9)+UND(M,10.,10,8)+UND(M,10.,10,7)+UND(M,10.,10,6)+UND(M,10.,10,5)+UND(M,10.,10,4)+UND(M,10.,10,3)+UND(M,10.,10,2)+UND(M,10.,10,1)+UND(M,10.,10,0) 
+
+!**********************************************************************!
+!                                                                      !
+!			HEXADECIMAL CONVERSION			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! HEX8 converts a series of unsigned 8-bit integers (bytes) to a
+! 2-column matrix of hexadecimal digits.
+!
+!     S = series of unsigned 8-bit integers (bytes)
+
+HEX8(S)                 RAVEL(DIGIT(S,16.,1),DIGIT(S,16.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNHEX8 converts a 2-column matrix of hexadecimal digits to a series
+! of unsigned 8-bit integers (bytes).
+!
+!     M = 2-column matrix of hexadecimal digits
+
+UNHEX8(M)               UND(M,16.,2,1)+UND(M,16.,2,0)
+
+!-----------------------------------------------------------------------
+!
+! HEX16 converts a series of unsigned 16-bit integers to a 4-column
+! matrix of hexadecimal digits.
+!
+!     S = series of unsigned 16-bit integers
+
+HEX16(S)                RAVEL(DIGIT(S,16.,3),DIGIT(S,16.,2),DIGIT(S,16.,1),DIGIT(S,16.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNHEX16 converts a 4-column matrix of hexadecimal digits to a series
+! of unsigned 16-bit integers.
+!
+!     M = 4-column matrix of hexadecimal digits
+
+UNHEX16(M)              UND(M,16.,4,3)+UND(M,16.,4,2)+UND(M,16.,4,1)+UND(M,16.,4,0)
+
+!-----------------------------------------------------------------------
+!
+! HEX32 converts a series of signed 32-bit integers to an 8-column
+! matrix of hexadecimal digits.
+!
+!     S = series of signed 32-bit integers
+
+HEX32(S)                RAVEL(DIGIT(S,16.,7),DIGIT(S,16.,6),DIGIT(S,16.,5),DIGIT(S,16.,4),DIGIT(S,16.,3),DIGIT(S,16.,2),DIGIT(S,16.,1),DIGIT(S,16.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNHEX32 converts an 8-column matrix of hexadecimal digits to a series
+! of signed 32-bit integers.
+!
+!     M = 8-column matrix of hexadecimal digits
+
+UNHEX32(M)              UND(M,16.,8,7)+UND(M,16.,8,6)+UND(M,16.,8,5)+UND(M,16.,8,4)+UND(M,16.,8,3)+UND(M,16.,8,2)+UND(M,16.,8,1)+UND(M,16.,8,0)
+
+!**********************************************************************!
+!                                                                      !
+!			 BYTE-FLOAT CONVERSION                         !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! Flconvert converts a series of 2-byte integer pairs (interlaced), 
+! into a series of floating point numbers.
+!                                         
+! The first 2-byte pair contains the following:
+!               1 sign bit (1 == negative), 7 bits exponent
+!               1 byte (msb) of mantissa
+!
+! The second 2-byte pair is the 2 lower bytes of the 3-byte mantissa
+! 
+! Algorithm:  16^(SIGNBIT*(EXPONENT-64)) * MANTISSA/2^24
+!
+! Supporting macros:
+! GetExp pulls out the sign bit, subtracts 64 from the 7bits to return
+! the adjusted exponent.
+! GetMantissa combines the 24 bits and divides by 2^24 (8 bits from the
+! first 2-byte integer * 2^16 + the second 2-byte integer)                            !
+!
+!      S = series of two-byte pairs
+!
+
+Flconvert(S)  (16^(GetExp(DECIM(S,2,1)))) * (GETMANTISSA(S))
+
+GETEXP(S) (((BIT(DIGIT(S,256,1),7)==1) * (-1) * BITUNBIT7(DIGIT(S,256,1)))) + ((bit(digit(S,256,1),7)==0) * BitUnBit7(digit(s,256,1))) - 64
+GETMANTISSA(S) ((2^16*DIGIT(DECIM(S,2,1),256,0) + DECIM(S,2,2))/2^24)
+BITUNBIT7(S) ((2^6)*(BIT(S,6)) + (2^5)*(BIT(S,5)) + (2^4)*(BIT(S,4)) + (2^3)*(BIT(S,3)) + (2^2)*(BIT(S,2)) + (2^1)*(BIT(S,1)) + (2^0)*(BIT(S,0)))
+
+!**********************************************************************!
+!                                                                      !
+!			     BYTE FOLDING			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! FOLD168 splits a series of unsigned 16-bit integers into a 2-column
+! matrix of unsigned 8-bit integers (bytes).
+!
+!     S = series of unsigned 16-bit integers
+
+FOLD168(S)              RAVEL(DIGIT(S,256.,1),DIGIT(S,256.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNFOLD816 combines a 2-column matrix of unsigned 8-bit integers 
+! (bytes) into a series of unsigned 16-bit integers.
+!
+!     M = 2-column matrix of unsigned 8-bit integers (bytes)
+
+UNFOLD816(M)            UND(M,256.,2,1)+UND(M,256.,2,0)
+
+!-----------------------------------------------------------------------
+!
+! FOLD328 splits a series of signed 32-bit integers into a 4-column
+! matrix of unsigned 8-bit integers (bytes).
+!
+!     S = series of signed 32-bit integers
+
+FOLD328(S)              RAVEL(DIGIT(S,256.,3),DIGIT(S,256.,2),DIGIT(S,256.,1),DIGIT(S,256.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNFOLD832 combines a 2-column matrix of unsigned 8-bit integers 
+! (bytes) into a series of signed 32-bit integers.
+!
+!     M = 2-column matrix of unsigned 8-bit integers (bytes)
+
+UNFOLD832(M)            UND(M,256.,4,3)+UND(M,256.,4,2)+UND(M,256.,4,1)+UND(M,256.,4,0)
+
+!-----------------------------------------------------------------------
+!
+! FOLD3216 splits a series of signed 32-bit integers into a 2-column
+! matrix of unsigned 16-bit integers (bytes).
+!
+!     S = series of signed 32-bit integers
+
+FOLD3216(S)             RAVEL(DIGIT(S,65536.,1),DIGIT(S,65536.,0))
+
+!-----------------------------------------------------------------------
+!
+! UNFOLD1632 combines a 2-column matrix of unsigned 16-bit integers 
+! into a series of signed 32-bit integers.
+!
+!     M = 2-column matrix of unsigned 16-bit integers
+
+UNFOLD1632(M)           UND(M,65536.,2,1)+UND(M,65536.,2,0)
+
+
+!-------------------------------- END ------------------------------------

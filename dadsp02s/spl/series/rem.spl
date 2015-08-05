@@ -1,0 +1,70 @@
+/*****************************************************************************
+*                                                                            *
+*   REM.SPL      Copyright (C) 2002-2005 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Remainder with same sign as first input                     *
+*                                                                            *
+*   Revisions:   25 Jul 2002  RRR  Creation                                  *
+*                15 Dec 2005  RRR  use updated modulo (%) operator           *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_REM
+
+    REM     
+
+    Purpose: Rounds a value towards zero
+                                                                        
+    Format:  REM(num, den)
+
+              num - a real or series, numerator value
+              den - a real or series, denominator value
+
+    Returns: A real or series
+
+    Example:
+             rem(5, 3)
+
+             returns 2
+
+
+             rem(-5, 3)
+
+             returns -2
+
+    Remarks:
+             REM(a, b) has the same sign as A but MOD(a, b) has the
+             same sign as B. Both are equal if the inputs have the same
+             sign, but differ by B if the signs differ, i.e.:
+
+             REM(-a, b) == MOD(-a, b) - b
+
+    See Also:
+             %
+             Ceil
+             Floor
+             Mod
+#endif
+
+
+
+/* remainder with same sign as a */
+rem(a, b)
+{
+	local r, z;
+
+	z = a < 0;
+
+	/* modulo */
+	r = abs(a) % abs(b);
+
+	/* set to sign of a */
+	r *= -z + not(z);
+
+	return(r);
+}
+

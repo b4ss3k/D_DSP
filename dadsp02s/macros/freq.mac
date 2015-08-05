@@ -1,0 +1,370 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!                                 FREQ.MAC                                   !
+!                                                                            !
+!                               April 4, 1995                                !
+!                                                                            !
+!  FFT-related macros, including: frequency-domain macros for convolution,   !
+!  deconvolution, and correlation functions; time- and frequency-domain	     !
+!  macros for covariance functions; time- and frequency-domain macros for    !
+!  spectral density and coherence functions; group delay, FFT padding,       !
+!  and wrapping; two-dimensional FFT's; frequency-domain integration;        !
+!  demodulation; and normalized auto- and cross- correlation. The freqency-  !
+!  domain macros employ FFT's to perform time-domain functions, which 	     !
+!  speeds them up.	    			 			     !
+!                                                                            !
+!                  Copyright (C) 1995 DSP Development Corp.                  !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!**********************************************************************!
+!                                                                      !
+!	     CONVOLUTION, DECONVOLUTION, AND CORRELATION	       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! FCONV performs a convolution using FFT's.  It is the frequency-domain
+! equivalent of the function CONV.
+!
+!     A = first series
+!     B = second series
+
+FCONV(A,B)		EXTRACT(REAL(IFFT(FFT(MAXTWO(A,B))*FFT(MAXTWO(B,A)))),1,LENGTH(A)+LENGTH(B)-1)
+MAXTWO(A,B)		EXTRACT(A,1,2*MAXLEN(A,B))
+MAXLEN(A,B)		INT(MAX(GSER(LENGTH(A),LENGTH(B))))
+
+!-----------------------------------------------------------------------
+!
+! FDECONV performs a deconvolution using FFT's.  There is currently no
+! time-domain equivalent for this macro.  The result of this macro will
+! differ from the original argument to FCONV by a constant, i.e. if
+! FCONV(A,B) = C, then FDECONV(C,A) = B + K, where K is a constant.
+!
+!     C = series to be deconvolved
+!     A = series to deconvolve by
+
+FDECONV(C,A)		EXTRACT(REAL(IFFT(FFT(EXTRACT(C,1,2*MAXLEND(C,A)))/FFT(EXTRACT(A,1,2*MAXLEND(C,A))))),1,LENGTH(C)+1-LENGTH(A))
+MAXLEND(C,A)		FLOOR(MAX(GSER(LENGTH(A),LENGTH(C)+1-LENGTH(A))))
+
+!-----------------------------------------------------------------------
+!
+! FCROSS performs a cross-correlation of two series using FFT's.  It is
+! the frequency-domain equivalent of the built-in macro CROSSCOR.
+!
+!     A = first series
+!     B = second series
+
+FCROSS(A,B)             REAL(IFFT(FFT(TWO(A))*CONJ(FFT(TWO(B)))))*2/(LENGTH(A)+LENGTH(B))
+
+!-----------------------------------------------------------------------
+!
+! FACOR performs an auto-correlation using FFT's.  It is the frequency-
+! domain equivalent of the built-in macro AUTOCOR.
+!
+!     A = input series
+
+FACOR(A)                REAL(IFFT(MAG(FFT(TWO(A))^2)))/LENGTH(A)
+TWO(S)                  EXTRACT(S,1,2*LENGTH(S))
+
+!-----------------------------------------------------------------------
+!
+! FPOW performs a power spectrum of two series.
+!
+!     A = first series
+!     B = second series
+
+FPOW(A,B)               FFT(TWO(A))*FFT(TWO(B))
+
+!**********************************************************************!
+!                                                                      !
+!			      COVARIANCE			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! COVAR performs covariance in the time domain.
+!
+!     A = first series
+!     B = second series
+
+COVAR(A,B)              (CROSSCOR(A,B))-MEAN(A)*MEAN(B)
+
+!-----------------------------------------------------------------------
+!
+! FCOVAR performs covariance using FFT's.  It is the frequency-domain
+! equivalent of COVAR.
+!
+!     A = first series
+!     B = second series
+
+FCOVAR(A,B)             (FCROSS(A,B))-MEAN(A)*MEAN(B)
+
+!-----------------------------------------------------------------------
+!
+! ACOVAR performs auto-covariance in the time domain.
+!
+!     A = input series
+
+ACOVAR(A)               (AUTOCOR(A))-MEAN(A)^2
+
+!-----------------------------------------------------------------------
+!
+! FACOVAR performs auto-covariance using FFT's.  It is the frequency-
+! domain equivalent of ACOVAR.
+!
+!     A = input series
+
+FACOVAR(A)              (FACOR(A))-MEAN(A)^2
+
+!**********************************************************************!
+!                                                                      !
+!		    SPECTRAL DENSITY AND COHERENCE		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! TPSD performs a power spectral density using convolution.  It is the
+! time-domain equivalent of the built-in macro PSD.
+!
+!     A = input series
+
+TPSD(A)			MAG(DECIMATE(EXTRACT(FFTP(DELAY(AUTOCOR(A),1)),1,LENGTH(A)),2))*8/LENGTH(A)
+
+!-----------------------------------------------------------------------
+!
+! CSD performs a cross spectral density in polar form, i.e. with both
+! magnitude and phase.  You can then calculate MAG and PHASE of the
+! result.
+!
+!     A = first series
+!     B = second series
+
+CSD(A,B)		EXTRACT(FFTP(A),1,INT(LENGTH(A)/2))*EXTRACT(CONJ(FFTP(B)),1,INT(LENGTH(B)/2))*16/(LENGTH(A)+LENGTH(B))^2
+
+!-----------------------------------------------------------------------
+!
+! TCSD performs a cross spectral density using convolution.  It is the
+! time-domain equivalent of CSD.
+!
+!     A = first series
+!     B = second series
+
+TCSD(A,B)		DECIMATE(EXTRACT(FFTP(DELAY(CROSSCOR(A,B),1)),1,INT(MAX(GSER(LENGTH(A),LENGTH(B))))),2)*16/(LENGTH(A)+LENGTH(B))
+
+!-----------------------------------------------------------------------
+!
+! COH calculates the coherence between two series, which should always
+! be a real number between 0 and 1.
+!
+!     A = first series
+!     B = second series
+
+COH(A,B)                MAG(CSD(A,B))^2/(PSD(A)*PSD(B))
+
+!-----------------------------------------------------------------------
+!
+! TCOH calculates the coherence between two series, which should always
+! be a real number between 0 and 1.  TCOH uses convolution and is
+! therefore the time-domain equivalent of COH.
+!
+!     A = first series
+!     B = second series
+
+TCOH(A,B)		MAG(TCSD(A,B))^2/(TPSD(A)*TPSD(B))
+
+!**********************************************************************!
+!                                                                      !
+!			     GROUP DELAY			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! GRPDELAY performs a group delay using FFT's.
+!
+!     S = input series
+
+GRPDELAY(S)             REAL(FFT(XVALS(S)*(S))/FFT(S))
+
+!**********************************************************************!
+!                                                                      !
+!			 PADDING AND WRAPPING			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! PAD2 pads a series with zeroes so that the resulting series has a
+! length which is a power of two.  FFT's, and all macros which use
+! FFT's, such as SPECTRUM and PSD, work most efficiently when the prime
+! factors of the length of the input series are low, and they are most
+! efficient when the length is a power of two.
+!
+!      S = series to be padded
+
+PAD2(S)			EXTRACT(S,1,FLOOR(2^(CEILING(LOG(LENGTH(S))/LOG(2)))))
+
+!-----------------------------------------------------------------------
+! 
+! WRAPHALF reverses the two halves of a series, plotting the second half
+! first, followed by the first half.  Also adjusts the X offset.
+! Useful with FFT's.
+!
+!     S = series to be wrapped
+
+WRAPHALF(S)             POFF|CONCAT(EXTRACT(S,FLOOR(LENGTH(S)/2)+1,FLOOR(LENGTH(S)/2)),EXTRACT(S,1,FLOOR(LENGTH(S)/2)))|SETXOFFSET(-(XOFFSET)+2*(XOFFSET(S)))|SETDELTAX(DELTAX(S))|PON
+
+!**********************************************************************!
+!                                                                      !
+!			TWO-DIMENSIONAL FFT'S			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! FFT2 performs a two-dimensional FFT on a matrix.  For timing
+! considerations, it should be noted that this procedure performs a
+! one-dimensional FFT on each row and on each column.
+!
+!     M = input matrix
+
+FFT2(M)        (TRANSPOSE(FFT(TRANSPOSE(FFT(M)))))
+
+!-----------------------------------------------------------------------
+!
+! IFFT2 performs a two-dimensional IFFT on a matrix.  For timing
+! considerations, it should be noted that this procedure performs a
+! one-dimensional IFFT on each row and on each column.
+!
+!     M = input matrix
+
+IFFT2(M)       (TRANSPOSE(IFFT(TRANSPOSE(IFFT(M)))))
+
+!**********************************************************************!
+!                                                                      !
+!			FREQUENCY DOMAIN INTEGRATION		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! FINTEG performs integration in the frequency domain by calculating 
+!                  F(f)/(i*pi*f)
+!
+! where      F(f) is the FFT of the original series
+!            f    is the frequency range of the fft
+!            i    is sqrt(-1)
+!
+! The integration result is inverse transformed back into the time domain.
+! FFTXVALS generates the x values with inverse spacing.
+!
+! Note:   This method performs a de-meaned integration, i.e the DC 
+!         offset of both the input and output series are removed.
+!
+! Example:
+! 	W1: GSIN(100,.01,2)
+! 	W2: FINTEG(W1)
+!
+! This is identical (within roundoff error) to:
+! 	W3: INTEG(W1-MEAN(W1))
+! 	W4: W3-MEAN(W3)
+!
+!	S = input series 
+
+FINTEG(S)    REAL(IFFT(FFT(S)/(FFTXVALS(S)*I*PI)))
+FFTXVALS(S)  GLINE(LENGTH(S), RATE(S)/LENGTH(S), 1, 0)
+
+!**********************************************************************!
+!                                                                      !
+!			 FREQUENCY DEMODULATION 		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! FDEMOD produces a frequency (Hz) vs. time plot plotting outlier values
+! in a series with a linear interpolation of the previous and next non-
+! outlier values. It works on "perfect" data that is data with an 
+! amplitude of exactly 1.  When noise is added to the amplitude, the 
+! macro does not evaluate properly.
+! 
+! OUTLIER, linear interpolation replacement, forms an XY series by 
+! removing outliers from both the XVALS and YVALS of the input series.
+! The outliers are then replaced by a linear (straight line) 
+! interpolation using XYINTERP. Any number of outliers may occur in
+! succession. Notice that traditional looping is not required.
+!
+!	FMSER = input series 
+
+FDEMOD(FMSER) GETPEAK(ABS(DERIV(ASIN(W1))))/(2*PI);OUTLIER(CURR,CURR==0)
+OUTLIER(S,COND) XYINTERP(DELETE(XVALS(S), COND), DELETE(S, COND))
+
+!**********************************************************************!
+!                                                                      !
+!		NORMALIZED AUTO AND CROSS CORRELATIONS		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! XCORR calculates a normalized cross-correlation using the convolution
+! function such that:
+!                               
+! +1 = perfect correlation
+!  0 = no correlation
+! -1 = negative correlation
+!
+!     A = first series
+!     B = second series
+!
+! The zero lag value occurs in the middle of the plot (at time t=0.0).
+
+XCORR(A,B) (2*CONV(A,REV(B))/((MEAN((A)*(A))*LENGTH(A)+MEAN((B)*(B))*LENGTH(B))))
+
+!-----------------------------------------------------------------------
+!
+! ACORR calculates a normalized auto-correlation using the convolution
+! function such that:
+!                               
+! +1 = perfect correlation
+!  0 = no correlation
+! -1 = negative correlation
+!
+!     A = input series
+!
+! The zero lag value occurs in the middle of the plot (at time t=0.0).
+
+ACORR(A) (CONV(A,REV(A))/(MEAN((A)*(A))*LENGTH(A)))
+
+!-----------------------------------------------------------------------
+!
+! FXCORR performs a cross-correlation of two series using FFT's.  It is
+! the frequency-domain equivalent of XCORR. For large datasets, FXCORR 
+! is much faster that XCORR.
+!
+!     A = first series
+!     B = second series
+!
+! The zero lag value is the first point of the series.
+
+FXCORR(A,B)  REAL(IFFT(FFT(TWO(A))*CONJ(FFT(TWO(B)))))*2/(MEAN((A)*(A))*LENGTH(A)+MEAN((B)*(B))*LENGTH(B))
+
+!-----------------------------------------------------------------------
+!
+! FACORR performs an auto-correlation using FFT's. It is the frequency-
+! domain equivalent of ACORR. For large datasets, FACORR is much faster 
+! that XCORR.
+!
+!     A = input series
+!
+! The zero lag value is the first point of the series.
+
+FACORR(A)   REAL(IFFT(MAG(FFT(TWO(A))^2)))/(MEAN(A*A)*LENGTH(A))
+TWO(S)      EXTRACT(S,1,2*LENGTH(S))
+
+!================================== END ===================================

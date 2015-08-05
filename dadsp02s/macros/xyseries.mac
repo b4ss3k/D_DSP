@@ -1,0 +1,140 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!                               XYSERIES.MAC                                 !
+!                                                                            !
+!                              April 10, 1993                                !
+!                                                                            !
+!  Macros for computations on X-Y data:  X-Y linear regression, two-	     !
+!  dimensional X-Y histogram, area of a closed loop in an X-Y window, and    !
+!  X-Y spline interpolation.						     !
+!                                                                            !
+!                  Copyright (C) 1995 DSP Development Corp.                  !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!**********************************************************************!
+!                                                                      !
+!			X-Y LINEAR REGRESSION			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+! 
+! XYLINREG performs a linear regression on an X-Y window.  The result
+! can be overplotted onto the original X-Y window.  XYLINREG works by
+! adjusting the output of the LINREG2 function, which by itself does
+! not generate data which can be directly compared to X-Y data.
+!
+! Example: W4: XY(W2,W3)
+!          W5: XYLINREG(W4)
+!          W6: W4|OVERPLOT(W5)
+!
+!     XYWIN = X-Y window to compute linear regression on
+
+XYLINREG(XYWIN)		LINREG2(YVALS(XYWIN),XVALS(XYWIN));POLYGRAPH(GSER(GETPT(CURRENT,1),(GETPT(CURRENT,2)-GETPT(CURRENT,1))/DELTAX(CURRENT)),GLINE(LENGTH(XVALS(XYWIN)),1,(MAX(XVALS(XYWIN))-MIN(XVALS(XYWIN)))/LENGTH(XVALS(XYWIN)),MIN(XVALS(XYWIN))))
+
+!**********************************************************************!
+!                                                                      !
+!			    X-Y HISTOGRAM			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+! 
+! XYHISTOGRAM performs a two-dimensional histogram of X-Y data.
+! Specify an X-Y window, the number of bins in the X direction, and the
+! number of bins in the Y direction.  The result is a matrix with the
+! entries being the number of times the X-Y window has data occurring
+! in that bin.  This macro calls a looping macro which cycles
+! sequentially through each point in the X-Y window.
+!
+!     XYSER = X-Y window
+!     XBINS = number of bins in the X direction
+!     YBINS = number of bins in the Y direction
+
+XYHISTOGRAM(XYSER,XBINS,YBINS)  GLINE(CEILING(MAG((XBINS)*(YBINS))),1,0,0);FOR('N',1,LENGTH(XYSER),INCCURR(XYHISTPT(XYSER,EVAL('N'),XBINS,YBINS)));RAVEL(CURR,FLOOR(XBINS))
+XYHISTPT(XYSER,N,XBINS,YBINS)	FLOOR(BIN(XVALS(XYSER),N,XBINS)+(BIN(YVALS(XYSER),N,YBINS)-1)*(XBINS))
+BIN(SER,N,BINS)			FLOOR(((GETPT(SER,N))-MIN(SER))*(BINS)/(MAX(SER)-MIN(SER)+0.0001))+1
+INCCURR(P)			SETPT(CURR,GETPT(CURR,P)+1,P)
+FOR(V,P,Q,FORM)			POFF;DEFMACRO(V,(P)-1,1);WHILE(EVAL(V)<Q,LOOP(V,FORM));PON
+LOOP(V,FORM)			DEFMACRO(V,EVAL(V)+1,1);ECHO(STRCAT(V,' = ',STRNUM(EVAL(V))));FORM
+
+!**********************************************************************!
+!                                                                      !
+!			 AREA OF CLOSED LOOP			       !
+!                                                                      !
+!**********************************************************************!
+
+! CWAREA and CCWAREA find the area of a closed loop, as displayed as an
+! XY series, from the component X and Y series.  These macros assume
+! that the last point of the XY series connects to the first point to
+! form a closed area.  
+!
+! Because of the way XYINTERP works, you must first ascertain whether
+! the order of points in the X and Y series defines a clockwise or
+! counterclockwise loop.  Use CWAREA for a clockwise loop and CCWAREA
+! for a counterclockwise loop.  
+!
+! If you use the wrong macro, because XYINTERP does not return an error
+! when it is inside a macro, you will simply fail to get an error or a
+! return value.  In this case, just use the other macro, or reverse the
+! order of the arguments.
+!
+! These macros compute area by calculating the center of the means of
+! the input series.  They assume that a radius drawn from the center
+! will meet the curve in only one point.  If the curve doubles back
+! along a radius so that it intersects the radius in more than one
+! point, you will, in this case also, fail to get either an error or a
+! return value.
+
+!-----------------------------------------------------------------------
+!
+! CWAREA finds the area of a closed clockwise loop.  See description
+! above.
+!
+!     XSER = x series of loop
+!     YSER = y series of loop
+
+CWAREA(XSER,YSER)       AREA(XYINTERP(XY(REVERSE(UNWRAP(PHASE(ISER(XSER,YSER)))),REVERSE(MAG(ISER(XSER,YSER))^2/2))))
+ISER(XSER,YSER)         ((XSER)-(MEAN(XSER)))+I*((YSER)-(MEAN(YSER)))
+
+!-----------------------------------------------------------------------
+!
+! CCWAREA finds the area of a closed counterclockwise loop.  See
+! description above.
+!
+!     XSER = x series of loop
+!     YSER = y series of loop
+
+CCWAREA(XSER,YSER)      AREA(XYINTERP(XY(UNWRAP(PHASE(ISER(XSER,YSER))),MAG(ISER(XSER,YSER))^2/2)))
+
+
+!**********************************************************************!
+!                                                                      !
+!			 X-Y SPLINE INTERPOLATION                       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------------
+!
+! XYSPLINE performs a spline fit of XY data.  The x values of the XY 
+! series are linearly interpolated and the y values are fitted with a 
+! cubic spline.   
+!
+! Example:
+!
+! 	W1: XY(GSIN(100,.01,20),GCOS(100,.01,10))
+! 	W2: XYSPLINE(W1, 3)
+!
+! W2 contains the spline fit of the XY data in W1.  W2 is 298 points long.
+! XYSPLINE also works on even interval data.
+!
+! 	S = XY series to interpolate
+! 	N = interpolation factor
+!
+
+XYSPLINE(S, N) XY(INTERP(XVALS(S), N), SPLINE(YVALS(S), N))
+
+
+!--------------------------------- END -----------------------------------

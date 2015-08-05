@@ -1,0 +1,62 @@
+                          POLYNOMIAL ALGORITHMS.
+
+  In this discussion, polynomials will be denoted by uppercase Roman letters
+with or without subscripts: A, B, R1, Q3, Ri.  Polynomial multiplication will
+be denoted by *.
+
+  1. Division Algorithm.  Given polynomials A and B with coefficients in a
+field F, there exist polynomials Q and R with coefficients in F such that
+                               A = Q*B + R
+and deg R < deg B.  A is called the dividend, B the divisor, Q the quotient,
+and R the remainder.
+
+  2. Euclid's Algorithm.  Given polynomials A and B, Euclid's algorithm is a
+method for finding the GCD (greatest common divisor) of A and B.  The method
+consists of repeated use of the division algorithm.
+  First, relabel A and B by A = R0, B = R1.  Then apply the division
+algorithm to R0 and R1 to find polynomials Q1 and R2 so that 
+                     R0 = Q1*R1 + R2, deg R2 < deg R1.
+  For the second step apply the division algorithm to R1 and R2:
+                     R1 = Q2*R2 + R3, deg R3 < deg R2.
+  Continue doing this.  In general, the i-th step will look like this:
+          R(i-1) = Qi*Ri + R(i+1), deg R(i+1) < deg Ri.
+Since the degrees of the remainders (Ri's) decrease, eventually there will be
+a zero remainder.  The last non-zero remainder is the GCD of A and B.
+
+  3. Bezout's Identity.  Given polynomials A and B with coefficients in a
+field F, there exist polynomials M and N, also with coefficients in F, such
+that
+                        M*A + N*B = GCD of A and B. 
+The latter equation is called "Bezout's identity."  There are many solutions
+to Bezout's identity, but one can be found by using the calculations from
+Euclid's algorithm for A and B.  The underlying idea is to express each
+remainder in Euclid's algorithm as a polynomial of the form M*A + N*B: 
+                           Ri = Mi*A + Ni*B.
+Since the GCD is a remainder, this would yield a solution to Bezout's
+identity.  To find Mi and Ni, use the notation in our description of Euclid's
+algorithm and start with R0 and R1 (polynomials A and B in disguise).  Then
+use a recurrence relation for the remaining remainders:
+                           M0 = 1, N0 = 0;
+                           M1 = 0, N1 = 1;
+                           Mi = M(i-2) - Q(i-1)*M(i-1), i > 1;
+                           Ni = N(i-2) - Q(i-1)*N(i-1), i > 1.
+
+  4. Sturm's Algorithm.  This is an algorithm for separating the real roots
+of a polynomial A with real coefficients.  It utilizes Euclid's algorithm.
+  First, let B be the derivative of A.  Then carry out Euclid's algorithm for
+polynomials A and B obtaining the non-zero remainders R0, R1, ..., Rk.  In
+earlier notation, R0 = A, R1 = B and Rk = GCD of A and B.  Define a sequence
+of polynomials S0, S1, ..., Sk by replacing every second pair of Ri's with
+their negatives:
+                  S0 = R0, S1 = R1, S2 = -R2, S3 = -R3, 
+                  S4 = R4, S5 = R5, S6 = -R6, S7 = -R7,...
+Next, given a real number a, define w(a) to be the number of sign changes in
+the sequence of real numbers S0(a), S1(a), ... Sk(a).
+
+  STURM'S THEOREM: Let r and s be real numbers r < s.  Let A be a real
+polynomial with no multiple roots such that r and s are not roots of A.  Then
+the number of roots of A lying between r and s is equal to w(r) - w(s).
+
+
+An excellent discussion of these results can be found in the book "A Concrete
+Introduction to Higher Algebra", by Lindsay Childs (Springer-Verlag 1979).

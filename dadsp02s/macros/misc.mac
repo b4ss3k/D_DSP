@@ -1,0 +1,515 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!				   MISC.MAC				     !
+!                                                                            !
+!				 March 25, 1995				     !
+!                                                                            !
+!  Miscellaneous macros:  modulo; complex series editing; unscaled overplot  !
+!  and constant overplot; rounding and order of magnitude; prime numbers     !
+!  and prime factors; display adjustment; protect and unprotect windows;     !
+!  scrolling of multiple windows; conditionals; elementary logicals; and     !
+!  modified PRINT, PLOT, and PS.					     !				      				             !
+!                                                                            !
+!                  Copyright (C) 1995 DSP Development Corp.                  !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!**********************************************************************!
+!                                                                      !
+!				MODULO				       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+! 
+! MOD computes the modulo (remainder) of one number or series with
+! respect to a base.  E.g. MOD(7,2) = 1, MOD(5*PI,2*PI) = PI.
+! 
+!     A = number or series to take modulo of
+!     B = number to take modulo with respect to
+
+MOD(A,B)                ((A)/(B)-INT((A)/(B)))*(B)
+
+!-----------------------------------------------------------------------
+! 
+! IMOD is mathematically equivalent to MOD for integers, but it should
+! be used when it must be guaranteed to return an integer.
+! 
+!     A = number or series to take modulo of
+!     B = number to modulo with respect to
+
+IMOD(A,B)               FLOOR(((A)/(B)-INT((A)/(B)))*(B)+0.5)
+
+!**********************************************************************!
+!                                                                      !
+!			    COMPLEX SERIES			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+! 
+! CEDIT does an edit of a complex series.  EDIT does not accept complex
+! series; CEDIT edits first the real part, then the imaginary part, then
+! recombines them.
+!
+!     S = complex series to be edited
+
+CEDIT(S)                EDIT(REAL(S))+I*EDIT(IMAG(S))
+
+!-----------------------------------------------------------------------
+! 
+! CTABLES displays two complex series in a table, with x values.  
+! TABLES does not accept complex series.  For easier comparison, 
+! CTABLES displays real parts next to each other, and imaginary parts
+! next to each other.
+!
+!     A = first complex series to be displayed
+!     B = second complex series to be displayed
+
+CTABLE(A,B)		TABLES(XVALS(A),REAL(A),REAL(B),IMAG(A),IMAG(B))
+
+!**********************************************************************!
+!                                                                      !
+!			       OVERPLOT				       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+! 
+! OVERPLOTU is an unscaled overplot.  OVERPLOT always rescales, but for
+! series whose y values are not comparable, this is meaningless.  This
+! function suppresses the rescaling.  However, it does not display 
+! an additional y axis; the y axis displayed is valid only for the first
+! series in the window.
+!
+!     S = series to be overplotted unscaled
+
+OVERPLOTU(S)            OVERPLOT(((MAX(GETSERIES(CURR,1)))-(MIN(GETSERIES(CURR,1))))*(S))
+
+!-----------------------------------------------------------------------
+! 
+! OPLINE overplots a constant line the length of the original series.
+! The constant may be an expression such as MEAN, MAX, or MIN.
+!
+!     V = constant value of line to be overplotted
+
+OPLINE(V)		OVERPLOT(ONES(LENGTH)*V)
+
+!-----------------------------------------------------------------------
+!
+! OPLINEC overplots a constant line the length of the original series,
+! in any color.  The constant may be an expression such as MEAN, MAX,
+! or MIN.
+!
+!     V     = constant value of line to be overplotted
+!     COLOR = color of overplotted line
+
+OPLINEC(V,COLOR)	OVERPLOT(ONES(LENGTH)*V,COLOR)
+
+!**********************************************************************!
+!                                                                      !
+!		   ROUNDING AND ORDER OF MAGNITUDE		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+! 
+! PREC (for precision) rounds off a number any level of precision.
+! E.g. PREC(X,1) rounds to the nearest integer; PREC(X,2) rounds to the
+! nearest even integer; PREC(X,100) rounds to the nearest 100;
+! PREC(X,.001) rounds to the nearest thousandth.
+!
+!     X     = number or series to be rounded 
+!     LEVEL = level at which to round
+
+PREC(X,LEVEL)           FLOOR((X)/(LEVEL)+0.5)*(LEVEL)
+
+!-----------------------------------------------------------------------
+! 
+! ORDMAG is the order of magnitude of X: ORDMAG(7) = 0, ORDMAG(70) = 1,
+! ORDMAG(700) = 2, ORDMAG(0.7) = -1.
+!
+!     X = input number or series
+
+ORDMAG(X)               FLOOR(LOG10(X))
+
+!**********************************************************************!
+!                                                                      !
+!		   PRIME NUMBERS AND PRIME FACTORS		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+! 
+! PRIMES generates a series consisting of all of the prime numbers less
+! than or equal to the argument.  The speed of PRIMES is proportional
+! to N log(N).
+!
+! Example: PRIMES(19) generates the series 2, 3, 5, 7, 11, 13, 17, 19.
+!
+!     N = upper limit of list of primes
+
+PRIMES(N)		DELETE(GLINE((N)-1,1,1,2),ROWREDUCE((FLOOR(QUOP(N))==QUOP(N))&&(QUOP(N)>1),'||'))
+QUOP(N)			RAVEL(REPLICATE(GLINE((N)-1,1,1,2),CEILING(SQRT((N)-1))),(N)-1)/TRANSPOSE(RAVEL(REPLICATE(GLINE(CEILING(SQRT((N)-1)),1,1,2),(N)-1),CEILING(SQRT((N)-1))))
+
+!-----------------------------------------------------------------------
+!
+! PRIMEFACS computes the prime factors of any integer.  For performance
+! reasons, you must first generate a window of PRIMES(M), move to a
+! different window, and then use PRIMEFACS(N).  When you do PRIMES(M),
+! M must be greater than or equal to N, or, if it is known that the
+! prime factors of N do not exceed a certain limit L, M must be greater 
+! or equal to L.  Because PRIMEFACS is much faster than PRIMES, if you
+! doing many factorizations, you may want to store the table of primes
+! to a dataset or file.
+!
+! Example: To find the prime factors of 100, type PRIMES(100) in W5,
+! then go to W6 and type PRIMEFACS(W5,100); the latter will generate 
+! the series 2, 2, 5, 5.
+!
+!     WP = window containing PRIMES(N)
+!     N  = number to factor
+
+PRIMEFACS(WP,N)		DELETE(PRIMSER(WP,N),NOT(PRIMSER(WP,N)))
+PRIMSER(WP,N)		UNRAVEL(TRANSPOSE(OUTERPROD(WP,GLINE(CEILING(LOG(N)/LOG(2)),1,0,0),'+')*(QUOPF(WP,N)==FLOOR(QUOPF(WP,N)))))
+QUOPF(WP,N)		(N)/OUTERPROD(WP,GLINE(CEILING(LOG(N)/LOG(2)),1,1,1),'^')
+
+!**********************************************************************!
+!                                                                      !
+!                         DISPLAY ADJUSTMENT                           !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! THICKLINE thickens the current signal line by a factor of 3.
+
+THICKLINE		POFF|OVERPLOT(CURRENT*1.01,WHITE)|OVERPLOT(CURRENT*.99,WHITE)|PON
+
+!-----------------------------------------------------------------------
+!
+! LOWLIGHT overplots a portion of the current series, by point numbers,
+! in the background color, thereby rendering it invisible.  Useful for
+! missing data.  To define the background color, LOWLIGHT uses the macro
+! BACKCOLOR, which defaults to blue; if the background color is
+! different, redefine BACKCOLOR.  To undo LOWLIGHT, type UNOVERPLOT.  
+!
+!     START = starting point value of the area to be colored out
+!     N     = number of points to be colored out
+
+LOWLIGHT(START,N)	OVERPLOT(EXTRACT(CURR,START,N),BACKCOLOR)
+BACKCOLOR		BLUE
+
+!-----------------------------------------------------------------------
+!
+! LOWLIGHTX overplots a portion of the current series, by x values, in
+! the background color, thereby rendering it invisible.  Useful for
+! missing data.  To define the background color, LOWLIGHTX uses the
+! macro BACKCOLOR, which defaults to blue; if the background color is
+! different, redefine BACKCOLOR.  To undo LOWLIGHTX, type UNOVERPLOT.  
+!
+!     XB = starting x value of the area to be colored out
+!     XE = ending x value of the area to be colored out
+
+LOWLIGHTX(XB,XE)	OVERPLOT(EXTRACTX(CURR,XB,XE),BACKCOLOR)
+EXTRACTX(S,XB,XE)       EXTRACT(S,INDS(S,XB),(INDS(S,XE))-(INDS(S,XB))+1)
+
+!-----------------------------------------------------------------------
+!
+! HIGHLIGHT overplots a portion of the current series, by point numbers,
+! in the color specified.  To undo HIGHLIGHT, type UNOVERPLOT.
+!
+!     START = starting point value of the area to be highlighted
+!     N     = number of points to be hightlighted
+!     COLOR = color to be used for highliting
+
+HIGHLIGHT(START,N,COLOR)	OVERPLOT(EXTRACT(CURR,START,N),COLOR)
+
+!-----------------------------------------------------------------------
+!
+! HIGHLIGHTX overplots a portion of the current series, by x values, in
+! the color specified.  To undo HIGHLIGHTX, type UNOVERPLOT.
+!
+!     XB    = starting x value of the area to be highlighted
+!     XE    = ending x value of the area to be hightlighted
+!     COLOR = color to be used for highliting
+
+HIGHLIGHTX(XB,XE,COLOR)		OVERPLOT(EXTRACTX(CURR,XB,XE),COLOR)
+
+!-----------------------------------------------------------------------
+!
+! CU returns the current window as a window reference.  Some functions
+! accept CU as a synonym for the CURRENT function; other functions,
+! such as CURPOS, do not respond to CURRENT but require an explicit
+! window reference.  CU can useful in the latter case.
+
+CU			EVAL(STRCAT('W',STRNUM(GETWNUM)))
+
+!-----------------------------------------------------------------------
+!
+! LEADZER takes a number and creates a string containing that number 
+! with a certain number of digits, including leading zeroes instead of
+! leading blanks.
+!
+!    VAL   = value to be represented
+!    PLACE = number of digits
+
+LEADZER(VAL,PLACE)	STREXT(STRNUM(FLOOR((VAL)+10^(PLACE))),2,FLOOR(PLACE))
+
+!**********************************************************************!
+!                                                                      !
+!		    PROTECT AND UNPROTECT WINDOWS		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+! 
+! PROTFORM is a modification of the PROTECT function.  PROTECT throws
+! away the window formula and uses only the window label to identify
+! the window.  PROTFORM puts the formula into the label so that the
+! formula can be retrieved to later unprotect the window, and then it
+! protects the window.  The formula label generated by PROTFORM
+! consists of "Protect:" followed by the formula.
+
+PROTFORM		PROTECT(STRCAT('Protect: ',GETWFORM))
+
+!-----------------------------------------------------------------------
+!
+! UNPROTFORM undoes the window protection done by PROTFORM by retrieving
+! the formula in the window label and reactivating it as the window 
+! formula.
+
+UNPROTFORM		SETWFORM(STREXT(GETLABEL,10))
+
+!-----------------------------------------------------------------------
+!
+! PROTCOMM is a modification of the PROTECT function.  PROTECT throws
+! away the window formula and uses only the window label to identify
+! the window.  PROTCOMM puts the formula into the comment field so that
+! the formula can be retrieved to later unprotect the window, and then
+! it protects the window.  
+!
+!     LAB = window label
+
+PROTCOMM(LAB)		COMMENT(GETWFORM);PROTECT(LAB)
+
+!------------------------------------------------------------------------
+!
+! UNPROTCOMM undoes the window protection done by PROTCOMM by
+! retrieving the formula from the comment field and reactivating it as
+! the window formula.
+
+UNPROTCOMM		SETWFORM(GETCOMMENT)
+
+!**********************************************************************!
+!                                                                      !
+!		    SCROLLING OF MULTIPLE WINDOWS		       !
+!                                                                      !
+!**********************************************************************!
+
+! These macros take advantage of the little used "plottime" DADiSP functions
+! to link multiple Windows together for simultaneous scrolling of multiple 
+! graphs. Note that these macros do not work properly for a zoomed window.
+
+!------------------------------------------------------------------------
+! LINKX provides simultaneous X direction scrolling of multiple Windows.
+!
+! Links together the current window and the window specified by WSTR so that
+! WSTR scrolls in the X direction whenever the current window scrolls. For
+! example,
+!                 W1: GSIN(100,.01);LINKX("W2")
+!                 W2: INTEG(W1)
+!
+! Each time W1 scrolls in the X direction, W2 will scroll by the same amount.
+!
+!	WSTR = window to link to, must be in quotes
+
+LINKX(WSTR)  (TORIGIN(0,0|EVAL(STRCAT("SX(",WSTR,")"))))
+SX(WSTR)     (SETX(WSTR, GETXL, GETWR))
+
+!----------------------------------------------------------------------------
+!
+! LINKY provides simultaneous Y direction scrolling of multiple Windows                  
+!
+! Links together the current window and the window specified by WSTR so that
+! WSTR scrolls in the Y direction whenever the current window scrolls. For
+! example,
+!                 W1: GSIN(100,.01);LINKY("W2")
+!                 W2: INTEG(W1)
+!
+! Each time W1 scrolls in the Y direction, W2 will scroll by the same amount.
+!
+!	WSTR = window to link to, must be in quotes
+
+LINKY(WSTR)  (TORIGIN(0,0|EVAL(STRCAT("SY(",WSTR,")"))))
+SY(W)  (SETY(W, GETYB, GETYT))
+
+
+!----------------------------------------------------------------------------
+!
+! LINKXY provides simultaneous X and Y direction scrolling of multiple 
+! Windows.                  
+!
+! Links together the current window and the window specified by WSTR so that
+! WSTR scrolls in the X and Y direction whenever the current window scrolls. 
+! For example,
+!                 W1: GSIN(100,.01);LINKXY("W2")
+!                 W2: INTEG(W1)
+!
+! Each time W1 scrolls in the X or Y direction, W2 will scroll by the 
+! same amount.
+!
+! 	WSTR = window to link to, must be in quotes
+
+LINKXY(WSTR) (TORIGIN(0,0|EVAL(STRCAT("SXY(",WSTR,")"))))
+SXY(WSTR)    (SX(WSTR)|SY(WSTR))
+
+
+!**********************************************************************!
+!                                                                      !
+!                            CONDITIONALS                              !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! IFPOINT does a pointwise conditional operation, which can be thought
+! of as a "vertical" conditional, versus the "horizontal" operation of
+! the IF function.  
+! 
+! Example: Compare corresponding points of W1 and W2, and create a
+! third series which is W1^2 where W1 is greater than W2, zero
+! otherwise.  The command would be IFPOINT(W1>W2, W1^2, 0.0).
+!
+!     COND = logical conditional expression involving a series
+!     TEXP = scalar or series expression to be used where COND is true
+!     FEXP = scalar or series expression to be used where COND is false
+
+IFPOINT(COND,TEXP,FEXP)   (TEXP)*(COND)+(FEXP)*NOT(COND)
+
+!**********************************************************************!
+!                                                                      !
+!			 ELEMENTARY LOGICALS			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! IMP returns the logical implication value A implies B.
+!
+!     A = premise
+!     B = conclusion
+
+IMP(A,B)		NOT(A)||(B)
+
+!-----------------------------------------------------------------------
+!
+! NOR returns the logical nor of A and B.
+!
+!     A = first argument
+!     B = second argument
+
+NOR(A,B)		NOT((A)||(B))
+
+!-----------------------------------------------------------------------
+!
+! NAND returns the logical nand of A and B.
+!
+!     A = first argument
+!     B = second argument
+
+NAND(A,B)		NOT((A)&&(B))
+
+!-----------------------------------------------------------------------
+!
+! EQV returns the logical equivalence of A and B.
+!
+!     A = first argument
+!     B = second argument
+
+EQV(A,B)		NOT(XOR(A,B))
+
+!**********************************************************************!
+!                                                                      !
+!		     PRINT, PLOT, AND POSTSCRIPT		       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! PLOTSEND sends HPGL output for the current window directly to a
+! plotter.  Specify the title, whether to plot in color or black &
+! white, and the port name (COM1, LPT1, etc.).
+!
+! Examples: 
+!
+! Send HPGL output for the current window to a pen plotter on COM1,
+! using the window formula as the title:
+! PLOTSEND(GETWFORM,0,'COM1').
+!
+! Send HPGL output for the current window to a black & white printer
+! on LPT1 that accepts HPGL, using 'Flight 1' as the title:
+! PLOTSEND('Flight 1',1,'LPT1').
+!
+!     TITLE = title in quotes, or GETWFORM for the window formula, or
+!             GETLABEL for the window label
+!     COLOR = 0 for color, 1 for black & white
+!     PORT  = port name in quotes
+
+PLOTSEND(TITLE,COLOR,PORT)	PLOT(TITLE,'PLOT.TMP',COLOR);RUN(STRCAT('COPY PLOT.TMP ',PORT));RUN('DEL PLOT.TMP')
+
+!-----------------------------------------------------------------------
+!
+! PLOTALLSEND sends HPGL output for the entire worksheet directly to a
+! plotter.  Specify whether to plot in color or black & white, and the
+! port name (COM1, LPT1, etc.).
+!
+! Examples: 
+!
+! Send HPGL output for the worksheet to a pen plotter on COM1:
+! PLOTALLSEND(0,'COM1').
+!
+! Send HPGL output for the worksheet to a black & white printer on LPT1
+! that accepts HPGL:  PLOTALLSEND(1,'LPT1').
+!
+!     COLOR = 0 for color, 1 for black & white
+!     PORT  = port name in quotes
+
+PLOTALLSEND(COLOR,PORT)		PLOTALL('PLOT.TMP',COLOR);RUN(STRCAT('COPY PLOT.TMP ',PORT));RUN('DEL PLOT.TMP')
+
+!-----------------------------------------------------------------------
+!
+! PSSEND sends a PostScript image of the current window directly to a
+! printer.  Specify the title and the port name (COM1, LPT1, etc.).
+!
+! Examples: 
+!
+! Send a PostScript image of the current window to a printer on LPT1,
+! using the window formula as the title:
+! PSSEND(GETWFORM,'LPT1').
+!
+! Send a PostScript image of the current window to a printer on LPT2,
+! using 'Flight 1' as the title:
+! PLOTSEND('Flight 1','LPT2').
+!
+!     TITLE = title in quotes, or GETWFORM for the window formula, or
+!             GETLABEL for the window label
+!     PORT  = port name in quotes
+
+PSSEND(TITLE,PORT)		PS(TITLE,'PS.TMP',0);RUN(STRCAT('COPY PS.TMP ',PORT));RUN('DEL PS.TMP')
+
+!-----------------------------------------------------------------------
+!
+! PSALLSEND sends a PostScript image of the entire worksheet directly
+! to a printer.  Specify the port name (COM1, LPT1, etc.).
+!
+! Example: 
+!
+! Send a PostScript image of the worksheet to a printer on LPT1:
+! PSALLSEND('LPT1').
+!
+!     PORT  = port name in quotes
+
+PLOTALLSEND(PORT)		PSALL('PS.TMP',0);RUN(STRCAT('COPY PS.TMP ',PORT));RUN('DEL PS.TMP')
+
+!--------------------------------- END ------------------------------------

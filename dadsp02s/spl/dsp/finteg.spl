@@ -1,0 +1,81 @@
+/*****************************************************************************
+*                                                                            *
+*   FINTEG.SPL  Copyright (C) 2007 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    frequency domain integration                                *
+*                                                                            *
+*   Revisions:   23 May 2007  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_FINTEG
+
+    FINTEG  
+
+    Purpose: Performs frequency domain integration.
+                                                                        
+    Format:  FINTEG(s)
+             
+              s    - the input series
+
+    Returns: A series or array.
+
+    Example:
+             W1: gnorm(1000, 1)
+             W2: integ(W1)
+             W3: finteg(W1)
+
+             W2 contains a standard time domain integration of W1.
+             W3 contains the integration as performed in the frequency
+             domain.
+
+    Remarks:
+
+             Finteg performs integration in the frequency domain
+             by calculating:
+
+                  F(f)/(i*pi*f)
+
+            where:     F(f) is the FFT of the original series
+                       f    is the frequency range of the fft
+                       i    = sqrt(-1)
+
+            F(0) is set to 0 to demean the result. The integration
+            calculation is inverse transformed back into the time
+            domain.
+
+            This method performs a de-meaned integration, i.e the DC
+            offset of both the input and output series are removed.
+
+    See Also:
+             FFT
+             Integ
+#endif
+
+
+/* frequency domain integration */
+finteg(s)
+{
+	local x, y;
+
+	/* generate x values with inverse spacing */
+	x = gline(length(s), rate(s) / length(s), 1, 0);
+
+	/* frequency domain integration */
+	y = fft(s)/(x*i*pi);
+
+	/* demean - also removes 1/0 pathology */
+	y[1] = 0;
+
+	/* inverse transform */
+	y = ifft(y);
+
+	/* convert to real */
+	if (isreal(s)) {
+		y = real(y);
+	}
+	return(y);
+}

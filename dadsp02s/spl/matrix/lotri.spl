@@ -1,0 +1,63 @@
+/*****************************************************************************
+*                                                                            *
+*   LOTRI.SPL   Copyright (C) 2000 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns the lower triangle of an array                      *
+*                                                                            *
+*   Revisions:    3 Apr 2000  RRR  Creation - from MATRIX.MAC by             *
+*                                             Kevin Carmondy                 *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_LOTRI
+
+    LOTRI  
+
+    Purpose: Returns the lower triangle of a matrix including the main diagonal
+                                                                        
+    Format:  LOTRI(m)
+
+                  m -  input array
+
+
+    Returns: An array of size(m) consisting of the lower triangle of m
+             including the main diagonal with the other elements set
+             to 0.
+
+    Example:
+             W1: ones(3)
+             W2: LOTRI(W1)
+
+             W2 == {{1, 0, 0},
+                    {1, 1, 0},
+                    {1, 1, 1}}
+
+
+    Remarks:
+             LOTRI includes the main diagonal. Use LOTRIX to exclude
+             the main diagonal.
+
+    See Also:
+             Colnos
+             Lotrix
+             Rownos
+             Uptri  
+             Uptrix
+
+#endif
+
+/*
+** LOTRI returns the lower triangle of a matrix, including the main
+** diagnonal, with the upper triangle zeroed out.
+*/
+
+
+lotri(M)
+{
+	return((M)*(rownos(M) >= colnos(M)));
+}
+
+

@@ -1,0 +1,13 @@
+! Trigger type menu- TRIG.MEN
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+ Trigger Method 
+________________
+
+Immediate        ~"Immediate"
+Analog Trigger   ~ANAPAN;"Analog Trigger"
+Digital Trigger  ~DIGPAN;"Digital Trigger"
+Time Delay       ~"Time Delay"
+

@@ -1,0 +1,37 @@
+
+_i2psty(s)
+{
+	local p;
+
+	s = castint(s);
+
+	switch (s) {
+		case 0:
+		default:
+			p = "Lines";
+			break;
+
+		case 1:
+			p = "Points";
+			break;
+
+		case 2:
+			p = "Sticks";
+			break;
+
+		case 3:
+			p = "Bars";
+			break;
+
+		case 4:
+			p = "Table";
+			break;
+
+		case 8:
+			p = "Steps";
+			break;
+		}
+
+	return(p);
+}
+

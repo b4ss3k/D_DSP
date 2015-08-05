@@ -1,0 +1,116 @@
+/*****************************************************************************
+*                                                                            *
+*   EYE.SPL    Copyright (C) 1998-2000 DSP Development Corporation           *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Matthew Tom                                                 *
+*                                                                            *
+*   Synopsis:    Generates an identity matrix                                *
+*                                                                            *
+*   Revisions:    3 May 1998  MAT  Creation                                  *
+*                21 Aug 1998  MAT  Help Menu Entry                           *
+*                16 May 2000  RRR  uses DIAG instead of loop                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_EYE
+
+    EYE
+
+    Purpose: Generates an identity matrix.
+
+    Format:  EYE(n)
+
+              n - An integer describing the size of the matrix.
+
+    Returns: The nxn identity matrix.
+
+    Example:
+             Eye(3)
+
+             creates the matrix {{1,0,0},{0,1,0},{0,0,1}}.
+
+    Remarks:
+             EYE uses DIAG to create the identity matrix.
+
+    See Also:
+             Diagonal
+             Ones
+             Zeros
+
+#endif
+
+
+
+
+eye(a, b)
+{
+	local output, nr, nc, n, d;
+
+	if (argc > 1)
+		{
+		if (IS_NUMERIC(a) && IS_NUMERIC(b))
+			{
+			a = castint(a);
+			b = castint(b);
+			}
+		else
+			{
+			error("eye - series or number required");
+			}
+		}
+	else
+		{
+		if(IS_SERIES(a))
+			{
+			(nr,nc) = size(a);
+			if (nr == 2 && nc == 1)
+				{
+				b = int(a[2]);
+				a = int(a[1]);
+				}
+			else
+				{
+				a = nr;
+				b = nc;
+				}
+			}
+		else if (IS_NUMERIC(a))
+			{
+			a = castint(a);
+			b = a;
+			}
+		else
+			{
+			error("eye - series or number required");
+			}
+		}
+	
+	/* Now that we have a and b, we can make the matrix.
+		If a or b is less than or equal to 0, then the output
+		is a blank array. */
+
+	if ( (a<=0) || (b<=0) )
+		{
+		output = gser();
+		}
+	else
+		{
+		/* get largest dimension */
+		d = maxval(a, b);
+	
+		/* diagonalize */
+		output = diag(ones(d, 1));
+	
+		/* reshape */
+		if (a != b) 
+			{
+			output = output[1..a, 1..b];
+			}
+		}
+	
+	return(output);
+}
+

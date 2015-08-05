@@ -1,0 +1,93 @@
+/*****************************************************************************
+*                                                                            *
+*   BARGAP.SPL Copyright (C) 2002 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets bar plot gaps                                          *
+*                                                                            *
+*   Revisions:   31 Jan 2001  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_BARGAP
+
+    BARGAP
+
+    Purpose: Sets the gap drawing bewteen bars of 2D bar plot
+                                                                        
+    Format:  BARGAP(win, on_off)
+
+              win    - an optional window, defaults to current window
+              on_off - an integer 1:use gaps, 0:no gaps (default 1)
+
+    Returns: Nothing
+
+    Example:
+             W1: gnorm(10, 1);bars;bargap(1)
+             W2: W1;bars;bargap(0)
+
+             The bars in W1 are drawn with gaps between each bar
+             (the default), while the bars in W2 abut each other with no
+             gaps.
+
+    Remarks: 
+             BARGAP only effects 2D bar charts.
+
+             BARGAP is a Window property. All bar plots plotted in the
+             Window will be drawn in the current BARGAP mode.
+
+    See Also:
+             Barctr
+             Bars
+             Bartop
+             Barstyle
+#endif
+
+
+
+/* toggle bar plot gaps */
+bargap(win, val)
+{
+	local exstyle;
+
+	/* bargap is a winexstyle bit */
+	if (argc < 1) {
+		return((winexstyle(W0) & EX_BAR_GAP) != 0);
+	}
+	else if (argc == 1) {
+		if (IS_WINDOW(win)) {
+			return((winexstyle(win) & EX_BAR_GAP) != 0);
+		}
+		else {
+			val = win != 0;
+			exstyle = winexstyle(W0);
+			/* clear EX_BAR_GAP bit */
+			exstyle &= ~EX_BAR_GAP;
+
+			/* set EX_BAR_GAP bit */
+			if (val) exstyle |= EX_BAR_GAP;
+			winexstyle(W0, exstyle);
+	
+			/* indicate window should plot */
+			plotmode(1, 0);
+
+		}
+	}
+	else {
+		val = val != 0;
+		exstyle = winexstyle(win);
+		/* clear EX_BAR_GAP bit */
+		exstyle &= ~EX_BAR_GAP;
+		if (val) exstyle |= EX_BAR_GAP;
+		winexstyle(win, exstyle);
+
+		/* indicate window should plot */
+		plotmode(win, 1, 0);
+
+	}
+}
+

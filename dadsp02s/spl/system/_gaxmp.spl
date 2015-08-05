@@ -1,0 +1,14 @@
+/* get misc (temp) path */
+_gaxmp(path, auto)
+{
+	local p;
+
+	if (auto) {
+		/* get system tmp path without trailing pathchar */
+		p = getmiscpath(0, 1);
+	}
+	else {
+		p = path;
+	}
+	return(p);
+}

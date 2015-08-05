@@ -1,0 +1,37 @@
+
+/* number to windowing function string */
+_n2winfn(n, modify)
+{
+	local s;
+
+	if (argc < 2) modify = 0;
+
+	switch (n) {
+		case 0:
+		default:
+			s = _nonestr;
+			break;
+
+		case 1:
+			s = "Hamming";
+			break;
+
+		case 2:
+			s = "Hanning";
+			break;
+
+		case 3:
+			s = "Kaiser";
+			break;
+
+		case 4:
+			s = "Flattop";
+			break;
+
+		case 5:
+			s = (modify) ? "Blckman" : "Blackman";
+			break;
+
+	}
+	return(s);
+}

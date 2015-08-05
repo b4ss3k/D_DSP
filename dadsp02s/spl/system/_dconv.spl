@@ -1,0 +1,17 @@
+
+/* deconvolution */
+_dconv(funct, funcf, swin1, swin2, time, dwin)
+{
+	local func, cmd;
+
+	if (time) {
+		func = funct;
+	}
+	else {
+		func = funcf;
+	}
+	cmd = sprintf("%s(%s, %s)", func, swin1, swin2);
+
+	eval(sprintf("Setwf(%s, '%s')", dwin, cmd));
+}
+

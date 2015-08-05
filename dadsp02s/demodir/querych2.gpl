@@ -1,0 +1,16 @@
+!  Query channel 2 setup
+@panel
+@focus 1
+
+Query Channel 2
+
+ Channel 2       
+Value <x{-1} y{-1} >
+<L>
+ Time Range:     <w{20}>~<{TTIMRNG}>~
+ Time Delay:     <w{20}>~<{TTIMDEL}>~
+ Range:          <w{20}>~<{TVOLRNG}>~
+ Offset:         <w{20}>~<{TVOLOFF}>~
+ Probe Factor:   <w{20}>~<{probe2}>~
+ Coupling:       <w{20}>~<{TCPL}>~
+<L>

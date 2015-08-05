@@ -1,0 +1,10 @@
+! QR.men - menu file for QR Decomposition
+@x0
+@y0
+@b{_bg1}
+@f{_fg1}
+      QR Decomposition
+
+Upper Triangular Matrix (R) ~_deffname('QR       QR Decompostion')|_defformat('QR(square matrix,type)')|_defxamp('QR(W1,01)')|_getser|defmacro("_int1","01",2)|_serint1form("QR")
+Orthogonal Matrix (Q)       ~_deffname('QR       QR Decompostion')|_defformat('QR(square matrix,type)')|_defxamp('QR(W1,10)')|_getser|defmacro("_int1","10",2)|_serint1form("QR")
+Combined Matrix (Q,R)       ~_deffname('QR       QR Decompostion')|_defformat('QR(square matrix,type)')|_defxamp('QR(W1,11)')|_getser|defmacro("_int1","11",2)|_serint1form("QR")

@@ -1,0 +1,18 @@
+/* return user format or _formafstr */
+_fmt2tic(fmt)
+{
+	switch(fmt) {
+		case "%g":
+			return(_formafstr);
+
+		case "%lx":
+		case "%x":
+			return(_formhxstr);
+
+		case "":
+			return(_formfxstr);
+
+		default:
+			return(fmt);
+	}
+}

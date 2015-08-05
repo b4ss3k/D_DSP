@@ -1,0 +1,15 @@
+*          EXERCISE 5
+
+ONE SOLUTION IS:
+
+          B       CODE
+          B       INTRPT 
+CODE      LDPK    0
+          LARP    0
+          SOVM
+          DINT
+          .
+          .
+          .
+
+

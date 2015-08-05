@@ -1,0 +1,128 @@
+/*****************************************************************************
+*                                                                            *
+*   ZEROS.SPL    Copyright (C) 1997-2006 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns an array of all zeros                               *
+*                                                                            *
+*   Revisions:    9 Jun 1997  RRR  Creation                                  *
+*                14 Feb 2006  RRR  use builtin gvalarray for speed           *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_ZEROS
+
+    ZEROS    
+
+    Purpose: Creates an array of all zeros
+                                                                        
+    Format:  ZEROS(numrows, numcols)
+
+              numrows - an integer specifying the number of rows
+              numcols - an optional integer for the number columns (default 1)
+
+    Returns: A series or array
+
+    Example:
+             Zeros(3)
+
+             returns the series {0, 0, 0}
+
+
+             Zeros(3, 2)
+
+             returns the 3x2 array {{0, 0},
+                                    {0, 0},
+                                    {0, 0}}
+
+    Remarks:
+             Zeros(size(A)) returns a array of all zeros with same dimension 
+             as A
+
+
+    See Also
+             Gline
+             Ravel
+             Size
+             Zeros
+
+#endif
+
+
+zeros(a, b, dx, dy)
+{
+	local nr, nc, out;
+
+	if (argc < 4) {
+		if (argc < 3) dx = 1.0;
+		dy = 1.0;
+	}
+		
+	if (argc > 1) {
+		/* e.g. zeros(10, 3) */
+		if (IS_SCALAR(a) && IS_SCALAR(b)) {
+			/* convert to ints */
+			a = castint(a);
+			b = castint(b);
+			if (a <= 0 || b <= 0) {
+				return({}); /* empty series */
+			}
+			else if (b == 1) {
+				out = gline(a,dx,0,0);
+			}
+			else {
+				out = gvalarray(0.0, a, b);
+			}
+			setdeltay(out, dy);
+			return(out);
+		}
+		else {
+			error("zeros - series or number required");
+		}
+	}
+
+	else {
+		if (IS_ARRAY(a)) {
+			/* series argument - get size */
+			(nr, nc) = size(a);
+			if (nr == 2 && nc == 1) {
+				/* 
+				** assume series came from size function,
+				** e.g. zeros(size(a)) 
+				*/
+				b = int(a[2]);
+				a = int(a[1]);
+			}
+			else {
+				/* e.g. zeros(x) - obsolete */
+				dx = deltax(a); dy = deltay(a);
+				a = nr; b = nc;
+			}
+		}
+     	else if (IS_SCALAR(a)) {
+			/* convert to ints */
+			a = castint(a);
+			b = a;
+		}
+		else {
+			error("zeros - series or number required");
+		}
+		if (a*b == 0) {
+			out = {}; /* empty series */
+		}
+		else if (b == 1) {
+			out = gline(a,dx,0,0);
+		}
+		else {
+			out = gvalarray(0.0, a, b);
+		}
+
+		return(out);
+	}               
+}
+
+

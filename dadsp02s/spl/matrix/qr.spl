@@ -1,0 +1,100 @@
+/*****************************************************************************
+*                                                                            *
+*   QR.SPL           Copyright (C) 2001 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Computes QR decomposition of a matrix                       *
+*                                                                            *
+*   Revisions:    9 Jul 2001  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_QR
+
+    QR
+
+    Purpose: Calculates the QR decomposition of a matrix.
+
+    Format:   QR(matrix, otype)
+
+              (q, r) = QR(matrix)
+
+              matrix - A square or rectangular matrix.
+
+              otype - Optional integer specifying the type of matrix to return. Defaults to 11. Valid arguments are:
+
+              01 - R, Upper triangular matrix.
+              10 - Q, Orthogonal matrix.
+              11 - Combined upper and orthogonal matrix (default).
+
+    Returns: A matrix.
+
+             (q, r) = qr(matrix) returns the q and r components in
+             separate variables.
+
+    Example: 
+              a = {{1, 4, 7},
+                   {2, 5, 8},
+                   {3, 6, 9}}
+
+              (q, r) = qr(a)
+
+              q == {{-0.267261,  0.872872,  0.408248},
+                    {-0.534522,  0.218218, -0.816497},
+                    {-0.801784, -0.436436,  0.408248}}
+
+              r == {{-3.741657, -8.552360, -13.363062},
+                    { 0.000000,  1.963961,   3.927922},
+                    { 0.000000,  0.000000,   0.000000}}
+
+
+              b = q *^ r
+
+              b == {{1, 4, 7},
+                    {2, 5, 8},
+                    {3, 6, 9}}
+
+    Remarks:
+              The input matrix is decomposed into an orthogonal matrix Q 
+              and an upper triangle matrix R such that M = Q*R.
+
+              For an overdetermined or underdetermined system of equations
+              of the form A *^ x = b, The \^ operator automatically uses QR
+              decomposition such that:
+
+                  A \^ b
+
+              returns the best solution for x in the least squares sense.
+
+    See Also:
+              *^
+              \^
+              HESS
+              LLU
+              MMULT
+              SVD
+#endif
+
+
+/* decompose into orthogonal QR components */
+qr(m, mode)
+{
+	local A, q, r;
+
+	if (outargc > 1) {
+		/* find combined solution and separate components */
+		A = _qr(m, 11);
+		q = A[.., 1..(numcols(a)-numcols(m))];
+		r = A[.., numcols(q)+(1..numcols(m))];
+
+		return(q, r);
+	}
+	else {
+		if (argc < 2) {
+			mode = 11;
+		}
+		return(_qr(m, mode));
+	}
+}

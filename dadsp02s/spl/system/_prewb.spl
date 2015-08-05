@@ -1,0 +1,25 @@
+/* show first few lines of translated binary file */
+
+#define NUMWBLINES 50
+
+/* writeb preview */
+_prewb(ser, dtype)
+{
+	local s;
+
+	if (eval(sprintf("length(%s)", ser)) > 0) {
+		eval(sprintf("writeb('previewb.txt', %s, 1, extract(%s, 1, %d))", dtype, ser, NUMWBLINES));
+
+		/* read as binary and write as ASCII */
+		s = readb('previewb.txt', eval(dtype), NUMWBLINES);
+		if (length(s) > 0) {
+			writea("previewb.txt", s, 1);
+			viewfile("previewb.txt");
+			delfile("previewb.txt");
+		}
+	}
+	else {
+		message("Preview Binary Data", sprintf(_nodatastr, ser), 8);
+	}
+
+}

@@ -1,0 +1,80 @@
+/* axis style to integer */
+_asty2si(s)
+{
+	local p;
+
+	switch (s) {
+
+		case _ax0:
+			p = 0;
+			break;
+
+		case _ax1:
+		default:
+			p = 1;
+			break;
+
+		case _ax2:
+			p = 2;
+			break;
+
+		case _ax3:
+			p = 3;
+			break;
+
+		case _ax4:
+			p = 4;
+			break;
+
+		case _ax5:
+			p = 5;
+			break;
+
+		case _ax6:
+			p = 6;
+			break;
+
+		case _ax7:
+			p = 7;
+			break;
+
+		case _ax8:
+			p = 8;
+			break;
+
+		case _ax9:
+			p = 9;
+			break;
+
+		case _ax10:
+			p = 10;
+			break;
+
+		case _ax11:
+			p = 11;
+			break;
+
+		case _ax12:
+			p = 12;
+			break;
+
+		case _ax13:
+			p = 13;
+			break;
+
+		case _ax14:
+			p = 14;
+			break;
+
+		case _ax15:
+			p = 15;
+			break;
+
+		case _ax16:
+			p = 16;
+			break;
+	}
+	return(p);
+}
+
+

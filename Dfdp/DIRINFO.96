@@ -1,0 +1,74 @@
+======================================
+DSP\DFDP>                 VERSION 4Q95
+======================================
+
+= MY DOC ==========================
+ DFDP     DOC  10240  11/07/90  18:05
+= PROGRAM =========================
+ HI       BAT      9  recursive batch
+ DFDP     BAT     19  main batch
+ DFDPM    EXE  49077  dfdp
+ CGEN     EXE  96599  coefficient generator
+ IIR      EXE 135109  iir 
+ KFIR     EXE 129781  kaiser window fir
+ PMFIR    EXE 150233  parks macclellan fir
+= INSTALL =========================
+ INSTALL  EXE  48618  install
+ DFDP     PAR    287  install parameters 
+= DESIGN ==========================
+ LAST     NAM     22  last designed filter
+ CGEN     PAR 149776  macros in TMS320 (10 models) 
+= LINKER  =========================
+ LINK     CTL     67  linker  
+ DSPLNK   CMD    184  18/08/89  
+= DOC ==============================
+ ASMGEN   DOC  16834  25/08/89  
+ CGEN     DOC   7756  13/05/88  
+ COEFF    DOC   1351  31/08/89  
+= EXAMPLES =========================
+ ELLIP    FLT   1559  
+ ELLIP    ASM   6698  
+ GO       BAT     73  linker batch for exemp 
+ EXEMP    ASM   6760  29/08/89
+ EXEMP    FLT   1574  30/08/89  
+ EXAMPLE  IO     776  29/01/88 I/O example  
+====================================
+- not completely undestood
+ MAIN     ASM   3467  16/02/87  asm file
+ MAIN_LNK CMD    183  20/11/87  command file??
+ MAIN     CTL    216   6/01/87  control file
+ MAIN     MAP   2324  18/06/87  list file
+ MAIN     LOD   3035  18/06/87  linked output file
+ MAIN     PCH    128  14/01/87  command file??
+====================================
+ SIMPLE   ASM   2383  18/03/87  
+ SIMPLE_L CMD     50  20/11/87  
+ SIMPLE   CTL     95   7/03/87  
+ SIMPLE   LOD    821  18/06/87  
+ SIMPLE   MAP   1548  18/06/87  
+====================================
+ PMFIRF   ASM   6766  18/06/87  
+ PMFIRF   LOD   1149  18/06/87  
+ PMFIRF   MAP   1273  18/06/87  
+====================================
+
+= WORK ===============================================================
+<29AUG89>
+ I12-4    FLT   1553    
+ I12-6    FLT   2289    
+ I13-4    FLT   1553    
+ I13-6    FLT   2283    
+ I14-4    FLT   1547    
+ I14-6    FLT   2271    
+ I16-4    FLT   1547    
+ I16-6    FLT   2271    
+ I6-4     FLT   1915    
+ I6-6     FLT   2289    
+ I7-4     FLT   1915    
+ I7-6     FLT   2289    
+ I8-4     FLT   1915    
+ I8-6     FLT   2289    
+ I9-4     FLT   1915    
+ I9-6     FLT   2289    
+=================================================================
+

@@ -1,0 +1,10 @@
+@tabbed
+Generate Trigonometric Series
+
+~_MF("trig.pan")
+~_MF("genset.pan")
+
+~~_formstr = _addhvx(_formstr)
+~~if(_chkwin > 0, eval(sprintf('setwf(%s, "%s")', _dwin, _formstr)))
+
+

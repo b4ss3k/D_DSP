@@ -1,0 +1,93 @@
+/*****************************************************************************
+*                                                                            *
+*   EXPFIT.SPL    Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Fits y(x) = A * exp(B*x)                                   *
+*                                                                            *
+*   Revisions:    20 Jun 2000  RRR  Creation - from series.mac               *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_EXPFIT
+
+    EXPFIT
+
+    Purpose: Fits y(x) = A * exp(B*x) using linearization
+                                                                        
+    Format:  EXPFIT(s)
+
+             s   - input series or array
+
+
+    Returns: A series, the fitted exponential curve
+
+             (fit, coef) = expfit(s)
+
+             returns both the fit and the coefficients as a series
+
+             (fit, A, B) = expfit(s)
+
+             returns the fit as a series and the coefficients as 
+             separate scalars
+
+
+    Example:
+             W1: 10 * exp((1..100) * -0.5)
+
+             W2: expfit(w1);overp(w1, lred)
+
+             Overplots the original data with the calculated exp fit.
+
+
+    Example:
+             (fit, coef) = expfit(w1)
+
+             fit is the same series as in W2
+
+             coef == {10.0, -0.5}
+
+    Remarks:
+             EXPFIT fits an exponential curve of the form y = e^(bx). The 
+             fit is accomplished by fitting a line to the following equation:
+ 
+                            ln(y) = ln(A) + bx
+
+             Note that y must be positive.
+
+    See Also:
+             Polyfit
+             Powfit
+             Trend
+#endif
+
+
+/* fit y(x) = A * exp(B * x) */
+expfit(s)
+{
+	local coef, result;
+
+	if (argc < 1) error("expfit - input series required");
+
+	/* transform and fit */
+	coef = polyfit(ln(s), 1, -1);
+	coef[1] = exp(coef[1]);
+
+	result = coef[1] * exp(xvals(s) * coef[2]);
+
+	if (ISXYSERIES(s)) {
+		result = xy(xvals(s), result);
+	}
+	if (outargc > 1) {
+		if (outargc > 2) {
+			return(result, coef[1], coef[2]);
+		}
+		return(result, coef);
+	}
+	return(result);
+}
+

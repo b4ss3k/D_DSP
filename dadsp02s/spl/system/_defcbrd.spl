@@ -1,0 +1,32 @@
+/* restore clipboard settings */
+_defcbrd()
+{
+	extern _cbotherstr, _cbcotherstr;
+
+	setvar("_cbf1",  _getcbf(1, 1));
+	setvar("_cbf2",  _getcbf(2, 1));
+	setvar("_cbf4",  _getcbf(4, 1));
+	setvar("_cbf8",  _getcbf(8, 1));
+	setvar("_cbf16", _getcbf(16, 1));
+
+	setvar('_cbtab',   _getcbdl(strescape("\t"), 1));
+	setvar('_cbcomma', _getcbdl(",", 1));
+	setvar('_cbspace', _getcbdl(" ", 1));
+	setvar('_cbsemi',  _getcbdl(";", 1));
+	setvar('_cbotherstr', _getcbos(1));
+	setvar('_cbother', strlen(_cbotherstr) > 0);
+	setvar("_clipboard_skip_delimiters", getconfdef("clipboard_skip_delimiters"));
+
+	setvar('_cbctab',   _getcbdl(strescape("\t"), 1, 1));
+	setvar('_cbccomma', _getcbdl(",", 1, 1));
+	setvar('_cbcspace', _getcbdl(" ", 1, 1));
+	setvar('_cbcsemi',  _getcbdl(";", 1, 1));
+	setvar('_cbcotherstr', _getcbos(1, 1));
+	setvar('_cbcother', strlen(_cbcotherstr) > 0);
+
+	setvar("_cbautocl", getconfdef("clipboard_autocol"));
+	setvar("_cbchead", getconfdef("clipboard_header"));
+
+}
+
+

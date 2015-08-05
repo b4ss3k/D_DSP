@@ -1,0 +1,15 @@
+! LOrient.men
+@f{_fg1}
+@b{_bg1}
+@x10
+@y0
+@panel
+Text & Axis Orientation
+
+X Axis Labels  <         >~defmacro("t1x",< >,1)~<Rot0><Rot90><Rot180><Rot270><RotChar90>
+X Tick Labels  <         >~defmacro("t2x",< >,1)~<Rot0><Rot90><Rot180><Rot270><RotChar90>
+
+Y Axis Labels  <         >~defmacro("t1y",< >,1)~<Rot0><Rot90><Rot180><Rot270><RotChar90>
+Y Tick Labels  <         >~defmacro("t2y",< >,1)~<Rot0><Rot90><Rot180><Rot270><RotChar90>
+
+~_mc;setarotx(t1x);setaroty(t1y);settrotx(t2x);settroty(t2y)

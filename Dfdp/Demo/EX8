@@ -1,0 +1,85 @@
+*         EXERCISE 8
+*
+*       THIS PROGRAM IMPLEMENTS A DIGITAL OSCILLATOR
+*
+*
+*       DATA MEMORY LOCATION ASSIGNMENTS
+*
+RATE    EQU     0       ADDR 00 CONTAINS CLOCK RATE
+MODE    EQU     1       ADDR 01 CONTAINS CONTROL MODE
+MASK    EQU     2       ADDR 02 CONTAINS MASK VALUE
+TEMP    EQU     4
+YMONE   EQU     5
+YMTWO   EQU     6
+CNST    EQU     7
+CMPL    EQU     8
+*
+        AORG    0       START PROGRAM AT ADDRESS 0
+        B       START   JUMP AROUND DATA
+*
+*       DATA MEMORY INITIALIZATION VALUES
+*
+DRATE   DATA    >0200   SAMPLING RATE
+DMODE   DATA    >000A   MODE
+DMASK   DATA    >7FFF   MASK VALUE
+PYMONE  DATA    >0800
+PYMTWO  DATA    >0
+PCNST   DATA    >2000   VARY OUTPUT FREQUENCY BY CHANGING THIS CONSTANT
+PCMPL   DATA    >FFFF
+*
+*       THE PROGRAM
+*
+START   LDPK    0       SET DATA PAGE POINTER TO 0
+        SOVM
+        DINT
+        LACK    DRATE   MOVE
+        TBLR    RATE        CLOCK RATE,
+        LACK    DMODE           A/D MODE,
+        TBLR    MODE                AND
+        LACK    DMASK                   MASK
+        TBLR    MASK                        INTO DATA MEMORY
+*
+*               INITIALIZE DATA CONSTANTS AND PARAMETERS
+*
+        ZAC
+        SACL    TEMP
+        LACK    PYMONE
+        TBLR    YMONE
+        LACK    PYMTWO
+        TBLR    YMTWO
+        LACK    PCNST   
+        TBLR    CNST
+        LACK    PCMPL
+        TBLR    CMPL
+*
+
+*
+        OUT     MODE,PA0        SET A/D CONVERTER MODE
+        OUT     RATE,PA1        SET SAMPLING RATE
+*
+LOOP    BIOZ    DSP             CONVERSION COMPLETE?
+        B       LOOP            WAIT UNTIL CONVERSION COMPLETE
+*
+DSP     LT      YMONE           COMPUTE Y(M)/4
+        MPY     CNST
+        LAC     YMTWO,14                "
+        SPAC
+        SACH    TEMP                    "
+        ZAC
+        SUB     TEMP                    "
+        SACL    TEMP
+        LAC     TEMP,2          COMPUTE Y(M)
+        SACL    TEMP
+        LAC     YMONE           SHIFT THE OUTPUT SAMPLES
+        SACL    YMTWO
+        LAC     TEMP                       "
+        SACL    YMONE
+        ZALS    TEMP            LOAD OUTPUT VALUE
+        XOR     MASK            CONVERT TO COMPL. BINARY FORMAT
+        SACL    TEMP
+        OUT     TEMP,PA2        OUTPUT Y(M)
+*
+        B       LOOP            REPEAT FOREVER
+        END
+
+

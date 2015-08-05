@@ -1,0 +1,20 @@
+! matrix.men - menu file for matrices
+@x0
+@y0
+@b{_bg1}
+@f{_fg1}
+ Matrix Functions
+
+ Multiply          ~_deffname('MMULT    Multiply 2 Matrices') | _defformat('Mmult(m1,m2)')| _defxamp('Mmult(W1,W2)') |_getser2("Matrix 1:","Matrix 2:") | _ser2form("Mmult")
+ Divide            ~_deffname('MDIV     Divide 2 Matrices') | _defformat('Mdiv(square matrix1,matrix2)')|_defxamp('Mdiv(w1,w2)') |_getser2("Matrix 1:","Matrix 2:") |_ser2form("MDiv")
+ Inverse           ~_deffname('INVERSE  Invert a Matrix')  |_defformat('Inv(matrix)')|_defxamp('Inv(W1)')|_getser|_serform("Inv")
+ Determinant       ~_deffname('DET      Determinant')  |_defformat('DET(square matrix)')|_defxamp('DET(W1)')|_getser|_evalserform("Det")
+ Diagonal          ~_deffname('DIAGONAL Diagonal of Matrix or Diagonalize Series') | _defformat('Diag(matrix)  or  Diag(series)')| _defxamp('Diag(W1)') |_getser |_serform("Diag")
+ Transpose         ~_deffname('TRANSPOSE Transpose Matrix')|_defformat(' Transpose(matrix)')|_defxamp(' Transpose(W1)') | _getser|_serform("Transpose")
+ Complex Conjugate ~_deffname('CONJ     Complex Conjugate')|_defformat('Conj(matrix)')|_defxamp('Conj(W1)')|_getser|_serform("Conj")
+
+ Decompositions    ~_mf("mdecomp.men")
+ Eigen Analysis    ~_mf("eigen.men")
+
+ Balance           ~_deffname('BALANCE  Balanced Matrix')  |_defformat('Balance(matrix)')|_defxamp('Balance(W1*W2)')|_getser|_serform("Balance")
+ Hessenberg        ~_deffname('HESS     Hessenberg Matrix Form')  |_defformat('Hess(series)')|_defxamp('Hess(W1*W2)')|_getser|_serform("Hess")

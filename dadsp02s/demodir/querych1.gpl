@@ -1,0 +1,16 @@
+!  Query channel 1 setup
+@panel
+@focus 1
+
+Query Channel 1
+
+ Channel 1       
+Value <x{-1} y{-1} >
+<L>
+ Time Range:     <w{20}>~<{OTIMRNG}>~
+ Time Delay:     <w{20}>~<{OTIMDEL}>~
+ Range:          <w{20}>~<{OVOLRNG}>~
+ Offset:         <w{20}>~<{OVOLOFF}>~
+ Probe Factor:   <w{20}>~<{probe1}>~
+ Coupling:       <w{20}>~<{OCPL}>~
+<L>

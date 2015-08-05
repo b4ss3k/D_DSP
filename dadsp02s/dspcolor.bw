@@ -1,0 +1,48 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                               !
+!                           DSPCOLOR.BW                         !
+!                                                               !
+!           Copyright (C) 1991 DSP Development Corp             !
+!                                                               !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+! DADiSP BLACK & WHITE color file
+
+! This color file allows DADiSP to operate
+! in Black & White on an EGA/VGA monitor in high resolution
+! mode (very useful for hi-res screen dumps).  To use this
+! file, type: 
+!                   copy dspcolor.bw dspcolor
+! or just type: 
+!                               BW 
+
+
+WHITE    ! 1 foreground
+BLACK    ! 2 background
+WHITE    ! 3 text_foreground
+BLACK    ! 4 text_background
+WHITE    ! 5 signal_color
+WHITE    ! 6 window_border_color
+BLACK    ! 7 window_color
+WHITE    ! 8 popmes_background_color
+WHITE    ! 9 list_background_color
+BLACK    ! 10 list_text_foreground_color
+WHITE    ! 11 list_text_background_color
+BLACK    ! 12 poptext_foreground_color
+WHITE    ! 13 infobox_color
+BLACK    ! 14 infobox_text_color
+WHITE    ! 15 help_color
+BLACK    ! 16 help_text_color
+BLACK    ! 17 window_background_color
+WHITE    ! 18 window_text_color
+WHITE    ! 19 window_grid_color
+WHITE    ! 20 window_hilite
+WHITE    ! 21 window_shadow
+BLACK    ! 22 list_hilite
+BLACK    ! 23 list_shadow
+BLACK    ! 24 pop_hilite
+BLACK    ! 25 pop_shadow
+WHITE    ! 26 bar_hilite
+WHITE    ! 27 bar_shadow
+BLACK    ! 28 mono_fg
+WHITE    ! 29 mono_bg

@@ -1,0 +1,58 @@
+/*****************************************************************************
+*                                                                            *
+*   ROWSUM.SPL       Copyright (C) 2004 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Produces a column of the sums of each row of an array       *
+*                                                                            *
+*   Revisions:   30 Mar 2004  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_ROWSUM
+
+    ROWSUM
+
+    Purpose: Produces a column of the sums of each row of a table.
+                                                                        
+    Format:  ROWSUM(table)
+
+              table - A series, table or expression evaluating to a series
+                      or table.
+
+    Returns: A single column series with the same number of rows as the
+             input table.
+
+    Example:
+             a = {{2,  4,  6}, 
+                  {8, 10, 12}}
+
+             b = rowsum(a)
+
+             b == {12, 30} 
+
+    Remarks:
+             ROWSUM uses ROWREDUCE to calculate the row sums.
+
+    See Also:
+             Colsum
+             Row
+             Rowlen
+             Rowmax
+             Rowmean
+             Rowmin
+             Rowreduce
+             Rowstdev
+             Sum
+             Transpose
+#endif
+
+
+/* calculate the sum of each row */
+rowsum(a)
+{
+	return(rowreduce(a, "+"));
+}

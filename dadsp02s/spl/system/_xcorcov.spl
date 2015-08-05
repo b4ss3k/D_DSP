@@ -1,0 +1,21 @@
+
+/* cross correlation/covariance  panel */
+_xcorcov(funct, funcf, swin1, swin2, time, norm, dwin)
+{
+	local func, cmd;
+
+	if (time) {
+		func = funct;
+	}
+	else {
+		func = funcf;
+	}
+	if (norm == 0) {
+		cmd = sprintf("%s(%s, %s)", func, swin1, swin2);
+	}
+	else {
+		cmd = sprintf("%s(%s, %s, %d)", func, swin1, swin2, norm);
+	}
+	eval(sprintf("Setwf(%s, '%s')", dwin, cmd));
+}
+

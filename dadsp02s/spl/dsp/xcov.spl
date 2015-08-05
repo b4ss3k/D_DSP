@@ -1,0 +1,109 @@
+/*****************************************************************************
+*                                                                            *
+*   XCOV.SPL   Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Cross-covariance using direct convolution                   *
+*                                                                            *
+*   Revisions:    2 May 2000  RRR  Creation - from FREQ.MAC                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_XCOV
+
+    XCOV
+
+    Purpose: Cross covariance using direct convolution
+                                                                        
+    Format:  XCOV(s1, s2, norm)
+
+                 s1 - input series
+
+                 s2 - input series
+
+               norm - optional integer, normalization method,
+
+                      0: None, 
+                      1: Unity (-1 to 1)
+                      2: Biased
+                      3: Unbiased
+
+                      defaults to 0: None
+
+
+    Returns: A series
+
+    Example:
+             W1: gsin(1000, .001, 4)
+             W2: gsin(1000, .001, 4)
+             W3: fxcorr(w1, w2)
+
+             Performs the cross covariance of two sinewaves. The 
+             peaks of the result indicate the two waveforms are
+             very similar at the time intervals where the peaks
+             occur.
+
+    Example:
+             W1: gsin(1000, .001, 4)
+             W2: gnorm(1000, .001)
+             W3: fxcorr(w1, w1, 1)
+             W4: fxcorr(w1, w2, 1)
+
+             W3 displays the cross covariance of a sinewave normalized
+             to -1 and 1. W4 shows the cross covariance between a sinewave
+             and random noise. The normalized maximum of W3 is 1.0, indicating
+             perfect covariance at time t == 0. Although the waveform of
+             W4 displays some peaks, the normalized maximum is roughly 0.04 
+             indicating little covariance between W1 and W2. For
+             a graphical representation, overplot W4 in W3.
+
+
+    Remarks:
+             The cross-covariance is used to determine how similar two
+             series are to each other. XCOV performs covariance by 
+             computing the direct convolution of the input series. 
+
+             The output length L is:
+
+                      L = length(s1) + length(s2) - 1
+
+             For series of equal lengths and offsets, the zeroth lag
+             component is the mid point of the series.
+
+             The BIASED normalization divides the result by M, the 
+             maximum length of the input series.
+
+             The UNBIASED normalization divides the result by
+
+                              M - abs(M - i - 1) + 1
+
+             where i is the index of the result.
+
+             See FXCOV for the frequency domain implementation.
+
+
+    See Also:
+             Acorr
+             Conv
+             Covar
+             Facorr
+             Fconv
+             Fxcov
+             Xcorr
+#endif
+
+
+
+/* time domain cross covariance */
+xcov(s1, s2, norm)
+{
+	local len, maxlen, f, xoff1, xoff2, dx;
+
+	if (argc < 3) {
+		if (argc < 2) error("xcov - 2 input series required");
+		norm = 0;
+	}
+	return(xcorr(s1-colmean(s1), s2-colmean(s2), norm));
+}

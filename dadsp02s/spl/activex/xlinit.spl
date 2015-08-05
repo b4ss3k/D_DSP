@@ -1,0 +1,104 @@
+/*****************************************************************************
+*                                                                            *
+*   XLINIT.SPL  Copyright (C) 2001 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Starts an Excel connection for xlget or xlput               *
+*                                                                            *
+*   Revisions:   22 Aug 2001  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_XLINIT
+
+    XLINIT
+
+    Purpose: Starts an ActiveX connection to Excel for Xlget or Xlput
+                                                                        
+    Format:  XLINIT("filename")
+
+             "filename" - optional string, name of an XLS file to open
+
+    Returns: 1 if a connection is established, else 0
+
+
+    Example:
+
+             xlinit()
+
+             W1: rand(10, 3);
+
+             xlput("A1:C10", W1);
+
+             W2: xlget("A1:C10");
+
+             xlclear
+
+             W1 == W2 is all ones, that is W1 and W2 are equivalent. A new
+             instance of Excel is started and the data is retrieved from the 
+             current Sheet of the current Workbook.
+
+             The Excel connection is then terminated.
+
+    Example:
+
+             xlinit("C:\my documents\dsp.xls")
+
+             W1: xlget("A1:C10");
+
+
+             W1 contains the data from cells A1 through C10 from the XLS file
+             "C:\my documents\dsp.xls".
+
+
+    Remarks:
+
+             XLINIT closes any previous connection established by XLGET,
+             XLPUT or a previous call to XLINIT and starts a new instance
+             of Excel. Use XLGET or XLPUT without XLINIT to connect to a
+             running instance of Excel.
+
+             XLCLEAR closes the connection.
+
+    See Also:
+             Xlclear
+             Xlget
+             Xlput
+#endif
+
+
+
+/* start Excel connection */
+xlinit(filename)
+{
+	local xl, status = 0;
+
+	if (argc < 1) {
+		filename = "";
+	}
+
+	/* first clear the existing connection if any */
+	xlclear();
+
+	/* start a new excel */
+	xl = createobject("excel.application");
+
+	if (isobject(xl)) {
+		/* load file */
+		if (strlen(filename) > 0) {
+			xl.workbooks.open(filename);
+		}
+		else {
+			/* add workbooks */
+			xl.workbooks.add();
+		}
+		/* save handle to global */
+		setvar("_excel", xl);
+		status = 1;
+	}
+	return(status);
+}

@@ -1,0 +1,60 @@
+/*****************************************************************************
+*                                                                            *
+*   FINITE.SPL  Copyright (C) 2002 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns 1 for each element that is not inf                  *
+*                                                                            *
+*   Revisions:    9 Aug 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_FINITE
+
+    FINITE
+
+    Purpose: Returns 1 for each element that is not infinite (inf) or NA
+                                                                        
+    Format:  FINITE(ser)
+
+              ser - Series
+
+    Returns: A series where each element is 1 where the input series is
+             not INF or NA and 0 where the input series is INF or NA.
+
+    Example:
+             a = {1, 2, inf, nan};
+             b = 5;
+             c = {};
+
+             finite(a) returns {1, 1, 0, 0}
+             finite(b) returns {1}
+             finite(c) returns {}
+
+    Remarks:
+             FINITE always returns a series.
+
+             FINITE returns an empty series if the input is an empty series.
+
+    See Also:
+             Finite
+             Isempty
+             Isinf
+             Isnan
+#endif
+
+
+/* where is input not inf or NA? */
+finite(a)
+{
+	if (argc < 1) error("finite - input required");
+
+	if (length(a) == 0) return({});
+
+	return(not(isinf(a)||isnan(a)));
+}

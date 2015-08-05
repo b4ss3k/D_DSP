@@ -1,0 +1,172 @@
+/*****************************************************************************
+*                                                                            *
+*   TF2SS.SPL    Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Matthew Tom                                                 *
+*                                                                            *
+*   Synopsis:    Transfer function to state space conversion                 *
+*                                                                            *
+*   Revisions:    3 Jul 1997  MAT  Creation                                  *
+*                 8 Jun 1998  MAT  Help Menu Entry                           *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_TF2SS
+
+    TF2SS
+
+    Purpose: Calculates the state-space representation:
+
+        		.
+        		x = Ax + Bu
+        		y = Cx + Du
+ 
+             of the system:
+             
+                        NUM(s) 
+                H(s) = --------
+                        DEN(s)
+ 
+ 	from a single input.
+
+    Format:  (A,B,C,D) = Tf2ss(Num,Den)
+
+              Num - Matrix NUM must contain the numerator
+                    coefficients with as many rows as there are
+                    outputs y.
+
+              Den - Vector DEN must contain the coefficients of
+                    the denominator in descending powers of s.
+
+    Returns: The A,B,C,D matrices of the state space
+             transformation in controller canonical form.
+
+    Example:
+             (A,B,C,D) = Tf2ss(Num,Den)
+
+             creates the A,B,C,D matrices of the state space
+             transformation in controller canonical form.
+ 
+    Remarks:
+             This calculation also works for discrete systems.
+
+             To avoid confusion when using this function
+             with discrete systems, always use a numerator
+             polynomial that has been padded with zeros to
+             make it the same length as the denominator.
+
+    See Also:
+             Bilinear
+
+#endif
+
+/*
+num		A vector representing the coefficients of the
+		 numerator polynomial.
+den		A vector representing the coefficients of
+		the denominator polynomial.
+mnum, nnum	Size of the array num.
+mden, n		Size of the array den.
+inz		List of indices i where den[i] is nonzero.
+*/
+
+tf2ss(num, den)
+{
+local flag1, flag2, mnum, nnum, mden, n, inz, a, b, c, d;
+
+flag1 = 0;
+flag2 = 0;
+(mnum,nnum) = size(num);
+(mden,n) = size(den);
+
+if (nnum == 1)
+	{
+	num = num';
+	flag1 = 1;
+	}
+if (n == 1)
+	{
+	den = den';
+	flag2 = 1;
+	}
+
+(mnum,nnum) = size(num);
+(mden,n) = size(den);
+/* First, check for null systems. */
+if (n == 0 && nnum == 0)
+	{
+	a = gser();
+	b = gser();
+	c = gser();
+	d = gser();
+	return(a,b,c,d);
+	}
+
+/* Next, strip the leading zeros from the denominator. */
+inz = find(not(den == 0));
+den = den[1..mden, inz[1]..n];
+(mden,n) = size(den);
+
+/* Now we have to check for a proper numerator. */
+if (nnum > n)
+	{
+	if (all(all(num[1..mnum,1..nnum-n])) == 0)
+		{
+		num = num[1..mnum,(nnum-n+1)..nnum];
+		(mnum,nnum) = size(num);
+		}
+	else
+		{
+		error("tf2ss - denominator must have order higher
+			than or equal to numerator's");
+		}
+	}
+
+/* Pad numerator with leading zeros to make it have the same number
+	of columns as the denominator.  Then normalize it to den[1]. */
+num = ravel(zeros(mnum,n-nnum),num) / den[1];
+
+/* Do the D-matrix first. */
+if (length(num))
+	{
+	d = num[1..mnum,1];
+	}
+else
+	{
+	d = gser();
+	}
+
+/* Handle the special constant case. */
+if (n == 1)
+	{
+	a = gser();
+	b = gser();
+	c = gser();
+	return(a,b,c,d);
+	}
+
+/* Now we do the rest, starting by normalizing den to den[1]. */
+den = den[1..mden,2..n] / den[1];
+a = gser(-den,eye(n-2,n-1));
+b = eye(n-1,1);
+if (mnum > 0)
+	{
+	c = num[1..mnum,2..n] - num[1..mnum,1] *^ den;
+	}
+else
+	{
+	c = gser();
+	}
+if (flag1 == 1)
+	{
+	num = num';
+	}
+if (flag2 == 1)
+	{
+	den = den';
+	}
+return(a,b,c,d);
+}

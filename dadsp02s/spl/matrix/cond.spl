@@ -1,0 +1,86 @@
+/*****************************************************************************
+*                                                                            *
+*   COND.SPL    Copyright (C) 2001-2005 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Estimates the condition number of a matrix                  *
+*                                                                            *
+*   Revisions:   24 Jul 2001  RRR  Creation                                  *
+*                 6 May 2005  RRR  override default_math_value to return inf *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_COND
+
+    COND  
+
+    Purpose: Estimates the condition number of a matrix
+                                                                        
+    Format:  COND(a)
+
+                  a - input matrix, defaults to the current series
+              
+    Returns: A real, the estimated condition number.
+
+    Example:
+             W1: {{1, 2, 3},
+                  {4, 5, 6},
+                  {7, 8, 9}}
+
+             W2: {{1, 2, 3},
+                  {4, 5, 6},
+                  {7, 8, 0}}
+
+
+             cond(w1) == 8.579581E+016
+
+             cond(w2) == 35.105870
+
+    Remarks:
+             COND uses SVD to compute the singular values of a matrix. The
+             result is the ratio of the maximum and minimum singular values.
+
+             The condition number is infinite for a singular matrix,
+             thus a large condition number indicates an ill conditioned
+             matrix.
+
+    See Also:
+             Norm
+             Svd
+#endif
+
+
+
+/* condition number */
+cond(a)
+{
+	local s, c, defmv;
+
+	if (argc < 1) a = refseries(1);
+
+	/* if not an array, cast */
+	if (not(IS_ARRAY(a))) a = {a};
+
+	/* singular values */
+	s = svd(a);
+
+	/* current default math value */
+	defmv = getconf("default_math_value");
+
+	/* override to return inf for singular matrices */
+	setconf("default_math_value", "inf");
+
+	/* condition value */
+	c = max(s) / min(s);
+
+	/* restore */
+	setconf("default_math_value", defmv);
+
+	return(c);
+
+}

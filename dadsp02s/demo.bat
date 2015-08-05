@@ -1,0 +1,1 @@
+dadispnt /c=demo.dsp

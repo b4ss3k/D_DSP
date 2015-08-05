@@ -1,0 +1,11 @@
+! GPIBLab Startup Menu
+@x0
+@y0
+  GPIB System
+_________________
+
+ Init GPIB       ~INITMEN
+ Remote Commands ~REMOTEMEN
+ Local Commands  ~LOCALMEN
+    
+ Digital Scope   ~SCOPEMEN     

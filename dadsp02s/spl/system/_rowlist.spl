@@ -1,0 +1,23 @@
+#define MAXNUMROWS 1000
+
+
+_rowlist(ser)
+{
+	local i, s = "", p;
+
+	if (argc < 1) {
+		ser = current;
+	}
+	if ((n = numrows(ser)) > MAXNUMROWS) {
+		n = MAXNUMROWS;
+	}
+
+	for (i = 1; i <= n; i++) {
+		if (strlen(s) > 0) s = strcat(s, strescape("\n"));
+		p = sprintf("%d", i);
+		s = strcat(s, p);
+	}
+	return(s);
+}
+
+		

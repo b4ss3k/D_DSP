@@ -1,0 +1,6 @@
+/* sets z tic from string value */
+_setztic(ticstr, auto)
+{
+	if (auto) setztic(-1);
+	else setztic(castreal(ticstr));
+}

@@ -1,0 +1,97 @@
+/*****************************************************************************
+*                                                                            *
+*   XYMERGE.SPL   Copyright (C) 2006 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Merges multiple series by respecting x values               *
+*                                                                            *
+*   Revisions:   12 Jan 2006  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_XYMERGE
+
+    XYMERGE  
+
+    Purpose: Merges multiple series with respect to the X values.
+                                                                        
+    Format:  XYMERGE(s1, s2, ..., sN)
+
+                 s1  -  1st series argument
+                 s2  -  2nd series argument
+                 sN  -  Nth series argument
+
+    Returns: An XY series
+
+    Example:
+
+             W1: 1..5
+             W2: (4..6)/10
+             W3: xymerge(w1, w2)
+
+             W1 contains the series {1, 2, 3, 4, 5} with X values at
+             {1, 2, 3, 4, 5}.
+
+             W2 contains the series {0.4, 0.5, 0.6} with X values at
+             {4, 5, 6}.
+
+             W3 contains the XY series {1, 2, 3, 4, 0.4, 5, 0.5, 0.6} with
+             X values at {1, 2, 3, 4, 4, 5, 5, 6} since W1 and W2 overlap
+             at the 4th and 5th points.
+
+
+    Example:
+             W1: xy(sort(gnorm(100, 1), 1), 1..100)
+             W2: xy(sort(grand(100, 1), 1), 1..100)
+             W3: xymerge(W1, W2)
+
+             W1 and W2 overlap for X values between 0 and 1.
+
+             W3 contains an XY series that is equal to W1 for X values less
+             than 0 and greater than 1 and the result is equal to the merged
+             values of W1 and W2 for X values between 0 and 1.
+
+    Remarks:
+             XYMERGE accepts any number of input series. Non-series inputs
+             are converted to series.
+
+             XYMERGE always returns an XY series with constantly increasing
+             X values.
+
+    See Also:
+             Concat
+             Merge
+             XY
+
+#endif
+
+
+/* merge multiple series with respect to X values */
+xymerge(argv)
+{
+	local i, g, s, x, y;
+
+	/* empty series */
+	x = {};
+	y = {};
+
+	/* combine all the series */
+	for (i = 1; i <= argc; i++) {
+
+		/* get the input and force it to a series for generality */
+		s = castseries(getargv(i));
+
+		/* concat X and Y components */
+		x = concat(x, xvals(s));
+		y = concat(y, yvals(s));
+	}
+
+	/* get indices of sorted x values */
+	g = grade(x, 1);
+
+	/* merge and return XY series */
+	return(xy(x[g], y[g]));
+}

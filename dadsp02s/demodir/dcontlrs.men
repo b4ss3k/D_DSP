@@ -1,0 +1,17 @@
+! Contlers.men:  Menu for DSPTrial
+@x10
+@y5
+@f{_fg1}
+@b{_bg1}
+! @h{_Controlhelp("contlers")}
+ Controllers
+___________________
+ PID              ~echo("Continuous PID Controller Design is Available in DADiSP/Controls")
+ PI               ~echo("Continuous PI Controller Design is Available in DADiSP/Controls")
+ PD               ~echo("Continuous PD Controller Design is Available in DADiSP/Controls")
+ Lag or Lead      ~echo("Continuous Lag/Lead Compensator Design is Available in DADiSP/Controls")
+
+ Disc PID         ~echo("Discrete PID Controller Design is Available in DADiSP/Controls")
+ Disc PI          ~echo("Discrete PI Controller Design is Available in DADiSP/Controls")
+ Disc PD          ~echo("Discrete PD Controller Design is Available in DADiSP/Controls")
+ Disc Lag or Lead ~echo("Discrete Lag/Lead Compensator Design is Available in DADiSP/Controls")

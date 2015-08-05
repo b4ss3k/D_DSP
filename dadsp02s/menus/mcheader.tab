@@ -1,0 +1,16 @@
+@wizard
+
+Multi Channel Header Wizard (1 of 3)
+
+{writehed()}
+{defvar("_rdfltflg", "YES")}
+{if(_rdfltflg == "YES", set_all_defaults)}
+
+~_mf("mcheader.pan")
+~_mf("mc_chan.pan")
+!~_mf("mcnames.pan")
+~_mf("mcinfo.pan")
+
+~~write_header(_headfile)
+
+

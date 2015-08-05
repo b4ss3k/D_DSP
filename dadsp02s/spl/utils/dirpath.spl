@@ -1,0 +1,67 @@
+/*****************************************************************************
+*                                                                            *
+*   DIRPATH.SPL     Copyright (C) 1999 DSP Development Corporation           *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns directory component of a path string                *
+*                                                                            *
+*   Revisions:   27 Apr 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_DIRPATH
+
+    DIRPATH
+
+    Purpose: Returns the directory component of a path string
+                                                                        
+    Format:  DIRPATH(pathname)
+
+              pathname - an optional string, a full path string containing a
+                        directory component
+
+    Returns: A string, the directory name.
+
+    Example:
+             DIRPATH("\dsp\system.mac")
+
+             returns the directory component "\dsp\"
+
+    Remarks:
+             DIRPATH is used internally to retrieve the last directory
+             in file dialog boxes - see system.mac. If the path string
+             does not contain a directory component, the current
+             LABBOOK path is returned.
+
+
+    See Also:
+             Eval
+             Strfind
+             Strrev
+             system.mac
+#endif
+
+
+
+/* get and store directory name */
+dirpath(pathname)
+{
+	local dir;
+
+	if (argc < 1) {
+		pathname = ""; /* this will default to getlabpath */
+	}
+
+	/* find directory component and save */
+	dir = strrev(strfind(pathchar, strrev(pathname)));
+
+	if (strlen(dir) == 0) {
+		/* no directory, default to Labbook directory */
+		dir = getlabpath();
+	}
+	return(dir);
+}
+
+

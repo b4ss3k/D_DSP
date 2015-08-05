@@ -1,0 +1,68 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                               !
+!                        PALETTE.MAC                            !
+!                                                               !
+!         Copyright (C) 1991-2000 DSP Development Corp          !
+!                                                               !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!
+!                DADiSP color palette file
+!
+! PALETTE.MAC is automatically read and loaded each time you 
+! start DADiSP.
+! 
+! This file allows you to select a subset of displayable colors 
+! from the Windows color palette.
+!
+! Palette colors must be in the following form of RGB values:
+!
+!       COLOR_NAME   COLOR_INDEX    ! RED GREEN BLUE
+!
+! COLOR_NAME    : arbitrary name of the color
+! COLOR_INDEX   : color index (0 <= index <= 255) assigned to color
+! RED           : 0.0 <= RED   <= 1.0
+! GREEN         : 0.0 <= GREEN <= 1.0
+! BLUE          : 0.0 <= BLUE  <= 1.0
+!
+!
+! The RED GREEN BLUE values MUST be preceded by a ! character
+!
+! example of a valid line:
+!
+!                            SLATE 36 ! 0.2 0.2 0.2
+!
+! The macro SLATE is assigned the value 36 and appears on the screen
+! with RED = GREEN = BLUE = 0.2. This color can be referred to in DADiSP as
+! SLATE.
+
+! more examples:
+
+! RED        4 ! 1.0 0.0 0.0
+!
+! GREEN      2 ! 0.0 1.0 0.0
+!
+! BLUE       1 ! 0.0 0.0 1.0
+!
+
+! IMPORTANT:
+!
+! Colors 0 through 32 are considered RESERVED. Although colors 0 through
+! 32 can be altered using palette.mac, this is not recommended. However,
+! you can safely define your own custom colors starting at index 33. Your
+! custom colors will automagically appear in the DADiSP color selection menus.
+
+
+! Special Colors for DADiSP
+
+STEEL_BLUE 6 ! 0.000 0.503 0.503
+LGREY      7 ! 0.753 0.753 0.753
+GREY       8 ! 0.510 0.510 0.510
+
+! define your own here beginning at index 33
+
+! example of extra colors - you're welcome to change and/or add 
+! CREAM     33 ! 1.000 0.985 0.942
+! SKYBLUE   34 ! 0.651 0.793 0.942
+! MONEY     35 ! 0.753 0.863 0.753
+

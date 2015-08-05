@@ -1,0 +1,30 @@
+! Dataio.men -- Data input/output functions
+@x5
+@y1
+@b{_bg2}
+@f{_fg2}
+    Statistical Graphs
+_____________________________
+
+ Histogram                   ~echo("Graphs Histogram of a Given Data Set")
+ Scatter Plot                ~echo("Graphs a One Series Against Another Series")
+ Residuals Plot              ~echo("Graphs Difference Between Actual Data and Theoretical Data")
+ Linear Fit Coefficients     ~echo("Returns the Coefficients of a Linear Fit")
+ Overplot Polynomial Fit     ~echo("Overplots a Polynomial Fit to a Dataset with the Original Dataset") 
+
+ Mean Plot                   ~echo("Overplots the Mean of a Dataset with the Original Dataset")
+ Median Plot                 ~echo("Overplots the Median of a Dataset with the Original Dataset")
+ Variance Plot               ~echo("Overplots the Variance of a Dataset with the Original Dataset")
+ Combination Plot            ~echo("Overplots the Mean, Median and Variance of a Dataset with the Original Dataset")
+ Errorbar Plot               ~echo("Graphs the Minimum and Maximum Error Value for Each Point in a Dataseries")
+! Boxplot                     ~echo("Graphs a Boxplot of Data, Showing Statistical Measurements")
+!
+! Xbar QC Chart	             ~echo("Constructs a Mean QC Chart")
+! Range QC Chart	     ~echo("Constructs a Range QC Chart")
+! Xbar/Range Chart            ~echo("Constructs a Mean - Range QC Chart")
+!
+ Boxplot                     ~_deffname('ERRORBAR Boxplot') | _defformat('Errorbar(ser,ser,ser,ser,ser,1)')|_defxamp('Errorbar(W1,W2,W3,W4,W5,1)')|dmf('boxplot.dmn')
+
+ Xbar QC Chart               ~_deffname('XCHART   Xbar Chart')| _defformat('Xchart(multi-column subgroup table)')|_defxamp('Xchart(W1)')|_gettables|_oserform("Xchart")
+ Range QC Chart              ~_deffname('RCHART   Range Chart')| _defformat('Rchart(multi-column subgroup table)')|_defxamp('Rchart(W1)')|_gettables|_oserform("Rchart")
+ Xbar/Range Chart            ~echo("Constructs a Mean - Range QC Chart")

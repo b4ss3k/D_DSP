@@ -1,0 +1,12 @@
+@tabbed
+
+{sprintf("Maximum & Minimum for W%d", getwnum)} 
+
+{defvar("_maxmin_page", 0)}
+{setmenupage(_maxmin_page)}
+
+~{if(itemtype==8||itemtype==2, '_MF("maxlist.pan")', '_MF("maxmin.pan")')}
+~_mf("mark.pan")
+
+
+~~setvar("_maxmin_page", getmenupage)

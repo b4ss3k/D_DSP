@@ -1,0 +1,12 @@
+! HelpMain.men  - Main menu for help files.
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+      DADiSP Help
+
+ General Overview          ~_MF("mainhelp.men")
+ The DADiSP Menu Interface ~_MF("menuhelp.men")
+ Using the Mouse           ~_MF("moushelp.men")
+ Command Line Interface    ~_MF("commhelp.men")
+ Function Key Control      ~_MF("funchelp.men")

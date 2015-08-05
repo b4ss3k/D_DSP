@@ -1,0 +1,79 @@
+/*****************************************************************************
+*                                                                            *
+*   FFTP2.SPL    Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Performs Polar form of 2D FFT of an input array             *
+*                                                                            *
+*   Revisions:   19 May 2000  RRR  Creation - from FFT2.SPL                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_FFTP2
+
+    FFTP2    
+
+    Purpose: Calculates the 2D FFT of an array in polar (magnitude-phase) form
+                                                                        
+    Format:  FFTP2(array, rowlen, collen)
+
+              array - a multi-column series
+
+             rowlen - optional intger, FFT row size, defaults to
+                      numrows(a)
+
+             collen - optional integer, FFT column size, defaults to
+                      numcols(a)
+
+
+    Returns: A complex array
+
+    Example:
+             Fftp2({{1, 2}, {3, 4}})
+
+             returns the complex polar array:
+
+                         {{10*exp(i*0),  2*exp(i*PI)},
+                          { 4*exp(i*PI), 0*exp(i*0)}}
+
+    Remarks:
+             FFTP2 is often used in image processing applications. 
+             Use FFTSHIFT to flip the output so the 0 frequency is in
+             the center of the plot.
+
+             If the input data is a series (i.e. a single column), a 1D FFT 
+             is performed. 
+
+
+    See Also
+             FFT
+             FFT2
+             IFFT2
+
+#endif
+
+
+/* 2D FFT in polar form */
+fftp2(a, rowlen, collen)
+{
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("fftp2 - input array required");
+			rowlen = numrows(a);
+			collen = numcols(a);
+		}
+		else {
+			collen = rowlen;
+		}
+	}
+	if (numcols(a) > 1) {
+		/* amazingly simple one liner */
+		return(transpose(fftp(transpose(fftp(a, rowlen)), collen)));
+	}
+	else {
+		return(fftp(a, rowlen));
+	}
+}
+

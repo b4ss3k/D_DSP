@@ -1,0 +1,16 @@
+! gradient.mnu - extracts the gradient descent curve of an ANN output window
+! changed for demo.
+@x 0
+@y 0
+@panel
+
+    MLP Network Gradient Size
+
+  Extracts the gradient descent curve of 
+
+  an ANN output window.
+
+  Inputs:
+       Source Window:  Wn
+       Run Number:     N
+~menuc()

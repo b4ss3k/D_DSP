@@ -1,0 +1,14 @@
+/* sets tic corners -> 1 == all */
+_sticall(all)
+{
+	local tstyle = 0;
+
+	tstyle = castint(getconf("tic_style"));
+	tstyle &= (~0x04);
+
+	if (all) { /* outer tics */
+		tstyle |= 0x04;
+	}
+
+	setconf("tic_style", caststring(tstyle));
+}

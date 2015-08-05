@@ -1,0 +1,15 @@
+! demctrls.spl
+! SPL file for DSPTrial of controls demo
+
+
+_rtlocb(num,den,ks) 
+{
+	local lks, clrts[], pt, clt;
+
+        lks = length(ks);
+        for (pt = 0; pt < lks; pt++) {
+	        clt = cmroots(extract(_rtlcof1(num,den,ks),int(pt*_rtllen(num,den))+1,int(_rtllen(num,den))));
+	        clrts =concat(clrts,clt);
+        }
+        return(clrts);
+}

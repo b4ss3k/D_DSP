@@ -1,0 +1,18 @@
+*          EXERCISE 7
+
+        IN    XN,2 
+        LARK  0,12
+        LARK  1,20
+        LARP  0
+        ZAC
+        LT    *-,1
+        MPY   *+,0
+        LTD   *-,1
+        MPY   *+,0
+        LTD   *,1
+        MPY   *,0
+        APAC
+        SACH  YN1
+        OUT   YN2
+
+

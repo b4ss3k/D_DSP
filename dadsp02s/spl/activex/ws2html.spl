@@ -1,0 +1,128 @@
+/*****************************************************************************
+*                                                                            *
+*   WS2HTML.SPL   Copyright (C) 2000-2003 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Converts a Worksheet to HTML using MS Word                 *
+*                                                                            *
+*   Revisions:     6 Sep 2000  RRR  Creation                                 *
+*                 19 Aug 2003  RRR  Word version check for file converters   *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_WS2HTML
+
+    WS2HTML    
+
+    Purpose: Converts the current Worksheet to HTML using MS Word and ActiveX
+                                                                        
+    Format:  WS2HTML(fname)
+
+             fname - string, optional filename (defaults to "dadisp.htm")
+
+
+    Returns: Nothing - creates an HTML file suitable for the Web
+
+
+    Example:
+             ws2html
+
+             Converts the current Worksheet to the HTML file named 
+            "dadisp.htm". The conversion is accomplished by using the 
+             SaveAs ActiveX method of Microsoft Word. The resulting 
+             HTML file can be displayed with any Web Browser.
+
+
+    Remarks:
+             WS2HTM requires the installation of MS Word.
+             
+
+    See Also:
+             Createobject
+             Msword
+             Msword2
+
+#endif
+
+
+
+/* convert worksheet to HTML via ActiveX and MS Word */
+ws2html(fname)
+{
+	local word, newdoc, format;
+
+	// default filename if necessary
+	if (argc < 1) fname = getlabpath + "dadisp.htm";
+
+	// copy worksheet metafile into clipboard 
+	copyworksheet();
+
+	echo("Starting HTML Conversion...");
+
+	// start Word
+	word = CreateObject("Word.Application");
+
+	// make sure HTML conversion is available
+	if (numstr(word.version) <= 8.0) {
+		if ((format = GetHtmlSaveAs(word)) < 0) {
+			word.Application.Quit(0);
+			error("HTML Converter Not Available");
+		}
+	}
+
+	// Add a new Document
+	newdoc = word.Documents.Add();
+
+	// paste worksheet as Enhanced Metafile 
+	word.Selection.PasteSpecial(0, 0, 0, 0, 9);
+
+	// set default save format - prevents Word from prompting
+	word.Application.DefaultSaveFormat = "HTML";
+
+	// save as HTML 
+	echo(sprintf("Saving %s ...", fname));
+	newdoc.SaveAs(fname);
+
+	// verified doc was saved 
+	if (newdoc.Saved) {
+		echo(sprintf("%s Saved", fname));
+	}
+	else {
+		echo(sprintf("Cannot Save %s", fname));
+	}
+
+	// all done
+	word.Application.Quit(0);
+
+}
+
+// gets HTML SaveAs format for Word, -1 if error 
+GetHtmlSaveAs(w)
+{
+	local f, idx, cnt, format = -1;
+
+	// get installed file conversions 
+	f = w.FileConverters;
+
+	// number of converters
+	cnt = f.Count;
+
+	// see if we have the HTML converter 
+	for (idx = 1; idx <= cnt; idx++) {
+		if (strlen(strfind("HTML", f.Item(idx).ClassName)) > 0) {
+			break;
+		}
+	}
+	if (idx <= cnt) {
+		// got it, does it save? 
+		if (f.Item(idx).CanSave) {
+			// format for SaveAs 
+			format = f.Item(idx).SaveFormat;
+		}
+	}
+	return(format);
+}

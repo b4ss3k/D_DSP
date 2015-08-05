@@ -1,0 +1,58 @@
+/*****************************************************************************
+*                                                                            *
+*   ROWMAX.SPL       Copyright (C) 2004 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Produces a column of the maximums of each row of an array   *
+*                                                                            *
+*   Revisions:   30 Mar 2004  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_ROWMAX
+
+    ROWMAX
+
+    Purpose: Produces a column of the maximum of each row of a table.
+                                                                        
+    Format:  ROWMAX(table)
+
+              table - A series, table or expression evaluating to a series
+                      or table.
+
+    Returns: A single column series with the same number of rows as the
+             input table.
+
+    Example:
+             a = {{2,  4,  6}, 
+                  {8, 10, 12}}
+
+             b = rowmax(a)
+
+             b == {6, 12} 
+
+    Remarks:
+             ROWMAX uses ROWREDUCE to find the row maxima.
+
+    See Also:
+             Colmax
+             Max
+             Row
+             Rowlen
+             Rowmean
+             Rowmin
+             Rowreduce
+             Rowstdev
+             Rowsum
+             Transpose
+#endif
+
+
+/* calculate the row maxima */
+rowmax(a)
+{
+	return(rowreduce(a, 26));
+}

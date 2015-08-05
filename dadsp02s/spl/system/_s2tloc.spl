@@ -1,0 +1,17 @@
+_s2tloc(str)
+{
+	local tloc;
+
+	switch (str) {
+		case _outticstr:
+		default:
+			tloc = 1;
+			break;
+
+		case _inticstr:
+			tloc  = 2;
+			break;
+
+	}
+	return(tloc);
+}

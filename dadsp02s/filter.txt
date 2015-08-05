@@ -1,0 +1,172 @@
+                    ______________________________________
+
+                                   FILTER.TXT 
+
+                         DSP Development Corporation
+                               3 Bridge Street   
+                               Newton, MA 02458   
+                                     USA
+
+                            Phone:  1-617-969-0185
+                            Fax:    1-617-969-0446
+                            Web:    http://www.dadisp.com
+
+                                 April, 2005
+                    ______________________________________
+
+
+
+        Introduction
+        _______________________________________________________________
+
+        DADiSP/Filters allows you to quickly design, analyze and
+        process both FIR (Finite Impulse Response) and IIR (Infinite
+        Impulse Response) digital filters from easy-to-use pop-up menus
+        or simple one line functions.  The filter module is fully
+        integrated with the DADiSP Worksheet to provide a complete
+        digital filter design, analysis, display and processing
+        environment.
+
+        The FIR module creates lowpass, highpass, bandpass, bandstop,
+        multiband, Hilbert transformers and differentiators using the
+        Parks-McClellan/Remez Exchange optimal design algorithm.  The
+        Kaiser Window method is also provided.
+
+        The IIR module supports Butterworth, Chebychev I, Chebychev II,
+        Elliptic and Bessel designs for lowpass, highpass, bandpass and
+        bandstop recursive filters.  The bilinear transform method is
+        employed and the resulting IIR coefficients are automatically
+        calculated in the traditional multistage cascade format.  Both
+        time and frequency domain characteristics of any resulting
+        filter can be displayed and manipulated.
+
+
+        Installing DADiSP/Filters
+        _______________________________________________________________
+
+        DADiSP/Filters requires DADiSP/2002 or higher.  To install
+        DADiSP/Filters, simply follow the instructions as indicated on
+        your distribution CD or disk.  By default, DADiSP/Filters will
+        be installed in the MODULES subdirectory of your DADiSP
+        distribution.
+
+
+
+        Using DADiSP/Filters
+        _______________________________________________________________
+
+        Once DADiSP/Filters has been properly installed, the easiest
+        way to design a filter is through the pop-up menuing facility. 
+        To use the filter menu:
+
+                  1. Start DADiSP.
+
+                  2. Select the Tools-Modules-Filter Design menu item.
+
+                  3. Select the FIR or IIR Filter Design item.
+
+
+        The Filters Module will also install a Filters button in the
+        toolbar.  The filter design dialog boxes should be
+        self-explanatory.  Most dialogs also include on-line help by
+        clicking the HELP button or pressing F1.
+
+
+        You can also load the filter macros by typing:
+
+                     macread("filter.mac")
+
+        Once the filter macros have been loaded, you can bypass the
+        main menu and directly access the filter menu by typing
+        pressing the Filters button or by typing:
+
+                             filters
+
+
+
+        Function Listing
+        _____________________________________________________________
+
+        The following routines are available with DADiSP/Filters
+        Version 4.0 :
+
+        FIR DIGITAL FILTER FUNCTIONS
+
+        BANDPASS        Designs a FIR linear phase bandpass filter
+        BANDSTOP        Designs a FIR linear phase bandstop filter
+        DIFF            Designs a FIR differentiator
+        FASTFILTER      FFT based FIR filtering
+        FIRMAG          Calculates FIR filter magnitude response
+        FIRPHASE        Calculates FIR filter phase response
+        HIGHPASS        Designs a FIR linear phase highpass filter
+        HILBERT         Designs a FIR Hilbert transformer
+      * KWBPASS         Designs a Kaiser Window FIR bandpass filter
+      * KWBSTOP         Designs a Kaiser Window FIR bandstop filter
+      * KWHPASS         Designs a Kaiser Window FIR highpass filter
+      * KWLPASS         Designs a Kaiser Window FIR lowpass filter
+        LOWPASS         Designs a FIR linear phase lowpass filter
+        REMEZ           Creates multiband FIR filters
+
+
+        IIR DIGITAL FILTER FUNCTIONS
+
+      * BESSEL          Designs an IIR Bessel filter
+        BUTTERWORTH     Designs an IIR Butterworth filter
+        CASCADE         Filters a time domain input with an IIR filter
+        CHEBY1          Designs an IIR Chebychev I filter
+        CHEBY2          Designs an IIR Chebychev II filter
+        ELLIPTIC        Designs an IIR Elliptical filter
+        IIRIMP          Calculates IIR filter impulse response
+        IIRMAG          Calculates IIR filter magnitude response
+        IIRPHASE        Calculates IIR filter phase response
+
+
+        FILTER COEFFICIENT CONVERSION FUNCTIONS
+
+      * CAS2DIR         Convert Cascade coefficients to Direct form
+      * DIR2CAS         Convert Direct form coefficients to Cascade form
+      * FIR2CAS         Convert FIR coefficients to Cascade form
+      * FIR2DIR         Convert FIR coefficients to Direct form
+
+      
+        FILTER RESPONSE FUNCTIONS
+
+      * FILTMAG         Filter magnitude response
+      * FILTPHASE       Filter phase response
+      * FILTIMP         Filter impulse response
+      * FILTGRPDELAY    Filter group delay
+
+
+        FILTERING FUNCTIONS
+
+      * DIRFILTER       Filter with Direct form coefficients in the time domain
+      * DIRFILTERF      Filter with Direct form coefficients using the FFT
+      * FILTDATA        Filter data directly in the time domain
+      * FILTDATAF       Filter data using the FFT method
+      * FIRFILTER       Filter with FIR coefficients by direct convolution
+      * FIRFILTERF      Filter with FIR coefficients using the FFT method
+      * IIRFILTER       Filter with Cacade coefficients in the time domain
+      * IIRFILTERF      Filter with Cacade coefficients using the FFT
+
+
+        MISCELLANEOUS DIGITAL FILTER FUNCTIONS
+
+        FIR             Evaluates a FIR difference equation
+        FIRPZ           Creates an FIR filter zero plot
+        FIRZEROS        Calculates zeros of an FIR filter
+        FULLFIR         Converts FIR filter to full band linear phase
+        IIR             Evaluates an IIR difference equation
+      * IIRGRPDELAY     Calculates group delay of an IIR filter
+        IIRPOLES        Calculates poles of an IIR filter
+        IIRPZ           Creates an IIR filter pole-zero plot
+        IIRZEROS        Calculates zeros of an IIR filter
+        POLECOEF        Converts IIR biquad to direct pole coeff form 
+        ZEROCOEF        Converts IIR biquad to direct zero coeff form 
+        UNWRAP          Phase unwrapping using Schafer's algorithm
+      * QUANTIZE        Quantize coefficients with N bits
+
+
+     * New or improved Version 4.0 functions.
+
+                        *** end of FILTERS.TXT ***
+

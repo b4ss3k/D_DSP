@@ -1,0 +1,13 @@
+! Set up Network Topology
+! modified for demo.
+@x 0
+@y 0
+  Choose Network Topology
+
+ One Hidden Layer         ~echo("see 'Four Hidden Layers'")
+ 
+ Two Hidden Layers        ~echo("see 'Four Hidden Layers'")
+  
+ Three Hidden Layers      ~echo("see 'Four Hidden Layers'")
+  
+ Four Hidden Layers       ~DMF('forlayer.dmn')

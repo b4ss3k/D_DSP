@@ -1,0 +1,76 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                               !
+!                           DSPCOLOR                            !
+!                                                               !
+!      Copyright (C) 1991-2002 DSP Development Corporation      !
+!                                                               !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+! DADiSP color file
+!
+! Color Value, Global Color Number, Color Parameter Name
+!
+! These values can be set at runtime with SETGCOLOR. For example:
+!
+!   setgcolor(5, LRED)
+!
+! sets the default series (aka signal) color to light red. This
+! runtime global color change will then be written to the session 
+! file (dadisp5.ses) as the line:
+!
+!   SIGNAL_COLOR 12
+!
+! since LRED is just a macro defined to 12.
+!
+! Use GETGCOLOR to retrieve a global color setting, e.g.
+!
+!   getgcolor(5)
+!
+! Color values with the SYS_ prefix indicate system colors
+! that automatically update when the system color scheme
+! changes. Other colors are defined internally but can be
+! altered in PALETTE.MAC
+
+WHITE               !  1 foreground
+SYS_BG_COLOR        !  2 background
+SYS_TEXT_COLOR      !  3 text_foreground
+SYS_BG_COLOR        !  4 text_background
+LBLUE               !  5 signal_color
+GREY                !  6 window_border_color
+SYS_INNER_COLOR     !  7 window_color
+SYS_TOOLTIP_BG      !  8 popmes_background_color
+GREY                !  9 list_background_color
+WHITE               ! 10 list_text_foreground_color
+GREY                ! 11 list_text_background_color
+SYS_TOOLTIP_FG      ! 12 poptext_foreground_color
+BLUE                ! 13 infobox_color
+YELLOW              ! 14 infobox_text_color
+RED                 ! 15 help_color
+WHITE               ! 16 help_text_color
+SYS_BG_COLOR        ! 17 window_background_color
+SYS_TEXT_COLOR      ! 18 window_text_color
+LGREY               ! 19 window_grid_color
+SYS_HILIGHT         ! 20 window_hilite
+SYS_SHADOW          ! 21 window_shadow
+SYS_HILIGHT         ! 22 list_hilite
+SYS_SHADOW          ! 23 list_shadow
+WHITE               ! 24 pop_hilite
+BLACK               ! 25 pop_shadow
+SYS_HILIGHT         ! 26 bar_hilite
+SYS_SHADOW          ! 27 bar_shadow
+BLACK               ! 28 mono_fg
+WHITE               ! 29 mono_bg
+SYS_INNER_COLOR     ! 30 worksheet_bg
+SYS_CAPT_TEXT       ! 31 window_label_color
+SYS_CAPTION         ! 32 label_background
+SYS_TOOLTIP_FG      ! 33 tooltip_fg
+SYS_TOOLTIP_BG      ! 34 tooltip_bg
+SYS_GREY_CAPT       ! 35 inactive_label_background
+SYS_CAPT_TEXT       ! 36 inactive_text_color
+SYS_TOOLTIP_BG      ! 37 active_label_background
+SYS_TOOLTIP_FG      ! 38 active_text_color
+SYS_TEXT_COLOR      ! 39 picktext_color
+BLACK               ! 40 prt_window_border_color
+LRED                ! 41 error_color
+
+

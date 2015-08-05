@@ -1,0 +1,15 @@
+/* get ztic, ticval or -1 */
+_gztic(w)
+{
+	local tic;
+
+	if (argc < 1) {
+		if (getzticset) tic = getztic;
+		else tic = -1;
+	}
+	else {
+		if (getzticset(w)) tic = getztic(w);
+		else tic = -1;
+	}
+	return(tic);
+}

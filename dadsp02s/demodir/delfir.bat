@@ -1,0 +1,1 @@
+del *.fir > nul

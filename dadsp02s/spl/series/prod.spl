@@ -1,0 +1,85 @@
+/*****************************************************************************
+*                                                                            *
+*   PROD.SPL    Copyright (C) 1998-2003 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Matthew Tom                                                 *
+*                                                                            *
+*   Synopsis:    Calculates the product of the entries of a series           *
+*                                                                            *
+*   Revisions:    3 May 1998  MAT  Creation                                  *
+*                 9 Jun 1998  MAT  Help Menu Entry                           *
+*                13 Apr 2000  RRR  colreduce                                 *
+*                27 Jul 2001  RRR  refseries                                 *
+*                21 Feb 2003  RRR  prod({}) == 1                             *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_PROD
+
+    PROD
+
+    Purpose: Calculates the product of all values of a series or array.
+
+    Format:  PROD(x)
+
+              x - input series or array, defaults to current window
+
+    Returns: A scalar
+    
+    Example:
+
+         PROD({5, 9, 2, 0.5})
+
+
+         returns 45
+
+    Example:
+ 
+         a = {{1, 2, 3},
+              {4, 5, 6},
+              {7, 8, 9}}
+
+         PROD(a)
+
+
+         returns 362880
+
+
+    See Also:
+             Colprod
+             Sum
+
+#endif
+
+
+/* product of a series or array */
+prod(s)
+{
+	local r;
+
+	/* default to current series */
+	if (argc < 1) s = refseries(1);
+
+	/* convert to series if required */
+	if (not(IS_ARRAY(s))) {
+		s = castseries(s);
+	}
+
+	if (length(s) == 0) {
+		/* special case for empty series */
+		r = 1;
+	}
+	else {
+		/* unravel in case input is array - colreduce does the rest */
+		r = colreduce(unravel(s), "*");
+
+		/* cast to scalar */
+		if (iscomplx(r)) r = castcomplex(r);
+		else r = castreal(r);
+	}
+
+	return(r);
+}

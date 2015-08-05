@@ -1,0 +1,12 @@
+! DBugOpt.men
+@x40
+@y0
+@f{_fg1}
+@b{_bg1}
+
+Monitor File Searches
+______________________
+No Monitoring         ~defmacro("dboptstr","0",3);"OFF"
+Show Successful Opens ~defmacro("dboptstr","1",3);"Successful Opens"
+Show Failed Opens     ~defmacro("dboptstr","2",3);"Failed Opens"
+Show All Searches     ~defmacro("dboptstr","3",3);"All Searches"

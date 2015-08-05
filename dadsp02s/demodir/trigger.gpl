@@ -1,0 +1,11 @@
+!  Menu for channel triggering mode
+@display
+     Triggering
+_____________________
+
+ Source:   [<     >] ~echo("")~<CHAN1><CHAN2>
+ Condition:[<     >] ~echo("  ")~<ENTER><EXIT><TRUE><FALSE>
+ Field:    [<  >]    ~echo(" ")~<1><2>
+ Mode:     [<     >] ~echo(" ")~<EDGE><PATTERN><STATE><DELAY><TV>
+ Slope:    [<    >]  ~defmacro("pslope","<>",3)~<POS><NEG>
+ Level               ~strnum(input(1,"Trigger Level in Volts"))

@@ -1,0 +1,80 @@
+/*****************************************************************************
+*                                                                            *
+*   COPPER.SPL     Copyright (C) 1997 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Generate a copper colormap                                  *
+*                                                                            *
+*   Revisions:    6 Nov 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_COPPER
+
+    COPPER
+
+    Purpose: Generates a brownish colormap
+                                                                        
+    Format:  COPPER(len)                           
+
+               len - optional colormap length, defaults to
+                     the length of the current colormap
+                                                                        
+
+    Returns: A table of RGB triples suitable for the SETCOLORMAP function.   
+                                                                        
+    Example:                                                            
+
+             clen = length(getcolormap());
+             density(ravel(rep(0..(clen-1), 32), clen)');
+             copper();
+                                                                        
+             Creates a table of 32 x colormap length RBG values and   
+             displays the resulting colors. The resulting image is a    
+             vertical plot of colors ranging from brown (lowest) to   
+             to white (highest).
+
+     Remarks:
+
+             COPPER() by itself sets the colormap and shading.
+
+             a = copper() or setcolormap(copper()) returns the rgb values.
+             In this case, use SETSHADING to make the new colormap
+             take effect on an existing density or 2D plot.
+
+     See Also:
+
+             Cool
+             Gray
+             Hot
+             Rainbow             
+             Setcolormap
+             Setshading
+             Showcmap
+
+#endif
+
+
+copper(m)
+{
+	local cmap;
+
+	if (argc < 1) {
+		m = size(getcolormap(), 1);
+	}
+	cmap = minval(1,gray(m)*^diag({1.2500, 0.7812, 0.4975}));
+
+	if (outargc == 0) {
+		setcolormap(cmap);
+		setshading();
+	}
+	else {
+		setvunits(cmap, "Red",   1);
+		setvunits(cmap, "Green", 2);
+		setvunits(cmap, "Blue",  3);
+		return(cmap);
+	}
+}

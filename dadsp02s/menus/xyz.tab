@@ -1,0 +1,12 @@
+@tabbed
+XYZ Plot
+
+{setvar("_xyztitle", "XYZ Series")}
+
+~_MF("xyz.pan")
+~_MF("xyzunits.pan")
+
+~~if(strlen(_formstr) > 0, _formstr = _addzhv(_formstr))
+
+!~~~if(strlen(_formstr) > 0, eval(sprintf('setwf(%s, "%s");_zdataunits', _dwin, _formstr)))
+~~if(strlen(_formstr) > 0, eval(sprintf('setwf(%s, "%s");', _dwin, _formstr)))

@@ -1,0 +1,28 @@
+! Design four hidden layer network
+! changed for demo.
+@x 0
+@y 0
+@panel
+   Design Four Hidden-Layer Network
+
+  Training Pattern Window:     W<    > ~defmacro('_TTW1','w<1>',2)~_SRCWIN
+  Target Pattern Window:       W<    > ~defmacro('_RTW1','w<2>',2)~_SRCWIN
+  Cross-Validation Patterns:   W<    > ~defmacro('_CTTW1','w<3>',2)~_SRCWIN
+  Cross-Validation Targets:    W<    > ~defmacro('_CRTW1','w<4>',2)~_SRCWIN
+
+  Input Layer Size:            <     > ~defmacro('_ILEN','<4>',2)~inp(2)
+  Hidden Layer 1 Size:         <     > ~defmacro('_H1LEN','<4>',2)~inp(2)
+  Hidden Layer 2 Size:         <     > ~defmacro('_H2LEN','<4>',2)~inp(2)
+  Hidden Layer 3 Size:         <     > ~defmacro('_H3LEN','<4>',2)~inp(2)
+  Hidden Layer 4 Size:         <     > ~defmacro('_H4LEN','<4>',2)~inp(2)
+  Output Layer Size:           <     > ~defmacro('_OLEN','<1>',2)~inp(2)
+  
+  Desired Mean-Squared Error:  <     > ~defmacro('_MSE','<0.0>',2)~inp(2)
+  Minimum Gradient Norm:       <     > ~defmacro('_MGN','<0.001>',2)~inp(2)
+  Desired Absolute Error:      <     > ~defmacro('_MAE','<0.0>',2)~inp(2)
+  Desired Digital Error:       <     > ~defmacro('_MDE','<0.0>',2)~inp(2)
+  Maximum Epochs:              <     > ~defmacro('_MNI','<100>',2)~inp(2)
+
+  Number of Runs:              <     > ~defmacro('_NRUN','<1>',2)~inp(2)
+  Random Number Seed:  <             > ~defmacro('_SEED','<1>',2)~inp(2)
+~menuc()

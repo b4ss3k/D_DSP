@@ -1,0 +1,33 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!          Frequency Domain Macros                !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+! Cross correlation using FFT method
+FCROSS(A,B) (REAL(IFFT(FFT(TWO(A))*CONJ(FFT(TWO(B)))))*2/(LENGTH(A)+LENGTH(B)))
+
+! Auto correlation using FFT method
+FACOR(A) (REAL(IFFT(MAG(FFT(TWO(A))^2)))/LENGTH(A))
+
+! Power Spectrum
+FPOW(A,B) FFT(TWO(A))*FFT(TWO(B))
+
+! Coherence using FFT method
+COH(A,B) FCROSS(A,B)*CONJ(FCROSS(A,B))/(FPOW(A,A)*FPOW(B,B))
+
+! Time domain Covariance
+COVAR(A,B) (CROSSCOR(A,B) - MEAN(A)*MEAN(B))
+
+! Covariance using FFT
+FCOVAR(A,B) (FCROSS(A,B) - MEAN(A)*MEAN(B))
+
+! Time domain autovariance
+ACOVAR(A) (AUTOCOR(A) - MEAN(A)^2)
+
+! Autovariance using FFT
+FACOVAR(A) (FACOR(A) - MEAN(A)^2)
+
+
+! Utilities
+TWO(S) EXTRACT(S, 1, 2*LENGTH(S))

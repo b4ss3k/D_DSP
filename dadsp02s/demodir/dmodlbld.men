@@ -1,0 +1,18 @@
+!  This is a DSPTRial Menu
+@x10
+@y5
+@f{_fg1}
+@b{_bg1}
+! @h{_Controlhelp("modelbld")}
+    Model Building
+________________________
+
+ Connect                ~echo("Connect Models with DADiSP/Controls")
+ Close-loop Unity NFB   ~echo("Calculate the Closed-loop Transfer Fcn. Assuming Unity Negative Feedback with DADiSP/Controls")
+ Close-loop Dynamic FB  ~echo("Calculate the Closed-loop Transfer Fcn. for Systems with open-loop & positive feedback dynamics with DADiSP/Controls")
+ Cont Delay             ~echo("Add a First Order Approximation of a Continuous Delay with DADiSP/Controls")
+ Cont Delay O2          ~echo("Add a Second Order Approximation of a Continuous Delay with DADiSP/Controls")
+ Cont to Discrete       ~echo("Calculate the Discrete Equivalent of Continuous Systems with DADiSP/Controls")
+ DC Gain Check          ~echo("Check the DC Gain of the Continuous System  with DADiSP/Controls")
+ Resolvant Matrix       ~echo("Produce the System Dynamics Resolvant Matrix with DADiSP/Controls")
+ Disc to Continuous     ~echo("Calculate Continuous Equivalent of Discrete Systems with DADiSP/Controls")

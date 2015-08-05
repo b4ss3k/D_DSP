@@ -1,0 +1,91 @@
+/*****************************************************************************
+*                                                                            *
+*   BITQUANT.SPL Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Quantizes an input series to N bits                         *
+*                                                                            *
+*   Revisions:   28 Feb 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_BITQUANT
+
+    BITQUANT
+
+    Purpose: Quantizes an input series to 2^bits levels
+                                                                        
+    Format:  BITQUANT(s, bits, xl, xh)
+
+                 s - input series or scalar
+
+              bits - an optional integer, number of quantization bits,
+                     defaults to 8 (i.e. 256 levels)
+
+                xl - an optional real, low value input range, defaults
+                     to min(s)
+
+                xh - an optional real, high value input range, defaults
+                     to max(s)
+
+
+
+    Returns: A series or real
+
+    Example:
+             bitquant(1..100, 3);stem
+
+             Quantizes the series to 2^3 == 8 levels and returns a 100 
+             points series with quantized values of:
+             0, 1, 2, 3, 4, 5, 6, 7
+
+
+    Example:
+             Bitquant(1..100, 3, -100, 100);stem
+
+             The input full scale input range is to +-100. The resulting 
+             output now shows only 4 distinct levels since the actual 
+             input series only ranges from 1 to 100, about half the 
+             full scale input range.
+
+
+    Remarks:
+             Bitquant always outputs integer values. See QUANTIZE to
+             quantize a series to an arbitrary number of levels.
+
+    See Also:
+             Bitscale
+             Linscale
+             Quantize
+#endif
+
+
+/* quantize an input series */
+bitquant(s, bits, xl, xh)
+{
+	local q;
+
+	/* default input args */
+	if (argc < 4) {
+		if (argc < 3) {
+			if (argc < 2) {
+				if (argc < 1) error("quantize - input series required");
+				bits = 8;
+			}
+			xl = castreal(minval(s));
+		}
+		xh = castreal(maxval(s));
+	}
+
+	if (bits < 0) error("quantize - bits must be positive");
+
+	/* quantize to 2^bits levels */
+	q = int(quantize(s, 2^bits, xl, xh, 0, 2^bits - 1));
+
+	return(q);
+}
+

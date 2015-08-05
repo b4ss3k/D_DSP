@@ -1,0 +1,13 @@
+! Initialize IEEE Interface
+@x9
+@y1
+@b{_bg3}
+@f{_fg3}
+  Initialize GPIB
+
+ Init              ~INIT
+
+ Set Delimiter     ~_MF("eol.men")
+ Set Timeout       ~eval(strcat("timeout(",strnum(input(2,"Time in Seconds")), ")"))|Echo("Timeout set")
+
+ Close GPIB        ~CLOSEIEEE

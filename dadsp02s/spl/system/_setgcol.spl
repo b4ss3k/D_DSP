@@ -1,0 +1,30 @@
+/* sets global color menu parameters */
+_setgcol()
+{
+	setvar("_GCV05", getgcolor(05));
+	setvar("_GCV07", getgcolor(07));
+	setvar("_GCV17", getgcolor(17));
+	setvar("_GCV18", getgcolor(18));
+	setvar("_GCV19", getgcolor(19));
+	setvar("_GCV20", getgcolor(20));
+	setvar("_GCV21", getgcolor(21));
+	setvar("_GCV31", getgcolor(31));
+	setvar("_GCV32", getgcolor(32));
+	setvar("_GCV35", getgcolor(35));
+	setvar("_GCV36", getgcolor(36));
+	setvar("_GCV37", getgcolor(37));
+	setvar("_GCV38", getgcolor(38));
+	setvar("_GCV41", getgcolor(41));
+
+	setvar("_GCV42", getgcolor(42));
+	setvar("_GCV43", getgcolor(43));
+	setvar("_GCV44", getgcolor(44));
+	setvar("_GCV45", getgcolor(45));
+
+	setvar("_GCV48", getgcolor(48));
+	setvar("_GCV49", getgcolor(49));
+	setvar("_GCV50", getgcolor(50));
+	setvar("_GCV51", getgcolor(51));
+
+	setvar("_hiactwin", getconf("GUI_HIGHLIGHT_CAPTION")); 
+}

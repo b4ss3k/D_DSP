@@ -1,0 +1,20 @@
+#include <series.h>
+
+/* is series XY */
+_isxy(s)
+{
+	local status = FALSE;
+
+	if (argc < 1) {
+		if (itemtype == 1) { // XY
+			status = TRUE;
+		}
+	}
+	else {
+		if (itemtype(s) == 1) {
+			status = TRUE;
+		}
+	}
+	return(status);
+}
+

@@ -1,0 +1,87 @@
+/*****************************************************************************
+*                                                                            *
+*   INTERP2.SPL  Copyright (C) 1997 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    2 Dimensional linear interpolation                          *
+*                                                                            *
+*   Revisions:   21 Jun 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_INTERP2
+
+    INTERP2    
+
+    Purpose: Performs 2 dimensional linear interpolation
+                                                                        
+    Format:  INTERP2(array, numrows, numcols)
+
+              array   - input array to interpolate
+              numrows - an integer specifying the row interpolation factor
+              numcols - an optional integer for the column interpolation 
+                        factor (default numrows)
+
+    Returns: An array
+
+    Example:
+
+             W1: Ravel(gnorm(100, 1), 10);
+             W2: Interp2(W1, 4);
+
+             W2 contains a 37x37 array of linearly interpolated values.
+
+
+    Remarks:
+             The interpolated result from INTERP2 always passes through 
+             the original data points.
+
+    See Also
+             Contour
+             Interp
+             Plot3d
+             Ravel
+             Spline
+             Spline2
+             Waterfall
+
+#endif
+
+
+
+interp2(s, n, m)
+{
+	local u;
+
+	/* check input array */
+	if (IS_ARRAY(s)) {
+		if (numcols(s) < 2) {
+			error("interp2 - array required");
+		}
+	}
+	else {
+		error("interp2 - array required");
+	}
+
+	/* interpolation factor */
+	if (argc < 2) {
+		n = 2;
+	}
+	else n = castint(n);
+	if (argc < 3) {
+		m = n;
+	}
+
+	/* interpolate in Y direction */
+	u = interp(s', m);
+
+	/* interpolate in X direction */
+	u = interp(u', n);
+
+	return(u);
+}

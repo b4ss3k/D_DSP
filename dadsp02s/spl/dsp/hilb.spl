@@ -1,0 +1,68 @@
+/*****************************************************************************
+*                                                                            *
+*   HILB.SPL     Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Simple Hilbert Transform                                    *
+*                                                                            *
+*   Revisions:    8 Feb 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_HILB
+
+    HILB  
+
+    Purpose: Calculates a simple Hilbert transform of a real series
+                                                                        
+    Format:  HILB(s)
+
+              s - the input series (real)
+
+
+    Returns: A complex series or array
+
+    Example:
+             W1: Gnorm(1000, 0.1)
+             W2: Hilb(w1)
+             W3: Real(w2)
+             W4: Imag(w2)
+
+             The real part of HILB is the same as the input series.
+             The imaginary part of HILB is the Hilbert Transform.
+
+    Remarks:
+             HILB uses the FFT and IFFT to calculate the Hilbert transform.
+
+    See Also:
+             Demodfm
+
+#endif
+
+
+
+/* simple Hilbert transformer */
+hilb(s)
+{
+	local nr, nc, len, h, y;
+
+	(nr, nc) = size(s);
+	len = bestpow2(nr);
+
+	y = fft(extract(real(s), 1, len));
+
+	if (len != 1) {
+	   h = {1, 2 * ones(fix((len - 1) / 2), 1), ones(1 - (len % 2), 1), zeros(fix((len - 1) / 2), 1)};
+	   y = y * h[.., ones(1, nc)];
+	}
+	y = ifft(extract(y, 1, len));
+	y = extract(y, 1, nr);
+
+	/* repair deltax */
+	setdeltax(y, deltax(s));
+
+	return(y);
+}
+

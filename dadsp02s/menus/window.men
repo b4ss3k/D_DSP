@@ -1,0 +1,10 @@
+! window.men -- windowing functions
+@x0
+@y0
+@b{_bg3}
+@f{_fg3}
+   Apply Windows
+
+ Hamming Window    ~_deffname('HAMMING  Hamming Window')      |_defformat('Hamming(series)')|_defxamp('Hamming(W1)')|_getser|_serform("Hamming")
+ Hanning Window    ~_deffname('HANNING  Hanning Window')      |_defformat('Hanning(series)')|_defxamp('Hanning(W1)')|_getser|_serform("Hanning")
+ Kaiser Window     ~_deffname('KAISER   Kaiser Window')      |_defformat('Kaiser(series)')|_defxamp('Kaiser(W1)')|_getser|_serform("Kaiser")

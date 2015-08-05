@@ -1,0 +1,108 @@
+[Worksheet Properties]
+Library=Simulation Library
+Group=DSP Functions
+MenuName=FFT_512
+Author=Ping
+Comment=Hierarchy Block for FFT with magnitude and phase
+Icon Name=
+Revision=
+
+[Block Diagram Listing]
+Header=Hypersignal for Windows Block Diagram Application, Block Listing
+Version=4.00
+Block Count=5
+Horizontal Scroll Position=0
+Vertical Scroll Position=0
+External Input=1
+External Output=2
+Manual Compile=0
+Block Library1=Simulation Library
+Block Name1=FFT 1
+DLL Name1=FFT.DLL
+Block Type1=2
+Block Class1=0
+Position1=192,160,224,192
+Input Count1=1
+Output Count1=1
+Parameter Count1=0
+Block1,Input Channel 0=External Input Connection,Output Channel 0
+Block Library2=Simulation Library
+Block Name2=Magnitude 1
+DLL Name2=MAG.DLL
+Block Type2=2
+Block Class2=0
+Position2=352,128,384,160
+Input Count2=1
+Output Count2=1
+Parameter Count2=0
+Block2,Input Channel 0=FFT 1,Output Channel 0
+Block Library3=Simulation Library
+Block Name3=Phase 1
+DLL Name3=PHASE.DLL
+Block Type3=2
+Block Class3=0
+Position3=352,224,384,256
+Input Count3=1
+Output Count3=1
+Parameter Count3=0
+Block3,Input Channel 0=FFT 1,Output Channel 0
+Block Name4=External Input Connection
+Block Type4=256
+Block Class4=2
+Input Count4=0
+Output Count4=1
+Block Name5=External Output Connection
+Block Type5=256
+Block Class5=2
+Input Count5=2
+Output Count5=0
+Block5,Input Channel 0=Magnitude 1,Output Channel 0
+Block5,Input Channel 1=Phase 1,Output Channel 0
+
+[Variables]
+Num=0
+
+[Environment]
+Undo Buffer Size=30
+
+[FFT 1]
+Version=4.00
+Precision=-1
+Framesize=512
+FramesizeIn0=256
+RCFlagIn0=0
+DTFlagIn0=1
+SampFreqIn0=8000.0
+FramesizeOut0=512
+RCFlagOut0=1
+DTFlagOut0=1
+SampFreqOut0=8000.0
+_FFTOrder=9
+NumLocalElements0=1000
+NumLocalElements1=1000
+
+[Magnitude 1]
+Version=4.00
+Precision=-1
+Framesize=257
+FramesizeIn0=512
+RCFlagIn0=1
+DTFlagIn0=1
+SampFreqIn0=8000.0
+FramesizeOut0=257
+RCFlagOut0=0
+DTFlagOut0=1
+SampFreqOut0=8000.0
+
+[Phase 1]
+Version=4.00
+Precision=-1
+Framesize=512
+FramesizeIn0=512
+RCFlagIn0=1
+DTFlagIn0=1
+SampFreqIn0=8000.0
+FramesizeOut0=257
+RCFlagOut0=0
+DTFlagOut0=1
+SampFreqOut0=8000.0

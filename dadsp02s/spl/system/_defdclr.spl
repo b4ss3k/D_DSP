@@ -1,0 +1,9 @@
+
+/* default dependencies colors */
+_defdclr()
+{
+	setvar("_GCV42", castint(getconfdef("child_bg_color")));
+	setvar("_GCV43", castint(getconfdef("child_fg_color")));
+	setvar("_GCV44", castint(getconfdef("parent_bg_color")));
+	setvar("_GCV45", castint(getconfdef("parent_fg_color")));
+}

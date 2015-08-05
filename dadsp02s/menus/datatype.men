@@ -1,0 +1,14 @@
+! Datatype.men -- Input type of binary data to read or write
+@x43
+@y15
+@b{_bg2}
+@f{_fg2}
+ Binary Data Type
+
+ Signed Byte       ~"SBYTE"
+ Unsigned Byte     ~"UBYTE"
+ Signed Integer    ~"SINT"
+ Unsigned Integer  ~"UINT"
+ Long Integer      ~"LONG"
+ Floating Point    ~"FLOAT"
+ Double Precision  ~"DOUBLE"

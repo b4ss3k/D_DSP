@@ -1,0 +1,15 @@
+/* creates a list of integers from 1 to num */
+_numlist(num)
+{
+	local i, s = "", p;
+
+	if (argc < 1) {
+		num = 1;
+	}
+	for (i = 1; i <= num; i++) {
+		p = sprintf("%d", i);
+		if (strlen(s) > 0) s = strcat(s, strescape("\n"));
+		s = strcat(s, p);
+	}
+	return(s);
+}

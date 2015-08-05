@@ -1,0 +1,65 @@
+/*****************************************************************************
+*                                                                            *
+*   SONOGRAM.SPL   Copyright (C) 1997 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates and plots the magnitude of the STFT as a         *
+*                Black on White image                                        *
+*                                                                            *
+*   Revisions:    9 Jul 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_SONOGRAM
+
+    SONOGRAM
+
+    Purpose: Calculates the 2D Spectrogram as a B&W image.
+
+    Format:  SONOGRAM(series, len, lap, swin)
+
+                 series  -    input series
+                    len  -    FFT length
+                    lap  -    optional overlap length, defaults to len / 2
+                   swin  -    optional windowing function, default HAMMING
+
+
+    Returns: A table of Amplitude values in Frequency vs Time format.
+
+    Example:
+             SONOGRAM(W1, 128)
+
+             Divides W1 into columns of 128 points that overlap by 64
+             points. The Spectrum (i.e. magnitude of the FFT) of each
+             column is calculated and the result is displayed as an
+             image. The image is displayed as Black on White.
+
+     Remarks:
+             The following windows are offered:
+             0:Hamming, 1:Hanning, 2:Rectangle (none) 3:Kaiser
+
+     See Also:
+
+             FFT
+             Ravel
+             Specgram
+             Spectrum
+
+#endif
+
+
+
+/* Magnitude of Short Term Fourier Transform as Density plot */
+sonogram(s, len, lap, swin)
+{
+	if (outargc == 0) {
+		setshading("white", "black");
+		specgram(s, len, lap, int(len/2), swin);
+	}
+	else {
+		return(specgram(s, len, lap, int(len/2), swin));
+	}
+}

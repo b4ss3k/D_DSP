@@ -1,0 +1,17 @@
+/* return user format or "" */
+_tic2fmt(fmt)
+{
+	switch(fmt) {
+		case _formafstr:
+			return("%g");
+
+		case _formhxstr:
+			return("%lx");
+
+		case _formfxstr:
+			return("");
+
+		default:
+			return(fmt);
+	}
+}

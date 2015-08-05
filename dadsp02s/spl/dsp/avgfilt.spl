@@ -1,0 +1,151 @@
+/*****************************************************************************
+*                                                                            *
+*   AVGFILT.SPL   Copyright (C) 1999 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Filters data by using the average of neighbors             *
+*                                                                            *
+*   Revisions:    16 Jun 1999  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_AVGFILT
+
+    AVGFILT
+
+    Purpose: Filters a series using the average of the N neighboring points
+                                                                        
+    Format:  AVGFILT(s, n, gval, lval)
+
+             s   - input series or array
+
+             n   - an optional integer, the number of neighbors to average.
+                   For point i, average points i-n through i+n exclusive of
+                   point i. Defaults to 1, i.e. for point i, average points
+                   i-1 and i+1
+
+            gval - optional real, the "greater than" threshold at which to 
+                   replace a point.  Point i is replaced if:
+
+                            point[i] > gval * current average[i]  
+
+                   Defaults to 1.0, i.e. replace each point if it is greater
+                   than the average of the neighbors.
+
+            lval - optional real, the "less than" threshold at which to 
+                   replace a point.  Point i is replaced if:
+
+                            point[i] < lval * current average[i]  
+
+                   Defaults to unspecified, i.e. do not use a "lesser than"
+                   threshold.
+
+
+    Returns: A series
+
+    Example:
+             W1: gnorm(100,.01)
+
+             W2: avgfilt(w1)
+
+             Replaces each point of w1 with average of the previous and next
+             point if it exceeeds the average.
+
+
+             W3: avgfilt(w1, 2)
+
+             Replaces each point of w1 with average of the two previous and 
+             two next points if it exceeeds the average.
+
+
+             W3: avgfilt(w1, 1, 1.2)
+
+             Replaces each point of w1 with average of the previous and next
+             point if it exceeds the average by 20%.
+
+
+             W4: avgfilt(w1, 1, 1.2, 1.3)
+
+             Replaces each point of w1 with average of the previous and next
+             point if it exceeds the average by 20% or is less than the
+             average by 30%.
+
+
+             W5: avgfilt(w1, 1, 0, 0)
+
+             Replaces each point of w1 with average of the previous and next
+             point unconditionally.
+
+
+             W6: -avgfilt(-w1, 1, 1.2)
+
+             Replaces each point of w1 with average of the previous and next
+             point if it is less than the average by 20%.
+
+
+    Remarks:
+             AVGFILT uses the convolution function to calculate the
+             neighbor averages. For n == 1, the kernal is simply
+             {1, 0, 1} / 2
+
+    See Also:
+             Conv
+
+#endif
+
+
+
+avgfilt(s, n, gval, lval)
+{
+	local k, r, avg, outlier, usemin = FALSE;
+
+	/* check input args */
+	if (argc < 4) {
+		if (argc < 3) {
+			if (argc < 2) {
+				if (argc < 1) {
+					error("avgfilt - input series required");
+				}
+				n = 1; /* average previous and next neighbor */
+			}
+			gval = 1.0;
+		}
+	}
+	else { /* we have lval */
+		usemin = TRUE;
+	}
+
+	if (n <= 0) error("avgfilt - n must be > 0");
+
+	/* make sure n is an integer */
+	n = castint(n);
+
+	/* build convolution kernal, size: 2n+1 by numcols(s) */
+	k = {ones(n, numcols(s)), zeros(1, numcols(s)), ones(n, numcols(s))};
+
+	/* set attributes to input series */
+	setdeltax(k, deltax(s));
+	setxoffset(k, xoffset(s));
+
+	/* perform convolution to get neighbor averages */
+	avg = conv(s, k) / (2*n);
+
+	/* align with data - remove first 2*n points */
+	avg = extract(avg, 2*n, length(s));
+
+	/* get "greater than" outliers */
+	outlier = s > (gval * avg);
+
+	if (usemin) { /* add in "lesser than" outliers */
+		outlier += s < (lval * avg);
+	}
+
+	/* replace outliers with avg */
+	r = s * not(outlier) + avg * outlier;
+
+	return(r);
+}

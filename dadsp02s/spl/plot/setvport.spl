@@ -1,0 +1,87 @@
+/*****************************************************************************
+*                                                                            *
+*   SETVPORT.SPL Copyright (C) 1998-1999 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets the viewport to the viewport of the input window       *
+*                                                                            *
+*   Revisions:    8 Jun 1998  RRR  Creation                                  *
+*                 4 Jan 1999  RRR  Added optional destination window         *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_SETVPORT
+
+    SETVPORT
+
+    Purpose: Sets the viewport of the current window to the input window
+                                                                        
+    Format:  SETVPORT(srcwin, deswin)
+
+              srcwin - a window, the template window
+              deswin - an optional window, the window to modify, defaults to
+                       current window
+
+    Returns: Nothing
+
+    Examples:
+             W1: Gnorm(1000,.01);setx(.2, .5)
+             W2: W1*W1;setvport(w1);
+
+             The squared data in W2 is displayed with the same X and Y
+             range as W1.
+
+             setvport(w1, w2)
+
+             Same as above, but the destination window, W2, is explicit.
+
+             W3:Gnorm(100,1);onplot(eval("setvport(w3, w4)"))
+             W4:Gsin(100,1,.02)
+
+             The viewport of W4 is linked to the viewport of W3. W4 will
+             scroll, expand or compress whenever W3 scrolls, expands or
+             compresses (ONPLOT). The ONPLOT function uses EVAL to prevent 
+             W3 from referring to itself.
+
+    Remarks:
+             SETVPORT also properly on arrays and images and is useful
+             when visually comparing data.
+
+    See Also:
+             Cut
+             Eval
+             Onplot
+#endif
+
+
+setvport(src, des)
+{
+	if (argc > 0) {
+		if (argc > 1) {
+			if (IS_WINDOW(src) && IS_WINDOW(des)) {
+				setx(des, getxl(src), getxr(src));
+				sety(des, getyb(src), getyt(src));
+			}
+			else {
+				error("setvport - Window Required");
+			}
+		}
+		else {
+			if (IS_WINDOW(src)) {
+				setx(getxl(src), getxr(src));
+				sety(getyb(src), getyt(src));
+			}
+			else {
+				error("setvport - Window Required");
+			}
+		}
+	}
+	else {
+		error("setvport - Window Required");
+	}
+}
+

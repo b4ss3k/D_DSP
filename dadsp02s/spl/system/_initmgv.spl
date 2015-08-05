@@ -1,0 +1,26 @@
+
+/* initialize parameters for the window margin dialog */
+_initmgv()
+{
+	setvar("_lmgauto", castint(getwmargin(1, 1)==0));
+	setvar("_rmgauto", castint(getwmargin(2, 1)==0));
+	setvar("_tmgauto", castint(getwmargin(3, 1)==0));
+	setvar("_bmgauto", castint(getwmargin(4, 1)==0));
+
+	if (getvar("_lmgauto")) setvar("_lmgpc", "-1");
+	else setvar("_lmgpc", caststring(round(getwmargin(1))));
+	setvar("_lmgpval", caststring(round(getwmargin(1))));
+
+	if (getvar("_rmgauto")) setvar("_rmgpc", "-1");
+	else setvar("_rmgpc", caststring(round(getwmargin(2))));
+	setvar("_rmgpval", caststring(round(getwmargin(2))));
+
+	if (getvar("_tmgauto")) setvar("_tmgpc", "-1");
+	else setvar("_tmgpc", caststring(round(getwmargin(3))));
+	setvar("_tmgpval", caststring(round(getwmargin(3))));
+
+	if (getvar("_bmgauto")) setvar("_bmgpc", "-1");
+	else setvar("_bmgpc", caststring(round(getwmargin(4))));
+	setvar("_bmgpval", caststring(round(getwmargin(4))));
+
+}

@@ -1,0 +1,31 @@
+#include <series.h>
+
+/* is plot in a 3D view */
+_is3d(s)
+{
+	local status = FALSE;
+
+	if (argc < 1) {
+		if (itemtype == 8) { // XYZ
+			status = TRUE;
+		}
+		else if ((itemtype == 2 || itemtype == 9) && (getplottype == 4)) {
+			// make sure not a chartplot in table mode
+			if (getplottype(0) != 6) {
+				// is a list and type is Z surface
+				status = TRUE;
+			}
+		}
+	}
+	else {
+		if (itemtype(s) == 8) {
+			status = TRUE;
+		}
+		else if ((itemtype(s) == 2 || itemtype == 9) && (getplottype(s) == 4)) {
+			status = TRUE;
+		}
+	}
+	return(status);
+}
+
+			

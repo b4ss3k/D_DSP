@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0061)http://www-rocq.inria.fr/scilab/doc/scicos_html/tutorial.html -->
+<HTML><HEAD><TITLE>Scicos Home Page</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="MSHTML 5.50.4807.2300" name=GENERATOR></HEAD>
+<BODY text=#000000 vLink=#ff6666 aLink=#ff0000 link=#0000ff bgColor=#c0c0c0 
+background="Scicos Tutorial_files/back2.gif" nosave>
+<UL>
+  <CENTER>
+  <H1><FONT size=+4>Scicos tutorial</FONT></H1></CENTER></UL>Scicos (Scilab 
+Connected Object Simulator) is a&nbsp; <A 
+href="ftp://ftp.inria.fr/INRIA/Scilab">Scilab package</A>&nbsp; for modeling and 
+simulation of dynamical systems which include both <FONT 
+color=#ff0000>continuous </FONT>and <FONT color=#ff0000>discrete</FONT> 
+sub-systems. Scicos has a friendly GUI for editing models by interconnecting 
+scicos blocks. Scicos blocks can be found in Scicos palettes or be defined by 
+the user. 
+<P><B>Typically, constructing a simple new Scicos diagram consists of</B> 
+<UL>
+  <LI>Starting Scicos with an empty diagram 
+  <LI>Opening one or more palettes 
+  <LI>Copying blocks of interest from the palettes into the diagram 
+  <LI>Setting parameters of the blocks to desired values 
+  <LI>Connecting the blocks' input and output ports 
+  <LI>Compiling and simulating the diagram 
+  <LI>Renaming and saving the diagram </LI></UL>The above does not include the use 
+of more advanced features such as Super block construction, new basic block 
+definition, etc..., nor does it contain cosmetic operations such as icon 
+editing, coloring or resizing of blocks in the diagram. These features will be 
+discussed later. 
+<P>
+<HR width="100%">
+
+<CENTER>
+<H2><B><U><FONT color=#3366ff><FONT size=+3>Session 
+1</FONT></FONT></U></B></H2></CENTER><B>Below, we present, step by step, a 
+simple Scicos session in which we construct a Scicos diagram and do a 
+simulation.</B> <BR>
+<HR width="100%">
+<BR><B><FONT color=#3366ff><FONT size=+1>Start Scicos</FONT></FONT></B> 
+<BR><B><FONT color=#000000>&nbsp;&nbsp;&nbsp; For that you should type in 
+</FONT><FONT color=#ff0000>Scilab main window</FONT>.</B> 
+<P><B><TT><FONT size=+1>--&gt; scicos();</FONT></TT></B> 
+<P>This opens up Scicos' main window with an empty diagram (to load an existing 
+diagram, the name of the file containing the diagram should be used as 
+argument). This window remains open during the entire Scicos session.&nbsp; 
+<HR width="100%">
+
+<CENTER><IMG height=481 src="Scicos Tutorial_files/Untitled.gif" width=612> 
+<BR><B>Empty Scicos diagram (by default named <FONT 
+size=+1>Untitled</FONT>)</B></CENTER>
+<HR width="100%">
+<BR><B><FONT color=#3366ff><FONT size=+1>Open the </FONT><TT><FONT 
+size=+2>Inputs/Outputs</FONT></TT><FONT size=+1> and </FONT><TT><FONT 
+size=+2>Linear</FONT><FONT size=+1> </FONT></TT><FONT 
+size=+1>palettes</FONT></FONT></B> <BR><B>&nbsp;&nbsp;&nbsp; To open a palette, 
+select&nbsp; <TT><FONT color=#ff0000>Palettes</FONT></TT>&nbsp; in the <TT><FONT 
+color=#ff0000>Edit</FONT></TT>&nbsp; menu and select the palette name among the 
+proposed choices.</B> 
+<P>A palette contains a set of Scicos blocks. These blocks can be copied into 
+the Scicos window to be used for constructing the Scicos diagram. These palettes 
+cannot be edited in this context. For editing a palette, the palette should be 
+loaded as a Scicos diagram.&nbsp; More on that later.&nbsp; 
+<HR width="100%">
+
+<CENTER><IMG height=481 src="Scicos Tutorial_files/inputs_outptus.gif" 
+width=573> <BR><B>The I<FONT size=+1>nputs_Outputs</FONT> palette</B></CENTER>
+<HR width="100%">
+<BR><B><FONT color=#3366ff><FONT size=+1>Copy from the palettes: a <TT>sinusoid 
+generator</TT>, a <TT>Scope</TT>, an <TT>Event generator</TT> and a 
+<TT>Gain</TT></FONT></FONT></B> <BR><B>&nbsp;&nbsp;&nbsp; To copy a block, 
+select <TT><FONT color=#ff0000>Copy&nbsp;</FONT></TT> in the <TT><FONT 
+color=#ff0000>Edit </FONT></TT>menu. The editor is then in copy mode and copies 
+can be made by first clicking on the block to be copied and then where the copy 
+is to be placed.</B> 
+<P>The <B><TT><FONT color=#ff0000>Event generator generates</FONT></TT></B> a 
+train of regularly spaced <B>events</B> in time. These events, available as an 
+<B>activation signal</B> on the <B>output activation port</B> of the block, will 
+be used to <B>activate</B> the scope (specifying the instants when the scope 
+displays the value of its input) through its <B>input activation port</B>. Input 
+and output activation ports are placed respectively on top and at the bottom of 
+blocks; <B>regular input and output ports</B> are placed on the sides. 
+<P>Block positions can be fine tuned, so that the input and output ports (to be 
+connected) are aligned, using the <TT><FONT color=#ff0000>Align</FONT></TT> in 
+the <TT><FONT color=#ff0000>Edit<FONT size=+1> </FONT></FONT></TT>menu. 
+<P>The result should look like the following&nbsp; 
+<HR width="100%">
+
+<CENTER><IMG height=481 src="Scicos Tutorial_files/untitled2.gif" width=612> 
+<BR><B>Scicos diagram after copying the blocks</B> <BR>
+<HR width="100%">
+</CENTER><B><FONT color=#3366ff><FONT size=+1>Link the blocks 
+together</FONT></FONT></B> <BR><B>&nbsp;&nbsp;&nbsp; To enter the link mode, 
+select <TT><FONT color=#ff0000>Link&nbsp;</FONT></TT> in the <TT><FONT 
+color=#ff0000>Edit </FONT></TT>menu. A link can be created by clicking&nbsp; on 
+the output port and then on the input port (or intermediary points before that 
+if a non straight line connection is desired).</B> 
+<P><FONT color=#000000>To make a</FONT> <FONT color=#000000>link originate&nbsp; 
+from another link (to split a link), it suffices to first click on the existing 
+link, where split is</FONT> <FONT color=#000000>to be placed, and then on an 
+input port (or intermediary points before that). The process of link creation 
+can be stopped and current link deleted by clicking on the right mouse 
+button.</FONT> 
+<P>Note that links associated with activation signals are, by default, red, and 
+links associated with regular signals, black. These default colors can be 
+changed using <TT><FONT color=#ff0000>Default Link Color<B> </B></FONT></TT>in 
+the<B> </B><TT><FONT color=#ff0000>Misc </FONT></TT>menu. 
+<P>Once all the input and output ports are connected, the Scicos diagram is 
+complete and can be simulated. However, before that, block parameters should be 
+changed if needed. 
+<P>
+<HR width="100%">
+<BR><B><FONT color=#3366ff><FONT size=+1>Change block parameter of the 
+</FONT><TT><FONT size=+2>Gain </FONT></TT><FONT size=+1>block; set the gain to 
+8</FONT></FONT></B> <BR><B>&nbsp;&nbsp;&nbsp; To change block parameters, click 
+on the block after selecting <TT><FONT color=#ff0000>Open/Set</FONT></TT> in the 
+<TT><FONT color=#ff0000>Object </FONT></TT>menu. This opens a dialog menu which 
+can be used to modify block parameters. These parameters can be defined using 
+valid Scilab expressions. These expressions are memorized symbolically, and then 
+evaluated.</B> 
+<P>After this changes, and cosmetic changes such as changing block colors, 
+background color, 3D aspect, etc..., the result should look something like the 
+following:&nbsp; 
+<HR width="100%">
+
+<CENTER><IMG height=481 src="Scicos Tutorial_files/untitled31.gif" width=612> 
+<BR><B>Diagram is now complete</B> <BR>
+<HR width="100%">
+</CENTER><B><FONT color=#3366ff><FONT size=+1>Simulate the 
+diagram</FONT></FONT></B> <BR><B>&nbsp;&nbsp;&nbsp; This is done by selecting 
+<TT><FONT color=#ff0000>Run</FONT></TT> in the <TT><FONT color=#ff0000>Simulate 
+</FONT></TT>menu. This opens a the scope in Scilab Graphic window number 1 (this 
+1 is one of scope parameters). The simulation can be stopped by clicking on the 
+<TT><FONT color=#ff0000>stop </FONT></TT><FONT color=#000000>button</FONT><FONT 
+color=#ff0000> </FONT>on top of Scicos' main window.</B> 
+<HR>
+
+<CENTER><IMG height=431 src="Scicos Tutorial_files/scope.gif" width=612> 
+<BR><B>Simulation result</B> <BR>
+<HR width="100%">
+</CENTER><B><FONT color=#3366ff><FONT size=+1>Rename the diagram and save 
+it</FONT></FONT></B> <BR><B>&nbsp;&nbsp;&nbsp; This is done either by selecting 
+<TT><FONT color=#ff0000>Rename</FONT></TT> in the <TT><FONT 
+color=#ff0000>Diagram </FONT></TT>menu, followed by <TT><FONT 
+color=#ff0000>Save</FONT></TT> in the same menu, or directly by <TT><FONT 
+color=#ff0000>Save As</FONT></TT>.</B> 
+<P>Scicos diagrams are saved in files which have the same name as the diagram 
+plus an extension <B>.cos</B> or<B> .cosf.</B> For example if the name of the 
+diagram is Untitled, the save operation creates a binary file Untitled.cos. It 
+is also possible to save Scicos diagram in <B>ASCII format</B>; the extension is 
+<B>.cosf </B>in that case. The advantage of ASCII format is that it is 
+<B>machine independent </B>but it is <B>much slower</B> to generate. 
+<P>To load a diagram, use <TT><FONT color=#ff0000>Load </FONT></TT>in the 
+<TT><FONT color=#ff0000>Diagram </FONT></TT>menu. If you are outside Scicos, 
+simply launch the Scicos command with the name of the file to be loaded as 
+argument. Example: 
+<P><B><TT><FONT size=+1>--&gt; scicos('Untitled.cos');</FONT></TT></B> 
+<HR width="100%">
+
+<CENTER><B><FONT color=#009900><FONT size=+1>How does the help 
+work</FONT></FONT></B></CENTER>
+<P><B>To get help on a block, select <TT><FONT color=#ff0000>help</FONT></TT> in 
+the <TT><FONT color=#ff0000>Misc</FONT></TT> menu and click on the block.</B> 
+<BR><B>To get help on an item in a menu, select help in the <TT><FONT 
+color=#ff0000>Misc</FONT></TT> menu and then select the item.</B> 
+<P>Unfortunately all the blocks and menu items are not documented at this time. 
+<BR>
+<HR width="100%">
+
+<HR width="100%">
+
+<CENTER><B><FONT color=#009900><FONT size=+1>How to edit a 
+palette</FONT></FONT></B></CENTER>
+<P><B>A palette is just like any other Scicos diagram; in fact any diagram can 
+be loaded as palette using the <FONT color=#ff0000>L<TT>oad as Palette 
+</TT></FONT>item in the <TT><FONT color=#ff0000>Diagram</FONT></TT> menu. To 
+make Scicos recognize a new palette you should add the name of the file that 
+contains it to the&nbsp; <FONT color=#009900>scicos_pal</FONT>&nbsp; vector in 
+Scilab. For example this variable can be defined at startup in your .scilab 
+file. This is done automatically when you use the item <TT><FONT 
+color=#ff0000>Save as Palette</FONT></TT> in the <TT><FONT 
+color=#ff0000>Diagram</FONT></TT>.</B> 
+<HR width="100%">
+<BR><I><FONT size=+2>Congratulation, you have now completed session 
+1.</FONT></I> <BR><I><FONT size=+2>Do want to move to Session 2?</FONT></I> 
+<BR>&nbsp; 
+<TABLE cols=2 width="70%" border=1 NOSAVE>
+  <TBODY>
+  <TR NOSAVE>
+    <TD NOSAVE>&nbsp;<B><BLINK><A 
+      href="http://www-rocq.inria.fr/scilab/doc/scicos_html/session2.html">Yes, 
+      I am ready for Session 2</A></BLINK></B></TD>
+    <TD>&nbsp;<B><A 
+      href="http://www-rocq.inria.fr/scilab/doc/scicos_html/index.html">No, I 
+      want to go back</A></B></TD></TR></TBODY></TABLE>
+<P>
+<HR>
+<B>For more information about Scicos, send an e-mail to Doctor Scilab: <U><A 
+href="mailto:Scilab@inria.fr">Scilab@inria.fr</A></U></B> 
+<CENTER>
+<HR>
+<BR>&nbsp; 
+<P><FONT size=-1>For suggestions about this Web server, send an e-mail to <B><A 
+href="mailto:Scilab@inria.fr">Scilab@inria.fr</A></B></FONT></CENTER>
+<P><BR></P></BODY></HTML>

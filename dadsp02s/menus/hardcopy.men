@@ -1,0 +1,12 @@
+! Hardcopy.men -- Handles Printing Functions
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+  Prints & Plots   
+
+ System Printer    ~_mf("print.men")
+
+ HPGL Plotter      ~_mf("plot.men")
+
+ PostScript File   ~_mf("post.men")

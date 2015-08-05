@@ -1,0 +1,81 @@
+/*****************************************************************************
+*                                                                            *
+*   EFFBIT.SPL   Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Abraham Goldsmith                                           *
+*                                                                            *
+*   Synopsis:    Calculates the number of effective bits based on the        *
+*                frequency of a sample                                       *                                                                            *
+*                                                                            *
+*   Revisions:   25 Aug 2000  AG   Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_EFFBIT
+
+    EFFBIT
+
+    Purpose: Calculate the number of effective bits possible at a given 
+             frequency for a quantizing device.
+                                                                        
+    Format:  EFFBIT( s, freq, fs)
+
+                  s - sinusoidal input series
+
+               freq - known frequency of the input signal
+
+                 fs - full scale input amplitude of the device being tested,
+                      defaults to abs(max(s) - min(s)).
+
+    Returns: a constant
+   
+    Example:
+             W1: DATA1.1.TEST
+             W2: EFFBIT( w1, 300, 40)
+
+             Calculates the number of bits that are effective for every 
+             sample of the input data.
+    
+
+
+    Remarks:
+             This routine uses the LSINFIT spl to match a sine wave 
+             to the input data. The number of effective bits is 
+             then calculated as:
+
+                -log2( rms (input data - fitted sin wave) * sqrt(12) / FS)
+
+
+    See Also:
+             LSINFIT
+
+    References:
+             IEEE Std 1057-1994 
+
+#endif
+
+/* effective bits calculation */
+
+effbit(s, freq, fs)
+{
+	local fit,coef,eb,rmserror;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			error("effbit - input series and frequency required");
+		}
+		fs = abs(max(s) - min(s));
+	}
+	/* 
+	** call LSINFIT to return an ideal sine wave for the given frequency, 
+	** the fit coefficients and the rms error between the original signal 
+	** and the fitted one, only the rms error is actually used 
+	*/
+	(fit,coef,rmserror) = lsinfit(s,freq,1);
+	
+	/* the effective bit calculation */
+	eb = -log2(rmserror*sqrt(12)/fs);
+	return(eb);
+}
+	

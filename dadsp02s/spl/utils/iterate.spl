@@ -1,0 +1,139 @@
+/*****************************************************************************
+*                                                                            *
+*   ITERATE.SPL      Copyright (C) 2004 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets or clears iteration mode for an SPL routine            *
+*                                                                            *
+*   Revisions:   18 Mar 2004  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#define SPL_ITERATE_BIT 0x01
+
+#if @HELP_ITERATE
+
+    ITERATE
+
+    Purpose: Sets or clears the column iteration mode of an SPL function.
+                                                                        
+    Format:  ITERATE(name, mode)
+
+              name - A string, the name of the SPL function.
+
+              mode - Optional. An integer, the iteration mode. 0: clear 
+                     column iteration, 1: set column iteration. Defaults
+                     to 1.
+
+
+    Returns: Nothing. Changes the column iteration mode of the function.
+
+
+    Example:
+             Consider the following SPL routine:
+
+             minscale(s)
+             {
+             	return(s / min(s));
+             }
+
+
+             a = {{1, 2, 3},
+                  {2, 4, 6},
+                  {3, 6, 9}}
+
+             y1 = minscale(a);
+
+             y1 == {{1, 2, 3},
+                    {2, 4, 6},
+                    {3, 6, 9}}
+
+             Since the input a is an array, the min function returns the
+             minimum of the entire array. Thus the input array is divided
+             by the value 1.
+
+             Now, if the SPL routine is converted to column iteration:
+
+             iterate("minscale", 1);
+             y1 = minscale(a);
+
+             y1 == {{1, 1, 1},
+                    {2, 2, 2},
+                    {3, 3, 3}}
+
+
+             Because minscale is now automatically presented with one column 
+             at a time, each column of the input array is divided by the 
+             minimum of that column. This has the same effect as:
+            
+                s / colmin(s)
+
+    Remarks:
+
+             The ITERATE function converts an SPL routine to a column
+             iterator function such that it operates on one column of
+             an input array at a time. This behavior persists only for
+             the duration of the current session.  Use the ITERATE
+             modifier in the function definition to make the behavior
+             permanent. For example:
+
+             ITERATE minscale(s)
+             {
+             	return(s / min(s));
+             }
+
+             The ITERATE function or keyword makes it very easy to
+             write a routine to handle each column of an array in the
+             same manner without having to get bogged down in the
+             details of multi-column operations.  Simply write the
+             function as if it will only receive a single column input
+             and DADiSP will automatically apply the function to each
+             column of the input array and accumulate the results.
+
+             ITERATE can also be specified in command mode. For example:
+
+             iterate minscale
+
+             enables column iteration for SPL function minscale. 
+             Because the command form does not accept optional
+             arguments, the command form can only enable column
+             iteration.
+
+
+    See Also:
+             Splload
+#endif
+
+
+/* set or clear ITERATE modifier of an SPL routine */
+iterate(name, mode)
+{
+	local modify;
+
+	if (argc < 2) {
+		if (argc < 1) error("iterate - SPL function name required");
+		mode = 1;
+	}
+
+	/* get spl modifier bits */
+	if ((modify = splmodify(name)) < 0) {
+		error(sprintf("iterate - cannot find function '%s'", name));
+	}
+	else {
+		/* clear iterate bit */
+		modify &= ~SPL_ITERATE_BIT; 
+
+		/* set bit if var != 0 */
+		if (mode) modify |= SPL_ITERATE_BIT;
+
+		/* set new bit value */
+		modify = splmodify(name, modify);
+
+		/* return current ITERATE bit */
+		modify = (modify & SPL_ITERATE_BIT) != 0;
+
+		return(modify);
+	}
+}

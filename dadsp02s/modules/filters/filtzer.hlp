@@ -1,0 +1,121 @@
+@modeless 1
+
+    FILTZEROS 
+
+    Purpose: 
+             Finds the zeros of a direct form or cascade filter.
+                                                                        
+    Format:  
+             FILTZEROS(b, a)
+
+                b - a series, numerator (i.e. zero) coefficients
+
+                a - a series, denominator (i.e. pole) coefficients
+
+    Alternative Format:  
+
+             FILTZEROS(c, N)
+
+                c - A series, the system coefficients in cascaded 
+                    biquad form.  If C contains 2 columns, c is assumed
+                    to be in direct form, where the first column is B
+                    and the second column is A.
+
+    Returns: 
+             A complex series, the zeros of the filter.
+
+    Example:
+             W1: filtzeros( {"{1}"}, {"{1, -0.5, 0.2}"} )
+
+             W1 contains the series {"{0.0, 0.0}"} representing the 2 
+             repeated zeros at 0.0. These are the zeros of the Z transform:
+
+                            1
+             H(z) = ------------------
+                            -1      -2
+                    1 - 0.5z  + 0.2z
+
+             or 
+
+                             2
+                            z
+             H(z) = -----------------
+                     2      
+                    z  - 0.5z  + 0.2z
+
+
+             The input filter coefficients are in direct form.
+
+    Example:
+             W1: butterworth(1, 100.0, 10.0)
+             W2: filtzeros(w1)
+
+             W1 contains a 10 Hz lowpass Butterworth filter and W2
+             displays the 11 zeros of the filter.  The filter coefficients
+             are in cascade form.
+
+    Example:
+             W1: butterworth(1, 100.0, 10.0)
+             W2: cas2dir(W1)
+             W3: filtzeros(w2)
+
+             Same as the previous example except the filter coefficients
+             are in Direct Form.
+
+    Example:
+             W1: lowpass(100.0, 10.0)
+             W2: filtzeros(w1, {"{1}"})
+
+             W1 contains a 10 Hz lowpass FIR Remez Exchange filter and
+             W2 displays the displays 23 zeros of the filter.  Since
+             the filter coefficients are in FIR form, the denominator
+             coefficient is set to {"{1}"}.
+
+    Remarks:
+             FILTZEROS uses ROOTS to calculate the roots of b[z], the 
+             numerator of a Z transform in direct form:
+  
+                                        -1                 -Q
+                    Y(z)   b[1] + b[2]*z   + ... + b[Q+1]*z
+             H(z) = ---- = -------------------------------------
+                                        -1                 -P
+                    X(z)    1   + a[2]*z   + ... + a[P+1]*z
+
+
+                        jw
+             where z = e    unit circle (frequency response)
+                   Q        order of zeros (numerator)
+                   P        order of poles (denominator)
+
+
+             For FILTZEROS(c, N), if the input c is a single column,
+             the coefficients are assumed to be in cascaded bi-quad
+             form.  This is the output format of IIR filters designed
+             by DADiSP/Filters.  In this case, FILTZEROS finds the
+             roots of the numerator of the following Z transform by
+             converting the coefficients to direct form:
+
+                               -1       -2                -1       -2
+                    b10 + b11 z  + b12 z       b20 + b21 z  + b22 z
+         H(z) = G * ________________________ *  ________________________ ...
+                               -1       -2                -1       -2
+                      1 + a11 z  + a12 z         1 + a21 z  + a22 z
+
+             Where the filter coefficients are represented by a single column
+             series in the following order:
+
+             G, b10, b11, b12, a11, a12, b20, b21, b22, a21, a22, ...
+
+             If C contains 2 columns, the coefficients are assumed to
+             be in direct form, where the first column is B and the
+             second column is A.
+
+             See FILTPOLES to find the poles of a filter.
+
+             See ZPLANE to display a pole-zero plot.
+
+    See Also:
+             Filtpoles
+             Polecoef
+             Zerocoef
+             Zplane

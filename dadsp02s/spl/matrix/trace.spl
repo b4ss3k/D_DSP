@@ -1,0 +1,60 @@
+/*****************************************************************************
+*                                                                            *
+*   TRACE.SPL   Copyright (C) 2001 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Trace of an array                                           *
+*                                                                            *
+*   Revisions:    9 Aug 2001  RRR  Creation                                  *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_TRACE
+
+    TRACE  
+
+    Purpose: Calculates the trace of an array, the sum of the diagonal elements
+                                                                        
+    Format:  TRACE(a)
+
+                  a - input array, defaults to the current series
+
+
+    Returns: A real, the diagonal sum.
+
+    Example:
+             W1: {{1, 2, 3},
+                  {4, 5, 6},
+                  {7, 8, 9}}
+
+             trace(w1) == 15
+
+    Remarks:
+             TRACE defaults to the current series if no input is
+             supplied.
+
+    See Also:
+             Diag
+             Sum
+#endif
+
+
+/* trace of an array */
+trace(a)
+{
+	local w, rank, nc, nr;
+
+	if (argc < 1) {
+		a = refseries(1);
+	}
+
+	/* cast non-arrays to an array */
+	if (not(IS_ARRAY(a))) a = {a};
+
+	return(sum(diag(a)));
+}

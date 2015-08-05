@@ -1,0 +1,20 @@
+/* generate list of current worksheet windows */
+_winlist(separator, addlabel)
+{
+	local i, s = "", p;
+
+	if (argc < 2) addlabel = 0;
+	if (argc < 1) separator = strescape("\n");
+
+	for (i = 1; i <= numwindows; i++) {
+		if (strlen(s) > 0) s = strcat(s, separator);
+		p = sprintf("W%d", i);
+		if (addlabel) {
+			p = sprintf("%s: %s", p, eval(sprintf("getlabel(W%d)", i)));
+		}
+		s = strcat(s, p);
+	}
+	return(s);
+}
+
+		

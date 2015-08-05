@@ -1,0 +1,68 @@
+/*****************************************************************************
+*                                                                            *
+*   MESHGRID.SPL Copyright (C) 2002 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Creates XY values from input series for 3D plots            *
+*                                                                            *
+*   Revisions:    4 Jan 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_MESHGRID
+
+    Purpose: Creates 2D XY values from X and Y input series.
+
+    Format:  (x, y) = MESHGRID(xser, yser)
+             
+             xser - A series, the x range.
+             yser - A series, the y range.
+
+    Returns: Two arrays of X and Y values.
+
+    Example:
+            (x, y) = meshgrid(-2..0.1..2, -2..0.1..2);
+            cos(x*y);
+
+            generates an interesting 2D cosine plot.
+
+    Remarks:
+            See FXYVALS to generate XY value from scalar parameters.
+    
+    See Also:
+            Fxyvals
+            Gline 
+            Ravel 
+
+#endif
+
+
+/* create z = f(x, y) grid from x and y series */
+meshgrid(x, y)
+{
+	local xl, yl, xo, yo;
+
+	if (argc < 2) {
+		if (argc < 1) error("meshgrid - x and y series required");
+		y = x;
+	}
+
+	/* row and column lengths */
+	xl = length(x);
+	yl = length(y);
+
+	/* create arrays from series */
+	xo = ravel(rep(x, yl), xl);
+	yo = rep(y', xl);
+
+	/* set correct deltas and offsets */
+	setdeltay(xo, deltay(yo));
+	setdeltax(yo, deltax(xo));
+	setyoffset(xo, yoffset(yo));
+	setxoffset(yo, xoffset(xo)); 
+
+	return(xo, yo);
+}

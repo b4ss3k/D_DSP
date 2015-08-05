@@ -1,0 +1,18 @@
+! Filter.men - Filter Design Main Menu
+@popmenu
+
+{if(!_filtersloaded, echo("Loading ...");macread(strcat(_filterhome, "filter.mac"));eval('_initfilt'))}
+
+
+{_filtmenstr}
+
+{_filtmfirstr}   ~_FIRMFD
+<L>
+{_filtmiirstr}   ~_IIRMFD
+<L>
+{_filtmrespstr}  ~_FILTRESPM
+<L>
+{_filtmmiscstr}  ~_FILTPZM
+<L>
+{_filtmfiltstr}  ~_FILTFILTM
+

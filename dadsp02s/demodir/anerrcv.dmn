@@ -1,0 +1,22 @@
+! anerrcv.mnu - extracts the gradient descent curve of an ANN output window
+!               for the cross-validation patterns of a neural network
+! modified for the demo
+@x 0
+@y 0
+@b{_bg3}
+@f{_fg3}
+
+@panel
+
+  Cross-Validation Analog Error
+
+ Extracts the gradient descent curve of an
+
+ Artificial Neural Net output window for the 
+
+ cross-validation patterns of a neural network.
+
+  Inputs:
+       Source Window:  Wn
+       Run Number:     N
+~menuc()

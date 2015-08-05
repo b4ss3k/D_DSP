@@ -1,0 +1,92 @@
+/*****************************************************************************
+*                                                                            *
+*   KRON.SPL  Copyright (C) 2002 DSP Development Corporation                 *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Computes Kronecker tensor product                           *
+*                                                                            *
+*   Revisions:   13 Aug 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_KRON
+
+    KRON  
+
+    Purpose: Returns the Kronecker tensor product of two arrays
+                                                                        
+    Format:  KRON(a, b)
+
+                  a -  An array.
+
+                  b -  An array.
+
+
+    Returns: An array.
+
+    Example:
+             a = {{ 1,  2},
+                  {-1, -2}}
+
+             b = {{10, 20},
+                  {30, 40},
+                  {50, 60}}
+
+             c = kron(a, b)
+
+             c == {{ 10,  20,   20,   40},
+                   { 30,  40,   60,   80},
+                   { 50,  60,  100,  120},
+                   {-10, -20,  -20,  -40},
+                   {-30, -40,  -60,  -80},
+                   {-50, -60, -100, -120}}
+
+
+    Remarks:
+
+             For m = numrows(a) and n = numcols(b), kron(a, b) returns
+             the array formed by the following product:
+
+             {{a[1, 1] * b, a[1, 2] * b, ... a[1, n] * b},
+              {a[2, 1] * b, a[2, 2] * b, ... a[2, n] * b},
+
+                                ...
+
+              {a[m, 1] * b, a[m, 2] * b, ... a[m, n] * b}}
+
+
+    See Also:
+             *^
+             ^^
+#endif
+
+
+
+/* Kronecker tensor product */
+kron(a, b)
+{
+	local ma, na, mb, nb, t, ia, ib, ja, jb, k;
+
+	if (argc < 2) error("kron - input arrays required");
+
+	if (not(IS_ARRAY(a))) a = castseries(a);
+	if (not(IS_ARRAY(b))) b = castseries(b);
+
+	(ma, na) = size(a);
+	(mb, nb) = size(b);
+
+	t = 0..(ma*mb-1);
+	ia = fix(t/mb)+1;
+	ib = rem(t,mb)+1;
+
+	t = 0..(na*nb-1);
+	ja = fix(t/nb)+1;
+	jb = rem(t,nb)+1;
+
+	k = a[ia, ja] * b[ib, jb];
+	return(k);
+}

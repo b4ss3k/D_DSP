@@ -1,0 +1,275 @@
+/*****************************************************************************
+*                                                                            *
+*   READBMP.SPL  Copyright (C) 1997-2002 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Reads a Microsoft .BMP bitmap file                          *
+*                                                                            *
+*   Revisions:    5 Dec 1997  RRR  Creation                                  *
+*                20 May 1998  AMK  Added 24-bit RGB bitmap support           *
+*                 9 Jun 1998  RRR  24-bit RGB bitmaps via RGBIMAGE           *
+*                 3 Jul 2002  RRR  simple 32 bit support                     *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_READBMP
+
+    READBMP    
+
+    Purpose: Reads a Microsoft .BMP bitmap file
+                                                                        
+    Format:  READBMP(filename)
+
+              filename - a string specifying a .BMP file
+
+    Returns: An array
+
+    Example:
+             READBMP("mandrill.bmp")
+
+             reads and displays the bitmap file "mandrill.bmp"
+
+
+             (image, cmap) = READBMP("mandrill.bmp")
+
+             reads the bitmap file into the variable image and copies
+             the colormap into the variable cmap.
+
+    Remarks:
+
+          READBMP currently supports only uncompressed .BMP files. If 
+          the image is a 24 bit bitmap, it is automatically read as an 
+          RGBIMAGE (i.e. 24 bits).
+
+          READBMP.SPL is based on LOADBMP.M (Copyright 1993) written by:
+
+               Ralph Sucher
+               Dept. of Communications Engineering
+               Technical University of Vienna
+               Gusshausstrasse 25/389
+               A-1040 Vienna
+               AUSTRIA
+
+    See Also:
+             Getrgb
+             Image24
+             Rgbimage
+             Writebmp
+#endif
+
+
+
+
+readbmp(bmpfile)
+{
+	local status, fid, bftype;
+	local biSize, biWidth, biHeight, biPlanes, biBitCnt, nCol;
+	local biCompr, biSizeIm, biXPelsPerMeter;
+	local biYPelsPerMeter, biClrUsed, biClrImportant, MapLength;
+	local map, X, xx, i, ndata, data, isize, width3, block;
+	local Rvals, Gvals, Bvals;
+
+	if (argc != 1) {
+		error("readbmp - BMP filename required");
+	}
+
+	if (strlen(strfind(".", bmpfile)) == 0) {
+		bmpfile = strcat(bmpfile, ".bmp");
+	}
+
+	fid = fopen(bmpfile, "rb");
+
+	if (fid != TRUE) {
+		error(sprintf("readbmp Cannot open %s .BMP file", bmpfile));
+	}
+	else fid = bmpfile;
+
+	// ------------------------------- BMP HEADER -------------------------------
+
+	// read file identifier
+
+	bfType = caststring(freadb(fid, byte, 2));
+
+	if (strcmp(bfType, "BM") != 0) {
+		fclose(fid);
+		error(sprintf("readbmp - %s Not a valid .BMP file", bmpfile));
+	}
+	
+	// read file length (bytes)
+	status = fseek(fid,0,2);
+
+	bfSize = ftell(fid);
+
+	status = fseek(fid,6,0);
+	
+	// read bytes reserved for later extensions
+	dummy = freadb(fid, long, 1);
+	
+	// read offset from beginning of file to first data byte
+	bfOffs = castint(freadb(fid, long, 1));
+	
+	// ----------------------------- BMP INFO-BLOCK -----------------------------
+	
+	// *** bitmap information header ***
+	
+	// read length of bitmap information header
+	biSize = castint(freadb(fid, long, 1));
+
+	// read width of bitmap
+	biWidth = castint(freadb(fid, long, 1));
+
+	// read height of bitmap
+	biHeight = castint(freadb(fid, long, 1));
+
+	// read number of color planes
+	biPlanes = castint(freadb(fid, uint, 1));
+
+	// read number of bits per pixel
+	biBitCnt = castint(freadb(fid, uint, 1));
+
+	nCol = 2^biBitCnt;
+	
+	// read type of data compression
+	biCompr = castint(freadb(fid, long, 1));
+	if (biCompr != 0) {
+		fclose(fid);
+		error("readbmp - currently only supports uncompressed .BMP files");
+	}
+
+	// read size of compressed image
+	biSizeIm = castint(freadb(fid, long, 1));
+
+	// read horizontal resolution (pixels/meter)
+	biXPelsPerMeter = castint(freadb(fid, long, 1));
+
+	// read vertical resolution (pixels/meter)
+	biYPelsPerMeter = castint(freadb(fid, long, 1));
+
+	// read number of used colors
+	biClrUsed = castint(freadb(fid, long, 1));
+
+	// read number of important colors
+	biClrImportant = castint(freadb(fid, long, 1));
+
+	// *** colormap ***
+	
+	MapLength = int((bfOffs-54)/4);
+
+	if (MapLength != 0) {	
+		// read colormap
+		printf("%s - Reading colormap ...", bmpfile);
+		map = zeros(4,MapLength);
+		map[..]= freadb(fid, ubyte, MapLength*4);
+		map = map[3..-1..1,..]'/255;
+	}	
+
+	// ------------------------------ BITMAP DATA -------------------------------
+	
+	ndata = castint(bfSize - bfOffs);
+	Width = (ndata*8/biBitCnt)/biHeight;
+	if (biBitCnt != 24) {
+		X = zeros(Width, biHeight);
+	}
+	Xsize = Width * biHeight;
+
+	data = freadb(fid, UBYTE, ndata);
+	printf("%s - Data Read, Processing Image ...", bmpfile);
+
+	fclose(fid);
+	
+	if (biBitCnt == 1) {
+		xx=zeros(ndata, 1);
+		for (i=1; i<=8; i++) {
+			X[i..8..Xsize]=fix((data-xx)/2^(8-i));
+			xx=xx+X[i..8..Xsize]*2^(8-i);
+		}
+	}
+	else if (biBitCnt == 4) {
+		X[1..2..Xsize]=fix(data/16);
+		X[2..2..Xsize]=round(data-X[1..2..Xsize]*16);
+	}
+	else if (biBitCnt == 8) {
+		if (length(data) != Xsize) {
+			X[..] = extract(data, 1, Xsize);
+		}
+		else {
+			X[..] = data;
+		}
+		if (biWidth != Width) {
+			/* remove extraneous zero padding */
+			X = extract(X, 1, biWidth);
+		}
+	}
+	else if (biBitCnt == 24) {
+		/* 24 bit support */
+
+		width3 = biWidth * 3;
+		isize = width3 * biHeight;
+		block = floor((length(data) - isize) / biHeight);
+		
+		if (block) {
+			/* remove 4 Byte alignment padding */
+			data = remove(data, width3 + block, width3 + 1, block);
+		}
+
+		/* extract individual RBG components */
+		Rvals = ravel(decimate(data,3,3)/255, biWidth);
+		Gvals = ravel(decimate(data,3,2)/255, biWidth);
+		Bvals = ravel(decimate(data,3,1)/255, biWidth);
+
+		X = rgbimage(Rvals, Gvals, Bvals);             
+	}
+	else if (biBitCnt == 32) {
+		/* 32 bit support */
+
+		/* remove Byte alignment padding */
+		data = remove(data, 4, 4);
+
+		/* extract individual RBG components */
+		Rvals = ravel(decimate(data,3,3)/255, biWidth);
+		Gvals = ravel(decimate(data,3,2)/255, biWidth);
+		Bvals = ravel(decimate(data,3,1)/255, biWidth);
+
+		X = rgbimage(Rvals, Gvals, Bvals);             
+	}
+	else {
+		error("readbmp - Not a valid .BMP file");
+	}
+
+	/* unity deltas for an image */
+	setdeltax(X, 1.0);
+	setdeltay(X, 1.0);
+	setxoffset(X, 0.0);
+	setyoffset(X, 0.0);
+
+	printf("%s - %dx%d %d Bit Image Completed", bmpfile, biWidth, biHeight, biBitcnt);
+
+	/* plot as image */
+	setplottype(X, 3);
+	setplotstyle(X, 0);
+
+	if (outargc == 0) {
+		/* set colormap and display as image */
+		scales(0);
+		if (MapLength != 0) {	
+			setcolormap(map);
+		}
+		return(X);
+	}
+	else {
+		if (MapLength != 0) {
+			/* return image and colormap */
+			return(X, map);
+		}
+		else {
+			/* just return image */
+			return(X);
+		}
+	}
+}
+
+

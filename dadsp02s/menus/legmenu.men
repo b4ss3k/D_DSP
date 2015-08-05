@@ -1,0 +1,11 @@
+! Legmenu.men - Add legend to window
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+ Create Legend
+
+ Input         ~_MF("legann.pan")
+ Move          ~_mc|echo("Click Inside Surrounded Text, Keep Button Down to Move")|textmove|echo(" ")
+ Edit          ~_mc|echo("Click on a Text Line to Edit")|textedit|echo(" ")
+ Delete        ~_mc|echo("Click Inside Surrounded Text to Delete")|textdel|echo(" ")

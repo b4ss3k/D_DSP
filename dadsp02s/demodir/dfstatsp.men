@@ -1,0 +1,14 @@
+! Menu to output statistics of bode magnitude and freq. responses
+! This is a DSPTrial menu for Controls Module
+@panel
+@b{_bg1}
+@f{_fg1}
+! @h{_Controlhelp("fstatsp")}
+         Frequency Statistics         
+_____________________________________
+~echo("Calculating Fstats...")
+ Bode Magnitude Plot in:  W<        >~Defmacro("_dwin1",<{_dwin1}>,1)~(_Dwin1chk(input(2,"Window number")))
+ Bode Frequency Plot in:  W<        >~Defmacro("_dwin2",<{_dwin2}>,1)~(_Dwin1chk(input(2,"Window number")))
+!~menuc();DMF("dfstats.men")
+~_mc;
+

@@ -1,0 +1,12 @@
+@tabbed
+XY Plot
+
+~_MF("xy.pan")
+~_MF("xyunits.pan")
+
+
+~~if(strlen(_formstr) > 0, _formstr = _addxyhv(_formstr,_xydtf))
+~~if(_chkwin > 0 && strlen(_formstr)>0, eval(sprintf('setwf(%s, "%s")', _dwin, _formstr)))
+
+
+

@@ -1,0 +1,143 @@
+/*****************************************************************************
+*                                                                            *
+*   WINFUNC.SPL   Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Multiplies a series with a spectral window                 *
+*                                                                            *
+*   Revisions:    17 Feb 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#define HAMMWIN 0
+#define HANNWIN 1
+#define RECTWIN 2
+#define KAISWIN 3
+#define FLATWIN 4
+#define BLCKWIN 5
+
+
+
+#if @HELP_WINFUNC
+
+    WINFUNC    
+
+    Purpose: Multiplies a series with a spectral window
+                                                                        
+    Format:  WINFUNC(func, s, ampflag)
+
+                 func - an integer, the window function - 0:Hamming
+                        1:Hanning, 2:Rectangular, 3:Kasier, 
+                        4:Flattop, 5:Blackman
+
+                    s - a series or array
+
+              ampflag - an optional integer, 
+                        0: do not correct amplitude (default)
+                        1: correct amplitude
+                        2: correct RMS
+                        3: correct mean squared
+
+    Returns: A series or array
+
+    Example:
+             W1: gsin(1000, .001, 45)
+             W2: Spectrum(Winfunc(0, W1))
+             W3: Spectrum(Winfunc(0, W1, 1))
+
+             The MAX of W2 == 0.539 and the MAX of W3 == 1.0. The amplitude
+             of the spectrum in W3 has been corrected to take into account
+             amplitude effects of the Hamming window.
+ 
+    Remarks:
+             WINFUNC is the core routine for the Blackman, Flattop, 
+             Hamming, Hanning and Kaiser SPL functions.
+
+             If fixamp == 1, the correction factor is the mean of
+             the spectral window. This assures that the spectrum of a 
+             sinusoid of amplitude 1.0 has a peak of 1.0.
+
+             If fixamp == 2, the correction is applied as follows:
+
+             w = winfun(s) * rms(s) / rms(winfun(s))
+
+             where winfun is Blackman, Flattop, Hamming, Hanning or Kaiser.
+             This assures that:
+
+             sqrt(area(psd(w))) == rms(s)    approximately
+
+
+             If fixamp == 3, the correction is applied as follows:
+
+             w = winfun(s) / sqrt(win * win / length(win))
+
+             where win is the windowing function.
+
+
+    See Also:
+             Blackman
+             Flattop
+             Hamming
+             Hanning
+             Kaiser
+#endif
+
+
+/* multiples s by windowing function */
+winfunc(func, s, fixamp)
+{
+	local win;
+
+	if (argc < 3) {
+		if (argc < 2) error("winfunc - window function and input series required");
+		fixamp = 0;
+	}
+
+	switch (func) {
+		case HAMMWIN:
+			win = ghamming(length(s), deltax(s));
+			break;
+
+		case HANNWIN:
+			win = ghanning(length(s), deltax(s));
+			break;
+
+		case KAISWIN:
+			win = gkaiser(length(s), deltax(s));
+			break;
+
+		case FLATWIN:
+			win = gflattop(length(s), deltax(s));
+			break;
+
+		case BLCKWIN:
+			win = gblckman(length(s), deltax(s));
+			break;
+
+		case RECTWIN:
+		default:
+			return(s);
+			break;
+	}
+
+	if (fixamp == 1) {
+		/* amplitude correction */
+		return(s * win / mean(win));
+	}
+	else if (fixamp == 2) {
+		/* rms correction */
+		w = s * win;
+		return(w * rms(s) / rms(w));
+	}
+	else if (fixamp == 3) {
+		/* mean squared correction */
+		return(s * win / sqrt((sum(win*win)/ length(win))));
+	}
+	else {
+		/* no correction */
+		return(s * win);
+	}
+}

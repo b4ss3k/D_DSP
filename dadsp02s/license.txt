@@ -1,0 +1,58 @@
+STANDARD WARRANTY AND LICENSE AGREEMENT:
+
+Downloading or using this Free Student Edition of DADiSP constitutes
+acceptance of terms and conditions of the software license agreement,
+and that the downloader or user agree that the user is a registered
+student at an accredited university, college or other non-corporate
+affiliated institution of education, and that the sole use of this 
+software shall be for the education and instruction of said user; and
+that each student is entitled to only one copy of the software and that
+no additional copies are to be made for any purpose whatsoever; and that
+the software here obtained is not to be used for any commercial or 
+profit-making activity; and that this is a limited-time offer and may be
+withdrawn at any time.
+
+SOFTWARE LICENSE AGREEMENT
+
+DSP Development grants to the user a non-exclusive license to use the
+supplied software programs and documentation, subject to the following
+terms and conditions:
+
+The supplied programs and documentation are for the customer's personal
+educational use.
+
+The supplied programs may not be copied.
+
+The user may not disclose or resell any part of the program or documentation.
+
+Use of this product constitutes acceptance of the terms and conditions of
+this Agreement.
+
+DISCLAIMER OF WARRANTIES AND LIABILITY
+
+The information contained in this software product and documentation is
+believed to be accurate and reliable.  However, DSP Development assumes
+no responsibility for any errors, omissions, or inaccuracies whatsoever.
+Without limiting the foregoing, DSP Development Corporation disclaims any
+and all warranties, expressed or implied, including the warranty of
+merchantability and fitness for a particular purpose, with respect to the
+information contained in the accompanying documentation and software 
+described therein.
+
+The entire risk as to the quality and performance of such information and
+software is upon the user.  DSP Development Corporation shall not be liable
+for any damages, including special or consequential damages, arising out of
+the use of such information or software even if DSP Development Corporation
+has been advised in advance of the possibility of such damages.  The use of
+the information contained in the documentation and software described
+therein is subject to the SOFTWARE LICENSE AGREEMENT.
+
+Notwithstanding anything to the contrary herein and without limiting
+the foregoing, DSP Development's liability to the user is further 
+limited to a maximum dollar amount not to exceed the purchase price 
+actually paid by the user for the software, documentation or services 
+which cause such damages, and if no price was paid, the aggregate 
+liability of DSP Development shall be limited to $25.00. The foregoing 
+shall be the sole and exclusive remedy of the user.
+
+

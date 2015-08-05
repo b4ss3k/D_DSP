@@ -1,0 +1,26 @@
+! matrix1.men - menu file for matrices
+@x0
+@y1
+@b{_bg1}
+@f{_fg1}
+ Matrix Functions
+___________________
+
+ Matrix Multiply   ~_deffname('MMULT    Multiply 2 Matrices') | _defformat('Mmult(m1,m2)')| _defxamp('Mmult(W1,W2)') |_getser2("Matrix 1:","Matrix 2:") | _ser2form("Mmult")
+ Inverse           ~_deffname('INVERSE  Invert a Matrix')  |_defformat('Inv(matrix)')|_defxamp('Inv(W1)')|_getser|_serform("Inv")
+ LU Decomposition  ~_deffname('LU       LU Decomposition')  |_defformat('LU(matrix)')|_defxamp('LU(W1*W2)')|_getser|_serform("Lu")
+ LLU               ~_deffname('LLU      LLU Decomposition')  |_defformat('LLU(matrix)')|_defxamp('LLU(W1*W2)')|_getser|_serform("Llu")
+ ULU               ~_deffname('ULU      ULU Decomposition')  |_defformat('ULU(matrix)')|_defxamp('ULU(W1*W2)')|_getser|_serform("Ulu")
+ Determinant       ~_deffname('DET      Determinant')  |_defformat('DET(square matrix)')|_defxamp('DET(W1)')|_getser|_evalserform("Det")
+ Eigenvalue        ~_deffname('EIGVAL   Eigenvalue')  |_defformat('Eigval(matrix)')|_defxamp('Eigval(W1*W2)')|_getser|_serform("Eigval")
+ Eigenvector       ~_deffname('EIGVEC   Eigenvector')  |_defformat('Eigvec(matrix)')|_defxamp('Eigvec(W1*W2)')|_getser|_serform("Eigvec")
+ Nobalance Value   ~_deffname('NBEIGVAL Unbalanced Eigenvalue Matrix')  |_defformat('Nbeigval(matrix)')|_defxamp('Nbeigval(W1*W2)')|_getser|_serform("NBeigval")
+ Nobalance Vector  ~_deffname('NBEIGVEC Unbalanced Eigenvector Matrix')  |_defformat('Nbeigvec(matrix)')|_defxamp('Nbeigvec(W1*W2)')|_getser|_serform("NBeigvec")
+ Balance           ~_deffname('BALANCE  Balanced Matrix')  |_defformat('Balance(matrix)')|_defxamp('Balance(W1*W2)')|_getser|_serform("Balance")
+ Hessenberg        ~_deffname('HESS     Hessenberg Matrix Form')  |_defformat('Hess(series)')|_defxamp('Hess(W1*W2)')|_getser|_serform("Hess")
+ Schur             ~_deffname('SCHUR    Schur Matrix Form')  |_defformat('Schur(series)')|_defxamp('Schur(W1*W2)')|_getser|_serform("Schur")
+ Unit Schur        ~_deffname('USCHUR   Schur Unit Matrix')  |_defformat('Uschur(series)')|_defxamp('Uschur(W1*W2)')|_getser|_serform("USchur")
+ SVD Decomposition ~mf("svd.men")
+ QR Decomposition  ~mf("qr.men")
+ Diagonal          ~_deffname('DIAGONAL Diagonal of Matrix or Diagonalize Series') | _defformat('Diag(matrix) of Diag(series)')| _defxamp('Diag(W1)') |_getser |_serform("Diag")
+ Matrix Division   ~_deffname('MDIV     Divide 2 Matrices') | _defformat('MDIV(square matrix1,matrix2)')|_defxamp('Mdiv(w1,w2)') |_getser2("Matrix 1:","Matrix 2:") |_ser2form("MDiv")

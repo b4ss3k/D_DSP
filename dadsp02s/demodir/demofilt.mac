@@ -1,0 +1,1 @@
+FILTER(S,H)     EXTRACT(CONV(S,H), CEIL(LENGTH(H)/2), LENGTH(S)) ! filter signal S with filter H

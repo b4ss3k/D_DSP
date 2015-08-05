@@ -1,0 +1,33 @@
+!This menu is to help the user desing a lead controller
+! this menu has been edited for the DSP Trial version of the demo.
+!
+! @h{_Controlhelp("dsgn2ord")}
+@typeface 1
+                 Design 2nd Order Controller     
+{defmacro("_dwin1",1,1);defmacro("_dwin2",2,1)}   
+ Damping Ratio:                              {_dsgndamp+0.0}  ~DMF("ddsgndmp.men") 
+ Natural Frequency (rad/sec):                {_dsgnwn+0.0}  ~DMF("ddsgnwn.men")
+ OPEN-LOOP CHARACTERISTICS 
+ Transfer Function:  {_dsgnolnc+0.0}/ [S * (S+{_dsgnoldc+0.0})] ~echo("Here you would specify the transfer fcn. coefficients.")       
+ Phase Margin (rad):                         {_dsgnpm+0.0}  ~echo("Here you would specify the phase of the open-loop system at the crossover freq. plus pi.")
+ Crossover Frequency (rad/sec):              {_dsgnwc+0.0}  ~echo("Here you would specify the frequency where the magnitude of the open loop system crosses unity.")
+ Crossover / Natural Frequency Ratio:        {_dsgnwcwn+0.0}  ~echo("Here you would specify the ratio of crossover frequency to natural frequency.")
+ CLOSED-LOOP CHARACTERISTICS
+ Transfer Function: ___________{_dsgnolnc+0.0}______________  ~echo("Here you would specify the closed-loop transfer fcn. numerator coefficients.")
+                    S^2 + {_dsgnoldc+0.0}*S + {_dsgnolnc+0.0} ~echo("Here you would specify the closed-loop transfer fcn. denominator coefficients.")
+ 
+ Magnitude of Peak Frequency Response:       {_dsgnmp +0.0}  ~echo("Here you would specify the largest magnitude of the closed-loop frequency response.")
+ Peak Frequency (rad/sec):                   {_dsgnwp+0.0}  ~echo("Here you would specify the frequency at which the largest peak occurs.")
+ Bandwidth  (rad/sec):                       {_dsgnwb+0.0}  ~echo("Here you would specify the frequency where the closed-loop system has a magnitude of sqrt(2)/2.")
+ Peak/Natural Frequency Ratio:               {_dsgnwpwn+0.0}  ~echo("Here you would specify the ratio of peak frequency to natural frequency.")
+ Bandwidth/Natural Frequency Ratio:          {_dsgnwbwn+0.0}  ~echo("Here you would specify the ratio of the bandwidth to natural frequency.")
+ 
+ Percent Overshoot:                          {_dsgnpo+0.0}  ~echo("Here you would specify the percentage that the step response overshoots unity.")   
+ Time to Peak (sec):                         {_dsgntp+0.0}  ~echo("Here you would specify the time for the closed-loop step response to reach its max value.")
+ Time to Settle %5 (sec):                    {_dsgnts5+0.0}  ~echo("Here you would specify the time it takes decaying exponential term of the closed-loop response to reach %95 of its final value.")
+ Time to Settle %2 (sec):                    {_dsgnts2+0.0}  ~echo("Here you would specify the time it takes decaying exponential term of the closed-loop response to reach %98 of its final value.")
+ 
+       Numerator to W1             Denominator to W2       ~echo("Here is where you would specify the destination windows for the transfer function.")
+ OUTPUT 2ND ORDER OPEN-LOOP SYSTEM TO DESIRED WINDOWS       ~echo("This is where you would accept the design and output the transfer function.")
+ OUTPUT 2ND ORDER CLOSED-LOOP SYSTEM TO DESIRED WINDOWS      ~menuc();_putdsgn2cl
+

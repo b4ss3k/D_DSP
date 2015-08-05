@@ -1,0 +1,18 @@
+! Menu to output bode magnitude and freq. responses
+! This is a DSPTrial menu for DADiSP/Controls
+@panel
+@b{_bg1}
+@f{_fg1}
+! @h{_Controlhelp("bode")}
+               Bode Plots               
+________________________________________
+~echo("Calculating Bode Plots...")
+ Numerator Coef :          <           >~_Defser1(Strcat("'","<W1>","'"))~(_Inser("Series or Window"))
+ Denominator Coef :        <           >~_Defser2(Strcat("'","<W2>","'"))~(_Inser("Series or Window"))
+ Number of Points :        <           >~Defmacro("npoints",<400>,1)~(Int(Abs(Input(2,"Points"))))
+ Number of Decades :       <           >~Defmacro("ndec",<4>,1)~(Int(Abs(Input(2,"Decades"))))
+ Initial Frequency :  <                >~Defmacro("frinit",<0.0100>,1)~(Abs(Input(1,"Frequency")))
+ 
+ Output Magnitude plot to:  W<         >~Defmacro("_dwin1",<3>,1)~(_Dwin1chk(Input(2,"Window number")))
+ Output Frequency plot to:  W<         >~Defmacro("_dwin2",<4>,1)~(_Dwin1chk(Input(2,"Window number")))
+~menuc();_Bodeplotm(_ser1,_ser2,npoints,ndec,frinit,_dwin1,_dwin2)

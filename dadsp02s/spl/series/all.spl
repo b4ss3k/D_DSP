@@ -1,0 +1,86 @@
+/*****************************************************************************
+*                                                                            *
+*   ALL.SPL      Copyright (C) 1997-2005 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns 1 if all elements of the input are non-zero         *
+*                                                                            *
+*   Revisions:    9 Oct 1997  RRR  Creation                                  *
+*                17 Feb 2005  RRR  single row fixup                          *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_ALL
+
+    ALL
+
+    Purpose: Returns 1 if all elements of the input are non-zero
+                                                                        
+    Format:  ALL(val)
+
+              val - series, scalar or string input
+
+    Returns: The scalar 1.0 or 0.0 or a row array if the input is an array
+             with more than 1 row and column.
+
+    Examples:
+             All(3)
+
+             returns 1.0
+
+
+             All({0.0, 1.0})
+
+             returns 0.0
+
+
+             All(ones(3,1))
+
+             returns 1.0
+
+
+             All(ones(3,3))
+
+             returns the 1x3 array {{1.0, 1.0, 1.0}}
+
+
+    Remarks:
+             The input is cast to a series if it is a scalar or a string.
+
+
+    See Also
+             Any
+             Find
+             Ones
+             Zeros
+
+#endif
+
+
+all(s)
+{
+	local a;
+
+	/* convert to series if required */
+	if (not(IS_ARRAY(s))) {
+		s = castseries(s);
+	}
+
+	/* convert single row into single column */
+	if (numrows(s) == 1) {
+		s = s';
+	}
+
+	/* if minimum of s != 0.0 is 0, a zero exists */
+	a = colmin(s != 0.0);
+
+	if (numcols(s) == 1) { /* single column series, return a scalar */
+		a = castreal(a);
+	}
+	return(a);
+}
+

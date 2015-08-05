@@ -1,0 +1,13 @@
+! OutSet.men
+@x40
+@y0
+@f{_fg1}
+@b{_bg1}
+
+  LPT1   ~defmacro("_scout",'setconf("PRT_OUTPUT","LPT1")',1);"LPT1"
+  LPT2   ~defmacro("_scout",'setconf("PRT_OUTPUT","LPT2")',1);"LPT2"
+  LPT3   ~defmacro("_scout",'setconf("PRT_OUTPUT","LPT3")',1);"LPT3"
+  COM1   ~defmacro("_scout",'setconf("PRT_OUTPUT","COM1")',1);"COM1"
+  COM2   ~defmacro("_scout",'setconf("PRT_OUTPUT","COM2")',1);"COM2"
+  File   ~defmacro("_ofil1", getstr('Enter Filename'),3);defmacro("_scout",strcat('setconf("PRT_OUTPUT",','"',eval('_ofil1'),'")'),1);eval('_ofil1')
+

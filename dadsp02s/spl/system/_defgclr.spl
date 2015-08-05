@@ -1,0 +1,26 @@
+/* resets global color parameters */
+_defgclr()
+{
+	setvar("_GCV17", castint(getconfdef("window_background_color")));
+	setvar("_GCV18", castint(getconfdef("window_text_color")));
+	setvar("_GCV20", castint(getconfdef("window_hilite")));
+	setvar("_GCV21", castint(getconfdef("window_shadow")));
+	setvar("_GCV07", castint(getconfdef("window_color")));
+	setvar("_GCV05", castint(getconfdef("signal_color")));
+	setvar("_GCV19", castint(getconfdef("window_grid_color")));
+	setvar("_GCV31", castint(getconfdef("window_label_color")));
+	setvar("_GCV32", castint(getconfdef("label_background")));
+	setvar("_GCV36", castint(getconfdef("inactive_text_color")));
+	setvar("_GCV35", castint(getconfdef("inactive_label_bg")));
+	setvar("_GCV38", castint(getconfdef("active_text_color")));
+	setvar("_GCV37", castint(getconfdef("active_label_bg")));
+	setvar("_GCV41", castint(getconfdef("error_color")));
+
+	setvar("_GCV42", castint(getconfdef("child_bg_color")));
+	setvar("_GCV43", castint(getconfdef("child_fg_color")));
+	setvar("_GCV44", castint(getconfdef("parent_bg_color")));
+	setvar("_GCV45", castint(getconfdef("parent_fg_color")));
+
+	setvar("_hiactwin", castint(getconfdef("GUI_HIGHLIGHT_CAPTION")));
+
+}

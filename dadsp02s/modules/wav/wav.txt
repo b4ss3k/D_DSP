@@ -1,0 +1,66 @@
+                    ______________________________________
+
+                                  WAV.TXT
+
+                         DSP Development Corporation
+                               3 Bridge Street   
+                               Newton, MA 02458   
+                                     USA
+
+                            Phone:  1-617-969-0185
+                            Fax:    1-617-969-0446
+                            Web:    http://www.dadisp.com
+
+                                 May, 2005
+                    ______________________________________
+
+
+
+DADiSP/WAV: Version 2.0:  Installation Notes and Information
+_________________________________________________________________
+
+DADiSP/WAV allows you to quickly read, write, and edit digital
+audio data from WAV format files via easy-to-use pop-up menus or
+simple one line functions.  The WAV module is fully integrated
+with the DADiSP Worksheet to provide a complete digital audio
+data analysis, display and processing environment.
+
+
+INSTALLING DADiSP/WAV
+_________________________________________________________________
+
+This version of DADiSP/WAV is pre-installed.
+
+
+USING DADiSP/WAV
+_________________________________________________________________
+
+The WAV module main menu can be called by pressing the WAV
+Toolbar button or by typing at the DADiSP command line: wav
+
+
+ON-LINE HELP FOR DADiSP/WAV Version 2.0
+_________________________________________________________________
+
+DADiSP/WAV has context sensitive on-line help which can be
+called directly from the menus by clicking the help button.
+
+
+
+For Additional information, please refer to the on-line help
+file, DSPWAV.HLP, or the SPL source code file, WAV.SPL, located
+in the WAV subdirectory.
+
+
+Reference Texts
+
+[1] Multimedia Programmer's Reference
+	Microsoft Windows Software Development Kit
+	Microsoft Corporation
+
+[2] Steve Rimmer
+	Multimedia Programming for Windows
+	Windcrest/McGraw Hill, 1994
+
+
+                     *** End of WAV.TXT ***

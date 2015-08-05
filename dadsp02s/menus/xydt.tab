@@ -1,0 +1,14 @@
+@tabbed
+XY Date/Time Plot
+
+{setvar("_xydttitle", "Data Series")}
+
+~_MF("xydt.pan")
+~_MF("xydtunit.pan")
+
+
+~~if(strlen(_formstr) > 0, _formstr = _adddthv(_formstr))
+~~if(_chkwin > 0 && strlen(_formstr)>0, eval(sprintf('setwf(%s, "%s")', _dwin, _formstr)))
+
+
+

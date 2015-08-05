@@ -1,0 +1,85 @@
+/*****************************************************************************
+*                                                                            *
+*   DBSTEPO.SPL      Copyright (C) 2000 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Help text for dbstepo                                      *
+*                                                                            *
+*   Revisions:    27 Jun 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_DBSTEPO
+
+    DBSTEPO
+
+    Purpose: Steps out of the current SPL routine
+                                                                        
+    Format:  DBSTEPO
+
+    Returns: Nothing, steps to the last line of the current routine
+
+
+    Example:
+
+             Assume the following two SPL routines:
+
+             mycall(x)
+             {
+                local y;
+
+                y = x + x;
+                y = myfunc(y);
+                return(y);
+             }
+
+             myfunc(x)
+             {
+                local y;
+
+                y = x*x;
+                return(y);
+             }
+
+             Now consider the following debugger session:
+
+
+             dbstop myfunc
+             dbcont
+
+             mycall(10)
+
+             dbstepo
+
+             A breakpoint is set the routine mycall and the function
+             is executed. The debugger stops at line 5. 
+
+             DBSTEPO steps to the last executable line myfunc.
+
+    Remarks:
+             Use DBCONT to start the debugging process. Use DBSTEP or
+             DBCONT to resume execution after a breakpoint has been
+             reached. Use DBSTATUS for information on the current
+             breakpoint. Use DBQUIT to exit debugging. 
+
+             Any DADiSP command or function can be executed once a breakpoint 
+             has been reached.
+
+
+    See Also:
+             Dbclear
+             Dbcont
+             Dbdown
+             Dbquit
+             Dbstack
+             Dbstatus
+             Dbstep
+             Dbstepi
+             Dbstop
+             Dbup
+             Locals
+             Vars
+#endif

@@ -1,0 +1,16 @@
+! FIR Filter Design Menu
+@x0
+@b{blue}
+    FIR Filter Design
+_________________________
+
+  Lowpass                ~dmf("demofilc.men")
+  Highpass               
+  Bandpass               
+  Bandstop               
+  Differentiator         
+
+  Magnitude Response     
+  Phase     Response     
+
+  Filter Data            

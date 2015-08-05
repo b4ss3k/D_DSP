@@ -1,0 +1,16 @@
+! Normalize Training or Target Data to +/- 1
+! changed for demo: Norm.dmn
+@x 0
+@y 0
+
+@panel
+
+    Normalize Data to +/- 1.0
+
+ Normalizes the Training or Target
+
+ Data to +/- 1.
+
+   Input:
+         Source Window:     Wn
+~menuc()

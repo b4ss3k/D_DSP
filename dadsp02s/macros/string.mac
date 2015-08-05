@@ -1,0 +1,129 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!				  STRING.MAC				     !
+!                                                                            !
+!				 March 30, 1995				     !
+!                                                                            !
+!  String operations: convert a character to ASCII code and ASCII code to    !
+!  character; convert string to series of ASCII codes and series of ASCII    !
+!  codes to string.							     !
+!                                                                            !
+!  		   Copyright (C) 1995 DSP Development Corp.                  !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!**********************************************************************!
+!                                                                      !
+!		      CONVERSION SOURCE STRINGS			       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! CHARCTRL is a string of 32 blanks.  This source string is for the
+! control characters, ASCII codes 0 to 31.  Since macros cannot be
+! defined with embedded control characters, they are converted to
+! blanks.
+
+CHARCTRL		'                                '
+
+!-----------------------------------------------------------------------
+!
+! CHARPRINT is a string containing one each of the printing characters
+! in the lower half of the ASCII table, ASCII codes 32 to 127.
+
+CHARPRINT		STRCAT(' !"#$%&',"'",'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~')
+
+!-----------------------------------------------------------------------
+!
+! CHARINTL contains the characters in the first part of the upper half
+! of the ASCII table (extended ASCII), ASCII codes 128 to 175, which
+! are accented and other international letters.
+
+CHARINTL		'ÄÅÇÉÑÖÜáàâäãåçéèêëíìîïñóòôöõúùûü†°¢£§•¶ß®©™´¨≠ÆØ'
+
+!-----------------------------------------------------------------------
+!
+! CHARDRAW contains the characters in the second part of the upper half
+! of the ASCII table (extended ASCII), ASCII codes 176 to 223, which
+! are graphics characters.
+
+CHARDRAW		'∞±≤≥¥µ∂∑∏π∫ªºΩæø¿¡¬√ƒ≈∆«»… ÀÃÕŒœ–—“”‘’÷◊ÿŸ⁄€‹›ﬁﬂ'
+
+!-----------------------------------------------------------------------
+!
+! CHARMATH contains the characters in the third part of the upper half
+! of the ASCII table (extended ASCII), ASCII codes 224 to 255, which
+! are mathematical symbols.
+
+CHARMATH		'‡·‚„‰ÂÊÁËÈÍÎÏÌÓÔÒÚÛÙıˆ˜¯˘˙˚¸˝˛ˇ'
+
+!-----------------------------------------------------------------------
+!
+! CHARDISP contains all the displayable characters, ASCII codes 32 to
+! 255.
+
+CHARDISP		STRCAT(CHARPRINT,CHARINTL,CHARDRAW,CHARMATH)
+
+!-----------------------------------------------------------------------
+!
+! CHARALL contains all the ASCII characters, ASCII codes 0 to 255,
+! except that the control characters are represented by blanks.
+
+CHARALL			STRCAT(CHARCTRL,CHARPRINT,CHARINTL,CHARDRAW,CHARMATH)
+
+!**********************************************************************!
+!                                                                      !
+!	  CONVERSION BETWEEN SINGLE CHARACTER AND ASCII CODE	       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! ASC converts one character to its ASCII code.  If the argument has
+! more than one character, only the first character is converted.
+!
+!     C = one-character string
+
+ASC(C)			FLOOR(256-STRLEN(STRFIND(STREXT(C,1,1),CHARDISP,1)))
+
+!-----------------------------------------------------------------------
+!
+! CHR converts an ASCII code to a character.  Control characters are
+! converted to blanks.  The argument is taken mod 256 and truncated to
+! an integer; hence arguments between 128 and 255 will access the
+! extended ASCII characters.  If a character needs to be converted from
+! one case to another, use the functions TOUPPER and TOLOWER.
+!
+!     N = ASCII code
+
+CHR(N)			STREXT(CHARALL,IMOD(N,256)+1,1)
+IMOD(A,B)		FLOOR(((A)/(B)-INT((A)/(B)))*(B)+0.5)
+
+!**********************************************************************!
+!                                                                      !
+!	 CONVERSION BETWEEN STRING AND SERIES OF ASCII CODES	       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! SERSTR converts a string to a series of ASCII codes.
+!
+!     STR = string
+
+SERSTR(STR)		GLINE(STRLEN(STR),1,0,0);FOR('N',1,STRLEN(STR),SETPT(CURR,ASC(STREXT(STR,EVAL('N'),1)),EVAL('N')))
+FOR(V,P,Q,FORM)		POFF;DEFMACRO(V,(P)-1,1);WHILE(EVAL(V)<Q,LOOP(V,FORM));PON
+LOOP(V,FORM)		DEFMACRO(V,EVAL(V)+1,1);ECHO(STRCAT(V,' = ',STRNUM(EVAL(V))));FORM
+
+!-----------------------------------------------------------------------
+!
+! STRSER converts a series of ASCII codes to a string.  The string is
+! stored in the macro STR.  Case conversion of the output of STRSER can
+! be done with the TOUPPER and TOLOWER functions.
+!
+!     SER = series of ASCII codes
+
+STRSER(SER)		DEFMACRO('STR','',2);FOR('N',1,LENGTH(SER),DEFMACRO('STR',STRCAT(EVAL("STR"),CHR(GETPT(SER,EVAL('N')))),2))
+
+!=============================== END ===================================

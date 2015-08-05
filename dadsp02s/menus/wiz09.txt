@@ -1,0 +1,20 @@
+Abs                    !_PDC_EXEC079  $Absolute Value
+Ampdist                !_PDC_EXEC089  $Amplitude Distribution
+Ceil                   !_PDC_EXEC081  $Round Up
+Deriv                  !_PDC_EXEC083  $3 Point Quadratic Derivative
+Exp                    !_PDC_EXEC093  $Exponential Power
+Floor                  !_PDC_EXEC080  $Round Down
+Integ                  !_PDC_EXEC086  $Integration using Simpson's Rule
+Lderiv                 !_PDC_EXEC084  $2 Point Left Derivative
+Ln                     !_PDC_EXEC092  $Natural Log (Base e)
+Log                    !_PDC_EXEC090  $Natural Log (Base e)
+Log10                  !_PDC_EXEC091  $Log Base 10
+Movavg                 !_PDC_EXEC088  $Moving Average
+Movavg2                !_PDC_EXEC313  $Moving Average with End Point Padding
+Movmax                 !_PDC_EXEC311  $Moving Maximum
+Movmin                 !_PDC_EXEC310  $Moving Minimum
+Movrms                 !_PDC_EXEC327  $Moving Root Mean Square
+Movstd                 !_PDC_EXEC312  $Moving Standard Deviation
+Partsum                !_PDC_EXEC087  $Cumulative Sum
+Rderiv                 !_PDC_EXEC085  $2 Point Right Derivative
+Sqrt                   !_PDC_EXEC082  $Square Root

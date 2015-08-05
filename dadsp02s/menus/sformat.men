@@ -1,0 +1,11 @@
+! SetFormat.men
+@x0
+@y0
+@f{_fg1}
+@b{_bg1}
+      Set Numerical Formatting Mode
+
+ Auto Format                             ~_mc;setformat(-1)
+ Floating Notation                       ~_mc;setformat(0)
+ Exponential Notation with Uppercase "E" ~_mc;setformat(1)
+ Exponential Notation with Lowercase "e" ~_mc;setformat(3)

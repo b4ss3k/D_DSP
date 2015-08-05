@@ -1,0 +1,144 @@
+/*****************************************************************************
+*                                                                            *
+*   SERIES.SPL   Copyright (C) 2004 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets or clears series mode for an SPL routine               *
+*                                                                            *
+*   Revisions:    1 Dec 2004  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#define SPL_SERIES_BIT 0x02
+
+#if @HELP_SERIES
+
+    SERIES
+
+    Purpose: Sets or clears the series mode of an SPL function.
+                                                                        
+    Format:  SERIES(name, mode)
+
+              name - A string, the name of the SPL function.
+
+              mode - Optional. An integer, the series mode. 
+
+                       0: clear series mode
+
+                       1: set series mode, force return value to be
+                          a series (default).
+
+
+    Returns: Nothing. Changes the series mode of the function.
+
+
+    Example:
+             Consider the following SPL routine:
+
+             smax(s)
+             {
+             	return(max(s));
+             }
+
+
+             a = {{1, 2, 3},
+                  {4, 5, 6},
+                  {7, 8, 9}}
+
+             m1 = smax(a);
+
+             m1 == 9
+
+             Since the input a is an array, smax returns the maximum of 
+             the entire array as a scalar.
+
+             If the SPL routine is set to explicitly return a series:
+
+             series("smax", 1);
+             m2 = smax(a);
+
+             m2 == {9}
+
+             The return value is a series because smax now automatically 
+             converts the scalar result to a series result. This is 
+             equivalent to:
+            
+                {max(s)}
+
+
+             Using column iteration:
+
+             iterate("smax", 1)
+             m3 = smax(a)
+
+             m3 == {{3, 6, 9}}
+
+             since smax now iterates over each column and returns the maximum
+             of each column.
+
+    Remarks:
+
+             The SERIES function forces an SPL routine to always return
+             a series. This behavior optimizes evaluation since the
+             return type is already known before the calculation takes
+             place. The optimizations are similar to what occurs with
+             internal functions that always return a series such as FFT 
+             or INTEG. However, this behavior persists only for
+             the duration of the current session.  Use the SERIES
+             modifier in the function definition to make the behavior
+             permanent. For example:
+
+             SERIES smax(s)
+             {
+             	return(max(s));
+             }
+
+
+             SERIES can also be specified in command mode. For example:
+
+             series smax
+
+             forces smax to always return a series. 
+
+             Because the command form does not accept optional
+             arguments, the command form can only enable series mode.
+
+
+    See Also:
+             Iterate
+             Splload
+#endif
+
+
+/* set or clear SERIES modifier of an SPL routine */
+series(name, mode)
+{
+	local modify;
+
+	if (argc < 2) {
+		if (argc < 1) error("series - SPL function name required");
+		mode = 1;
+	}
+
+	/* get spl modifier bits */
+	if ((modify = splmodify(name)) < 0) {
+		error(sprintf("series - cannot find function '%s'", name));
+	}
+	else {
+		/* clear series bit */
+		modify &= ~SPL_SERIES_BIT; 
+
+		/* set bit if var != 0 */
+		if (mode) modify |= SPL_SERIES_BIT;
+
+		/* set new bit value */
+		modify = splmodify(name, modify);
+
+		/* return current SERIES bit */
+		modify = (modify & SPL_SERIES_BIT) != 0;
+
+		return(modify);
+	}
+}

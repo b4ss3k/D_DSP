@@ -1,0 +1,16 @@
+! MDecomp.men - Matrix Decompositions
+@x0
+@y0
+@f{_fg1}
+@b{_bg1}
+Matrix Decompositions
+
+ LU Decomposition    ~_deffname('LU       LU Decomposition')  |_defformat('LU(matrix)')|_defxamp('LU(W2)')|_getser|_serform("Lu")
+ LLU                 ~_deffname('LLU      LLU Decomposition')  |_defformat('LLU(matrix)')|_defxamp('LLU(W2)')|_getser|_serform("Llu")
+ ULU                 ~_deffname('ULU      ULU Decomposition')  |_defformat('ULU(matrix)')|_defxamp('ULU(W2)')|_getser|_serform("Ulu")
+
+ SVD Decomposition   ~_mf("svd.men")
+ QR Decomposition    ~_mf("qr.men")
+
+ Schur               ~_deffname('SCHUR    Schur Matrix')  |_defformat('Schur(series)')|_defxamp('Schur(W2)')|_getser|_serform("Schur")
+ Unit Schur          ~_deffname('USCHUR   Schur Unit Matrix')  |_defformat('Uschur(series)')|_defxamp('Uschur(W2)')|_getser|_serform("USchur")

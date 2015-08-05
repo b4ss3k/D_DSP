@@ -1,0 +1,10 @@
+! regress.dmn -- Multiple Regression Menu
+! modified for the demo
+@x0
+@y0
+   Multiple Regression
+
+ Display Regression Statistics ~_deffname('MULREGSUM Multiple Regression')  |_defformat(' Mulregsum(series, table)')|_defxamp(' Mulregsum(W1,W2)')|_dmgetser2("Y Series (series):   ", "X Variables (table): ") | MULREGMEN
+ Generate Coefficients         ~_deffname('MRCOEFS  Regression Coefficients') | _defformat('MRCoefs(series, table)') |_defxamp('MRCoefs(W1,W2)') | _dmgetser2("Y Series (series):   ","X Variables (table): ") | _oser2form("MRCoefs")
+ Plot Regression Equation      ~_deffname('MRGRAPH  Regression Equation Plot') | _defformat('MRGraph(series, table)') |_defxamp('MRGraph(W1,W2)') | _dmgetser2("Y Series (series):   ","X Variables (table): ") | _oser2form("MRGraph")
+~_mc

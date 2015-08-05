@@ -1,0 +1,15 @@
+! math.men -- Series math functions
+@x0
+@y0
+@b{_bg1}
+@f{_fg1}
+     Math Functions 
+ 
+ General Math            ~_MF("mathgen.men")
+ Log Functions           ~_MF("log.men")
+ Complex Functions       ~_MF("complex.men")
+ Matrix Functions        ~_mf("matrix.men")
+ Trigonometric Functions
+    Basic & Inverse      ~_MF("trig.men")
+    Hyperbolic & Inverse ~_MF("trig2.men")
+ Error/Bessel/Gamma      ~_MF("bessel.men")

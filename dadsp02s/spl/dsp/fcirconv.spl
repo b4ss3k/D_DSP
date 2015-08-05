@@ -1,0 +1,71 @@
+/*****************************************************************************
+*                                                                            *
+*   FCIRCONV.SPL   Copyright (C) 2003 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Circular Convolution using FFT's                            *
+*                                                                            *
+*   Revisions:    4 Apr 2003  RRR  Creation - from FCONV.SPL                 *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_FCIRCONV
+
+    FCIRCONV
+
+    Purpose: Circular convolution using the FFT method
+                                                                        
+    Format:  FCIRCONV(s1, s2)
+
+                 s1 - input series
+
+                 s2 - input series
+
+                  N - Optional. An integer, the convolution length, defaults
+                      to the maximum length of the input series.
+
+    Returns: A series
+
+    Example:
+             W1: {1, 2, 3}
+             W2: {4, 5, 6}
+             W3: circonv(w1, w2)
+
+             W3 contains the series {31, 31, 28}, the result of circular
+             convolution of W1 and W2.
+
+    Remarks:
+             FCIRCONV performs circular convolution by computing the FFT's 
+             of the input series. This method is faster than CIRCONV for 
+             large series.
+
+             See CIRCONV for a time domain implementation.
+
+    See Also:
+             Circonv
+             Conv
+             Fconv
+#endif
+
+
+/* frequency domain circular convolution */
+fcirconv(s1, s2, N)
+{
+	local c;
+
+	if (argc < 3) {
+		if (argc < 2) error("fcirconv - two input series required");
+		/* default to maximum length */
+		N = max(length(s1), length(s2));
+	}
+
+	/* multiply DFTs */
+	c = real(ifft(fft(s1, N) * fft(s2, N)));
+
+	/* set xoffset */
+	setxoffset(c, xoffset(s1) + xoffset(s2));
+
+	return(c);
+}

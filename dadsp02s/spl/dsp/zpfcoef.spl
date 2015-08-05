@@ -1,0 +1,141 @@
+/*****************************************************************************
+*                                                                            *
+*   ZPFCOEF.SPL   Copyright (C) 2001 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Designs digital filter given analog zeros and poles         *
+*                                                                            *
+*   Revisions:   30 Jan 2001  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_ZPFCOEF
+
+    ZPFCOEF
+
+    Purpose: Designs a digital filter from a set of analog (s domain)  
+             zeros and poles
+                                                                        
+    Format:  ZPFCOEF(z, p, K, Fs, Fp)
+
+                 z - a series consisting of the zeros of the analog 
+                     filter transfer function in Hertz
+
+                 p - a series consisting of the poles of the analog 
+                     filter transfer function in Hertz
+
+                 K - an optional real, the filter gain, defaults to 1.0
+
+                Fs - an optional real, the sample rate of the digital filter,
+                     defaults to 1.0
+
+                Fp - an optional integer, the warping frequency. The
+                     magnitude to the digital filter at Fp matches
+                     the magnitude of the analog filter, defaults to
+                     Fs. 
+
+    Returns: A series, the coefficients of the digital filter in cascade
+             form.
+
+    Example:
+              f := 0..1..10000
+              w := 2*pi*f
+              s := i*w
+
+             W1: 5 * (s+40*2*pi)*(s+30*2*pi) / ((s+20*2*pi)*(s+300*2*pi))
+             W2: 20 * log10(mag(W1));setxlog(1)
+             W3: zpfcoef({-40, -30}, {-20, -300}, 5, 10000, 200)
+             W4: clogmag(W3, 4096);setxlog(1)
+             W5: integ(gnorm(1000, 1/10000))
+             W6: cascade(W5, W3)
+
+
+             W1 contains the original S domain transfer function. The 
+             magnitude of the transfer function is displayed in W2.
+
+             W3 contains the resulting digital filter coefficients in
+             2nd order cascade form. The sample rate of the digital filter
+             is 10000 Hz and the response is set to match the analog filter 
+             at 200 Hz. The entire frequency response of the digital filter 
+             is displayed in W4.
+
+             W5 contains synthesized data and W5 filters the data with
+             the resulting digital filter in W3.
+
+    Remarks:
+             The digital filter conversion is performed using the    
+             bilinear transform. The cascade format is used for speed
+             and accuracy in the digital filtering process.
+
+             The number of poles must equal or exceed the number 
+             of zeros.
+
+    See Also:
+             Bilinear
+             Cascade
+             DADiSP Filters Module
+#endif
+
+
+zpfcoef(z, p, K, Fs, Fp)
+{
+	local zD, pD, kD, num, den, coef;
+
+	if (argc < 5) {
+		if (argc < 4) {
+			if (argc < 3) {
+				if (argc < 2) {
+					error("zpfcoef - zeros and poles series required");
+				}
+				K = 1.0;
+			}
+			Fs = 1.0;
+		}
+		if (Fs <= 0) Fs = 1.0;
+		Fp = Fs;
+	}
+
+	/* convert H(s) zeros & poles to H(z) using the bilinear transform */
+	(zD, pD, kD) = bilinear((sort(z*2*pi, 1)), (sort(p*2*pi, 1)), K, Fs, Fp);
+
+	/* expand roots into second order stages */
+	num = cascadexp(-zD);
+	den = cascadexp(-pD);
+
+	/* break into individual 2nd order stages */
+	num = ravel(num, 3);
+
+	/* multiply first numerator stage by Gain so we can set it to 1.0 */
+	num[.., 1] *= kD;
+
+	/* remove leading 1 from each demoninator stage - as per cascade form */
+	den = extract(ravel(den, 3), 2, 2);
+
+	/* append unity gain and convert to single column */
+	coef = {1, unravel({num, den})};
+
+	/* set filter rate */
+	setdeltax(coef, 1/Fs);
+
+	return(coef);
+}
+
+
+/* convert roots of a polynomial to 2nd order stages */
+cascadexp(r)
+{
+	if (length(r) == 1) {
+		return({1, r[1], 0}); /* b0, b1*z^-1, b2*z^-2 */
+	}
+	if (length(r) == 2) {
+		return({1, r[1]+r[2], r[1]*r[2]});
+	}
+	else {
+		/* recurse on the remaining stages */
+		return(concat({1, r[1]+r[2], r[1]*r[2]}, cascadexp(extract(r, 3, -1))));
+	}
+}
+
+

@@ -1,0 +1,67 @@
+/* IFFT panel */
+_ifft2w(ser, rlen, clen, form, dwin)
+{
+	local evalstr;
+
+	/* Real, Cartesian or Polar form */
+	switch (form) {
+		case 0:
+		case 1:
+		default:
+			func = "Ifft2";
+			break;
+
+		case 2:
+			func = "Ifftp2";
+			break;
+	}
+
+	/* row length */
+	if (strcmp(rlen, "-1") == 0) {
+		if (strcmp(clen, "-1") == 0) {
+			rlenstr = "";
+		}
+		else {
+			rlenstr = sprintf("numrows(%s)", ser);
+		}
+	}
+	else if (strcmp(rlen, "-2") == 0) {
+		rlenstr = sprintf("bestpow2(%s)", ser);
+	}
+	else {
+		rlenstr = sprintf("numrows(%s)", ser);
+	}
+
+	/* column length */
+	if (strcmp(clen, "-1") == 0) {
+		clenstr = "";
+	}
+	else if (strcmp(clen, "-2") == 0) {
+		clenstr = sprintf("bestpow2(%s)", ser);
+	}
+	else {
+		clenstr = sprintf("numcols(%s)", ser);
+	}
+
+	if (strlen(clenstr) == 0) {
+		if (strlen(rlenstr) == 0) {
+			evalstr = sprintf("%s(%s)", func, ser);
+		}
+		else {
+			evalstr = sprintf("%s(%s, %s)", func, ser, rlenstr);
+		}
+	}
+	else {
+		evalstr = sprintf("%s(%s, %s, %s)", func, ser, rlenstr, clenstr);
+	}
+
+	if (form == 0) {
+		evalstr = sprintf("setwf(%s, 'Real(%s)')", _dwin, evalstr);
+	}
+	else {
+		evalstr = sprintf("setwf(%s, '%s')", _dwin, evalstr);
+	}
+
+	eval(evalstr);
+}
+

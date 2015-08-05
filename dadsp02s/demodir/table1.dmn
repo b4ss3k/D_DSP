@@ -1,0 +1,13 @@
+! Win1.pan - Input a Window
+! modified for the demo.
+@x0
+@y0
+@panel
+{_funcstr}
+{_formatstr}
+{_examplestr}
+{defmacro("_dwin",strcat("W",strnum(getwnum)),2)}
+
+ Input Table:  <         >~_DEFSER1(strcat("'","<w1>","'"))~_INSER("Table")
+
+~_mc;if(strcmp(_ser1,_dwin)==0,_DEFSER1("'curr'"))

@@ -1,0 +1,22 @@
+/* svd form to int value */
+_svdf2i(f)
+{
+	local str;
+
+	switch (f) {
+		case 0:
+		default:
+			str = "00";
+			break;
+		case 1:
+			str = "01";
+			break;
+		case 2:
+			str = "10";
+			break;
+		case 3:
+			str = "11";
+			break;
+	}
+	return(str);
+}

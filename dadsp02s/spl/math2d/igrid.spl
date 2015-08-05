@@ -1,0 +1,249 @@
+/*****************************************************************************
+*                                                                            *
+*   IGRID.SPL     Copyright (C) 1998-2003 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Grids XYZ data using inverse distance method                *
+*                                                                            *
+*   Revisions:   11 Feb 1998  RRR  Creation                                  *
+*                25 Mar 1998  RRR  Added optional weights and radius         *
+*                29 Dec 1998  RRR  Support for single XYZ input series       *
+*                15 May 2003  RRR  XYZ units                                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#define GRID_INTERP 1
+
+#if @HELP_IGRID
+
+    IGRID   
+
+    Purpose: Grids XYZ data using the inverse distance method
+                                                                        
+    Format:  IGRID(x, y, z, gridsize, interp, weights, radius)
+
+               x - a series, x or horizontal range
+               y - a series, y or vertical range
+               z - a series, z or height data
+
+        gridsize - an optional integer or series, size of output grid,
+                   defaults to sqrt(length(x))
+
+          interp - an optional integer, cubic spline smoothing
+                   factor, defaults to 1 (no smoothing)
+
+         weights - an optional series, weights of distance function,
+                   defaults to {0, 0, 1, 1, 1}
+
+          radius - an optional real specifying the maximum radius to 
+                   include in the interpolation, defaults to all
+
+    Returns: An array
+
+    Example:
+             x = grand(100, 1)*2 - 1;
+             y = grand(100, 1)*2 - 1;
+             z = cos(x*y);
+             xyz = igrid(x, y, z);
+
+             Grids the function cos(x*y) over the range -1 to 1 with
+             an interpolated grid of 11x11
+
+             xyz2 = igrid(x[..], y[..], z[..], 20)
+
+             Same as above but the interpolated grid is 20x20.
+
+             xyz2 = igrid(x[..], y[..], z[..], {20, 30})
+
+             Same as above but the interpolated grid is 20x30.
+
+
+             IGRID also accepts a single XYZ series as input:
+
+             xyzser = xyz(x, y, z)
+
+             xyz3 = igrid(xyzser)
+
+             Same as first example.
+
+
+             xyz3 = igrid(xyzser, 20)
+
+             Same as second example.
+
+
+             xyz3 = igrid(xyzser, {20, 30})
+           
+             Same as third example.
+
+    Remarks:
+             IGRID uses INVDISTANCE, the inverse distance method of 
+             gridding irregularly spaced data.
+
+             If GRIDSIZE is a series, the first element specifies the
+             output number of columns and the second element specifies 
+             the output number of rows.
+
+             The optional WEIGHTS series specifies the weighting of 
+             the radius terms {r^-1, r^-2, r^-3, r^-4, ...}. The 
+             default of {0, 0, 1, 1, 1} specifies a linear combination 
+             of r^-3 + r^-4 + r^-5 terms.
+
+
+    See Also
+             Invdistance
+#endif
+
+
+igrid(x, y, z, gridsize, interp, weights, radius)
+{
+	local zi, ri, xinc, yinc, xgridsize, ygridsize, inargcnt;
+	local xu, yu, zu;
+
+	/* check inputs */
+	if (argc < 1) error("igrid - Series Required");
+	if (not(IS_ARRAY(x))) error("igrid - Series Required");
+	inargcnt = argc;
+
+	/* check if input is XYZ series */
+	if (ISXYZSERIES(x)) {
+
+		inargcnt = 3; /* for x, y, and z series */
+
+		/* shift the optional args */
+		if (argc > 1) {
+			if (argc > 2) {
+				if (argc > 3) {
+					if (argc > 4) {
+						radius = interp;
+						inargcnt++;
+					}
+					weights = gridsize;
+					inargcnt++;
+				}
+				interp = z;
+				inargcnt++;
+			}
+			gridsize = y;
+			inargcnt++;
+		}
+		/* save units */
+		zu = getzunits(x);
+		yu = getvunits(x);
+		xu = gethunits(x);
+
+		/* get XYZ components */
+		z = zvals(x);
+		y = yvals(x);
+		x = xvals(x);
+	}
+	else {
+		/* else we require at least 3 series */
+		if (inargcnt < 3) error("igrid - XYZ or 3 Separate Series Required ");
+
+		/* save units */
+		zu = getvunits(z);
+		yu = getvunits(y);
+		xu = getvunits(x);
+	}
+		
+	/* determine gridsize and interp */
+	if (inargcnt < 5) {
+		if (inargcnt < 4) {
+			xgridsize = int(sqrt(length(x))) + 1;
+			ygridsize = xgridsize;
+		}
+		interp = GRID_INTERP;
+	}
+	if (inargcnt > 3) {
+		if (IS_SERIES(gridsize)) {
+			if (length(gridsize) > 1) {
+				xgridsize = gridsize[1];
+				ygridsize = gridsize[2];
+			}
+			else {
+				xgridsize = castint(gridsize);
+				ygridsize = xgridsize;
+			}
+		}
+		else {
+			xgridsize = gridsize;
+			ygridsize = xgridsize;
+		}
+	}
+
+	/* make sure sizes are integers */
+	xgridsize = castint(xgridsize);
+	ygridsize = castint(ygridsize);
+	interp    = castint(interp);
+
+	if (length(x) == 0 || length(y) == 0 || length(z) == 0) {
+		error("igrid - input series required");
+	}
+
+	/* calc interpolation range */
+	(ri, xinc, yinc) = gridrange(x, y, xgridsize, ygridsize);
+
+	/* inverse distance interpolation */
+	if (inargcnt < 6) {
+		zi = invdistance(ravel(x, y), z, ri);
+	}
+	else if (inargcnt < 7) {
+		zi = invdistance(ravel(x, y), z, ri, weights);
+	}
+	else {
+		zi = invdistance(ravel(x, y), z, ri, weights, radius);
+	}
+	zi = ravel(zi, xgridsize);
+
+	/* set to surface */
+	setplottype(zi, 4);
+
+	/* Z data units */
+	setdeltax(zi, xinc);
+	setxoffset(zi, min(ri[.., 1]));
+	sethunits(zi, xu);
+
+	setdeltay(zi, yinc);
+	setyoffset(zi, min(ri[.., 2]));
+	setvunits(zi, yu);
+
+	setzunits(zi, zu);
+
+	/* spline smooth */
+	if (interp > 1) {
+		zi = spline2(zi, interp);
+	}
+
+
+	return(zi);
+}
+
+
+/* generate interpolation range */
+gridrange(x, y, xgridsize, ygridsize)
+{
+	local xmin, xmax, ymin, ymax;
+	local xinc, yinc;
+
+	if (argc < 4) {
+		if (argc < 3) {
+			xgridsize = int(sqrt(length(x))) + 1;
+		}
+		ygridsize = xgridsize;
+	}
+
+	xmax = max(x); xmin = min(x);
+	ymax = max(y); ymin = min(y);
+
+	xinc = (xmax - xmin) / (xgridsize - 1);
+	yinc = (ymax - ymin) / (ygridsize - 1);
+
+	(x, y) = fxyvals(xmin, xmax, xinc, ymin, ymax, yinc);
+
+	return(ravel(x[..], y[..]), xinc, yinc);
+}

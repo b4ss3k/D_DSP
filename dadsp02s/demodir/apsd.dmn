@@ -1,0 +1,11 @@
+! apsd.dmn -- Advanced Power Spectral Density menu modified for the demo
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+@h
+    PSD Analysis  
+
+ Classical           ~echo("Classical PSD techniques are FFT based")
+
+ Parametric          ~DMF("aparam.dmn")

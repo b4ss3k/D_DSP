@@ -1,0 +1,1116 @@
+/*****************************************************************************
+*                                                                            *
+*   WRITEHED.SPL  Copyright (C) 1996-1998 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Donal de Burca                                             *
+*                                                                            *
+*   Synopsis:     Automatic Import Header File Creation                      *
+*                                                                            *
+*   Revisions:     1 Jun 1996  DDB  Creation                                 *
+*                  6 Nov 1996  AMK  Edit, Update for B08                     *
+*                 20 Dec 1996  AMK  cancel out of Flymenus, cancels all      *
+*                 17 Jul 1997  RRR  broke out dosingle and domulti           *
+*                 11 Dec 1998  RRR  added gethome in menuonthefly            *
+*                                                                            *
+*****************************************************************************/
+
+/*
+**	WRITEHED.SPL contains a number of functions to support the automatic 
+**	import header file creation capabilities.
+**
+** DoSingle and DoMulti are the main calling functions to create a header
+** file for Single and Multi-channel data files.
+**
+** Note: these functions only create a header file.  This file must be 
+** loaded in the Import Utilities dialog box, or specified in a call to the 
+** IMPORTFILE function.  The header file is an ASCII text file which can be
+** edited in any text editor.
+**
+** Functions contained in this file:
+** _rdfltflg
+** write_header
+** multich_sernam
+** series_units
+** offset_slope
+** menuonthefly
+** set_defaults
+**
+** dosingle and domulti are contained in dosingle.spl and domulti.spl
+*/
+
+
+writehed()
+{
+	/* dummy function to load these routines */
+	return;
+}
+
+
+/*
+** write_header
+**
+** Purpose: create the header file based upon input from user.
+** Format: 
+** write_header(filename)
+** filename - A string.  The path and filename for the desired header file.
+**
+** Remarks:
+** write_header relies on global variables to output the header information
+** to the specified header file.  these variables are set in the menus called
+** by dosingle and domulti (above).  
+** write_header is not intended for stand-alone use.
+**
+*/
+
+write_header(_headfile)
+{
+
+ if(eval('_flyflg')==1) {
+	/* test to see if specified header file already exists.
+	** if it does, prompt for permission to overwrite.
+	** if permission granted, close file and proceed to WriteFile label.
+	** if permission denied, close file and return to header generation menu.
+	*/
+
+	if(fopen(_headfile,"r")==1) {
+		if(message(_fileexistsmes,sprintf(_replacefilemes, _headfile),6)==1) {
+			fclose(_headfile);
+			goto WriteFile;
+		}
+		else {
+			fclose(_headfile);
+			_headfile=pickfile(getlabpath,"Header File Selection",strescape("Header Files(*.hed)\0\*.hed\0All Files(*.*)\0\*.*\0"),1);
+			if(strlen(_headfile) > 0) {
+				write_header(_headfile);
+			}
+			else return;
+		}
+	}
+                
+	WriteFile:
+
+	/* open file to be used as header (create file if it doesn't already exist) */
+
+	fopen(_headfile,"w+");
+
+	/* write keywords along with parameters specified by user to header file */
+
+	fputs(strcat("DATASET        ",_datasetname,"\n"),_headfile);
+	fputs(strcat("VERSION        ",_versnum,"\n"),_headfile);
+
+	/* for multiple channel input set seriesname as a string of series names
+	** equivalent to the number of channels being imported
+	*/
+
+	if(((numstr(_impchans))>1)||(_scflag==0)) {
+		multich_sernam(_impchans,_headfile,_seriesname);
+		series_rate(_impchans,_headfile); 
+		series_units(_impchans,_headfile);
+	}
+	else {
+		fputs(strcat("SERIES         ",_seriesname,"\n"),_headfile);
+		fputs(strcat("HORZ_UNITS     ",_unitsh,"\n"),_headfile);
+		fputs(strcat("VERT_UNITS     ",_unitsv,"\n"),_headfile);
+		fputs(strcat("RATE           ",_samprate,"\n"),_headfile);
+	}
+
+	fputs(strcat("FILE_TYPE      ",_filetype,"\n"),_headfile);
+
+	/* if _savemode is anything other than PROMPT, write keyword WRITE_MODE
+	** to header file along with relevant parameter.
+	*/
+
+	if(strcmp(_savemode,"PROMPT")!=0) {
+		fputs(strcat("WRITE_MODE     ",_savemode,"\n"),_headfile);
+	}
+
+	fputs(strcat("DATE           ",_dateacq,"\n"),_headfile);
+	fputs(strcat("TIME           ",_timeacq,"\n"),_headfile);
+
+	/* Channel Information parameters
+	** only write to header file if they differ from defaults
+	*/
+
+	if(strcmp(_impchans,"1")!=0)
+        fputs(strcat("NUM_SERIES     ",_impchans,"\n"),_headfile);
+        
+	if(strcmp(_numchans,"1")!=0)        
+        fputs(strcat("NUM_COLUMNS    ",_numchans,"\n"),_headfile);
+
+	if(strcmp(_chanoffset,"1")!=0)
+        fputs(strcat("COLUMN         ",_chanoffset,"\n"),_headfile);
+
+	if(strcmp(_modestore,"INTERLACED")!=0)
+        fputs(strcat("STORAGE_MODE   ",_modestore,"\n"),_headfile);
+
+	/* Axis Modification parameters
+	** If set for each series (in multi-channel) use functions
+	** Only write to single channel header file if they differ from defaults.
+	*/
+
+	if(((numstr(_impchans))>1)||(_scflag==0)) {
+		offset_slope(_impchans,_headfile); 
+	}
+	else {
+		if(strcmp(_offsetx,"0")!=0)
+			fputs(strcat("X_OFFSET       ",_offsetx,"\n"),_headfile);
+        
+		if(strcmp(_offsety,"0")!=0)
+			fputs(strcat("Y_OFFSET       ",_offsety,"\n"),_headfile);
+        
+		if(strcmp(_slopey,"1")!=0)
+			fputs(strcat("SLOPE          ",_slopey,"\n"),_headfile);
+        
+		if(strcmp(_numpts,"ALL")!=0 && strcmp(_numpts, "-1")!=0)
+			fputs(strcat("NUM_SAMPS      ",_numpts,"\n"),_headfile);
+	}
+        
+	/* Data Skipping parameters
+	** only write to header file if they differ from defaults.
+	*/
+ 
+	if(strcmp(_offsetfile,"0")!=0)
+        fputs(strcat("FILE_OFFSET    ",_offsetfile,"\n"),_headfile);
+
+	if(strcmp(_unitsoffset,"LINE")!=0)
+        fputs(strcat("OFFSET_UNITS   ",_unitsoffset,"\n"),_headfile);
+
+	if(strcmp(_skipint,"0")!=0)
+        fputs(strcat("SKIP           ",_skipint,"\n"),_headfile);
+
+	if (_swapflag) 
+        fputs(strcat("SWAPBYTE       ","\n"),_headfile);
+
+	/* add comment if user defined */
+	if(strlen(_usercomm)>0) {
+		fputs(strcat("COMMENT        ",_usercomm,"\n"),_headfile);
+	}
+	fputs("DATA\n",_headfile);        
+
+	/* close file */
+	fclose(_headfile);
+
+	/* reset all flags to zero */
+	setvar(_scflag,0);
+ 
+	return('Header File Written');
+ }
+
+}
+
+/*
+** multich_sernam
+**
+** Purpose: places multiple series names into header file for multi-channel
+** 			import.
+**
+** Format: 
+** multich_sernam(series_num, file_name, name_o_series)
+** series_num - An integer. The number of the series.
+** file_name - A string. The path and filename for the header file.
+** name_o_series - A string. The name of the series.
+**
+** Remarks:
+** multich_sernam relies on global variables to output the header information
+** to the specified header file.  these variables are set in the menus called
+** by dosingle and domulti (above).  
+** multich_sernam is not intended for stand-alone use.
+**
+*/
+
+multich_sernam(series_num, file_name, name_o_series)
+{
+	local num_lines, mm, nn, pp, tempname;
+
+	if(strcmp(_seriesflag,"NO")==0) {
+		num_lines=int(numstr(series_num)/4);
+		for(nn=1;nn<=num_lines;nn++) {
+			fputs("SERIES         ",file_name);
+			for(mm=1;mm<=4;mm++) {
+				fputs(strcat(name_o_series,"_",strnum(mm+(4*(nn-1))),","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+        
+		if(numstr(series_num)>(num_lines*4)) {
+			fputs("SERIES         ",file_name);
+			for(pp=(num_lines*4);pp<numstr(series_num);pp++) {
+				fputs(strcat(name_o_series,"_",strnum(pp+1),","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+	}
+        
+	else  {                   // individual series names
+		num_lines=int(numstr(series_num)/4);
+       
+		for(nn=1;nn<=num_lines;nn++) {
+			fputs("SERIES         ",file_name);
+			for(mm=1;mm<=4;mm++) {
+				tempname=_getservar((mm+(4*(nn-1))),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+        
+		if(numstr(series_num)>(num_lines*4)) {
+			fputs("SERIES         ",file_name);
+			for(pp=(num_lines*4);pp<numstr(series_num);pp++) {
+				tempname=_getservar((pp+1),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+	}
+
+	return;
+}
+
+
+/*
+** series_units
+** Purpose:
+** write units to header file if user specifies individual units for each 
+** series.
+**
+** Format: series_units(series_num, file_name)
+** series_num - An integer. the number of the series.
+** file_name - A string. The path and filename for the header file.
+**
+** Remarks:
+** series_units relies on global variables to output the header information
+** to the specified header file.  these variables are set in the menus called
+** by dosingle and domulti (above).  
+** series_units is not intended for stand-alone use.
+**
+*/
+
+series_units(series_num,file_name)
+{
+	local num_lines, mm, nn, pp, tempname;
+
+	num_lines=int(numstr(series_num)/4);
+
+	if(strcmp(_hunitsflag,"YES")==0) {
+		// horizontal units
+
+		for(nn=1;nn<=num_lines;nn++) {
+			fputs("HORIZ_UNITS    ",file_name);
+			for(mm=1;mm<=4;mm++) {
+				tempname=_gethedvar("_unitsh",strnum(mm+(4*(nn-1))),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+
+		if(numstr(series_num)>(num_lines*4)) {
+			fputs("HORIZ_UNITS    ",file_name);
+			for(pp=(num_lines*4);pp<numstr(series_num);pp++) {
+				tempname=_gethedvar("_unitsh",strnum(pp+1),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+	}
+	else {
+		// horizontal units
+		fputs(strcat("HORZ_UNITS     ",_unitsh,"\n"),_headfile);
+	}
+        
+	if(strcmp(_vunitsflag,"YES")==0) {
+	// vertical units
+        
+	   	for(nn=1;nn<=num_lines;nn++) {
+			fputs("VERT_UNITS     ",file_name);
+			for(mm=1;mm<=4;mm++) {
+				tempname=_gethedvar("_unitsv",strnum(mm+4*(nn-1)),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+        
+		if(numstr(series_num)>(num_lines*4)) {
+			fputs("VERT_UNITS     ",file_name);
+			for(pp=(num_lines*4);pp<numstr(series_num);pp++) {
+				tempname=_gethedvar("_unitsv",strnum(pp+1),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+	}
+        
+	else {
+		// vertical units
+		fputs(strcat("VERT_UNITS     ",_unitsv,"\n"),_headfile);
+	}
+        
+	return;
+}
+
+/*
+** offset_slope
+**
+** Purpose:
+** write offsets and slopes to header file if user specifies individual 
+** offset and slopes for each series. also writes number of points per 
+** channel to be imported.
+**
+** Format:
+** offset_slope(series_num, file_name)
+** series_num - An integer. the number of the series.
+** file_name - A string. The path and filename for the header file.
+** 
+** Remarks:
+** offset_slope relies on global variables to output the header information
+** to the specified header file.  these variables are set in the menus called
+** by dosingle and domulti (above).  
+** offset_slope is not intended for stand-alone use.
+**
+*/
+
+offset_slope(series_num,file_name)
+{ 
+	local num_lines, mm, nn, pp, tempname;
+
+	num_lines=int(numstr(series_num)/4);
+
+	if(strcmp(_xoffflag,"YES")==0) {
+		// x_offset
+
+		for(nn=1;nn<=num_lines;nn++) {
+			fputs("X_OFFSET       ",file_name);
+			for(mm=1;mm<=4;mm++) {
+				tempname=_gethedvar("_offsetx",strnum(mm+(4*(nn-1))),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+
+		if(numstr(series_num)>(num_lines*4)) {
+			fputs("X_OFFSET       ",file_name);
+			for(pp=(num_lines*4);pp<numstr(series_num);pp++) {
+				tempname=_gethedvar("_offsetx",strnum(pp+1),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+	}
+        
+	else {
+		if(strcmp(_offsetx,"0")!=0)
+		fputs(strcat("X_OFFSET       ",_offsetx,"\n"),_headfile);
+	}
+        
+
+	if(strcmp(_yoffflag,"YES")==0) {
+		// y_offset
+
+		for(nn=1;nn<=num_lines;nn++) {
+			fputs("Y_OFFSET       ",file_name);
+			for(mm=1;mm<=4;mm++) {
+				tempname=_gethedvar("_offsety",strnum(mm+(4*(nn-1))),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+
+		if(numstr(series_num)>(num_lines*4)) {
+			fputs("Y_OFFSET       ",file_name);
+			for(pp=(num_lines*4);pp<numstr(series_num);pp++) {
+				tempname=_gethedvar("_offsety",strnum(pp+1),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+	}
+        
+	else {
+		if(strcmp(_offsety,"0")!=0)
+			fputs(strcat("Y_OFFSET       ",_offsety,"\n"),_headfile);
+	}
+        
+        
+	if(strcmp(_slopeflag,"YES")==0) {
+		// slope
+
+		for(nn=1;nn<=num_lines;nn++) {
+			fputs("SLOPE          ",file_name);
+			for(mm=1;mm<=4;mm++) {
+				tempname=_gethedvar("_slopey",strnum(mm+(4*(nn-1))),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+
+		if(numstr(series_num)>(num_lines*4)) {
+			fputs("SLOPE          ",file_name);
+			for(pp=(num_lines*4);pp<numstr(series_num);pp++) {
+				tempname=_gethedvar("_slopey",strnum(pp+1),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+	}
+        
+	else { 
+		if(strcmp(_slopey,"1")!=0)
+			fputs(strcat("SLOPE          ",_slopey,"\n"),_headfile);
+	}
+        
+	if(strcmp(_impptsflag,"YES")==0) {
+		// num_samps
+
+		for(nn=1;nn<=num_lines;nn++) {
+			fputs("NUM_SAMPS      ",file_name);
+			for(mm=1;mm<=4;mm++) {
+				tempname=_gethedvar("_numpts",strnum(mm+(4*(nn-1))),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+
+		if(numstr(series_num)>(num_lines*4)) {
+			fputs("NUM_SAMPS      ",file_name);
+			for(pp=(num_lines*4);pp<numstr(series_num);pp++) {
+				tempname=_gethedvar("_numpts",strnum(pp+1),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+	}
+        
+	else {
+		if(strcmp(_numpts,"ALL")!=0)
+			fputs(strcat("NUM_SAMPS      ",_numpts,"\n"),_headfile);
+	}
+               
+	return;
+}
+
+series_rate(series_num, file_name)
+{ 
+	local num_lines, mm, nn, pp, tempname;
+
+	if(strcmp(_rateflag,"YES")==0) {
+
+		num_lines=int(numstr(series_num)/4);
+
+		for(nn=1;nn<=num_lines;nn++) {
+			fputs("RATE           ",file_name);
+			for(mm=1;mm<=4;mm++) {
+				tempname=_gethedvar("_samprate",strnum(mm+(4*(nn-1))),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+
+		if(numstr(series_num)>(num_lines*4)) {
+			fputs("RATE           ",file_name);
+			for(pp=(num_lines*4);pp<numstr(series_num);pp++) {
+				tempname=_gethedvar("_samprate",strnum(pp+1),"YES");
+				fputs(strcat(tempname,","),file_name);
+			}
+			fputs("\n",file_name);
+		}
+	}
+	else {
+		fputs(strcat("RATE           ",_samprate,"\n"),_headfile);
+	}
+
+	return;
+}
+ 
+
+/*
+** menuonthefly
+**
+** Purpose: 
+** Pops up a menu repeatedly for the number of channels being imported to 
+** allow user to set a series name and units for each series.
+**
+** Format:
+** menuonthefly
+**
+** Remarks:
+** menuonthefly relies on global variables to output the header information
+** to the specified header file.  these variables are set in the menus called
+** by dosingle and domulti (above).  
+** menuonthefly is not intended for stand-alone use.
+**
+*/
+
+menuonthefly()
+{
+	local menu1, menu2, string1;
+
+	menu1 = strcat(gethome,_menudir,pathchar,"flymenu.pan");
+	menu2 = strcat(gethome,_menudir,pathchar,"flymenu2.pan");
+
+	fopen(menu1,"w+");
+	fopen(menu2,"w+");
+
+	fputs("@panel\n@x0\n@y0\n{defmacro('_flyflg',0,1)}\nImport Information for Series   {xx}\n\n",menu1);
+
+	fputs("@panel\n@x0\n@y0\n{defmacro('_flyflg',0,1)}\nImport Information for Dataset   '{_datasetname}'\n\n",menu2);
+
+	fputs("Enter the following parameters which will\napply to all channels.\n\n",menu2);
+
+
+	if(strcmp(_seriesflag,"YES")==0) {
+		string1=strcat("Series Name  : <               >~eval(strcat(",'"',"setvar('_seriesname",'"',",strnum(xx),",'"',"',","'<{_seriesname",'"',",strnum(xx),",'"',"}>')",'"',"))~INPUT(5)");
+		fputs(strcat(string1,"\n"),menu1);
+	}
+        
+	if(strcmp(_unitsflag,"YES")==0) {
+		string1=strcat("Horiz. Units  : <               >~eval(strcat(",'"',"setvar('_unitsh",'"',",strnum(xx),",'"',"',","'<{_unitsh",'"',",strnum(xx),",'"',"}>')",'"',"))~pickunit");
+		fputs(strcat(string1,"\n"),menu1);                                                                                                                      
+        
+		string1=strcat("Vert. Units  : <               >~eval(strcat(",'"',"setvar('_unitsv",'"',",strnum(xx),",'"',"',","'<{_unitsv",'"',",strnum(xx),",'"',"}>')",'"',"))~pickunit");
+		fputs(strcat(string1,"\n"),menu1);
+	}
+	else {
+		string1=strcat("Horiz. Units  : <               >~eval(strcat(",'"',"setvar('_unitsh1","',","'<{_unitsh","}>')",'"',"))~pickunit");
+		fputs(strcat(string1,"\n"),menu2);                                                                                                                      
+        
+		string1=strcat("Vert. Units  : <               >~eval(strcat(",'"',"setvar('_unitsv1","',","'<{_unitsv","}>')",'"',"))~pickunit");
+		fputs(strcat(string1,"\n"),menu2);
+	}
+
+        
+	if(strcmp(_xoffflag,"YES")==0) {
+		string1=strcat("X Offset  : <               >~eval(strcat(",'"',"setvar('_offsetx",'"',",strnum(xx),",'"',"',","'<{_offsetx",'"',",strnum(xx),",'"',"}>')",'"',"))~INPUT(1)");
+		fputs(strcat(string1,"\n"),menu1);
+	}
+	else {
+		string1=strcat("X Offset  : <               >~eval(strcat(",'"',"setvar('_offsetx","',","'<{_offsetx",'"',",strnum(xx),",'"',"}>')",'"',"))~INPUT(1)");
+		fputs(strcat(string1,"\n"),menu2);
+	}
+
+	if(strcmp(_yoffflag,"YES")==0) {
+		string1=strcat("Y Offset  : <               >~eval(strcat(",'"',"setvar('_offsety",'"',",strnum(xx),",'"',"',","'<{_offsety",'"',",strnum(xx),",'"',"}>')",'"',"))~INPUT(1)");
+		fputs(strcat(string1,"\n"),menu1);
+	}
+	else {
+		string1=strcat("Y Offset  : <               >~eval(strcat(",'"',"setvar('_offsety","',","'<{_offsety",'"',",strnum(xx),",'"',"}>')",'"',"))~INPUT(1)");
+		fputs(strcat(string1,"\n"),menu2);
+	}
+
+	if(strcmp(_slopeflag,"YES")==0) {
+		string1=strcat("Slope  : <               >~eval(strcat(",'"',"setvar('_slopey",'"',",strnum(xx),",'"',"',","'<{_slopey",'"',",strnum(xx),",'"',"}>')",'"',"))~INPUT(1)");
+		fputs(strcat(string1,"\n"),menu1);
+	}
+	else {
+		string1=strcat("Slope  : <               >~eval(strcat(",'"',"setvar('_slopey","',","'<{_slopey",'"',",strnum(xx),",'"',"}>')",'"',"))~INPUT(1)");
+		fputs(strcat(string1,"\n"),menu2);
+	}
+
+	if(strcmp(_impptsflag,"YES")==0) {
+		string1=strcat("Points Per Channel  : <               >~eval(strcat(",'"',"setvar('_numpts",'"',",strnum(xx),",'"',"',","'<{_numpts",'"',",strnum(xx),",'"',"}>')",'"',"))~INPUT(5)");
+		fputs(strcat(string1,"\n"),menu1);
+	}
+	else {
+		string1=strcat("Points Per Channel  : <               >~eval(strcat(",'"',"setvar('_numpts","',","'<{_numpts",'"',",strnum(xx),",'"',"}>')",'"',"))~INPUT(5)");
+		fputs(strcat(string1,"\n"),menu2);
+	}
+
+   fputs("~menuclear;defmacro('_flyflg',1,1)",menu1);
+	fputs("~menuclear;defmacro('_flyflg',1,1)",menu2);
+
+	fclose(menu1);
+	fclose(menu2);
+
+	defmacro("_flyflg",1,1);
+
+	if((strcmp(_seriesflag,"YES")==0)||(strcmp(_unitsflag,"YES")==0)||(strcmp(_xoffflag,"YES")==0)||(strcmp(_yoffflag,"YES")==0)||(strcmp(_slopeflag,"YES")==0)||(strcmp(_impptsflag,"YES")==0)) {
+		for(xx=1;xx<=numstr(_impchans);xx++) {
+			if(eval('_flyflg')==1) {
+				eval(strcat('menufile("',menu1,'")'));
+			}
+		}
+	}
+
+	if((strcmp(_unitsflag,"NO")==0)||(strcmp(_xoffflag,"NO")==0)||(strcmp(_yoffflag,"NO")==0)||(strcmp(_slopeflag,"NO")==0)||(strcmp(_impptsflag,"NO")==0)) {
+		if(eval('_flyflg')==1) {
+			eval(strcat('menufile("',menu2,'")'));
+		}
+	}
+	else {
+		menuclear;
+	}
+ 
+	return;
+}
+
+
+/*
+** set_defaults
+**
+** Purpose:
+** sets default values for all menus used by dosingle and domulti.
+** function is called on initial use of header generation menu and also 
+** when user requests defaults restored after generation.  function is called
+** by curly evaluator braces in the menus: scheader.pan and mcheader.pan) 
+**
+** Remarks:
+** 
+*/
+
+set_defaults()
+{
+	_resetservar();
+
+	setvar(_datasetname,"DATASET");
+	setvar(_versnum,"Next");
+	setvar(_seriesname,"SERIES");
+	setvar(_filetype,"ASCII");
+	setvar(_samprate,"1");
+	setvar(_unitsh,_gethunits);
+	setvar(_unitsv,_getvunits);
+	setvar(_savemode,"PROMPT");
+	setvar(_headfile,"header.hed");
+	setvar(_usercomm,"");
+	setvar(_numpts,"All");
+	setvar(_offsetfile,"0");
+	setvar(_unitsoffset,"LINE");
+	setvar(_skipint,"0");
+	setvar(_numchans,"1");
+	setvar(_impchans,"1");
+	setvar(_chanoffset,"1");
+	setvar(_modestore,"INTERLACED");
+	setvar(_offsetx,"0");
+	setvar(_offsety,"0");
+	setvar(_slopey,"1");
+	setvar(_scflag,0);
+	setvar(_acceptdef,0);
+	setvar(_defchg,0);
+	setvar(_namechg,0);
+	setvar(_unitschg,0);
+	setvar(_offschg,0);
+	setvar(_allchg,0);
+	setvar(_seriesflag,"YES");
+	setvar(_unitsflag,"YES");
+	setvar(_hunitsflag,"YES");
+	setvar(_vunitsflag,"YES");
+	setvar(_xoffflag,"YES");
+	setvar(_yoffflag,"YES");
+	setvar(_slopeflag,"YES");
+	setvar(_impptsflag,"YES");
+	setvar(_rdfltflg,"YES");
+	setvar(_rateflag,"YES");
+	setvar(_swapflag,0);
+	setvar(_pointsall,1);
+	setvar(_usechanno,0);
+
+
+	return;
+}
+
+
+
+set_all_defaults(num)
+{
+	local i;
+
+	if (argc < 1) {
+		num = 1;
+	}
+	else {
+		num = castint(num);
+	}
+
+	set_defaults();
+
+#if 0
+	for (i = 1; i <= num; i++) {
+		setvar(sprintf("%s%d", '_datasetname', i), "DATASET");
+		setvar(sprintf("%s%d", '_versnum', i), "Next");
+		setvar(sprintf("%s%d", '_seriesname', i), sprintf("%s%d", "SERIES_", i));
+		setvar(sprintf("%s%d", '_filetype', i), "ASCII");
+		setvar(sprintf("%s%d", '_samprate', i), "1");
+		setvar(sprintf("%s%d", '_unitsh', i), _gethunits);
+		setvar(sprintf("%s%d", '_unitsv', i), _getvunits);
+		setvar(sprintf("%s%d", '_savemode', i), "PROMPT");
+		setvar(sprintf("%s%d", '_numpts', i), "All");
+		setvar(sprintf("%s%d", '_offsetfile', i), "0");
+		setvar(sprintf("%s%d", '_unitsoffset', i), "LINE");
+		setvar(sprintf("%s%d", '_skipint', i), "0");
+		setvar(sprintf("%s%d", '_numchans', i), "1");
+		setvar(sprintf("%s%d", '_impchans', i), "1");
+		setvar(sprintf("%s%d", '_chanoffset', i), "1");
+		setvar(sprintf("%s%d", '_modestore', i), "INTERLACED");
+		setvar(sprintf("%s%d", '_offsetx', i), "0");
+		setvar(sprintf("%s%d", '_offsety', i), "0");
+		setvar(sprintf("%s%d", '_slopey', i), "1");
+	}
+#endif
+
+	setvar(_headfile, "header.hed");
+	setvar(_usercomm, "");
+	setvar(_scflag, 0);
+	setvar(_acceptdef, 0);
+	setvar(_defchg,0);
+	setvar(_namechg,0);
+	setvar(_unitschg,0);
+	setvar(_offschg,0);
+	setvar(_allchg,0);
+	setvar(_seriesflag,"YES");
+	setvar(_unitsflag,"YES");
+	setvar(_hunitsflag,"YES");
+	setvar(_vunitsflag,"YES");
+	setvar(_xoffflag,"YES");
+	setvar(_yoffflag,"YES");
+	setvar(_slopeflag,"YES");
+	setvar(_impptsflag,"YES");
+	setvar(_rdfltflg,"YES");
+	setvar(_rateflag,"YES");
+	setvar(_swapflag,0);
+	setvar(_pointsall,1);
+	setvar(_usechanno,0);
+
+	return;
+}
+
+def_all_defaults(num)
+{
+	local i;
+
+	if (argc < 1) {
+		num = 1;
+	}
+	else {
+		num = castint(num);
+	}
+
+#if 0
+	for (i = 1; i <= num; i++) {
+		defvar(sprintf("%s%d", '_datasetname', i), "DATASET");
+		defvar(sprintf("%s%d", '_versnum', i), "Next");
+		defvar(sprintf("%s%d", '_seriesname', i), sprintf("%s%d", "SERIES_", i));
+		defvar(sprintf("%s%d", '_filetype', i), "ASCII");
+		defvar(sprintf("%s%d", '_samprate', i), "1");
+		defvar(sprintf("%s%d", '_unitsh', i), _gethunits);
+		defvar(sprintf("%s%d", '_unitsv', i), _getvunits);
+		defvar(sprintf("%s%d", '_savemode', i), "PROMPT");
+		defvar(sprintf("%s%d", '_numpts', i), "All");
+		defvar(sprintf("%s%d", '_offsetfile', i), "0");
+		defvar(sprintf("%s%d", '_unitsoffset', i), "LINE");
+		defvar(sprintf("%s%d", '_skipint', i), "0");
+		defvar(sprintf("%s%d", '_numchans', i), "1");
+		defvar(sprintf("%s%d", '_impchans', i), "1");
+		defvar(sprintf("%s%d", '_chanoffset', i), "1");
+		defvar(sprintf("%s%d", '_modestore', i), "INTERLACED");
+		defvar(sprintf("%s%d", '_offsetx', i), "0");
+		defvar(sprintf("%s%d", '_offsety', i), "0");
+		defvar(sprintf("%s%d", '_slopey', i), "1");
+	}
+#endif
+
+	_resetservar();
+
+	defvar("_headfile", "header.hed");
+	defvar("_usercomm", "");
+	defvar("_scflag", 0);
+	defvar("_acceptdef", 0);
+	defvar("_defchg",0);
+	defvar("_namechg",0);
+	defvar("_unitschg",0);
+	defvar("_offschg",0);
+	defvar("_allchg",0);
+	defvar("_seriesflag","YES");
+	defvar("_unitsflag","YES");
+	defvar("_hunitsflag","YES");
+	defvar("_vunitsflag","YES");
+	defvar("_xoffflag","YES");
+	defvar("_yoffflag","YES");
+	defvar("_slopeflag","YES");
+	defvar("_impptsflag","YES");
+	defvar("_rdfltflg","YES");
+	defvar("_rateflag","YES");
+	defvar("_swapflag",0);
+	defvar("_pointsall",1);
+	defvar("_usechanno",0);
+
+	return;
+}
+
+
+_tounitoffset(n)
+{
+	local str;
+
+	switch (n) {
+		case 0:
+		default:
+			str = "LINE";
+			break;
+
+		case 1:
+			str = "BYTE";
+			break;
+
+		case 2:
+			str = "POINT";
+			break;
+	}
+	return(str);
+}
+
+_tomodestore(n)
+{
+	local str;
+
+	switch (n) {
+		case 0:
+		default:
+			str = "INTERLACED";
+			break;
+
+		case 1:
+			str = "SEQUENTIAL";
+			break;
+
+	}
+	return(str);
+}
+
+
+_tosavemode(n)
+{
+	local str;
+
+	switch (n) {
+		case 0:
+		default:
+			str = "PROMPT";
+			break;
+
+		case 1:
+			str = "OVERWRITE";
+			break;
+
+		case 2:
+			str = "APPEND";
+			break;
+
+		case 3:
+			str = "CANCEL";
+			break;
+	}
+	return(str);
+}
+
+
+
+_fromunitoffset(str)
+{
+	local n;
+
+	switch (str) {
+		case "LINE":
+		default:
+			n = 0;
+			break;
+
+		case "BYTE":
+			n = 1;
+			break;
+
+		case "POINT":
+			n = 2;
+			break;
+	}
+	return(n);
+}
+
+_frommodestore(str)
+{
+	local n;
+
+	switch (str) {
+		default:
+		case "INTERLACED":
+			n = 0;
+			break;
+
+		case "SEQUENTIAL":
+			n = 1;
+			break;
+
+	}
+	return(n);
+}
+
+
+_fromsavemode(str)
+{
+	local n;
+
+	switch (str) {
+		default:
+		case "PROMPT":
+			n = 0;
+			break;
+
+		case "OVERWRITE":
+			n = 1;
+			break;
+
+		case "APPEND":
+			n = 2;
+			break;
+
+		case "CANCEL":
+			n = 3;
+			break;
+	}
+	return(n);
+}
+
+
+_setallhed(varname, num, tot)
+{
+	local i, val;
+
+	val = getvar(sprintf("%s%d", varname, num));
+	for (i = 1; i <= tot; i++) {
+		setvar(sprintf("%s%d", varname, i), val);
+	}
+}
+
+
+_cntcommas(str)
+{
+	return(castint(sum(charstr(",")==charstrs(str))));
+}
+
+_setimpchans(chans, tot)
+{
+	if (chans == "-1") {
+		setvar("_impchans", tot);
+	}
+	else {
+		setvar("_impchans", strnum(_cntcommas(chans)+1));
+	}
+}
+
+
+
+_gethedvar(vname, xx, flag)
+{
+	local v, var;
+
+	if (flag == "YES") {
+		var = sprintf("%s%d", vname, xx);
+		if (eval(sprintf("isvar(%s)", var))) {	
+			v = eval(sprintf("getvar(%s)", var));
+		}
+		else {
+			v = eval(sprintf("getvar(%s)", vname));
+		}
+	}
+	else {
+		v = eval(sprintf("getvar(%s)", vname));
+	}
+	return(v);
+}
+
+
+_sethedvar(vname, xx, flag, v)
+{
+	if (flag == "YES") {
+		setvar(sprintf("%s%d", vname, xx), v);
+	}
+	else {
+		setvar(sprintf("%s", vname), v);
+	}
+}
+
+
+_getservar(xx, flag)
+{
+	local v, var;
+
+	if (flag == "YES") {
+		var = sprintf("%s%d", "_seriesname", xx);
+		if (eval(sprintf("isvar(%s)", var))) {	
+			v = eval(sprintf("getvar(%s)", var));
+		}
+		else {
+			if (_usechanno) {
+				v = sprintf("CHANNEL_%d", _orgchannum(xx));
+			}
+			else {
+				v = sprintf("SERIES_%d", xx);
+			}
+		}
+	}
+	else {
+		v = eval(sprintf("getvar(%s)", "_seriesname"));
+	}
+	return(v);
+}
+
+
+_setservar(xx, flag, v)
+{
+	if (flag == "YES") {
+		setvar(sprintf("%s%d", "_seriesname", xx), v);
+	}
+	setvar(sprintf("%s", "_seriesname"), v);
+}
+
+
+
+_resetservar()
+{
+	local i, n;
+
+	if (isvar(_impchans)) {
+		n = castint(_impchans);
+	}
+	else {
+		n = 1;
+	}
+
+	for (i = 1; i <= n; i++) {
+		delvar(sprintf("%s%d", "_seriesname", i));
+	}
+
+	setvar("_seriesname", "SERIES");
+	if (isvar(_usechanno)) {
+		if (_usechanno) {
+			setvar("_seriesname", "CHANNEL");
+		}
+	}
+}
+
+
+_orgchanlist()
+{
+	if (_chanoffset == "All" || _chanoffset == "-1") {
+		return(_numlist(numstr(_impchans)));
+	}
+	return(chr2chr(_chanoffset, ",", strescape("\n")));
+}
+
+_orgchannum(n)
+{
+	local s, num;
+
+	if (_chanoffset == "All" || _chanoffset == "-1") {
+		num = n;
+	}
+	else {
+		if (n <= 0) n = 1;
+		s = strget(n, _chanoffset);
+		if (strlen(s) > 0) {
+			num = castint(s);
+			if (num <= 0) num = 1;
+		}
+		else {
+			num = n;
+		}
+	}
+	return(num);
+}

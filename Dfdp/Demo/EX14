@@ -1,0 +1,96 @@
+*          EXERCISE 14
+
+        IDT 'EX14'
+*
+*       THIS PROGRAM IMPLEMENTS THE SIMPLE FILTER
+*       FOR EXERCISE 14.
+*
+*
+*       DATA MEMORY LOCATION ASSIGNMENTS
+*
+RATE    EQU     0       ADDR 00 CONTAINS CLOCK RATE
+MODE    EQU     1       ADDR 01 CONTAINS CONTROL MODE
+MASK    EQU     2       ADDR 02 CONTAINS MASK VALUE
+UIN     EQU     3       CURRENT DATA SAMPLE
+XOUT    EQU     4       VARIABLE FOR OUTPUT OF FILTER
+TEMP    EQU     5
+CNST    EQU     6
+ONE     EQU     7
+ZERO    EQU     8
+XTEMP   EQU     10
+X1      EQU     11
+X2      EQU     12
+*
+*
+        AORG    0       START PROGRAM AT ADDRESS 0
+        B       START   JUMP AROUND DATA
+*
+*       DATA MEMORY INITIALIZATION VALUES
+*
+DRATE   DATA    >0200   SAMPLING RATE
+DMODE   DATA    >000A   MODE
+DMASK   DATA    >7FFF   MASK VALUE
+*
+DCNST   DATA    >0000   CONSTANT FOR INPUT
+DX1I    DATA    13107   INITIAL VALUE FOR STATE VARIABLE X1
+DX2I    DATA    26214   INITIAL VALUE FOR STATE VARIABLE X2
+*
+*
+*       THE PROGRAM
+*
+START   ROVM            *  CHANGE OVERFLOW MODE HERE  *
+*
+        LDPK    0       SET DATA PAGE POINTER TO 0
+        DINT
+        LACK    DRATE   LOAD
+        TBLR    RATE        CLOCK RATE,
+        LACK    DMODE           A/D MODE,
+        TBLR    MODE                AND
+        LACK    DMASK                   MASK
+        TBLR    MASK                        INTO DATA MEMORY
+*
+        LACK    DX1I    LOAD OTHER CONSTANTS
+        TBLR    X1
+        LACK    DX2I
+        TBLR    X2
+
+        LACK    DCNST
+        TBLR    CNST
+        LACK    1
+        SACL    ONE
+        ZAC
+        SACL    ZERO
+*
+*
+        OUT     MODE,PA0        SETS AIB SAMPLING MODE
+        OUT     RATE,PA1        SET SAMPLING RATE
+*
+LOOP    BIOZ    GO              CONVERSION COMPLETE?
+        B       LOOP            WAIT UNTIL CONVERSION COMPLETE
+*
+GO      IN      UIN,PA2         READ IN DATA SAMPLE         
+        LAC     UIN             CONVERT TO TWO'S COMPL. FORM
+        XOR     MASK
+        SACL    UIN
+*
+*
+        ZALH    UIN             *  OR ZERO, OR CNST  *
+        SUB     X2,15           COMPUTE U(N) - 0.5*X2
+        SACH    XTEMP
+        ZALH    X1              COMPUTE X1+X2
+        ADDH    X2
+        SACH    X1
+        LAC     X2              *  OR X1  *
+        SACL    XOUT
+        DMOV    X1              SHIFT DOWN THE STATE VARIABLES
+        DMOV    XTEMP
+*
+*
+        LAC     XOUT            CONVERT BACK TO BINARY FORM
+        ADD     ONE,15
+        SACL    XOUT
+        OUT     XOUT,PA2        WRITE OUT THE SPECTRALLY REVERSED DATA
+        B       LOOP            DO THIS FOREVER
+        END
+
+

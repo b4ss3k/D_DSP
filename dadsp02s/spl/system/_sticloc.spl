@@ -1,0 +1,17 @@
+/* sets tic location - inner our outer */
+_sticloc(loc)
+{
+	local tstyle = 0;
+
+	tstyle = castint(getconf("tic_style"));
+	tstyle &= (~0x03);
+
+	if (loc == 2) { /* outer tics */
+		tstyle |= 0x02;
+	}
+	else { /* inner tics */
+		tstyle |= 0x01;
+	}
+
+	setconf("tic_style", caststring(tstyle));
+}

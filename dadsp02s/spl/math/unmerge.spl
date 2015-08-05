@@ -1,0 +1,72 @@
+/*****************************************************************************
+*                                                                            *
+*   UNMERGE.SPL   Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Unmerges (demultiplex) interlaced series                   *
+*                                                                            *
+*   Revisions:    18 Feb 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_UNMERGE
+
+    UNMERGE    
+
+    Purpose: Unmerges (demultiplexes) an interlaced series
+                                                                        
+    Format:  UNMERGE(s, n)
+
+              s - an interlaced (merged) series or array
+              n - an integer, number of interlaced series, defaults to 2
+
+    Returns: A series or array
+
+    Example:
+             W1: Merge(gsin(100, .01), gnorm(100, .01), gsqr(100, .01, 4))
+             W2: Unmerge(W1, 3)
+
+             W1 contains one column of three interlaced series.
+             W2 contains three columns where:
+
+                Col(w2, 1) == gsin(100, .01)
+                Col(w2, 2) == gnorm(100, .01)
+                Col(w2, 3) == gsqr(100, .01, 4)
+
+
+    Remarks:
+             Unmerge demultiplexes an interlaced series. Each of the
+             interlaced components must be of the same length.
+
+    See Also:
+             Decimate
+             Merge
+             Ravel
+             Unravel
+
+#endif
+
+
+/* demultiplex an interlaced series */
+unmerge(s, n)
+{
+	local i, outs[];
+
+	/* default input args */
+	if (argc < 2) {
+		if (argc < 1) {
+			error("unmerge - input series required");
+		}
+		n = 2;
+	}
+	if (n < 1) error("unmerge - number of series must be positive");
+
+	for (i = 1; i <= n; i++) {
+		/* create columns by raveling the decimated component series */
+		outs = ravel(outs, decimate(s, n, i));
+	}
+	return(outs);
+}

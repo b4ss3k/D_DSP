@@ -1,0 +1,448 @@
+/*****************************************************************************
+*                                                                            *
+*   RESIDUE.SPL    Copyright (C) 2003 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Partial fraction expansion of a rational polynomial         *
+*                                                                            *
+*   Revisions:    1 Oct 2003  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_RESIDUE
+
+    RESIDUE
+
+    Purpose: Finds the partial fraction expansion of a rational polynomial.
+
+    Format:  RESIDUE(b, a)
+             (r, p, k) = RESIDUE(b, a)
+
+                 B - A series, the numerator coefficients in descending
+                     powers.
+
+                 A - A series, the denominator coefficients in descending
+                     powers.
+
+
+             Alternative Format:
+
+             RESIDUE(r, p, k)
+             (b, a, k) = RESIDUE(r, p, k)
+
+                 r - A series, the residues representing the numerator terms 
+                     of the partial fraction expansion.
+
+                 p - A series, the poles of the partial fraction expansion.
+
+                 k - A series, the numerator coefficients for the direct 
+                     terms of the partial fraction expansion.
+
+
+    Returns: (r, p, k) = RESIDUE(b, a) returns the partial fraction expansion
+             of the polynomial.
+
+             r, p and k are series where r represents the residues of the 
+             partial fraction expansion, p are the pole locations and k 
+             represents the direct terms (if any).
+
+             RESIDUE(b, a) with one or zero output arguments returns r, p
+             and k in one series of three columns where r == COL(1), 
+             p == COL(2) and k == COL(3).
+
+             (b, a, c) = RESIDUE(r, p, k) returns inverse partial fraction 
+             expansion, converting the partial fraction expansion back into
+             b(s)/a(s) form. Series b and a are the numerator and denominator 
+             terms of the rational polynomial with the partial fraction 
+             expansion represented by r, p, and k. Series c represents the 
+             remainder terms (if any).
+
+             RESIDUE(r, p, k) with one or zero output arguments returns b
+             and a in one series of two columns where b == COL(1) and 
+             a == COL(2).
+
+             RESIDUE(f) or (b, a) = RESIDUE(f) assumes f is a three
+             column series with r, p and k as each of the columns.
+             Thus RESIDUE(RESIDUE(b, a)) == {{b/a[1], a/a[1]}}
+
+    Example:
+                             3s - 7          3s - 7
+             Given H(s) = ------------ = -------------
+                          s^2 - 4s + 3   (s - 3)(s - 1)
+
+
+             (r, p, k) = residue({3, -7}, {1, -4, 3})
+
+             r == {1, 3}
+             p == {2, 1}
+             k == {}
+
+             representing the partial fraction expansion:
+
+                      1       2        3s - 7
+             H(s) = ----- + ----- = ------------
+                    s - 3   s - 1   s^2 - 4s + 3
+
+
+             now, performing the inverse transform:
+
+             (b, a, c) = residue(r, p, k)
+
+             b == {3, -7}
+             a == {1, -4, 3}
+             c == {}
+
+             The series b and a represent the numerator and denominator
+             terms of the original rational polynomial.
+
+             
+    Example:
+                              s^2 + s + 1
+             Given H(s) = -------------------
+                          s^3 - 5s^2 + 8s - 4
+
+
+             (r, p, k) = residue({1, 1, 1}, {1, -5, 8, -4})
+
+             r == {3, -2, 7}
+             p == {1, 2, 2}
+             k == {}
+
+             Since the polynomial contains two repeated poles, the result 
+             represents the partial fraction expansion:
+
+                      3      -2         7
+             H(s) = ----- + ----- + ---------
+                    s - 1   s - 2   (s - 2)^2
+
+    Remarks:
+             Given the rational polynomial H(s) = b(s)/a(s) where:
+
+             M = length(b) and N = length(a):
+        
+                     b(s)     b[1] s^(M-1) + b[2] s^(M-2) + ... + b[M] 
+             H(s) = ------ = --------------------------------------------
+                     a(s)     a[1] s^(N-1) + a[2] s^(N-2) + ... + a[N]
+
+
+             If a[1] does not equal 1, the numerator and denominator terms
+             are normalized by dividing each coefficient by a[1].
+
+             If there are no repeated roots, the partial fraction expansion 
+             of the rational polynomial is of the form:
+
+
+                      r[1]       r[2]             r[N-1]
+             H(s) = -------- + -------- + ... + ---------- + k(s)
+                    (s-p[1])   (s-p[2])         (s-p[N-1])
+
+
+             If there are K repeated roots (closer than 1.0e-3), then 
+             the partial fraction expansion includes terms such as:
+
+                    r[i]       r[i+1]            r[i+K-1]
+                  -------- + ---------- + ... + ---------- 
+                  (s-p[i])   (s-p[i])^2         (s-p[i])^K
+
+
+              See residuez to find the partial fraction expansion of a
+              Z transform.
+
+    See Also:
+             Fft
+             Poly
+             Residuez
+             Roots
+#endif
+
+
+
+/* partial fraction expansion or inverse transform */
+residue(u, v, k)
+{
+	local tol, acnt, f, p, i, ii, n, q, j, ptemp, indx, h1, h2;
+
+	tol = 0.001;   // Repeated root tolerance
+
+	/* parse args */
+	if (argc == 1) {
+		if (numcols(u) > 1) {
+			if (numcols(u) > 2) {
+				k = col(u, 3);
+			}
+			else {
+				k = {};
+			}
+			v = col(u, 2);
+		}
+		else {
+			v = {1};
+		}
+		u = col(u, 1);
+		acnt = 3;
+	}
+	else {
+		acnt = argc;
+	}
+
+	//  Find input polynomials from residues, poles, and remainder.  
+	//  Multiple roots differ by < tol.
+
+	if (acnt > 2) {
+
+		// ensure series 
+		u = {u};
+		v = {v};
+
+		n = max(length(u) , length(v));
+
+		// ensure v and u have same size 
+		u = extract(u, 1, n);
+		v = extract(v, 1, n);
+
+		// sort based on pole magnitudes
+		i = grade(-mag(v), 1);
+
+		p = {v[i]};
+		r = {u[i]};
+		n = length(p);
+		q = ravel(p, ones(n, 1));  // poles and multiplicities
+		if (n > 1) {
+			loop (j = 2..n) {
+				if (mag(p[j] - p[j-1]) < tol) {
+					q[j, 2] = q[j-1, 2] + 1;   // multiplicity of pole
+				}
+			}
+		}
+		v = poly(p); u = zeros(n, 1);
+		loop (indx = 1..n) {
+			ptemp = q[.., 1];
+			i = indx;
+			loop (j = 1..q[indx,2], ptemp[i] = nan; i--);
+			ptemp = ptemp[find(not(isnan(ptemp)))]; temp = poly(ptemp);
+			j = length(temp);
+			if (j < n) {
+				temp = {zeros(n-j, 1), temp};
+			}
+			u = u + (r[indx] * temp);
+		}
+
+		if (not(isempty(k))) {
+			if (any(k != 0)) {
+				u = {zeros(length(k), 1), u};
+				temp = conv(k,v);
+				u = u + temp;
+			}
+		}
+
+		u = check_imag_tol(u);
+		v = check_imag_tol(v);
+		k = check_imag_tol(k);
+
+		/* dress it up */
+		setcomment(u, "Num");
+		setcomment(v, "Den");
+		setcomment(k, "Rem");
+
+		if (outargc <= 1) {
+			/* place result in current window */
+			u = ravel(u, v, k);
+			setplotstyle(u, 4); // set to tableview
+			return(u);
+		}
+		else {
+			return(u, v, k);
+		}
+	}
+
+	// find the partial-fraction expansion for any pole order
+
+	// ensure series 
+	u = {u};
+	v = {v};
+	k = {};
+
+	// strip leading zeros 
+	f = find(u != 0);
+	if (length(f)) u = u[f[1]..length(u)];
+
+	// strip leading zeros
+	f = find(v != 0);
+	if (length(f)) v = v[f[1]..length(v)];
+
+	u = u / v[1]; v = v / v[1];   // Normalize.
+	if (length(u) >= length(v)) (k, u) = deconv(u, v);
+	r = roots(v); 
+	eh = imag(r); if (abs(max(eh)) < tol && abs(min(eh)) < tol) r = real(r);
+
+	if (reproot(r, 0, tol)) {
+		p = sort(r, 1);
+	}
+	else {
+		i = grade(-mag(r), 1); 
+		p = {r[i]};
+	}
+
+	if (isempty(p)) {
+		coeffs = {}; 
+		poles = {}; 
+		k = 1;
+		return(coeffs, poles, k);
+	}
+
+	q = zeros(length(p), 2);   // initialize poles and multiplicity
+
+	q[1,1] = p[1]; q[1,2] = 1; j = 1;
+	repeated = 0;
+
+	if (length(p) > 1) {
+		loop (i = 2..length(p)) {
+			av = q[j,1] / q[j,2];
+			if (mag(av - p[i]) <= tol) {  // treat as repeated root
+				q[j,1] = q[j,1] + p[i];   // sum average
+				q[j,2] = q[j,2] + 1;
+				repeated = 1;
+			}
+			else {
+				j = j + 1; q[j,1] = p[i]; q[j,2] = 1;
+			}
+		}
+	}
+	q[1..j, 1] = q[1..j, 1] / q[1..j, 2];   // multiple pole mean
+
+	// desired = 1 to average multiple poles
+
+	desired = 1;
+	if (repeated && desired) {
+		indx = 0;
+		loop (i = 1..j) {
+			loop (ii = 1..real(q[i, 2])) {
+				indx++; 
+				p[indx] = q[i, 1];
+			}
+		}
+	}
+
+	poles = p;  // Rename.
+
+	coeffs = zeros(length(p),1); 
+	if (repeated) { // repeated roots
+		v = poly(p);
+		next = 0;
+		loop (i = 1..j) {
+			pole = q[i, 1]; n = real(q[i, 2]);
+			loop (indx = 1..n) {
+				next++;
+				coeffs[next] = resi2(u,v,pole,n,indx);
+			}
+		}
+	}
+	else { // no repeated roots
+		loop (i = 1..j) {
+			h1 = (i > 1)     ? (1..i-1) : gser();
+			h2 = (i + 1 > j) ? gser() : i+1..j;
+
+			if (length(h1) == 0 && length(h2) == 0) {
+				temp = 1;
+			}
+			else {
+				temp = poly(p[{h1, h2}]);
+			}
+			coeffs[i] = polyval(u,p[i]) / polyval(temp,p[i]);
+		}
+	}
+
+	coeffs = check_imag_tol(coeffs);
+	poles  = check_imag_tol(poles);
+	k      = check_imag_tol(k);
+
+	/* dress it up */
+	setcomment(coeffs, "Residues");
+	setcomment(poles,  "Poles");
+	setcomment(k,      "Direct Terms");
+
+	if (outargc <= 1) {
+		// place result in current window
+		coeffs = ravel(coeffs, poles, k);
+		setplotstyle(coeffs, 4); // set to tableview
+		return(coeffs);
+	}
+	else {
+		return(coeffs, poles, k);
+	}
+}
+
+
+
+resi2(u, v, pole, n, k)
+{
+	if (argc < 4) n = 1;
+	if (argc < 5) k = n;
+
+
+	p = {1,  -pole};
+	if (n >= 1) {
+		loop (j = 1..n) {
+			v = deconv(v,p);
+		}
+	}
+	if (n-k >= 1) {
+		loop (j = 1..n-k) {
+			(u,v) = polyder(u,v);
+		}
+	}
+	c = 1; if (k < n) c = prod(1..n-k);
+	coeff = (polyval(u,pole) / polyval(v,pole)) / c;
+
+	return(coeff);
+}
+
+check_imag_tol(s, tol)
+{
+	local l, m, p, q, allreal;
+
+	if (argc < 2) {
+		tol = 1e-8;
+	}
+
+	/* check for zero length series */
+	if (length(s) <= 0) return(s);
+
+	/* make copy */
+	p = s;
+
+	/* check for near zero values */
+	m = find(mag(p) < tol);
+	if (length(m) > 0) {
+		/* zero out near zero values */
+		p[m] = 0;
+	}
+
+	allreal = 0;
+
+	/* check imag/real ratio */
+	l = find(abs(imag(p)) <= abs(real(p)) * tol);
+	if (length(l) > 0) {
+		if (length(l) == length(p)) {
+			/* imag part all zero */
+			allreal = 1;
+		}
+	}
+
+	if (allreal) {
+		/* all imaginary parts are zero */
+		p = real(p);
+	}
+	else if (length(l) > 0) {
+		/* some imaginary parts are zero */
+		p[l] = real(p[l]);
+	}
+
+	return(p);
+}
+
+

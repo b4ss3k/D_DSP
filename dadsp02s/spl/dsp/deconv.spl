@@ -1,0 +1,108 @@
+/*****************************************************************************
+*                                                                            *
+*   DECONV.SPL     Copyright (C) 2002-2006 DSP Development Corporation       *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Deconvolves two series                                     *
+*                                                                            *
+*   Revisions:    28 Aug 2002  RRR  Creation, adaptation of PD source        *
+*                  1 Dec 2006  RRR  ITERATE for simple column iteration      *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_DECONV
+
+    DECONV
+
+    Purpose: Deconvolves two series.
+
+    Format:  (q, r) = DECONV(b, a)
+
+               b - A series.
+
+               a - A series.
+
+    Returns: A series such that b = conv(a, q) + r
+
+    Example:
+             a = {1, 2, 3};
+             x = {1, 0, -1, 2};
+             b = conv(a, x);
+
+             (q, r) = deconv(b, a);
+
+             b == {1, 2, 3, 0, 1, 6}
+             q == {1, 0, -1, 2}
+             r == {0, 0, 0, 0, 0, 0}
+
+
+             (q, r) = deconv({1, 5, 1, 2}, a)
+
+             q == {1, 3}
+             r == {0, 0, -8, -7}
+
+             conv(q, a) + r == {1, 5, 1, 2}
+
+Remarks:
+             If a and b represent polynomial coefficients, q will contain 
+             the quotient of the polynomial and r the lowest order remainder
+             polynomial.
+
+             See FDECONV for an implementation using the FFT.
+
+See Also:
+             Conv
+             Fdeconv
+#endif
+
+
+
+/* deconvolve a into b */
+ITERATE deconv(b, a)
+{
+	local na, nb, q, r, dummy;
+
+	if (argc < 2) error("deconv - numerator and denominator series required");
+
+	if (not(IS_ARRAY(b))) b = castseries(b);
+	if (not(IS_ARRAY(a))) a = castseries(a);
+
+	if (a[1] == 0) error("deconv - first denominator coefficient cannot be zero");
+
+	nb = length(b);
+	na = length(a);
+
+	if (na > nb) {
+		q = {0};
+		r = b;
+	}
+	else {
+		/* polynomial division is the impulse response of the system */
+		q = filteq(b, a / a[1], extract({1}, 1, (nb-na+1))) / a[1];
+
+		/* handle output units */
+		dummy = b[1..2] / a[1..2]; 
+		sethunits(q, gethunits(dummy));
+		setvunits(q, getvunits(dummy));
+
+		if (outargc > 1) {
+			/* only compute if requested */
+			r = b - conv(q, a);
+		}
+		else {
+			r = {0};
+		}
+	}
+
+	/* proper deltax */
+	setdeltax(q, deltax(b));
+
+	/* proper lengths */
+	q = extract(q, 1, nb - na + 1);
+
+	return(q, r);
+}

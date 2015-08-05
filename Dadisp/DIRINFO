@@ -1,0 +1,51 @@
+======================================
+DADISP *** VERSION 4Q93
+======================================
+This dirinfo is info only on this current directory , not on dadisp itself.
+For info. refer to DADISP.DOC
+
+=SYSTEM=========================
+ DADISP   BAT       10  10/02/86  
+ DADISP2  EXE   188112  19/09/88  
+ DADATA2  OVL    72096  19/09/88  
+ DADISPW2 OVL   254656  19/09/88  
+ IXPORT2  OVL    44560  19/09/88  
+ DADISP   IDX       56  26/04/87 index
+ DSPCOLOR          629   6/07/87  
+ READ     ME     33191  19/09/88 
+=EXAMPLE========================
+ TEST     DAT     5650  21/01/86 example data you can import 
+ FREQ     MAC      954  29/02/88 frequency macros 
+=DEMO===========================
+ HDEMO    BAT       19  12/02/88 DEMO batch file
+ DEMO     DSP    12379  22/08/88 DEMO command file 
+=DRIVERS ================
+ CONFIG   FNT       32  28/03/87 config file
+ NORM     FNT     3597   6/04/87 normal font 
+ SMALL    FNT      907  28/02/86 small font 
+ GRAPHICS DEV    11497  29/08/86 graphics driver  
+ PLOTTER  FNT     7168  16/03/84  
+ PRINTER  PRN     6144  13/08/86 printer driver 
+ EPSON80  PRN     5120  25/04/85  
+ LASERJET PRN     5120   2/01/86  
+ LJETPLUS PRN     6144  13/08/86  
+ THINKJET PRN     4096  25/04/85  
+=PLOTTER EXEC ===================
+ PLOTTER  EXE    92091  14/04/88  
+ PLOT     BAT       22  30/06/88  
+ PLOT     CNF        5  30/06/88  
+=HELP============================
+ HELP2    F      25573  19/02/86  
+ HELP2    I       1846   8/02/86  
+ HELP2    L       1458  14/02/86  
+ HELP2    M       1076   2/01/86  
+ HELP2    W       1076   2/01/86  
+=================================
+=================================
+ TUTOR2       <REP>     30/11/90  
+ WORK91       <REP>     14/01/91  work on ascotel 91 ; uses DFM.BAT to see
+=================================
+
+
+
+

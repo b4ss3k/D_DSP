@@ -1,0 +1,7 @@
+setvname(vname, val)
+{
+	local vstr;
+
+	vstr = sprintf("'%s'", vname);
+	setvar(eval(vstr), val);
+}

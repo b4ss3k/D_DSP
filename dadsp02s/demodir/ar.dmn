@@ -1,0 +1,16 @@
+! ar.dmn -- Autoregressive Power Spectral Density menu. modified for the demo
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+ Autoregressive (AR) PSD 
+
+ Levinson Recursion      ~_deffname('LEV      Yule-Walker Linear Prediction')|_defformat('LEV(series, order)')|_defxamp('LEV(W1,20)')|_agetserint1("Input Series:", "Order       :")|_oserint1form("Lev")
+
+ Burg MEM                ~echo("Use the Burg Method of Linear Prediction to generate AR coefficients")
+
+ Covariance              ~echo("Use the Covariance Method of Linear Prediction to generate AR coefficients")
+
+ AR PSD Estimation       ~_deffname('ARPSD    Linear Prediction (AR) PSD Estimation')|_defformat('ARPSD(arcoeff, psdlen)')|_defxamp('ARPSD(W1,1024)')|_agetserint1("AR Coeff     :", "PSD Length   :")|_oserint1form("Arpsd")
+
+ AR Extrapolation        ~echo("Perform AR Time Domain Extrapolation")

@@ -1,0 +1,123 @@
+@modeless 1
+
+    FILTPOLES 
+
+    Purpose: 
+             Finds the poles of a direct form or cascade filter.
+                                                                        
+    Format:  
+             FILTPOLES(b, a)
+
+                b - a series, numerator (i.e. zero) coefficients
+
+                a - a series, denominator (i.e. pole) coefficients
+
+    Alternative Format:  
+
+             FILTPOLES(c, N)
+
+                c - A series, the system coefficients in cascaded 
+                    biquad form.  If C contains 2 columns, c is assumed
+                    to be in direct form, where the first column is B
+                    and the second column is A.
+
+    Returns: 
+             A complex series, the zeros of the filter.
+
+    Example:
+             W1: filtpoles( {"{1}"}, {"{1, -0.5, 0.2}"} )
+
+             W1 contains the series {"{0.25 + 0.3708i, 0.25 - 0.3708i}"},
+             two complex conjugate values representing the two poles of
+             the filter. These are the poles of the Z transform:
+
+                            1
+             H(z) = ------------------
+                            -1      -2
+                    1 - 0.5z  + 0.2z
+
+             or 
+
+                             2
+                            z
+             H(z) = -----------------
+                     2      
+                    z  - 0.5z  + 0.2z
+
+
+             The input filter coefficients are in direct form.
+
+    Example:
+             W1: butterworth(1, 100.0, 10.0)
+             W2: filtpoles(w1)
+
+             W1 contains a 10 Hz lowpass Butterworth filter and W2
+             displays the 11 poles of the filter.  The filter coefficients
+             are in cascade form. Since the magnitude of each pole is
+             less than 1.0, the filter is stable.
+
+    Example:
+             W1: butterworth(1, 100.0, 10.0)
+             W2: cas2dir(W1)
+             W3: filtpoles(w2)
+
+             Same as the previous example except the filter coefficients
+             are in Direct Form.
+
+    Example:
+             W1: lowpass(100.0, 10.0)
+             W2: filtpoles(w1, {"{1}"})
+
+             W1 contains a 10 Hz lowpass FIR Remez Exchange filter and
+             W2 displays 23 repeated poles at 0.0.  Since the filter
+             coefficients are in FIR form, the denominator coefficient
+             is set to {"{1}"}.
+
+    Remarks:
+             FILTPOLES uses ROOTS to calculate the roots of a[z], the 
+             denominator of a Z transform in direct form:
+  
+                                        -1                 -Q
+                    Y(z)   b[1] + b[2]*z   + ... + b[Q+1]*z
+             H(z) = ---- = -------------------------------------
+                                        -1                 -P
+                    X(z)    1   + a[2]*z   + ... + a[P+1]*z
+
+
+                        jw
+             where z = e    unit circle (frequency response)
+                   Q        order of zeros (numerator)
+                   P        order of poles (denominator)
+
+
+             For FILTPOLES(c, N), if the input c is a single column,
+             the coefficients are assumed to be in cascaded bi-quad
+             form.  This is the output format of IIR filters designed
+             by DADiSP/Filters.  In this case, FILTPOLES finds the
+             roots of the denominator of the following Z transform by
+             converting the coefficients to direct form:
+
+                               -1       -2                -1       -2
+                    b10 + b11 z  + b12 z       b20 + b21 z  + b22 z
+         H(z) = G * ________________________ *  ________________________ ...
+                               -1       -2                -1       -2
+                      1 + a11 z  + a12 z         1 + a21 z  + a22 z
+
+             Where the filter coefficients are represented by a single column
+             series in the following order:
+
+             G, b10, b11, b12, a11, a12, b20, b21, b22, a21, a22, ...
+
+             If C contains 2 columns, the coefficients are assumed to
+             be in direct form, where the first column is B and the
+             second column is A.
+
+             See FILTZEROS to find the zeros of a filter.
+
+             See ZPLANE to display a pole-zero plot.
+
+    See Also:
+             Filtzeros
+             Polecoef
+             Zerocoef
+             Zplane

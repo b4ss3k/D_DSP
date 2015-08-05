@@ -1,0 +1,17 @@
+/* add file to DWK Worksheet */
+_adddwk(defdir, msg)
+{
+	local fname = "";
+
+	/* get filename */
+	fname = pickfile(defdir, msg);
+
+	/* add to DWK file */
+	if (strlen(fname) > 0) {
+		addworksheetfile(fname);
+	}
+
+	return(fname);
+}
+
+	

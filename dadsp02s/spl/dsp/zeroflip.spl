@@ -1,0 +1,89 @@
+/*****************************************************************************
+*                                                                            *
+*   ZEROFLIP.SPL     Copyright (C) 1999 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Pads enpoints of a series by flipping end segments about 0  *
+*                                                                            *
+*   Revisions:   25 Jun 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_ZEROFLIP
+
+    ZEROFLIP
+
+    Purpose: Pads the ends of a series with endpoint reflections about 0.0
+                                                                        
+    Format:  ZEROFLIP(s, padlen)
+
+                   s - input series
+
+              padlen - optional integer, length of segment to pad with,
+                       defaults to length(s) / 10
+
+    Returns: A series
+
+
+    Example:
+             W1: integ(gnorm(1000,1/1000))
+             W2: zeroflip(w1, 200); overp(w1, lred)
+
+             The simulated data in w1 is padded at the beginning and
+             end with segments of length 200 that are reflections of
+             the beginning and end segments about 0.  The original data
+             is overplotted to provide a comparison.
+
+    Remarks:
+             ZEROFLIP is useful in FIR filtering operations where the
+             input data is padded at the beginning and end to diminish
+             the ramp up and ramp down transients implicit in the
+             filtering process.  The transients occur because the input
+             data is assumed to be zero prior to the start and after
+             the end of the data.  See PADFILT for more information.
+
+             
+    See Also:
+             Endflip
+             Fir
+             Padfilt
+#endif
+
+
+
+
+/* flip start and end segments about zero and concat */
+zeroflip(data, padlen)
+{
+	local first, last, dx, xoff;
+
+	/* hurdles */
+	if (argc < 2) {
+		if (argc < 1) error("zeroflip - input series required");
+		padlen = int(length(data) / 10);
+	}
+	if (padlen <= 0) return(data);
+	if (padlen >= length(data)) error(sprintf("zeroflip - padlen must be < %d", length(data)));
+	
+	/* get first and last segments */	
+	first = extract(data, 1, padlen);
+	last  = extract(data, 1 + length(data) - padlen, padlen);
+
+	/* flip segments in time and about 0.0 */
+	first = rev(first);
+	first = -1.0 * first;
+
+	last = rev(last);
+	last = -1.0 * last;
+
+	dx = deltax(data);
+	xoff = xoffset(data);
+
+	/* return padded result */
+	data = concat(first, data, last);
+	setxoffset(data, xoff - (padlen * dx));
+
+	return(data);
+}

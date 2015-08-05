@@ -1,0 +1,20 @@
+_pickser(ser)
+{
+	local i, s = "", p;
+
+	ser = _frmcurr(ser);
+	s = ser;
+
+	for (i = 1; i <= numwindows; i++) {
+		p = sprintf("W%d", i);
+		if (strcmp(ser, p) != 0) {
+			if (strlen(s) > 0) {
+				s = strcat(s, strescape("\n"));
+			}
+			s = strcat(s, p);
+		}
+	}
+	return(s);
+}
+
+		

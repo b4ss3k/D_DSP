@@ -1,0 +1,13 @@
+! Scales.men
+@x0
+@y1
+@b{_bg1}
+@f{_fg1}
+@h{hlp("scales.hlp")}
+  Scales Settings
+
+Location          ~_mf("winscales.men")
+Axis Range / Span ~_mf("AxisSpan.pan")
+
+Label Orientation ~_mf("LOrient.pan")
+Rotation Rules    ~_mf("Vrotate.pan")

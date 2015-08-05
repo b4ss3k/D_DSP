@@ -1,0 +1,10 @@
+! txlayout.men
+! Removable Layout Element & Mode Functions
+@x0
+@y0
+@f{_fg1}
+@b{_bg1}
+ Element Display
+
+Printing Options~_mf("printopt.pan") 
+Screen Options  ~_mf("scrnopt.pan")

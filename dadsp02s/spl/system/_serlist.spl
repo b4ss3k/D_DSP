@@ -1,0 +1,21 @@
+/* generate list of series and overplots */
+_serlist()
+{
+	local i = 1, s = "", p, nitems;
+
+	/* if a chart plot, get each trace */
+	if ((itemtype == 9) || (itemtype == 2 && getplottype(0) == 6)) {
+		nitems = numitems + itemcount - 1;
+	}
+	else {
+		nitems = numitems;
+	}
+	do {
+		p = sprintf("%d", i);
+		if (i < nitems) p = strcat(p, strescape("\n"));
+		s = strcat(s, p);
+	} while (++i <= nitems);
+	return(s);
+}
+
+		

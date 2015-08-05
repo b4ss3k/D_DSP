@@ -1,0 +1,19 @@
+! Statsum.men -- Statistical summary menu
+@b{_bg2}
+@f{_fg2}
+@focus 1    ! focus on OK button
+@suppress 2 ! suppress Cancel Button
+@panel
+    Summary Statistics of {strcat('W', strnum(getwnum))}
+
+ Sample Size       <                    >~<{sersize}>~
+ Mean              <                    >~<{(mean)}>~
+ Variance          <                    >~<{(stdev^2)}>~
+ Std. Deviation    <                    >~<{(stdev)}>~
+ Std. Error        <                    >~<{(stdev/sqrt(sersize))}>~
+ Maximum           <                    >~<{max}>~
+ Minimum           <                    >~<{min}>~
+ Range             <                    >~<{max-min}>~
+ RMS               <                    >~<{mag(rms(w0))}>~
+ <L>
+~_mc

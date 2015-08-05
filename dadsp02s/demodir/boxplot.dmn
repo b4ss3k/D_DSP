@@ -1,0 +1,17 @@
+! errorbar.pan - inputs 3 series and creates a real errorbar plot
+@f{_fg1}
+@b{_bg1}
+@panel
+{_funcstr}
+{_formatstr}
+{_examplestr}
+
+ Data Series:            <            >~_DEFSER1(strcat("'t(","<W2>",")'"))~_INSER("Series Expression")
+ Max Bar Series:         <            >~_DEFSER2(strcat("'t(","<W2+w5>",")'"))~_INSER("Series Expression")
+ Min Bar Series:         <            >~_DEFSER3(strcat("'t(","<W2-W5>",")'"))~_INSER("Series Expression")
+ Max Error Stick Series: <            >~_DEFSER4(strcat("'t(","<W3>",")'"))~_INSER("Series Expression")
+ Min Error Stick Series: <            >~_DEFSER5(strcat("'t(","<W4>",")'"))~_INSER("Series Expression")
+
+~_mc
+~POFF;setwform(strcat("errorbar(",_ser2,",",_ser4,",",_ser5,",",_ser3,",",_ser1,",1)"));
+~setx(-0.5,5.5);setxtic(1);wincolor(white,black);gridhv;griddot;sethunits("Experiments");setvunits("Temp.");scales(2);PON

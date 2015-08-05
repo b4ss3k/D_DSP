@@ -1,0 +1,19 @@
+/* show first few lines of translated binary file */
+
+#define NUMRBLINES 50
+
+_prerb(fname, dtype, offset)
+{
+	local s;
+
+	if (strlen(fname) > 0) {
+		/* read as binary and write as ASCII */
+		s = readb(fname, dtype, NUMRBLINES, offset);
+		if (length(s) > 0) {
+			writea("previewb.txt", s, 1);
+			viewfile("previewb.txt");
+			delfile("previewb.txt");
+		}
+	}
+}
+

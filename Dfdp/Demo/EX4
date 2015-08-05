@@ -1,0 +1,43 @@
+*          EXERCISE 4
+
+VAR0      EQU     0
+VAR1      EQU     1
+VAR2      EQU     2
+*
+*
+          AORG    0
+          LACK    >DV1    LOAD PROGRAM MEMORY ADDRESS OF 
+*                         FIRST NUMBER
+          TBLR    VAR0    READ FIRST NUMBER
+          LACK    >FF     LOAD SECOND NUMBER
+          SACL    VAR1
+          LACK    >8      LOAD THIRD NUMBER
+          SACL    VAR2
+*
+*
+          LT      VAR0    SET UP FOR MULTIPLY
+          MPY     VAR1    DO THE MULTIPLY
+          PAC             PUT PRODUCT IN THE 
+*                         ACCUMULATOR
+          ADD     VAR2,7  ADD 128*VAR2 TO ACCUMULATOR
+*
+          SACH    3,1     SAVE UPPER WORD IN 
+*                         DATA MEMORY
+*                         LOCATION 3 WITH A 
+*                         SHIFT OF 1
+          SACL    4       MOVE LOW WORD OUT INTO
+*                         TEMPORARY SPOT
+          LAC     1,1     MOVE WORD BACK IN
+*                         WITH A SHIFT
+          SACL    4       STORE IT OUT 
+*                         (NOW IT'S SHIFTED)
+          ZALH    3
+          ADDS    4
+DV1       DATA    >7FFF
+*
+          END
+*               OUR RESULT IS NOW A 32-BIT NUMBER 
+*               IN THE ACCUMULATOR
+*
+
+

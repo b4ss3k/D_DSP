@@ -1,0 +1,101 @@
+/*****************************************************************************
+*                                                                            *
+*   XCONF.SPL   Copyright (C) 1999 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates x value of confidence level and density function *
+*                                                                            *
+*   Revisions:    1 Apr 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_XCONF
+
+    XCONF 
+
+    Purpose: Returns x value for a given density function and confidence level
+                                                                        
+    Format:  XCONF(pdens, c, interp)
+
+             pdens  - series, probability density function or histogram series
+
+                 c  - real, confidence level or percentile (0.0 <= c <= 1.0)
+
+             interp - linear interpolate x value (default TRUE)
+
+
+    Returns: A real
+
+    Example:
+             W1: gnorm(10000,1) + 10
+             W2: histogram(w1, 1000)
+
+             Xconf(w2, 0.5)
+
+             returns 10.022808, the approximate mean of the original series.
+
+    Remarks:
+             The input density function or histogram is automatically 
+             normalized between 0 and 1. XCONF returns NA if the 
+             confidence level is out of range. Unless specified, XCONF
+             automatically performs linear interpolation to find the
+             best X value for a given confidence level if an exact
+             match is not found.
+
+    See Also:
+             Confx
+             Find
+             Gnorm
+             Grand
+             Integ
+#endif
+
+
+
+xconf(pdens, c, interp)
+{
+	local cum, idx, xv, x, m, b, idx1;
+
+	if (argc < 3) {
+		interp = 1;
+		if (argc < 2) {
+			error("xconf - density and x value required");
+		}
+	}
+
+	/* initialize x */
+	x = navalue();
+
+	/* generate cumulative probability curve from density */
+	cum = partsum(pdens);
+
+	/* normalize to 0.0 to 1.0 */
+	cum /= max(cum);
+
+	/* find index of percentile */
+	idx = find(cum >= c);
+	idx1 = idx[1];
+
+	/* lookup x value */
+	if (not(isnavalue(idx1))) {
+		xv = xvals(cum);
+		if ((cum[idx1] == c) || (idx1 - 1 <= 0) || interp == 0) {
+			/* found exact match */
+			x = xv[idx1];
+		}
+		else { /* linear interpolate */
+			m = (cum[idx1] - cum[idx1-1]) / deltax(xv);
+			if (m == 0.0) {
+				x = xv[idx1];
+			}
+			else {
+				b = cum[idx1] - m * xv[idx1];
+				x = (c - b) / m;
+			}
+		}
+	}
+	return(x);
+}

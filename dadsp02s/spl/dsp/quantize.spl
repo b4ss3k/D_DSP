@@ -1,0 +1,130 @@
+/*****************************************************************************
+*                                                                            *
+*   QUANTIZE.SPL Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Quantizes an input series to N levels                       *
+*                                                                            *
+*   Revisions:   28 Feb 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_QUANTIZE
+
+    QUANTIZE
+
+    Purpose: Quantizes an input series to N levels
+                                                                        
+    Format:  QUANTIZE(s, levels, xl, xh  yl, yh)
+
+               s  - input series or scalar
+
+          levels  - an optional integer, number of quantization levels,
+                    defaults to 256
+
+              xl  - an optional real, low value input range, defaults
+                    to min(s)
+
+              xh  - an optional real, high value input range, defaults
+                    to max(s)
+
+              yl  - an optional real, low value output range, defaults
+                    to xl
+
+              yh  - an optional real, high value output range, defaults
+                    to xh
+
+
+
+    Returns: A series or real
+
+    Example:
+             Quantize(1..100, 10)
+
+             returns a 100 points series with quantize values of
+             1, 12, 23, 34, 45, 56, 67, 78, 89, 100
+
+    Example:
+             W1: gcos(100, .01, 2)
+             W2: quantize(w1, 2^4)
+
+             The cosine is quantized to 16 levels ranging from -1 to 1.
+
+    Example:
+             W3: quantize(w1, 2^4, min(w1), max(w1), 0, 2^4 - 1)
+
+             The cosine is quantized to 16 levels ranging from 0 to 15.
+
+
+    Example:
+             W1: gcos(100, .01, 2)
+    
+             setlinewidth(2);shadewith(w2);rainbow
+    
+             W2: quantize(w1, 10);plotmode(w1, 1)
+
+             The cosine is quantized to 10 levels ranging from -1 to 1.
+             W1 is shaded to show the 10 distinct levels. The linewidth
+             is thicken to highlight the color shading.
+
+
+    Remarks:
+             Quantize quantizes a series to any number of quantization
+             levels. Use BITQUANT to specifically quantize a series to 2^n
+             levels.
+             
+    See Also:
+             Bitquant
+             Bitscale
+             Linscale
+#endif
+
+
+/* quantize an input series */
+ITERATE quantize(s, levels, xl, xh, yl, yh)
+{
+	local q;
+
+	/* default input args */
+	if (argc < 6) {
+		if (argc < 5) {
+			if (argc < 4) {
+				if (argc < 3) {
+					if (argc < 2) {
+						if (argc < 1) error("quantize - input series required");
+						levels = 256;
+					}
+					xl = castreal(minval(s)); /* handles scalars */
+				}
+				xh = castreal(maxval(s)); /* handles scalars */
+			}
+			yl = xl;
+		}
+		yh = xh;
+	}
+
+	if (levels < 0) error("quantize - levels must be positive");
+
+	/* rescale from 0 to 1 */
+	q = linscale(s, xl, xh, 0.0, 1.0);
+
+	/* scale from 0 to levels */
+	q *= levels;
+
+	/* truncate */
+	q = int(q);
+
+	/* clip overrange data */
+	q = clip(q, levels - 1);
+
+	/* scale to output range */
+	q = linscale(q, 0, levels - 1, yl, yh);
+
+	return(q);
+}
+
+

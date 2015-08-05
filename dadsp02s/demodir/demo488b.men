@@ -1,0 +1,16 @@
+!  HP 54510 Menuing system.
+@x0
+@y0
+@f{_fg2}
+@b{_bg2}
+    Oscilloscope
+_____________________
+
+ Ch 1 Setup         ~CHONEMEN
+ Ch 2 Setup         ~CHTWOMEN
+
+ GPIB System        ~SYSTEMMEN
+ Triggering         ~TRIGGERMEN
+ Display            ~DISPLAYMEN
+
+ Receive Data       ~dmf("demo488c.men")

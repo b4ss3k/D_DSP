@@ -1,0 +1,161 @@
+/*****************************************************************************
+*                                                                            *
+*   MSWORD2.SPL     Copyright (C) 2000 DSP Development Corporation           *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Example of ActiveX support with MS Word                    *
+*                                                                            *
+*   Revisions:    20 Mar 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_MSWORD2
+
+    MSWORD2    
+
+    Purpose: Inserts a metafile of a Worksheet into MS Word using ActiveX
+                                                                        
+    Format:  MSWORD2()
+
+    Returns: Nothing - creates and inserts a Worksheet into MS Word
+
+    Example:
+             msword2
+
+             Creates a new example Worksheet in DADiSP, then starts MS Word 
+             and inserts the metafile of the Worksheet into the current
+             Word document.
+
+    Remarks:
+             MSWORD is a simple example of how to invoke an external
+             application (MS Word) as an ActiveX server using SPL. 
+             SPL uses an ActiveX syntax similar to C++ and Visual Basic.
+
+             Here are the pertinent SPL statements:
+
+             copyworksheet(); // copy DADiSP Worksheet into the clipboard
+
+             word = CreateObject("Word.Application");   // start Word
+             doc  = word.Documents;                     // get Doc object
+             range = doc.Add().Range();                 // get Range object
+             word.Visible = 1;                          // show on screen
+
+             See MSWORD for an example of copying text into.
+
+    See Also:
+             Createobject
+             Getproperty
+             Msword
+             Setproperty
+
+#endif
+
+
+
+/* demonstrates ActiveX calls to MS Word */
+msword2()
+{
+	local word, doc;
+
+	/* new 4 Window worksheet */
+	if (newworksheet(4) == 0) return;
+
+	/*
+	** generate noisy sine in W1, set units to Volts and
+	** add a nice label
+	*/
+
+	setwf(w1, 'Gnorm(1000,.01) * 0.1 + gsin(1000,.01);Setvunits("V");
+		Label("Noisy Sinewave")');
+
+	/* turn on axes labels */
+	scales(w1, 2);
+
+	/*
+	** single pole filter in W2, set color to LRED, set plot ranges
+	** to the same ranges as W1 and add a label
+	*/
+
+	setwf(w2, 'Slp(W1, 1);Label("Single Pole Filter Output");
+			sercolor(lred);sety(getyb(w1), getyt(w1));setytic(getytic(w1))');
+
+	/* turn on axes labels */
+	scales(w2, 2);
+
+	/* Now calculate corresponding spectra in W3 and W4 */
+
+	plotmode(w3, 0); /* shut off plotting */
+	plotmode(w4, 0);
+
+	/*
+	** W3:
+	** Calculate spectrum of W1, set to log axes, turn on solid grids,
+	** set plotting range from 0.001 to 10 and tic every decade
+	*/
+
+	setwf(w3, 'Spectrum(w1, 4096)');
+	setxlog(w3, 1);
+	setylog(w3, 1);
+	setgridstyle(w3, 1, 1);
+	setgridstyle(w3, 2, 1);
+	sety(w3, 0.001, 10.0);
+	setytic(w3, 1);
+	scales(w3, 2);
+
+	/*
+	** W4:
+	** Calculate spectrum of W2, set to log axes, turn on solid grids,
+	** set plotting range from 0.001 to 10 and tic every decade
+	*/
+
+	setwf(w4, 'Spectrum(w2, 4096)');
+	setxlog(w4, 1);
+	setylog(w4, 1);
+	setgridstyle(w4, 1, 1);
+	setgridstyle(w4, 2, 1);
+	sety(w4, 0.001, 10.0);
+	setytic(w4, 1);
+	scales(w4, 2);
+
+	/* turn on plots */
+	plotmode(w3, 1);
+	plotmode(w4, 1);
+
+	/* copy worksheet into clipboard */
+	copyworksheet();
+
+	echo("Starting Word...");
+
+	// start Word, equivalent to Visual Basic's: 
+	// Dim word As New Word.Application
+	word = CreateObject("Word.Application");
+
+	/* remove messages */
+	echo("");
+
+	// get "Document" object, in VB: 
+	// Dim doc As word.document
+	doc  = word.Documents;
+
+	// Add a new Document and get range object
+	range = doc.Add().Range();
+
+	/* paste worksheet as Enhanced Metafile */
+	word.Selection.PasteSpecial(0, 0, 0, 0, 9);
+
+	// let's see it!
+	word.Visible = 1;
+
+	/*
+	** Note: ActiveX objects are automatically released when the 
+	**       local (or global) variables are deleted
+	*/
+
+	// return the handle so we can assign it (if desired)
+	if (outargc > 0) {
+		return(word);
+	}
+}

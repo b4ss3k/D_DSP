@@ -1,0 +1,111 @@
+/*****************************************************************************
+*                                                                            *
+*   RANDN.SPL      Copyright (C) 2000-2006 DSP Development Corporation       *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Generates a normally distributed random array              *
+*                                                                            *
+*   Revisions:     7 Feb 2000  RRR  Creation                                 *
+*                 14 Feb 2006  RRR  use builtin gnormarray for speed         *
+*                                                                            *
+*****************************************************************************/
+
+
+
+#if @HELP_RANDN
+
+    RANDN
+
+    Purpose: Generates a normally distributed random array
+
+    Format:  Randn(numrows, numcols, mean, std)
+
+               numrows - An integer, number of output rows
+
+               numcols - An optional integer, number of output columns,
+                         defaults to numrows
+
+                   mean - An optional real, mean of the distribution, defaults
+                          to 0.0
+
+
+                    std - An optional real, standard deviation of the 
+                          distribution, defaults to 1.0
+    
+             Randn with no input arguments returns a scalar
+    
+    Returns: A scalar, series or array
+
+    Example:
+             Randn(20, 5)
+
+             Generates a 20 row by 5 column array of normally 
+             distributed random numbers with values between 0.0 and 
+             1.0 and a mean of 0 and standard deviation of 1.
+
+
+    Example:
+             Randn(20, 5, 10, 3)
+
+             Same as above except the mean is 10.0 and the standard
+             deviation is 3.0.
+
+    Example:
+             Randn
+
+             Returns a single random real value chosen from a set of 
+             normally distributed random values with a mean of 0 and 
+             a standard deviation of 1.0.
+
+Remarks:
+
+             Randn uses Gnorm to generate the random values. The SEEDRAND 
+             function determines the initial seed of the random number 
+             generator.
+
+
+See Also:
+             Gnormal
+             Grand
+             Rand
+             Seedrand
+
+#endif
+
+
+randn(n, m, mean, std)
+{
+	local a, b, r;
+
+	if (argc < 4) {
+		if (argc < 3) {
+			if (argc < 2) {
+				if (argc < 1) {
+					/* pick value from series of 12 */
+					a = gnorm(12,1);
+					b = castint(grand(1,1,1,12));
+					return(a[b]);
+				}
+				m = n;
+			}
+			mean = 0.0;
+		}
+		std = 1.0;
+	}
+	m = castint(m);
+	n = castint(n);
+
+	if (m <= 0 || n <= 0) return({}); /* empty series */
+
+	if (m == 1) {
+		/* no need for array */
+		r = gnorm(n, 1, mean, std);
+	}
+	else {
+		r = gnormarray(n, m, mean, std);
+	}
+
+	return(r);
+}

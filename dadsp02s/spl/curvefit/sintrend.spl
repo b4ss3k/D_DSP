@@ -1,0 +1,90 @@
+/*****************************************************************************
+*                                                                            *
+*   SINTREND.SPL  Copyright (C) 1999 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Fits y(x) = A + B*x + C * sin(D*x + E) using the FFT       *
+*                                                                            *
+*   Revisions:    22 Jun 1999  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_SINTREND
+
+    SINTREND
+
+    Purpose: Fits y(x) = A + B*x + C * sin(D*x + E) using the FFT
+                                                                        
+    Format:  SINTREND(s)
+
+             s   - input series or array
+
+
+    Returns: A series, the fitted sin curve
+
+             (fit, coef) = SINTREND(s)
+
+             returns both the fit and the coefficients as a series
+
+
+    Example:
+             W1: 5 + 3 * gsin(100, .01, 10) + gline(100, .01, 20, 0)
+
+             W2: sintrend(w1);overp(w1, lred)
+
+             Overplots the original data with the calculated sin fit.
+
+
+             (fit, coef) = sintrend(w1)
+
+             fit is the same series as in W2
+
+             coef == {5.2742, 19.4460, 2.9830, 62.8319, -0.0019}
+
+
+             Note: since D == coef[4] == 2*pi*F, in this case, 
+                   F == 62.8319 / (2*pi) = 10.0
+
+    Remarks:
+             SINTREND first calculates and removes the linear trend in
+             the data, fits a sin then adds in the calculated linear
+             trend.  SINTREND uses SINFIT to find the dominate
+             frequency present in the series.
+
+    See Also:
+             FFT
+             Sinfit
+             Trend
+#endif
+
+
+/* Fit A + B*x + C * sin(D*x + E) */
+sintrend(s)
+{
+	local tf, sf, x, fit;
+
+	if (argc < 1) error("sintrend - input series required");
+
+	/* get linear trend */
+	(tf, tcoef) = trend(s);
+
+	/* get sinusoidal fit */
+	(sf, scoef) = sinfit(s - tf);
+
+	/* x series */
+	x = xvals(s);
+
+	/* create fit - note: scoef[1] == 0 because linear trend was removed */
+	fit = tcoef[1] + tcoef[2] * x + scoef[2] * sin(scoef[3]*x + scoef[4]);
+
+	if (outargc > 1) {
+		return(fit, {tcoef, scoef[2..4]}); /* don't need scoef[1] */
+	}
+	else {
+		return(fit);
+	}
+}

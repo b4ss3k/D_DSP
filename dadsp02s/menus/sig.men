@@ -1,0 +1,21 @@
+! Sig.men -- Manipulate signal display
+@x9
+@y1
+@b{_bg3}
+@f{_fg3}
+  Display Series
+___________________
+
+ Compress Horiz.   ~_MC | COMPRESSH(_INREAL('Amount to Compress Signal'))
+ Compress Vertical ~_MC | COMPRESSV(_INREAL('Amount to Compress Signal'))
+ Expand Horiz.     ~_MC | EXPANDH(_INREAL('Amount to Expand Signal'))
+ Expand Vertical   ~_MC | EXPANDH(_INREAL('Amount to Expand Signal'))
+ Grid:     <      >~_MC | GRID<>~<OFF><SOL><DOT>
+ Overplot          ~_MC | OVERPLOT(_INWIN('Window to Overplot'))
+ Display:  <      >~_MC | <>~<POINTS><LINES>
+ Scales:   <      >~_MC | SCALES<>~<ON><OFF>
+ Scroll Sig: <    >~_MC | SCROLL<>(_INREAL('Amount to Scroll Signal'))~<L><R><U><D>
+ Set Units:  <    >~SET<>UNITS(_INSTR('New Units for Signal'))~<H><V>
+___________________
+
+ {_EXITMES}

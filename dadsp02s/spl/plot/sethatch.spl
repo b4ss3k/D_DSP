@@ -1,0 +1,52 @@
+/*****************************************************************************
+*                                                                            *
+*   SETHATCH.SPL Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Help for SETHATCH                                           *
+*                                                                            *
+*   Revisions:   26 May 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_SETHATCH
+
+    SETHATCH
+
+    Purpose: Turns 3D cross-hatching On or Off
+                                                                        
+    Format:  SETHATCH(win, mode)
+
+              win  - optional window, defaults to current window
+              mode - integer, 0:OFF, 1:ON
+
+    Returns: Nothing
+
+    Example:
+             
+             (x, y) = fxyvals(-2, 2, 0.1, -2, 2, 0.1);
+             Cos(x*y);setplottype(4);hot();sethatch(0);
+
+             Creates a shaded 3D plot of cos(x*y) without cross-hatching.
+
+             (x, y) = fxyvals(-2, 2, 0.1, -2, 2, 0.1);
+             W1: Cos(x*y);setplottype(4);hot();sethatch(0);
+             W2: Deriv(w1)
+
+             W1: Shadewith(w2);pon;
+
+             Creates a shaded 3D plot of cos(x*y) without cross-hatching
+             using the derivative of the surface as the lighting model.
+
+    Remarks:
+             Using SETHATCH(0) is useful for high density 3D plots.
+
+
+    See Also
+             Plot3d
+             Setplottype
+#endif
+

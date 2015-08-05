@@ -1,0 +1,6 @@
+@tabbed
+Read ASCII Table
+~_mf("readt.pan")
+~_mf("rtdelim.pan")
+~_mf("rthead.pan")
+

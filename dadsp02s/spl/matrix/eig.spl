@@ -1,0 +1,95 @@
+/*****************************************************************************
+*                                                                            *
+*   EIG.SPL     Copyright (C) 2001 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns eigenvalues and eigenvectors of an array            *
+*                                                                            *
+*   Revisions:   24 Jul 2001  RRR  Creation                                  *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_EIG
+
+    Purpose: Computes the Eigenvalues and Eigenvectors of a square matrix.
+
+    Format:  EIG(a)
+
+             (vec, val) = EIG(a)
+
+             a - real or Complex matrix.
+ 
+
+    Returns: A single column real or complex series that contains the
+             eigenvalues.
+
+             (vec, val) = EIG(a) 
+
+             returns both the eigenvector array and the eigenvalues as the
+             diagonal of an array
+
+    Example:
+              a = {{1, 3, 4},
+                   {5, 6, 7}, 
+                   {8, 9, 12}}
+
+              val = eig(a)
+
+              val == {19.964160, 
+                      -1.473921, 
+                       0.509760}
+
+    Example:
+             a = {{1, 3, 4},
+                  {5, 6, 7}, 
+                  {8, 9, 12}}
+
+             (x, lambda) = eig(a)
+
+
+                  x == {{ -0.253874, -0.896277,  0.046508},
+                        { -0.504564,  0.270278, -0.801862},
+                        { -0.825205,  0.351621,  0.595697}}
+
+             lambda == {{ 19.964160,  0.000000,  0.000000},
+                        {  0.000000, -1.473921,  0.000000},
+                        {  0.000000,  0.000000,  0.509760}}
+
+
+              a *^ x == x *^ lambda ==
+
+                       {{ -5.068385,  1.321041,  0.023708},
+                        {-10.073188, -0.398369, -0.408757},
+                        {-16.474527, -0.518261,  0.303662}}
+
+    Remarks:
+              For (x, lambda) = Eig(a), the nth entry of the diagonal 
+              of the eigenvalue array lambda corresponds to the eigenvector 
+              in column n of x.
+
+    See Also:
+             *^
+             Balance 
+             Eigval
+             Nbeigval
+             Nbeigvec
+
+#endif
+
+/* eigenvalues and eigenvectors */
+eig(a)
+{
+	if (not(IS_ARRAY(a))) error("eig - input array required");
+
+	if (outargc > 1) {
+		return(eigvec(a), diag(eigval(a)));
+	}
+	else {
+		return(eigval(a));
+	}
+}

@@ -1,0 +1,14 @@
+! Toolbar.pan -- Make a toolbar button
+@f{_fg1}
+@b{_bg1}
+@panel
+Add a Toolbar Button
+
+ Toolbar #:   <        >~defmacro("_tbarn","< >",2)~<1><2><3>
+ Button #:  <             >~defmacro("_tbutton","<{_tbutton}>",2)~<Last_Button><1><2><3><4><5><6><7><8><9><10><11><12><13><14><15><16><17><18><19><20><21><22><23><24><25>
+ Color:       <        >~defmacro("_tbcolr","<{_tbcolr}>",2)~_mf("colors.men")
+ Label:       <        >~defmacro("_tbstr","<{_tbstr}>",2)~input(5,"Button Label")
+! Command:     <                             >~defmacro("_tbcmd","<{_tbcmd}>",2)~input(5,"Command","Command to Execute with Button Push")
+ Command:     <                             >~defmacro("_tbcmd",'<{_tbcmd}>',2)~input(5,"Command","Command to Execute with Button Push")
+
+~_MC ;eval(strcat("TOOLBAR(",_tbarn,",",_tbutn,",4,",_tbcolr,",'",_tbstr,"','",_tbcmd,"')"))

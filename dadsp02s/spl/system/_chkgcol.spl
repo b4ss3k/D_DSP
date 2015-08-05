@@ -1,0 +1,31 @@
+/* checks if global color has changed */
+_chkgcol()
+{
+	local status;
+
+	status = (	
+				(_GCV05 != getgcolor(05)) ||
+				(_GCV07 != getgcolor(07)) ||
+				(_GCV17 != getgcolor(17)) ||
+				(_GCV18 != getgcolor(18)) ||
+				(_GCV19 != getgcolor(19)) ||
+				(_GCV20 != getgcolor(20)) ||
+				(_GCV21 != getgcolor(21)) ||
+				(_GCV31 != getgcolor(31)) ||
+				(_GCV32 != getgcolor(32)) ||
+				(_GCV35 != getgcolor(35)) ||
+				(_GCV36 != getgcolor(36)) ||
+				(_GCV37 != getgcolor(37)) ||
+				(_GCV38 != getgcolor(38)) ||
+				(_GCV42 != getgcolor(42)) ||
+				(_GCV43 != getgcolor(43)) ||
+				(_GCV44 != getgcolor(44)) ||
+				(_GCV45 != getgcolor(45)) 
+			);
+
+	if (status == 0) {
+		status = getconf("GUI_HIGHLIGHT_CAPTION") != _hiactwin;
+	}
+	return(status);
+}
+	

@@ -1,0 +1,10 @@
+! dwkdoc.tab - add/remove files from dwk document
+@tabbed
+Document Files for {getworksheetname}
+
+~_mf("dwkadd.pan")
+
+~_mf("dwkrem.pan")
+
+! now save worksheet to add or remove misc files
+~~pdc(2016)

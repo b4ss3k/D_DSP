@@ -1,0 +1,11 @@
+_tocurr(s) 
+{
+	if (setwfmode() == 0) {
+		if (strcmp(s, strcat("w",strnum(getwnum))) == 0) {
+			if (strcmp(s, getvar("_dwin")) == 0) {
+				s = 'curr';
+			}
+		}
+	}
+	return(s);
+}

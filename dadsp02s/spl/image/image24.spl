@@ -1,0 +1,127 @@
+/*****************************************************************************
+*                                                                            *
+*   IMAGE24.SPL  Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Converts an image to a 24 bit color image                  *
+*                                                                            *
+*   Revisions:    7 Jun 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_IMAGE24
+
+    IMAGE24 
+
+    Purpose: Converts an image with a colormap to a 24 bit color image
+                                                                        
+    Format:  IMAGE24(inwin)
+
+              inwin - an optional window containing the source image,
+                      defaults to the current window
+
+    Returns: An array, a 24 bit color image
+
+    Example:
+
+             W1: Density(spline2(ravel(gnorm(100,1),10), 8));rainbow()
+             W2: Image24(W1);
+
+             W1 contains an image of a random surface shaded with 
+             the colors of the spectrum ranging from red to blue. W2 
+             converts the image into a 24 bit color image.            
+
+    Remarks:
+             Unlike standard images, a 24 bit image does not
+             reference a separate colormap.  Instead, each pixel of
+             the image is comprised of a composite 24 bit RED, GREEN,
+             BLUE value packed into a long integer (4 bytes). Use 
+
+                           (r, g, b) = GETRGB(image) 
+             
+             to retrieve the separate red, green and blue values from 
+             a composite 24 bit image. 
+
+                           image = RGBIMAGE(r, g, b)
+
+             To construct a 24 bit composite image from separate RGB 
+             values.
+
+             Because 24 bit color images do not require a colormap
+             (the colors are implicit), the image can be saved and
+             restored automatically with the correct colors.
+
+
+    See Also:
+             Density
+             Getcolormap
+             Getrgb
+             Iminterp
+             Rgbimage
+             Spline2
+             Interp2
+
+#endif
+
+
+
+image24(iwin)
+{
+	local nr, nc, r, g, b, image;
+
+	if (argc > 0) {
+		if (not(IS_WINDOW(iwin))) {
+			error("image24 - Window input required");
+		}
+	}
+
+	if (argc == 0) { /* current window */
+		(nr, nc) = size(w0);
+		map = getcolormap(w0);
+		iwin = w0;
+	}
+	else {
+		(nr, nc) = size(iwin);
+		map = getcolormap(iwin);
+	}
+	if (nc < 2) {
+		error("image24 - image required");
+	}
+
+	if (rgbimage(iwin)) {
+		/* already 24 bit image */
+		image = iwin;
+	}
+	else {
+		/* get and shape rgb values */
+		r = ravel(col(map,1), nr);
+		g = ravel(col(map,2), nr);
+		b = ravel(col(map,3), nr);
+
+		/* produce RGB image */	
+		image = rgbimage(r, g, b);
+	}
+
+	/* unity deltas */
+	setdeltax(image,  1.0);
+	setdeltay(image,  1.0);
+	setxoffset(image, 0.0);
+	setyoffset(image, 0.0);
+
+	if (outargc == 0) {
+		/* put array in current window and plot as image */
+		image;
+		setplotstyle(w0, 0);
+		setplottype(w0, 3);
+	}
+	else {
+		return(image);
+	}
+}
+
+
+		

@@ -1,0 +1,20 @@
+! LOrient.hlp
+LABEL ORIENTATION:
+Axis Labels can be shown vertically or horizontally.  By default, all tick 
+labels are shown horizontally, and axis labels are shown horizontally along
+the x-axis and vertically along the y-axis.  
+
+The rotation degrees are counterclockwise (CCW). 
+
+Options available for tic and label rotations:
+Rot0:       No rotation.
+Rot90:      90 Degree CCW Rotation for Entire String
+Rot180:     180 Degree CCW Rotation for Entire String (upside down)
+Rot270:     270 Degree CCCW Rotation for Entire String (90 deg Clockwise)
+RotChar90:  Horizontal Characters laid out in vertical sequence.  
+            Leftmost letter becomes vertical topmost letter.
+
+
+Note: Setting rotation does not "stick". That is, if the scales are changed,
+the orientation defaults are applied. If you desire different defaults, use
+the option to set DEFAULT ROTATIONS.

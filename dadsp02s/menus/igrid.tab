@@ -1,0 +1,19 @@
+@tabbed
+Inverse Distance Gridding
+
+{setvar("_xyztitle", "Igrid")}
+
+! default igrid options
+{defvar("_intpgrid", 1)}
+{setvar("_xgrid", 1+int(sqrt(length(eval(sprintf("col(%s, %s)", eval('_ser1'), eval('_col1')))))))}
+{setvar("_ygrid", 1+int(sqrt(length(eval(sprintf("col(%s, %s)", eval('_ser1'), eval('_col1')))))))}
+{defvar("_igwstr", "")}
+
+
+~_MF("igrid.pan")
+~_MF("igridopt.pan")
+
+~~if(strlen(_formstr)>0&&strlen(_igwstr)>0, _poffdwin;eval(sprintf('setwf(%s, "Igrid(%s, %s%d, %d%s, %d, %s)")', _dwin, _formstr, _lbrace, _xgrid, _ygrid, _rbrace, _intpgrid, _igwstr)))
+~~if(strlen(_formstr)>0&&strlen(_igwstr)==0, _poffdwin;eval(sprintf('setwf(%s, "Igrid(%s, %s%d, %d%s, %d)")', _dwin, _formstr, _lbrace, _xgrid, _ygrid, _rbrace, _intpgrid)))
+~~if(strlen(_formstr)>0 &&_fxycmap != 0, _cwin=_getcwin;eval(sprintf("moveto(%s)", _dwin));eval(_i2cmap(_fxycmap));eval(sprintf("moveto(%s)", _cwin)), shadewith());_pondwin
+

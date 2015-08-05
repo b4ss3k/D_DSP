@@ -1,0 +1,86 @@
+/*****************************************************************************
+*                                                                            *
+*   IDXTOX.SPL  Copyright (C) 2003 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Converts an index to an x value                             *
+*                                                                            *
+*   Revisions:   30 Jan 2003  RRR  Creation                                  *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_IDXTOX
+
+    IDXTOX  
+
+    Purpose: Converts index values of a series to X values.
+                                                                        
+    Format:  IDXTOX(series, idx)
+
+             series    - input series
+
+              idx      - An integer or series of integers. The indices
+                         ranging from 1 to length(s)
+              
+    Returns: A real or series.
+
+    Example:
+             W1: 1..0.1..10
+             W2: idxtox(w1, 1..5)
+
+             W2 contains the series {1, 1.1, 1.2, 1.3, 1.4}, the first 5
+             X values of W1.
+
+    Remarks:
+             For XY or XYZ series, the actual X values are looked up. 
+
+             For interval series, the X values are computed as follows:
+
+                 x = (idx - start) * deltax(s) + xoffset(s)
+
+             where start is the value of SPL_START_INDEX.
+
+    See Also:
+             Idx
+             Xtoidx
+             Xvals
+
+#endif
+
+
+
+/* convert index to x value */
+idxtox(s, idx)
+{
+	local x, start;
+
+	if (argc < 2) {
+		if (argc < 1) error("idxtox - input series and index value required");
+
+		/* assume sole input is index */
+		idx = s;			
+
+		/* reference current series */
+		s = refseries();
+	}
+	if (ISXYSERIES(s) || ISXYZSERIES(s)) {
+		/* lookup actual x values */
+		x = xvals(s);
+		x = x[idx];
+	}
+	else {
+		/* starting index */
+		start = castint(getconf("SPL_START_INDEX"));
+
+		/* interval series - use faster computation */
+		x = (idx - start) * deltax(s) +  xoffset(s);
+	}
+	return(x);
+}
+

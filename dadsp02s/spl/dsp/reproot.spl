@@ -1,0 +1,94 @@
+/*****************************************************************************
+*                                                                            *
+*   REPROOT.SPL    Copyright (C) 2003 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Checks for repeated roots of a polynomial                   *
+*                                                                            *
+*   Revisions:    3 Oct 2003  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_REPROOT
+
+    REPROOT
+
+    Purpose: Checks for repeated roots of a polynomial.
+
+    Format:  REPROOT(p, findroots, tol)
+
+                       p - A series, the coefficients of the polynomial 
+                           in descending powers (highest order to lowest).  
+                           If findroots is 0, p represents the roots of 
+                           the polynomial.
+
+               findroots - Optional. An integer. If 1, p contains the
+                           polynomial coefficients and the roots are
+                           calculated. If 0, p contains the roots. 
+                           Defaults to 1.
+
+                     tol - Optional. A real. The tolerance threshold to
+                           determine repeated roots, Defaults to 1e-3.
+
+    Returns: An integer. 1 if repeated roots exist else 0.
+
+    Example:
+
+             For p(x) = x^3 + 3x^2 + 3x + 1
+
+             reproot({1, 3, 3, 1})
+
+             returns 1.
+
+    Example:
+
+             For p(x) = (x + 1)(x + 1)(x + 2)
+
+             reproot(poly({1, 1, 2}))
+
+             returns 1.
+
+    Remarks:
+             REPROOT is used as a support routine for residue and
+             residuez.
+
+    See Also:
+             Poly
+             Polyroot
+             Residue
+             Residuez
+#endif
+
+
+/* true if multiple roots exist within a tolerance */
+reproot(z, findroots, tol)
+{
+	local r, d, status;
+
+	if (argc < 3) {
+		tol = 1e-3;
+		if (argc < 2) {
+			findroots = 1;
+		}
+	}
+
+	if (findroots) {
+		/* polynomial coefficients passed in, find roots */
+		z = roots(z);
+	}
+
+	/* get sorted poles */
+	r = sort(z);
+
+	/* find differences */
+	d = mag(extract(r - delay(r, 1), 2, length(r) - 1));
+
+	/* check if difference less than tolerance */
+	status = any(d < tol);
+
+	return(status);
+}

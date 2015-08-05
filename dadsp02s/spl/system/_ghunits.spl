@@ -1,0 +1,19 @@
+/* get horizontal units */
+_ghunits(s, item, member)
+{
+	local hu;
+
+	if (argc == 2) { /* assume item, member */
+		hu = gethunits(s, item);
+	}
+	else {
+		hu = (argc > 0) ? gethunits(s) : gethunits;
+	}
+
+	if (strlen(hu) == 0) {
+		/* get default units */
+		hu = _gethunits;
+	}
+	return(hu);
+}
+

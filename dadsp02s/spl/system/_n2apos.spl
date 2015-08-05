@@ -1,0 +1,31 @@
+/* number to annotation position */
+_n2apos(n, skip)
+{
+	local pos;
+
+	if (argc < 2) skip = 0;
+
+	switch (n) {
+		case 0:
+		default:
+			pos = PAPER;
+			break;
+
+		case 1:
+			pos = GLASS;
+			break;
+
+		case 2:
+			pos = WIN_MARGIN;
+			break;
+
+		case 3:
+			pos = (skip) ? WS_MARGIN : WP_MARGIN;
+			break;
+
+		case 4:
+			pos = WS_MARGIN;
+			break;
+	}
+	return(pos);
+}

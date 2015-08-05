@@ -1,0 +1,12 @@
+! plot.men -- Plotting Functions
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+       Plot   
+
+ CURRENT Window     ~_deffname('PLOT     Plot Current Window to HPGL File')  |_defformat('Plot("title", "filename", colormode)')|_defxamp('Plot("myplot", "hpgl.out")')|_str2int1("Title         ","HPGL Filename ", "Color Mode    ")|_mf("plot3.pan")
+
+ ALL Windows        ~_deffname('PLOTALL  Plot Each Window on Separate Page')  |_defformat('Plotall("filename", colormode)')|_defxamp('Plotall("hpgl.out")')|_str1int1("HPGL Filename ", "Color Mode    ")|_mf("plot2.pan")|eval('plotal(_hptitle, _hpfile, _pcolor)')
+
+ Worksheet          ~_deffname('PLOTWS   Plot Worksheet on Single Page')  |_defformat('Plotws("filename", colormode)')|_defxamp('Plotws("hpgl.out")')|_str1int1("HPGL Filename ", "Color Mode    ")|_mf("plot2.pan")|eval('plotws(_hptitle, _hpfile, _pcolor)')

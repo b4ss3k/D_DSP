@@ -1,0 +1,177 @@
+/*****************************************************************************
+*                                                                            *
+*   XLGET.SPL    Copyright (C) 2001-2007 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Gets a range of data from Excel via Automation              *
+*                                                                            *
+*   Revisions:   17 Aug 2001  RRR  Creation                                  *
+*                14 Sep 2001  RRR  support for sheet names                   *
+*                 1 May 2007  RRR  range verification                        *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_XLGET
+
+    XLGET
+
+    Purpose: Returns a range of values from Excel via ActiveX Automation
+                                                                        
+    Format:  XLGET("rangestr", "bookname", sheet)
+
+              rangestr - a string, Excel input range, defaults to
+                         "A1", the first cell
+
+              bookname - an optional string, Excel Workbook name, defaults to
+                         "" (empty) indicating use current Workbook
+
+                 sheet - an optional integer or string, Excel Sheet number, 
+                         or sheet name, defaults to 1, the first sheet if 
+                         bookname is specified, else the current sheet
+
+
+    Returns: A series, string or scalar if a single value is requested
+
+
+    Example:
+             W1: rand(10, 3);
+
+             xlput("A1:C10", W1);
+
+             W2: xlget("A1:C10");
+
+             W1 == W2 is all ones, that is W1 and W2 are equivalent. The data
+             is retrieved from the current Sheet of the current Workbook.
+
+
+    Example:
+             W1: rand(10, 3);
+
+             xlput("A1:C10", W1, "Book2", 2);
+
+             W2: xlget("A1:C10", "Book2", 2);
+
+             W1 == W2 is all ones, that is W1 and W2 are equivalent. The data
+             is retrieved from the second Sheet of Workbook Book2.
+
+
+    Remarks:
+             If Excel is already running, XLGET attempts to connect to
+             the running instance of Excel, otherwise XLGET connects 
+             to a new instance of Excel.
+
+             Numeric data is transferred as double precision values.
+
+    See Also:
+             Xlclear
+             Xlput
+#endif
+
+
+
+/* get data from a range of Excel cells */
+xlget(rangestr, bookname, sheet)
+{
+	local s, xl, ta;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) {
+				rangestr = "A1";
+			}
+			bookname = "";
+		}
+		/* if we have a bookname, use first sheet, else default to current */
+		if (strlen(bookname) > 0) sheet = 1;
+		else sheet = 0;
+	}
+
+	if (not(IS_STRING(rangestr))) {
+		error("xlget: input range string required");
+	}
+
+	if (not(IS_STRING(bookname))) {
+		error("xlget: bookname must be a string or empty string");
+	}
+
+	/* default _excel if not defined */
+	defvar("_excel", -1);
+
+	/* use existing Excel connection or establish a new one */
+	if (not(isobject(_excel))) {
+		/* no current connection, try to connect to existing Excel */
+		xl = getobject("excel.application", 0);
+		if (not(isobject(xl))) {
+			/* try loading new instance of Excel */
+			xl = createobject("excel.application");
+			if (not(isobject(xl))) {
+				/* no go */
+				error("xlget - cannot start Excel");
+			}
+			else {
+				/* add workbook */
+				xl.workbooks.add();
+			}
+		}
+		/* save Excel handle to global */
+		setvar("_excel", xl);
+	}
+	else {
+		/* get global Excel handle */
+		xl = getvar("_excel");
+	}
+
+	/* check input range */
+	range = xlget_getrange(xl, bookname, sheet, rangestr);
+	if (not(isobject(range))) {
+		error(sprintf("xlget - invalid range: %s", rangestr));
+	}
+
+	/* do not transpose */
+	ta = getconf("activex_array_transpose");
+	setconf("activex_array_transpose", "0");
+
+	s = xl.range(rangestr).value;
+
+	setconf("activex_array_transpose", ta);
+
+	return(s);
+}
+
+
+
+/* get a range object */
+xlget_getrange(xl, bookname, sheet, rangestr)
+{
+	local sheetlen, xlrange;
+
+	/* see if sheet is a string or numeric */
+	if (IS_STRING(sheet)) {
+		sheetlen = strlen(sheet);
+	}
+	else {
+		sheetlen = sheet;
+	}
+
+	/* now select the range */
+	if (strlen(bookname) > 1) {
+		/* use specified workbook and worksheet */
+		xlrange = xl.workbooks(bookname).worksheets(sheet).range(rangestr);
+	}
+	else {
+		/* use current workbook */
+		if (sheetlen > 0) {
+			/* use specified sheet */
+			xlrange = xl.worksheets(sheet).range(rangestr);
+		}
+		else {
+			/* use current sheet */
+			xlrange = xl.range(rangestr);
+		}
+	}
+	return(xlrange);
+}

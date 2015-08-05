@@ -1,0 +1,32 @@
+/* show first few lines of translated ASCII Table */
+
+#define NUMRTLINES 50
+
+_prert(fname, offset, startcol, hex, collist, delim, skip_delim)
+{
+	local s, dl;
+
+	if (strlen(fname) > 0) {
+		/* add -1 to collist if necessary */
+		if (strlen(strfind("-1", collist)) == 0) {
+			collist = strcat(collist, ",-1");
+		}
+
+		/* check if double quote a delimiter */
+		if (strlen(strfind('"', delim)) > 0) {
+			dl = sprintf("'%s'", delim);
+		}
+		else {
+			dl = sprintf('"%s"', _readt_delimiters);
+		}
+
+		s = (sprintf("readt('%s', %d, %d, %s, %d, %d, %s, %s)", fname, offset, startcol, collist, NUMRTLINES, hex, dl, skip_delim));
+		s = eval(s);
+		if (length(s) > 0) {
+			writet("preview.txt", s, 1);
+			viewfile("preview.txt", 1, NUMRTLINES);
+			delfile("preview.txt");
+		}
+	}
+}
+

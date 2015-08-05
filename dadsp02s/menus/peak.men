@@ -1,0 +1,22 @@
+! peak.men -- Find peak functions
+! x9,y1
+@x0
+@y0
+@b{_bg3}
+@f{_fg3}
+   Analyze Peaks 
+ 
+ Display Minimum   ~_ML(strcat("Min. is: ",strnum(REAL(MIN))))
+ Display Maximum   ~_ML(strcat("Max. is: ",strnum(REAL(MAX))))
+
+ Find First Peak   ~_deffname('FPEAK    Find First Peak') | _defformat('Fpeak(threshold,width)') | _defxamp('Fpeak(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalrealint("Fpeak");cursoron
+ Find Next Peak    ~_deffname('FPEAKN   Find Next Peak') | _defformat('Fpeakn(threshold,width)') | _defxamp('Fpeakn(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalrealint("Fpeakn");cursoron
+ Find Prev. Peak   ~_deffname('FPEAKP   Find Previous Peak') | _defformat('Fpeakp(threshold,width)') | _defxamp('Fpeakp(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalrealint("Fpeakp");cursoron
+
+ Get Peak Values   ~_deffname('GETPEAK  Get Peaks') | _defformat('Getpeak(ser,thresh,width,size)') | _defxamp('Getpeak(W1,Min(W1))')|_getserrealint2("Series:    ","Threshold: ","Width:     ","Size:      ")|_serrealint2("Getpeak")
+
+ Find First Valley ~_deffname('FVALL    Find First Valley') | _defformat('Fvall(threshold,width)') | _defxamp('Fvall(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalrealint("Fvall");cursoron
+ Find Next Valley  ~_deffname('FVALLN   Find Next Valley') | _defformat('Fvalln(threshold,width)') | _defxamp('Fvalln(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalrealint("Fvalln");cursoron
+ Find Prev. Valley ~_deffname('FVALLP   Find Previous Valley') | _defformat('Fvallp(threshold,width)') | _defxamp('Fvallp(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalrealint("Fvallp");cursoron
+
+ Get Valley Values ~_deffname('GETVALLEY   Get Valleys') | _defformat('Getvalley(ser,thresh,width,size)') | _defxamp('Getvalley(series,threshold)') | _getserrealint2("Series:    ","Threshold: ","Width:     ","Size:      ") | _serrealint2("Getvalley")

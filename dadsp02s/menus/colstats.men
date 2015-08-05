@@ -1,0 +1,17 @@
+! colstats.men -- Column-wise math functions
+!@x8
+!@y1
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+   Column Statistics
+ 
+ Mean                ~_deffname('COLMEAN  Column Mean')      |_defformat('Colmean(series)')|_defxamp('Colmean(W1)')|_getser|_serform("Colmean")
+ Standard Deviation  ~_deffname('COLSTDEV Column Stdev')     |_defformat('Colstdev(series)')|_defxamp('Colstdev(W1)')|_getser|_serform("Colstdev")
+ Median              ~_deffname('COLMEDIAN  Column Median')   |_defformat('Colmedian(series)')|_defxamp('Colmedian(W1)')|_getser|_serform("Colmedian")
+ Minimum             ~_deffname('COLMIN   Column Minimum')   |_defformat('Colmin(series)')|_defxamp('Colmin(W1)')|_getser|_serform("Colmin")
+ Maximum             ~_deffname('COLMAX   Column Maximum')   |_defformat('Colmax(series)')|_defxamp('Colmax(W1)')|_getser|_serform("Colmax")
+! Range              ~_deffname('COLRANGE Column Range')     |_defformat('Colrange(series)')|_defxamp('Colrange(W1)')|_getser|_serform("Colrange")
+! Sum                 ~_deffname('COLTOTAL Column Total')     |_defformat('Coltotal(series)')|_defxamp('Coltotal(W1)')|_getser|_serform("Coltotal")
+ Count               ~_deffname('COLLENGTH  Column Sample Count')   |_defformat('Collength(series)')|_defxamp('Collength(W1)')|_getser|_serform("Collength")

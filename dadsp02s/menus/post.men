@@ -1,0 +1,12 @@
+! post.men -- PostScript Functions
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+     PostScript  
+
+ CURRENT Window     ~_deffname('PS       PostScript Current Window to File')  |_defformat('Ps("title", "filename", colormode)')|_defxamp('Ps("mytitle", "post.eps")')|_str2int1("Title         ","PS Filename   ", "Color Mode    ")|_mf("post3.pan")
+
+ ALL Windows        ~_deffname('PSALL    PostScript Each Window on Separate Page')  |_defformat('Psall("filename", colormode)')|_defxamp('Psall("post.eps")')|_str1int1("PS Filename   ", "Color Mode    ")|_mf("post2.pan")|eval('psall(_pstitle, _psfile, _pcolor)')
+
+ Worksheet          ~_deffname('PSWS     PostScript Worksheet on Single Page')  |_defformat('Psws("filename", colormode)')|_defxamp('Psws("post.eps")')|_str1int1("PS Filename   ", "Color Mode    ")|_mf("post2.pan")|eval('psws(_pstitle, _psfile, _pcolor)')

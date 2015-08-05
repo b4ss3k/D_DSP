@@ -1,0 +1,388 @@
+/*****************************************************************************
+*                                                                            *
+*   EXAMPLES.SPL  Copyright (C) 1995-1997 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       DSP Development Corporation                                *
+*                                                                            *
+*   Synopsis:     SPL functions as discussed in the SPL: DADiSP's Series     *
+*                 Processing Language manual                                 *
+*                                                                            *
+*   Revisions:    21 Aug 1995  DSP  Creation                                 *
+*                 17 Jul 1997  RRR  B09 syntax update                        *
+*                                                                            *
+*****************************************************************************/
+
+
+/* convert fahrenheit to centigrate */
+celsius(f)
+{
+	local c;
+
+	c = (5.0 / 9.0) * (f - 32.0);
+	return(c);
+}
+
+
+/* example of local variable a */
+fun1(x)
+{
+	local a;
+
+	a = x + 1;
+	return(a);
+}
+
+
+/* setting global variable a in a function */
+fun2(x)
+{
+	local y, a;
+
+	y = getvar(a);
+	setvar(a, x + y);
+	return(a);
+}
+
+
+/* returns 1 if number is even, else 0 */
+iseven(x)
+{
+	return(2*(int(x/2)) == x);
+}
+
+
+/* returns 1 if number is odd, else 0 */
+isodd(x)
+{
+	return(not(iseven(x)));
+}
+
+
+/*
+** returns the sign of a number
+** 1: positive, 0: zero, -1: negative
+*/
+sgn(n)
+{
+	local sign;
+
+	sign = (n > 0) - (n < 0);
+	return(sign);
+}
+
+
+/* replace the values of a series based on a logical condition */
+replace(s, cond, val)
+{
+	local result;
+
+	result = s * not(cond) + val * cond;
+	return(result);
+}
+
+
+/* return the data range of the input series */
+drange(s)
+{
+	local r1;
+
+	r1 = max(s) - min(s);
+	return(r1);
+}
+
+
+/* return the larger of two numbers */
+larger(a, b)
+{
+	local val;
+
+	if (a > b) 
+		val = a;
+	else
+		val = b;
+
+	return(val);
+}
+
+
+/*
+** square root by Newton's approximation,
+** accurate to about 5 decimal places 
+*/
+srt(num)
+{
+	local a1, b1;
+
+	/* check domain */
+	if (num <= 0)
+		return(0);
+
+	if (imag(num) != 0.0)
+		return(0);
+
+	b1 = num / 2;
+	a1 = num;
+	
+	while (a1 > 0.00001 * b1) (
+		a1 = abs((num / b1) - b1);
+		b1 = ((num / b1) + b1) / 2;
+	)
+	return(b1);
+}
+
+
+/* raise x to the n-th power for n > 0 */
+power(x, n)
+{
+	local p;
+
+	for (p = 1; n > 0; --n) {
+		p = p * x;
+	}
+	return(p);
+}
+
+
+/* sort series s into ascending order */
+shellsort(s)
+{
+	local v, n, gap, k, j, temp;
+
+	v = s;
+	n = length(v);
+
+	for (gap = int(n/2); gap > 0; gap = int(gap/2)) {
+		for (k = gap; k < n; k++) {
+			for (j = k - gap; j >= 0; j -= gap) {
+				if (v[j+1] <= v[j+gap+1]) 
+					break;
+				temp = v[j+1];
+				v[j+1] = v[j+gap+1];
+				v[j+gap+1] = temp;
+			}
+		}
+	}
+	return(v);
+}
+
+
+/* double positive values of a series only */
+pos2(a)
+{
+	local n, j;
+
+	n = length(a);
+	for (j = 1; j <= n; j++) {
+		if (a[j] < 0) 
+			continue; /* skip negative values */
+
+		/* do positive processing */
+		a[j] *= 2;
+	}
+	return(a);
+}
+
+
+/* slow way to remove the mean */
+demean1(s)
+{
+	local outser, n, mm, j;
+
+	outser = gser();
+	n  = length(s);
+	mn = mean(s);
+
+	for (j = 1; j <= n; j++) {
+		outser[j] = s[j] - mn;
+	}
+	return(outser);
+}
+
+
+/* much faster and simpler de-mean algorithm */
+demean2(s)
+{
+	return(s - mean(s));
+}
+
+
+/* replace elements > thresh with val */
+replacewith1(s, thresh, val)
+{
+	local n, outser, j;
+
+	n = length(s);
+	outser = s;
+
+	for (j = 1; j <= n; j++) {
+		if (outser[j] > thresh) {
+			outser[j] =  val;
+		}
+	}
+	return(outser);
+}
+
+
+/* fast replace using a binary series */
+replacewith2(s, thresh, val)
+{
+	local cond, result;
+
+	cond = s > thresh;
+	result = s * not(cond) + val * cond;
+	return(result);
+}
+
+
+/* outlier linear interpolation replacement */
+outlier(s, cond) 
+{
+	return(xyinterp(delete(xvals(s), cond), delete(s, cond)));
+}
+
+
+! Fibonacci numbers returned as a series
+fib(x)
+{
+	local a, b, c, j, sig;
+
+	a = 0;
+	b = 1;
+	j = 1;
+	sig = gser(0);
+
+	while (b < x) (
+		c = b;
+		b = a + b;
+		a = c;
+		sig[j] = a;
+		j = j + 1;
+	)
+	return(sig);
+}
+
+
+! another example of creating Fibonacci numbers
+fib2(n)
+{
+	local j = 1, f[] = {1, 1};
+
+	while (f[j] + f[j+1] < n) (
+		f[j+2] = f[j] + f[j+1];
+		j = j + 1;
+	)
+	return(f);
+}
+
+
+/* call by value rule */
+double1(x)
+{
+	x *= 2;
+	return(x);
+}
+
+
+/* exception to call by value */
+double2(x)
+{
+	local n, j;
+
+	n = length(x);
+	for (j = 1; j <= n; j++) {
+		x[j] *= 2;
+	}
+	return(x);
+}
+
+
+/* does not alter input series */
+double3(x)
+{
+	local local_x, n;
+
+	local_x = x;
+	n = length(x);
+	for (j = 1; j <= n; j++) {
+		local_x[j] *= 2;
+	}
+	return(local_x);
+}
+
+
+/* factorial function */
+fac(x)
+{
+	if (x <= 0) return(1);
+	else return(x * fac(x-1));
+}
+
+
+/*
+** evalutates a function f at value val, i.e. returns
+** y = f(val). Function f must be passed in as a string,
+** e.g. feval("sin", pi/2) returns 1.0.
+*/
+
+feval(f, val)
+{
+	return(eval(strcat(f, "(val)")));
+}
+
+
+/* find root of function f over interval a, b */
+froot(f, a, b, eps)
+{
+	local m;
+
+	m = (a + b) / 2.0; /* midpoint of interval [a, b] */
+
+
+	/* found root or met tolerance */
+	if (feval(f, m) == 0.0 || b - a < eps)
+		return(m);
+
+	/* left edge */	
+	else if (feval(f, a) * feval(f, m) < 0.0)
+		return(froot(f, a, m, eps));
+
+	/* right edge */
+	else
+		return(froot(f, m, b, eps));
+}
+
+
+/* 5th root polynomial test for froot() */
+p(x)
+{
+	return(x^5 + x + 3.0);
+}
+
+
+/* optional argument example */
+func1(x, y)
+{
+	if (x < 0) return(y);
+	else return(x);
+}
+
+
+/* defaulting an optional argument */
+optfun(a, b)
+{
+	/* default b if not specified */
+	if (argc < 2) b = 10;
+	return(a * b);
+}
+
+
+/* example of avoiding macro conflicts */
+myfun(x)
+{
+	local a;
+
+	a = sin(x) + x;
+	return(a*a);
+}
+

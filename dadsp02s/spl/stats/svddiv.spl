@@ -1,0 +1,115 @@
+/*****************************************************************************
+*                                                                            *
+*   SVDDIV.SPL    Copyright (C) 1999-2000 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Solves A \ b = x using singular value decomposition        *
+*                                                                            *
+*   Revisions:    18 Jun 1999  RRR  Creation                                 *
+*                 21 Mar 2000  RRR  use input matrix column size             *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_SVDDIV
+
+    SVDDIV
+
+    Purpose: Solves for x in A *^ x = b using singular value decomposition
+                                                                        
+    Format:  SVDDIV(A, b, tol)
+
+             A   - input array
+
+             b   - input array
+
+             tol - optional real, threshold at which to zero out singular
+                   values. If not specified, all singular values are used.
+
+    Returns: A series or array
+
+
+    Example:
+             W1: gnorm(100,.01)
+
+             W2: 5*w1 + 3*sin(w1) - 2*w1^3
+
+             W3: ravel(w1, sin(w1), w1^3)
+
+             W4: Svddiv(W3, w2)
+
+             W4 == {5, 3, -2}, the coefficients of W2. 
+
+    Remarks:
+             SVDDIV solves the set of simultaneous equations as
+             specified by A and b.  Given the matrix equation:
+
+                          A *^ x = b
+
+             SVDDIV calculates:
+
+                 x = V *^ (1/W) *^ (transpose(U) *^ B)
+
+              where 
+
+                 A = U *^ W *^ transpose(V) 
+
+              as calculated by SVD.  By specifying TOL, singular
+              values less than TOL are eliminated and SVDDIV
+              essentially calculates a least squares fit.  A typical
+              value for TOL is EPS.  See [1] for further details.
+
+
+    See Also:
+             \^
+             QR
+             SVD
+
+    References:
+
+             [1] Press, Flannery, Teukolsky, Vetterling
+                 Numerical Recipes in C
+                 Cambridge Press, 1988
+                 pp. 407-552
+#endif
+
+
+
+/* solve A *^ x = b using singular value decomposition */
+svddiv(A, b, tol)
+{
+	local m, n, x, u, w, v, sing_edit = TRUE;
+
+	if (argc < 3) {
+		if (argc < 2) error("svddiv - two input matrices required");
+		sing_edit = FALSE;
+	}
+
+	/* get number of columns, n */
+	(m, n) = size(A);
+
+	/* get SVD matrices */
+	(u, w, v) = svd(A);
+
+
+	/* get diagonal elements */
+	w  = diag(extract(w, 1, n));
+
+	/* convert to diagonal matrix, edit singular values if necessary */
+	if (sing_edit) {
+		/* edit singular values, if w < tol then 1/w = 0 */
+		w  = diag((1/w) * (w > tol));
+	}
+	else { /* use inverse of computed singular values */
+		w = diag(1/w);
+	}
+
+	/* solve the system, use n columns */
+	x = v *^ (w *^ extract((conj(transpose(u)) *^ b), 1, n));
+	
+	return(x);
+}
+

@@ -1,0 +1,19 @@
+! AppTopic.men - Application Topics demo menu for DADiSP 4.0 
+@x20
+@y0
+@b{_bg2}
+@f{_fg2}
+       Application Topics
+
+ Identification of Signal Envelopes ~_MC;demoload("demoenv.dsp")
+
+ Stress-Strain Curve Analysis       ~_MC;demoload("demohyst.dsp")
+
+ Outlier Replacement                ~_MC;demoload("outlier.dsp")
+
+ Spectral Analysis                  ~_MC;demoload("Vibstdy1.dsp")
+
+ Climatology Data Analysis          ~_MC;demoload("climate.dsp")
+
+ Return to Demo Main Menu           ~_MC;DMF("DemoMenu.men")
+ 

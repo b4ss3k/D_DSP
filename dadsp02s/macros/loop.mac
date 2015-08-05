@@ -1,0 +1,367 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!                                 LOOP.MAC                                   !
+!                                                                            !
+!                              April 14, 1995                                !
+!                                                                            !
+!  Macros for general looping operations, including building series and      !
+!  matrices, and other looping operations.                                   !
+!  									     !	
+!  Note: DADiSP includes a Series Pocessing Language, SPL, designed 	     !
+!  specifically for manipulating data and performing actions within the	     ! 
+!  DADiSP worksheet environment.  SPL supports conditional statements,       !
+!  such as, IF-THEN-ELSE, WHILES loops, DO loops, and FOR loops.  See the    ! 
+!  chapter titled "Series Proccessing Language" in the User's Manual for     !
+!  more details.							     !
+!  									     !
+!                 Copyright (C) 1995 DSP Development Corp.                   !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!**********************************************************************!
+!                                                                      !
+!		     FORMULA-BASED LOOPING MACROS		       !
+!                                                                      !
+!**********************************************************************!
+
+! Use the following macros for looping on one or more index variables.  
+! Loops done with these macros are on the order of 50 times slower than
+! equivalent series or matrix operations in DADiSP, when they exist.
+! Therefore, use these macros only when you are sure that there is no
+! way to use the implicit looping mechanisms in DADiSP functions that
+! could accomplish the same thing.
+!
+! In all these macros, you use a formula involving the loop index. The
+! first argument to the loop macro is the loop index in quotes,
+! followed by the limits, and then a formula without quotes.  In the
+! formula, instead of simply typing the loop index, you must use EVAL
+! of the loop index, as the examples show.
+!
+! Example: To display the value of every point a series in W1:
+!
+!     FOR('J',1,LENGTH(W1),ECHO(GETPT(W1,EVAL('J')))
+!
+! Never use 'I' as a loop index.  In DADiSP, 'I' always stands for the
+! square root of -1.
+!
+! Loops may be nested.  To display the value of every point of a matrix
+! in W1, use the following:
+!
+!     FOR('M',1,LENGTH(W1),FOR('N',1,NUMCOLS(W1),
+!         ECHO(ENTRY(W1,EVAL('M'),EVAL('N')))))
+!
+! You could also use FOR2 for the above operation:
+!
+!     FOR2('M',1,LENGTH(W1),'N',1,NUMCOLS(W1),
+!         ECHO(ENTRY(W1,EVAL('M'),EVAL('N'))))
+!
+! Besides being simpler, FOR2 displays the values of both loop indexes,
+! whereas only the inner loop index is displayed with nested FOR's.
+!
+! All of the loop macros here turn off the display, generate their
+! output, and then turn on the display.  Each iteration flashes a
+! status message to inform you of the progress of the loop.  If you
+! wish to see the display as the loop progresses, simply delete the
+! 'POFF' and 'PON' at the beginning and end of the macros.
+
+!-----------------------------------------------------------------------
+! 
+! FOR executes a formula from a lower limit through an upper limit
+! using a loop index.  The loop index must be in quotes, but the
+! formula should not be.  The formula must be an executable expression
+! involving the loop index, except that all appearances of the loop
+! index must be replaced by EVAL of the loop index.
+!
+! For example, to display the value of every point a series in W1:
+!
+!     FOR('J',1,LENGTH(W1),ECHO(GETPT(W1,EVAL('J')))
+!
+!     V    = loop index in quotes
+!     P    = lower limit of loop index
+!     Q    = upper limit of loop index
+!     FORM = formula to be looped
+
+FOR(V,P,Q,FORM)		POFF;DEFMACRO(V,(P)-1,1);WHILE(EVAL(V)<Q,LOOP(V,FORM));PON
+LOOP(V,FORM)		DEFMACRO(V,EVAL(V)+1,1);ECHO(STRCAT(V,' = ',STRNUM(EVAL(V))));FORM
+
+!-----------------------------------------------------------------------
+! 
+! FOR2 executes a two-level nested loop: it executes a formula with two
+! loop indexes, each from a lower limit through an upper limit.  The
+! loop indexes must be in quotes, but the formula should not be.  The
+! formula must be an executable expression involving the loop indexes,
+! except that all appearances of the loop indexes must be replaced by
+! EVAL of the loop indexes.
+!
+! For example, to display the value of every point in a matrix in W1:
+!
+!     FOR2('M',1,LENGTH(W1),'N',1,NUMCOLS(W1),
+!         ECHO(ENTRY(W1,EVAL('M'),EVAL('N'))))
+!
+!     U    = outer loop index in quotes
+!     P    = lower limit of outer loop index
+!     Q    = upper limit of outer loop index
+!     V    = inner loop index in quotes
+!     R    = lower limit of inner loop index
+!     S    = upper limit of inner loop index
+!     FORM = formula to be looped
+
+FOR2(U,P,Q,V,R,S,FORM)	POFF;DEFMACRO(U,(P)-1,1);WHILE(EVAL(U)<Q,LOOP2O(U,V,R,S,FORM));PON
+LOOP2O(U,V,R,S,FORM)	DEFMACRO(U,EVAL(U)+1,1);DEFMACRO(V,(R)-1,1);WHILE(EVAL(V)<S,LOOP2I(U,V,FORM))
+LOOP2I(U,V,FORM)	DEFMACRO(V,EVAL(V)+1,1);ECHO(STRCAT(U,' = ',STRNUM(EVAL(U)),', ',V,' = ',STRNUM(EVAL(V))));FORM
+
+!-----------------------------------------------------------------------
+! 
+! BUILDSP builds up a series point by point.  It takes one formula,
+! which must evaluate to a scalar, and which involves a variable point
+! number.  It builds the series up as the point number variable loops
+! from 1 to the number of points.  The formula must be an executable
+! expression involving the point number variable, except that all
+! appearances of the point number variable must be replaced by EVAL of
+! the variable.
+!
+! For example, if Wn[k] denotes the k-th point of Wn, to create a
+! series in W2 in which  W2[1] = W1[1]  and for  n > 1,  W2[n] = 
+! W1[n] + W1[n-1]:
+! 
+!     BUILDSP('N',LENGTH(W1),IF(EVAL('N')==1,GETPT(W1,1),
+!         GETPT(W1,EVAL('N'))+GETPT(W1,EVAL('N')-1)))
+! 
+!     V    = point number variable in quotes
+!     P    = number of points
+!     FORM = formula of scalar to be built
+
+BUILDSP(V,P,FORM)	POFF;GLINE(FLOOR(P),1,0,0);DEFMACRO(V,0,1);WHILE(EVAL(V)<P,LOOP(V,SETPT(CURR,FORM,FLOOR(EVAL(V)))));PON
+
+!-----------------------------------------------------------------------
+! 
+! BUILDSS builds up a series as a concatenation of smaller series.  It
+! takes one formula, which must evaluate to a series, and which
+! involves a loop index.  It builds the series up as the loop index
+! loops from a lower limit to an upper limit.  The formula must be an
+! executable expression involving the loop index, except that all
+! appearances of the loop index must be replaced by EVAL of the loop
+! index.
+!
+! For example, to build a variable-width step function which is
+! composed of line segments, where the number of points of the k-th
+! segment is the k-th value in W1, and the height of the k-th step is
+! k:
+! 
+!     BUILDSS('K',1,LENGTH(W1),GLINE(INT(GETPT(W1,EVAL('K'))),1,0,
+!         EVAL('K')))
+!
+!     V    = loop index in quotes
+!     P    = lower limit of loop index
+!     Q    = upper limit of loop index
+!     FORM = formula of component series
+
+BUILDSS(V,P,Q,FORM)	POFF;DEFMACRO(V,(P)-1,1);LOOP(V,FORM);WHILE(EVAL(V)<Q,LOOP(V,CONCAT(CURR,FORM)));PON
+
+!-----------------------------------------------------------------------
+! 
+! BUILDMP builds up a matrix point by point.  It takes one formula,
+! which must evaluate to a scalar, and which involves two variables, a
+! row number and a column number.  It builds the matrix up as the two
+! variables loop from 1 to the number of rows and columns.  The formula
+! must be an executable expression involving the row and column
+! variables, except that all appearances of the row and column
+! variables must be replaced by EVAL of the variables.
+!
+! For example, if Wn[m,n] denotes the entry at the m-th row and n-th
+! column point of Wn, to create a matrix in W2 in which  W2[1,n] =
+! W1[1,n], W2[m,1] = W1[m,1], and elsewhere W2[m,n] = W1[m,n] +
+! W1[m-1,n] + W1[m,n-1]:
+! 
+!     BUILDMP('M',LENGTH(W1),'N',NUMCOLS(W1),
+!         IF(EVAL('M')==1,ENTRY(W1,1,EVAL('N'),
+!         IF(EVAL('N')==1,ENTRY(W1,EVAL('M'),1),
+!         ENTRY(W1,EVAL('M'),EVAL('N'))+
+!         ENTRY(W1,EVAL('M')-1,EVAL('N'))+
+!         ENTRY(W1,EVAL('M'),EVAL('N')-1))))
+! 
+!     U    = row number variable in quotes
+!     P    = number of rows
+!     V    = column number variable in quotes
+!     Q    = number of columns
+!     FORM = formula of scalar to be built
+
+BUILDMP(U,P,V,Q,FORM)	POFF;GLINE(FLOOR(P*Q),1,0,0);DEFMACRO(U,0,1);WHILE(EVAL(U)<P,LOOP2O(U,V,1,Q,SETPT(CURR,FORM,FLOOR((EVAL(V)-1)*(P)+EVAL(U)))));RAVEL(CURR,P);PON
+
+!-----------------------------------------------------------------------
+! 
+! BUILDMC builds up a matrix column by column.  It takes one formula,
+! which must evaluate to a series, and which involves a variable
+! column number.  It builds the matrix up as the column variable loops
+! from 1 to the number of columns.  The formula must be an executable
+! expression involving the column variable, except that all appearances
+! of the column variable must be replaced by EVAL of the variable.
+!
+! For example, to build a matrix with 18 columns, each column
+! consisting of points N^2 to N^2 + 5 of W1, where N is the column
+! number:
+!
+!     BUILDMC('N',18,EXTRACT(W1,EVAL('N')^2,5))
+! 
+!     V    = column number variable in quotes
+!     P    = number of columns
+!     FORM = formula of column series
+
+BUILDMC(V,P,FORM)	POFF;DEFMACRO(V,0,1);LOOP(V,FORM);WHILE(EVAL(V)<P,LOOP(V,RAVEL(CURR,FORM)));PON
+
+!-----------------------------------------------------------------------
+! 
+! BUILDMR builds up a matrix row by row.  It takes one formula, which
+! must evaluate to a series, and which involves a variable row number.
+! It builds the matrix up as row number loops from 1 to the number of
+! rows.  The formula must be an executable expression involving the row
+! variable, except that all appearances of the row variable must be
+! replaced by EVAL of the variable.
+!
+! For example, to build a matrix with 18 rows, each row consisting of
+! points N^2 to N^2 + 5 of W1, where N is the row number:
+!
+!     BUILDMR('N',18,EXTRACT(W1,EVAL('N')^2,5))
+! 
+!     V    = row number variable in quotes
+!     P    = number of rows
+!     FORM = formula of row series
+
+BUILDMR(V,P,FORM)	POFF;DEFMACRO(V,0,1);LOOP(V,TRANSPOSE(FORM));WHILE(EVAL(V)<P,LOOP(V,CONCAT(CURR,TRANSPOSE(FORM))));PON
+
+!**********************************************************************!
+!                                                                      !
+!		     STRING-BASED LOOPING MACROS		       !
+!                                                                      !
+!**********************************************************************!
+
+! The following are string-based looping macros.  They differ from the
+! formula-based looping macros above only in that the formula is passed
+! as a string, i.e. in quotes, which eliminates the need to use 
+! EVAL('N') in place of N.
+!
+! For example, for the forumula-based loop:
+!
+!     FOR1(1,LENGTH(W1),ECHO(EXP(GETPT(W1,EVAL('N'))))
+!
+! the equivalent string-based loop is:
+!
+!     FOR1S(1,LENGTH(W1),'ECHO(EXP(GETPT(W1,N)))')
+!
+! and for the formula-based loop:
+!
+!     BUILDP2(1,LENGTH(W1),GETPT(W1,EVAL('N')),
+!         GETPT(W1,EVAL('N'))+GETPT(W1,EVAL('N')-1))
+!
+! the equivalent string-based loop is:
+!
+!     BUILDP2(1,LENGTH(W1),'GETPT(W1,N)',
+!         'GETPT(W1,N)+GETPT(W1,N)-1)')
+!
+! String-based loops are about 3 to 10 times slower than formula-based
+! loops, because the string is recompiled on each iteration.  String-
+! based loops cannot be used in other macros, nor can they be nested.
+!
+! However, string-based loops continue to execute through errors.  When
+! a formula in a formula-based loop fails to return a proper result,
+! the entire loop terminates.  Thus the string-based loops should be
+! used when you need to keep looping past an error condition.
+
+!-----------------------------------------------------------------------
+! 
+! FORS executes a command string from a lower limit through an upper
+! limit.  The command string must be an executable string expression,
+! in which the loop index is always referred to as N.  The command
+! string must be in quotes or be constructed as a string expression.
+!
+! For example, to display the value of EXP of every point of W1:
+!
+!     FORS(1,LENGTH(W1),'ECHO(EXP(GETPT(W1,N)))')
+!
+!     P   = lower limit of loop index N
+!     Q   = upper limit of loop index N
+!     STR = command string in quotes or string expression
+
+FORS(P,Q,STR)		POFF;DEFMACRO('N',(P)-1,1);WHILE(STRCAT('N<',STRNUM(Q)),STRCAT('LOOPSTR("',STR,'")'));PON
+LOOPSTR(STR)		DEFMACRO('N',EVAL('N+1'),1);ECHO(STRCAT('N = ',STRNUM(EVAL('N'))));EVAL(STR)
+
+!-----------------------------------------------------------------------
+! 
+! BUILDSPS builds a series up point by point.  It takes one command
+! string, which must evaluate to a scalar, and which involves a loop
+! index.  It builds the series up as the loop index loops from 1 to the
+! number of points.  The command string must be an executable string
+! expression, in which the loop index is always referred to as N.  The
+! command string must be in quotes or be constructed as a string
+! expression.
+!
+!     P   = number of points
+!     STR = command string in quotes or string expression
+
+BUILDSPS(P,STR)		POFF;DEFMACRO('N',0,1);LOOPSTR(STRCAT('GSER(',STR,')'));WHILE(STRCAT('N<',STRNUM(P)),STRCAT('LOOPSTR(STRCAT("CONCAT(CURR,GSER(',STR,'))"))'));PON
+
+!-----------------------------------------------------------------------
+! 
+! BUILDSSS builds a series up as a concatenation of smaller series.  It
+! takes one command string, which must evaluate to a series, and which
+! involves a loop index.  It builds the series up as the loop index
+! loops from a lower limit to an upper limit.  The command string must
+! be an executable string expression, in which the loop index is always
+! referred to as N.  The command string must be in quotes or be
+! constructed as a string expression.
+!
+! For example, to build a variable-width step function which is
+! composed of line segments, where the number of points of the n-th
+! segment is the n-th value in W1, and the height of the n-th step is
+! n:
+! 
+!     BUILDSSS(1,LENGTH(W1),'GLINE(INT(GETPT(W1,N))),1,0,N)')
+!
+!     P   = lower limit of loop index N
+!     Q   = upper limit of loop index N
+!     STR = command string in quotes or string expression
+
+BUILDSSS(P,Q,STR)	POFF;DEFMACRO('N',(P)-1,1);LOOPSTR(STR);WHILE(STRCAT('N<',STRNUM(Q)),STRCAT('LOOPSTR(STRCAT("CONCAT(CURR,',STR,')"))'));PON
+
+!-----------------------------------------------------------------------
+! 
+! BUILDMCS builds up a matrix column by column.  It takes one command
+! string, which must evaluate to a series, and which involves a loop
+! index.  It builds the matrix up as the loop index loops from 1 to the
+! number of columns.  The command string must be an executable string
+! expression, in which the loop index is always referred to as N.  The
+! command string must be in quotes or be constructed as a string
+! expression.
+!
+! For example, to build a matrix with 18 columns, each column
+! consisting of points N^2 to N^2 + 5 of W1, where N is the column
+! number:
+!
+!     BUILDMCS(18,'EXTRACT(W1,N^2,5)')
+! 
+!     P   = number of columns
+!     STR = command string in quotes or string expression
+
+BUILDMCS(P,STR)		POFF;DEFMACRO('N',0,1);LOOPSTR(STR);WHILE(STRCAT('N<',STRNUM(P)),STRCAT('LOOPSTR(STRCAT("RAVEL(CURR,',STR,')"))'));PON
+
+!-----------------------------------------------------------------------
+! 
+! BUILDMRS builds up a matrix row by row.  It takes one command string,
+! which must evaluate to a series, and which involves a loop index.  It
+! builds the matrix up as the loop index loops from 1 to the number of
+! rows.  The command string must be an executable string expression, in
+! which the loop index is always referred to as N.  The command string
+! must be in quotes or be constructed as a string expression.
+!
+! For example, to build a matrix with 18 rows, each row consisting of
+! points N^2 to N^2 + 5 of W1, where N is the row number:
+!
+!     BUILDMRS(18,'EXTRACT(W1,N^2,5)')
+! 
+!     P   = number of rows
+!     STR = command string in quotes or string expression
+
+BUILDMRS(P,STR)		POFF;DEFMACRO('N',0,1);LOOPSTR(STRCAT('TRANSPOSE(',STR,')'));WHILE(STRCAT('N<',STRNUM(P)),STRCAT('LOOPSTR(STRCAT("CONCAT(CURR,TRANSPOSE(',STR,'))"))'));PON
+
+!=============================== END ===================================

@@ -1,0 +1,23 @@
+/* resets metafile menu parameters */
+_defmeta()
+{
+	setvar("_mfres", castint(getconfdefault("METAFILE_USE_PRINTER")));
+	setvar("_mfwi",  castint(getconfdefault("METAFILE_WIDTH")));
+	setvar("_mfhi",  castint(getconfdefault("METAFILE_HEIGHT")));
+	setvar("_mfdim", getvar("_mfwi")>0);
+	setvar("_mftof", 0);
+	setvar("_mftof",  castint(getconfdefault("METAFILE_USE_FILE")));
+	setvar("_mffn",   getconfdefault("METAFILE_FILENAME"));
+	setvar("_mftyp",  castint(getconfdefault("METAFILE_TYPE")));
+
+	if (getvar("_mfwi") <= 0) {
+		setvar("_mfwi", 6);
+		setvar("_mfhi", 4);
+	}
+
+	setvar("_cbf1", _getcbf(1,1));
+	setvar("_cbf2", _getcbf(2,1));
+	setvar("_cbf4", _getcbf(4,1));
+	setvar("_cbf8", _getcbf(8,1));
+}
+

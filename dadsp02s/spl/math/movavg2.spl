@@ -1,0 +1,84 @@
+/*****************************************************************************
+*                                                                            *
+*   MOVAVG2.SPL  Copyright (C) 1999 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Moving average with end point padding                       *
+*                                                                            *
+*   Revisions:    8 Sep 1999  RRR  Creation - from SERIES.MAC                *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_MOVAVG2
+
+    MOVAVG2   
+
+    Purpose: Moving average with end point padding
+                                                                        
+    Format:  MOVAVG2(s, n)
+
+              s - a series, the input data
+
+              n - an integer, number of points to average as the series is 
+                  processed
+
+
+    Returns: A series
+
+
+    Example:
+             W1: 1..10
+             W2: movavg(w1, 3)
+             W3: movavg2(w1, 3)
+
+             W2 contains the series: 
+
+             {1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 9.5, 10.0}
+
+             and W3 conatins the series:
+
+             {1.333, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 9.667}
+
+             The standard moving average ramps the average up and down
+             at the end points whereas MOVAVG2 pads the endpoints.
+
+    Remarks: 
+             MOVAVG2 is an adjusted moving average.  The standard
+             MOVAVG function performs a "stepped up" average at the
+             start of the series and a "stepped down" average at the
+             end.  MOVAVG2 pads the end points with the initial and
+             final values before calculating the moving average.
+
+
+    See Also:
+             Movavg
+#endif
+
+
+/* moving average with end point padding */
+movavg2(s, n)
+{
+	local l, t;
+
+	/* check input arguments */
+	if (argc < 2) error("movavg2 - input series number of points required");
+
+	l = length(s);
+
+	/* pad end points with first and last values */
+	t = concat(rep({s[1, ..]}, n), s, rep({s[l, ..]}, n));
+
+	/* calculate moving average and extract proper region */
+	t = extract(movavg(t, n), n + floor(n/2) + 1, l);
+
+	/* reset series attributes */
+	setxoffset(t, xoffset(s));
+	setdeltax(t, deltax(s));
+	sethunits(t, gethunits(s));
+	setvunits(t, getvunits(s));
+
+	return(t);
+}

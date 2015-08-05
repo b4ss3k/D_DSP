@@ -1,0 +1,20 @@
+! mainhelp.men -- main help menu
+@y1
+@b{_helpbg}
+@f{_helpfg}
+                   The DADiSP Command Line Interface
+______________________________________________________________________
+
+ The command line interface allows you to enter any one of DADiSP's
+ hundreds of functions and macros directly from the keyboard.  You
+ may also run your own programs or DADiSP command files from the
+ command line.
+
+ To enter a command, you must be in an open Worksheet.  (You 
+ accessed this menu facility from an open Worksheet.)  Your 
+ keystrokes will appear on the edit line near the bottom of the
+ worksheet screen.
+
+ The DADiSP pop-up menus contain examples of functions that may
+ also be typed at the command line.  For a complete list of 
+ acceptable functions and their arguments, see the Reference Manual.

@@ -1,0 +1,10 @@
+! AxisSpan.hlp
+AXIS SPAN:
+Axes can extend over the entire plotting area or a portion of the plotting 
+area.  By default, scales appear staggered and extend for the entire plotting
+area.  This menu allows you to specify a portion or the plotting area for the
+scales.
+
+Specify the axis range to be displayed on the scales, and what percentage of
+the plotting area for the axis span.  The scales will appear flush with the 
+plotting area of the window.   

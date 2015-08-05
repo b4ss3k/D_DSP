@@ -1,0 +1,15 @@
+! seeds.mnu - Extracts the random number seeds for the various runs
+!             of a multiple-network training process.
+@x 0
+@y 0
+@panel
+
+    MLP Network Random Seeds
+
+  Extracts the random number seeds for the various
+
+  runs of a multiple-network training process.
+
+  Input:
+       Source Window:  Wn
+~menuc()

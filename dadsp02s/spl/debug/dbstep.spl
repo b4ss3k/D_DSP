@@ -1,0 +1,63 @@
+/*****************************************************************************
+*                                                                            *
+*   DBSTEP.SPL    Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Help text for dbstep                                       *
+*                                                                            *
+*   Revisions:    27 Jun 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_DBSTEP
+
+    DBSTEP
+
+    Purpose: Steps the debugger to the next executable line
+                                                                        
+    Format:  DBSTEP
+
+    Returns: Nothing, steps the debugger to the next line
+
+
+    Example:
+             dbstop myfunc
+             dbcont
+
+             myfunc(10)
+             dbstep
+
+             Sets a breakpoint in the SPL routine named myfunc and
+             starts debugging. The myfunc routine is then called and
+             DBSTEP steps the debugger to the next line.
+
+    Remarks:
+             Use DBCONT to start the debugging process. Use DBSTEP or
+             DBCONT to resume execution after a breakpoint has been
+             reached. Use DBQUIT to exit debugging. 
+
+             Use DBSTEPI to step into the SPL routine at the current
+             line number. Use DBSTEPO to step out of the current
+             function.
+
+             Any DADiSP command or function can be executed once a breakpoint 
+             has been reached.
+
+
+    See Also:
+             Dbclear
+             Dbcont
+             Dbdown
+             Dbquit
+             Dbstack
+             Dbstatus
+             Dbstepi
+             Dbstepo
+             Dbstop
+             Dbup
+             Locals
+             Vars
+#endif

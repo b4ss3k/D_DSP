@@ -1,0 +1,43 @@
+! prnopt.tab - print configuration settings while previewing
+@tabbed
+@apply
+Print Settings
+
+{setvar("_opscnt", 0)}
+{defvar("_prnopt_page", 0)}
+
+! margin settings
+{setvar("_prntmi", numstr(getconf("prt_yt")))}
+{setvar("_prnlmi", numstr(getconf("prt_xl")))}
+{setvar("_prnrmi", numstr(getconf("prt_xr")))}
+{setvar("_prnbmi", numstr(getconf("prt_yb")))}
+
+! misc settings
+{setvar("_prndec",   castint(getconf("PRT_DECIMATE")))}
+{setvar("_prnadp",   castint(getconf("PRT_ADJUST_PORTRAIT")))}
+{setvar("_prnort",   castint(getconf("PRT_ORIENTATION")))}
+{setvar("_prnfn",    getconf("PRT_FILE"))}
+{setvar("_prncoe",   castint(getconf("PRT_CHECK_ERROR")))}
+{setvar("_prntof",   castint(getconf("PRT_USE_FILE")))}
+{setvar("_prnlw",    castint(getconf("PRT_LINEWIDTH"))+1)}
+{setvar("_prnfs",    numstr(getconf("PRT_FONT_SCALE")))}
+{setvar("_prnxext",  getconf("PRT_X"))}
+{setvar("_prnyext",  getconf("PRT_Y"))}
+{setvar("_prnsdg",   castint(getconf("PRT_SETUP_DIALOG")))}
+
+! page size
+{setvar("_prncontin", castint(getconf("PRT_CONTINUOUS")))}
+{setvar("_prnphm",    castint(getconf("PRT_PAGE_HEIGHT")))}
+{setvar("_prnpwm",    castint(getconf("PRT_PAGE_WIDTH")))}
+{setvar("_prn_pwa",   castint(_prnpwm < 0))}
+{setvar("_prn_pha",   castint(_prnphm < 0))}
+
+{setmenupage(_prnopt_page)}
+
+~_MF("printopt.pan")
+~_MF("prtsize.pan")
+~_MF("setsysp.pan")
+
+
+~~setvar("_prnopt_page", getmenupage)
+~~updatepreview(0)

@@ -1,0 +1,51 @@
+/*****************************************************************************
+*                                                                            *
+*   XYZ.SPL      Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Help for XYZ plot                                           *
+*                                                                            *
+*   Revisions:   26 May 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_XYZ
+
+    XYZ
+
+    Purpose: Creates a 3D XYZ plot
+                                                                        
+    Format:  XYZ(xsig, ysig, zsig)
+
+              xsig - series to be used for X values
+              ysig - series to be used for Y values
+              zsig - series to be used for Z values
+
+    Returns: An XYZ series
+
+    Example:
+             XYZ(gsin(100, .01, 4), gcos(100, .01, 4), 0..0.01..0.99)
+
+             creates an XYZ spiral
+
+             Spin()
+
+             Spins the XYZ plot.
+
+    Remarks:
+             Use ROTATE3D to rotate an XYZ plot.  The configuration
+             parameters X_ROTATE3D, Y_ROTATE3D and Z_ROTATE3D set the
+             default rotation angles in degrees for an XYZ plot.  The
+             default values are X:20, Y:-15, Z:35 degrees.
+
+
+    See Also
+             Mouserotate
+             Rotate3d
+             Spin
+             XY
+#endif
+

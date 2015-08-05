@@ -1,0 +1,45 @@
+_dtype2s(s)
+{
+	local p;
+
+	s = caststring(s);
+
+	switch (s) {
+		case "SINT":
+			p = _SINTSTR;
+			break;
+
+		case "SBYTE":
+		default:
+			p = _SBYTESTR;
+			break;
+
+		case "UBYTE":
+			p = _UBYTESTR;
+			break;
+
+		case "UINT":
+			p = _UINTSTR;
+			break;
+
+		case "LONG":
+			p = _LONGSTR;
+			break;
+
+		case "FLOAT":
+			p = _FLOATSTR;
+			break;
+
+		case "DOUBLE":
+			p = _DOUBLESTR;
+			break;
+
+		case "ULONG":
+			p = _ULONGSTR;
+			break;
+
+	}
+
+	return(p);
+}
+

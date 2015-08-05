@@ -1,0 +1,17 @@
+/*****************************************************************************
+*                                                                            *
+*   DOMULTI       Copyright (C) 1997 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      DSP Development Corporation                                 *
+*                                                                            *
+*   Synopsis:    Supports multi channel header creation from pull down menu  *
+*                                                                            *
+*   Revisions:   17 Jul 1997  DSP  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+/* write_header() and other support routines */ 
+#include <writehed.spl>
+
+domulti  _mf("mcheader.pan")|_mf("mc_chan.pan")|_mf("mcnames.pan")|menuonthefly|write_header(_headfile)

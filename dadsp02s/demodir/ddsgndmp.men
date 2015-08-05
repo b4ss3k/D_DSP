@@ -1,0 +1,11 @@
+! This is a DSPTrial Menu 
+@panel
+@b{_bg1}
+@f{_fg1}
+           Damping Ratio          
+               
+ Damping Ratio:  <                >~_dsgndampc(<{_dsgndamp+0.0}>)~abs(input(1,"Damping Ratio"))
+ 
+ Constant: Natural Frequency. 
+! ~menuc();DMF("ddsgn2or.men")
+~menuc()        

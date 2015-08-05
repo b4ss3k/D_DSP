@@ -1,0 +1,137 @@
+/*****************************************************************************
+*                                                                            *
+*   XCORR.SPL   Copyright (C) 2000 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Cross-correlation using convolution                         *
+*                                                                            *
+*   Revisions:    2 May 2000  RRR  Creation - from FREQ.MAC                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_XCORR
+
+    XCORR
+
+    Purpose: Cross correlation using the covolution method
+                                                                        
+    Format:  XCORR(s1, s2, norm)
+
+                 s1 - input series
+
+                 s2 - input series
+
+               norm - optional integer, normalization method,
+
+                      0: None, 
+                      1: Unity (-1 to 1)
+                      2: Biased
+                      3: Unbiased
+
+                      defaults to 0: None
+
+
+    Returns: A series
+
+    Example:
+             W1: gsin(1000, .001, 4)
+             W2: gsin(1000, .001, 4)
+             W3: xcorr(w1, w2)
+
+             Performs the cross correlation of two sinewaves. The 
+             peaks of the result indicate the two waveforms are
+             very similar at the time intervals where the peaks
+             occur.
+
+    Example:
+             W1: gsin(1000, .001, 4)
+             W2: gnorm(1000, .001)
+             W3: xcorr(w1, w1, 1)
+             W4: xcorr(w1, w2, 1)
+
+             W3 displays the cross correlation of a sinewave normalized
+             to -1 and 1. W4 shows the cross correlation between a sinewave
+             and random noise. The normalized maximum of W3 is 1.0, indicating
+             perfect correlation at time t == 0. Although the waveform of
+             W4 displays some peaks, the normalized maximum is roughly 0.04 
+             indicating little correlation between W1 and W2. For
+             a graphical representation, overplot W4 in W3.
+
+
+    Remarks:
+             The cross-correlation is used to determine how similar two
+             series are to each other. XCORR performs correlation by 
+             computing the direct convolution of the input series. 
+
+             The output length L is:
+
+                      L = length(s1) + length(s2) - 1
+
+             For series of equal lengths and offsets, the zeroth lag
+             component is the mid point of the series.
+
+             The BIASED normalization divides the result by M, the 
+             maximum length of the input series.
+
+             The UNBIASED normalization divides the result by
+
+                              M - abs(M - i - 1) + 1
+
+             where i is the index of the result.
+
+             See FXCORR for the frequency domain implementation.
+
+
+    See Also:
+             Acorr
+             Conv
+             Facorr
+             Fconv
+             Fxcorr
+#endif
+
+
+/* time domain cross correlation */
+xcorr(s1, s2, norm)
+{
+	local len, maxlen, t, dx;
+
+	if (argc < 3) {
+		if (argc < 2) error("xcorr - 2 input series required");
+		norm = 0;
+	}
+
+
+	/* perform correlation in the time domain */
+	t = conv(rev(s1), s2);
+
+	/* normalization */
+	switch (norm) {
+		case 0:	/* none */
+		default:
+			break;
+
+		case 1: /* -1 to +1 */
+			t /= sqrt(colsum(s1*s1)*colsum(s2*s2));
+			break;
+
+		case 2: /* biased */
+			maxlen = maxval(collength(s1), collength(s2));
+			t /= maxlen;
+			break;
+
+		case 3: /* unbiased */
+			dx = deltax(t);
+			maxlen = maxval(length(s1), length(s2));
+			t /= ({1..maxlen, (maxlen-1)..1});
+			setdeltax(t, dx); // preserve original deltax 
+			break;
+
+	}
+
+	/* all done */
+	return(t);
+}
+

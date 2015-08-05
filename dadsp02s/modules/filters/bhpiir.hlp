@@ -1,0 +1,29 @@
+@modeless 1
+                Butterworth Highpass IIR Filter Parameters
+
+
+ Magnitude (dB) |
+                |
+                |                   
+                |
+          0  __ |               ____________   _
+                |              /                |
+                |             /                 |
+                | Stop Band  /   Pass Band      | Attenuation
+                |           /                   |
+      -Attn  __ | _________/                   _|
+                |
+                |________________________________________________________
+                          |     |             |        Frequency (Hz)
+                          f     f             f
+                           stop  cut           rate/2
+
+
+  frate  -  Sample Rate           Hz 
+
+  fstop  -  Stopband Frequency    Hz
+  fcut   -  Cutoff Frequency      Hz
+
+  attn   -  Stopband Attenuation  dB
+
+                        0 < fstop < fcut < frate/2

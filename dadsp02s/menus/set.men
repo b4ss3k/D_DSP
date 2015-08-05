@@ -1,0 +1,18 @@
+! Set.men -- Global settings menu
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+     Settings
+
+ Global Colors     ~_MF("gcolor.pan")
+! Menu Colors       ~_MF("color1.men")
+ Error Beep On     ~_MC ; beep(1)
+ Error Beep Off    ~_MC ; beep(0)
+ Auto Recalc On    ~_MC ; CALC(1)
+ Auto Recalc Off   ~_MC ; CALC(0)
+ Set to Degrees    ~_MC ; SETDEGREE ; Echo("Set to Degrees")
+ Set to Radians    ~_MC ; SETRADIAN ; Echo("Set to Radians")
+ Precision         ~_deffname('SETPREC   Set Display Precision') | _defformat('Setprec(number digits)') | _defxamp('Setprec(4)') | _getint1('Digits After Decimal:') |_evalint('Setprec')
+ Conformity        ~_mf("conform.men")
+ Numerical Format  ~_mf("sformat.men")

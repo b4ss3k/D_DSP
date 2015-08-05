@@ -1,0 +1,778 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!                                 MATRIX.MAC                                 !
+!                                                                            !
+!                               March 27, 1995                               ! 
+!                                                                            !
+!  Matrix operations:  access row and column numbers; generate elementary    !
+!  vectors and matrices; add, delete and substitute rows and columns;        !
+!  rotate and shift a matrix; change individual points; compute matrix       !
+!  shape; compute row and column statistics; compute overall matrix          !
+!  statistics; generate Toeplitz and Vandermonde matrices; reshape matrix;   !
+!  and extract triangular regions; compute the rank of a square matrix;      !
+!  linear interpolate a matrix.         				     !
+!                                                                            !
+!                Copyright (C) 1995 DSP Development Corporation              !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!**********************************************************************!
+!                                                                      !
+!                         ROW AND COLUMN NUMBERS                       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! NUMROWS returns the number of rows in a matrix.
+!
+!     M = input matrix
+
+NUMROWS(M)     INT(MAX(COLLENGTH(M)))
+
+!-----------------------------------------------------------------------
+!
+! ROWNOS returns a matrix of the row numbers of the input matrix.
+!
+!     M = input matrix
+
+ROWNOS(M)      RAVEL(REPLICATE(GLINE(NUMROWS(M),1,1,1),NUMCOLS(M)),NUMCOLS(M))
+
+!-----------------------------------------------------------------------
+!
+! COLNOS returns a matrix of the column numbers of the input matrix.
+!
+!     M = input matrix
+
+COLNOS(M)      TRANSPOSE(RAVEL(REPLICATE(GLINE(NUMCOLS(M),1,1,1),NUMROWS(M)),NUMROWS(M)))
+
+!**********************************************************************!
+!                                                                      !
+!                          VECTOR GENERATORS                           !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! GVCONST generates a column vector whose entries are all the same
+! value.
+!
+!     N   = number of entries
+!     VAL = value of each entry
+
+GVCONST(N,VAL) GLINE(INT(N),1,0,VAL)
+
+!-----------------------------------------------------------------------
+!
+! GVZEROS generates a column vector of all zeros.
+!
+!     N = number of entries
+
+GVZEROS(N)     GVCONST(N,0)
+
+!-----------------------------------------------------------------------
+!
+! GVONES generates a column vector of all ones.
+!
+!     N = number of entries
+
+GVONES(N)      GVCONST(N,1)
+
+!-----------------------------------------------------------------------
+!
+! GVINDEX generates a column vector in which each entry is equal to its
+! row number.
+!
+!     N = number of entries
+
+GVINDEX(N)     GLINE(INT(N),1,1,1)
+
+!-----------------------------------------------------------------------
+!
+! GVTRI generates a triangular vector.
+!
+!     N = number of entries
+
+GVTRI(N)       CONCAT(GLINE(FLOOR((N)/2),1,1,1),GLINE(CEILING((N)/2),1,1,1))
+
+!**********************************************************************!
+!                                                                      !
+!                          MATRIX GENERATORS                           !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! GMIDENT generates an identity matrix.
+!
+!     N = number of rows and columns (order) in the matrix
+
+GMIDENT(N)     RAVEL(EXTRACT(REPLICATE(CONCAT(GSER(1),GVZEROS(N)),N),1,(N)*(N)),N)
+
+!-----------------------------------------------------------------------
+!
+! GMCONST generates a matrix whose entries are all the same value.
+!
+!     NROW = number of rows
+!     NCOL = number of columns
+!     VAL  = value of each entry
+
+GMCONST(NROW,NCOL,VAL)        RAVEL(REPLICATE(GVCONST(NROW,VAL),NCOL),NROW)
+
+!-----------------------------------------------------------------------
+!
+! GMZEROS generates a matrix of all zeros.
+!
+!     NROW = number of rows
+!     NCOL = number of columns
+
+GMZEROS(NROW,NCOL)        GMCONST(NROW,NCOL,0)
+
+!-----------------------------------------------------------------------
+!
+! GMONES generates a matrix of all ones.
+!
+!     NROW = number of rows
+!     NCOL = number of columns
+
+GMONES(NROW,NCOL)        GMCONST(NROW,NCOL,1)
+
+!-----------------------------------------------------------------------
+!
+! GMROWNOS generates a matrix of row numbers for a matrix of given
+! dimensions.
+!
+!     NROW = number of rows
+!     NCOL = number of columns
+
+GMROWNOS(NROW,NCOL)        RAVEL(REPLICATE(GLINE(NROW,1,1,1),NCOL),NCOL)
+
+!-----------------------------------------------------------------------
+!
+! GMCOLNOS generates a matrix of column numbers for a matrix of given
+! dimensions.
+!
+!     NROW = number of rows
+!     NCOL = number of columns
+
+GMCOLNOS(NROW,NCOL)        TRANSPOSE(RAVEL(REPLICATE(GLINE(NCOL,1,1,1),NROW),NROW))
+
+!**********************************************************************!
+!                                                                      !
+!                          REGION PROCESSING                           !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! ADDROW appends a series as a row to a matrix.
+!
+!     M = matrix to be added to
+!     S = series to be added as a row
+
+ADDROW(M,S)    CONCAT(M,S)
+
+!-----------------------------------------------------------------------
+!
+! ADDCOL appends a series as a column to a matrix.
+!
+!     M = matrix to be added to
+!     S = series to be added as a column
+
+ADDCOL(M,S)    RAVEL(M,S)
+
+!-----------------------------------------------------------------------
+!
+! ADDZEROROW appends a zero row to a matrix.
+!
+!     M = matrix to be added to
+
+ADDZEROROW(M)  CONCAT(M,GMZEROS(1,NUMCOLS(M)))
+
+!-----------------------------------------------------------------------
+!
+! ADDZEROCOL appends a zero column to a matrix.
+!
+!     M = matrix to be added to
+
+ADDZEROCOL(M)  RAVEL(M,GVZEROS(NUMROWS(M)))
+
+!-----------------------------------------------------------------------
+!
+! DROPROW removes the last row from a matrix.
+!
+!     M = matrix to remove from
+
+DROPROW(M)     REGION(M,1,NUMROWS(M)-1,1,NUMCOLS(M))
+
+!-----------------------------------------------------------------------
+!
+! DROPCOL removes the last column from a matrix.
+!
+!     M = matrix to remove from
+
+DROPCOL(M)     REGION(M,1,NUMROWS(M),1,NUMCOLS(M)-1)
+
+!-----------------------------------------------------------------------
+!
+! DELETEROW removes the n-th row from a matrix.
+!
+!     M = matrix to remove from
+!     N = row number of row to remove
+
+DELETEROW(M,N) IF(N==1,REGION(M,2,NUMROWS(M)-1,1,NUMCOLS(M)),IF(N==NUMROWS(M),REGION(M,1,NUMROWS(M)-1,1,NUMCOLS(M)),CONCAT(REGION(M,1,(N)-1,1,NUMCOLS(M)),REGION(M,(N)+1,NUMROWS(M)-(N),1,NUMCOLS(M)))))
+
+!-----------------------------------------------------------------------
+!
+! DELETECOL removes the n-th column from a matrix.
+!
+!     M = matrix to remove from
+!     N = column number of column to remove
+
+DELETECOL(M,N) IF(N==1,REGION(M,1,NUMROWS(M),2,NUMCOLS(M)-1),IF(N==NUMCOLS(M),REGION(M,1,NUMROWS(M),1,NUMCOLS(M)-1),RAVEL(REGION(M,1,NUMROWS(M),1,(N)-1),REGION(M,1,NUMROWS(M),(N)+1,NUMCOLS(M)-(N)))))
+
+!-----------------------------------------------------------------------
+!
+! SUBSTROW substitutes a series into the n-th row of a max.
+!
+!     M = matrix to substitute into
+!     N = row number to substitute at
+!     S = series to substitute in
+
+SUBSTROW(M,N,S)  IF(N==1,CONCAT(TRANSPOSE(S),REGION(M,2,NUMROWS(M)-1,1,NUMCOLS(M))),IF(N==NUMROWS(M),CONCAT(REGION(M,1,NUMROWS(M)-1,1,NUMCOLS(M)),TRANSPOSE(S)),CONCAT(REGION(M,1,(N)-1,1,NUMCOLS(M)),TRANSPOSE(S),REGION(M,(N)+1,NUMROWS(M)-(N),1,NUMCOLS(M)))))
+
+!-----------------------------------------------------------------------
+!
+! SUBSTCOL substitutes a series into the n-th column of a matrix.
+!
+!     M = matrix to substitute into
+!     N = column number to substitute at
+!     S = series to substitute in
+
+SUBSTCOL(M,N,S)  IF(N==1,RAVEL(S,REGION(M,1,NUMROWS(M),2,NUMCOLS(M)-1)),IF(N==NUMCOLS(M),RAVEL(REGION(M,1,NUMROWS(M),1,NUMCOLS(M)-1),S),RAVEL(REGION(M,1,NUMROWS(M),1,(N)-1),S,REGION(M,1,NUMROWS(M),(N)+1,NUMCOLS(M)-(N)))))
+
+!**********************************************************************!
+!                                                                      !
+!   		        ROTATE AND SHIFT A MATRIX                      !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! ROTATEL rotates a matrix to the left by any number of columns.  Each
+! row is moved left by the indicated number of columns, and the extreme
+! left columns are appended to the right of the matrix.
+!
+!     M = matrix to rotate left
+!     N = number of positions (columns) to rotate left by
+
+ROTATEL(M,N)		RAVEL(REGION(M,1,LENGTH(M),(N)+1,SERCOUNT(M)-(N)),REGION(M,1,LENGTH(M),1,N))
+
+!-----------------------------------------------------------------------
+!
+! ROTATER rotates a matrix to the right by any number of columns.  Each
+! row is moved right by the indicated number of columns, and the
+! extreme right columns are appended to the left of the matrix.
+!
+!     M = matrix to rotate right
+!     N = number of positions (columns) to rotate right by
+
+ROTATER(M,N)		RAVEL(REGION(M,1,LENGTH(M),SERCOUNT(M)-(N)+1,N),REGION(M,1,LENGTH(M),1,NUMCOLS(M)-(N)))
+
+!-----------------------------------------------------------------------
+!
+! SHIFTL shifts a matrix to the left by any number of columns.  Each
+! row is moved left by the indicated number of columns, the extreme
+! left columns are lost, and the matrix is padded on the right with
+! zeros.
+!
+!     M = matrix to shift left
+!     N = number of positions (columns) to shift left by
+
+SHIFTL(M,N)		RAVEL(REGION(M,1,LENGTH(M),(N)+1,SERCOUNT(M)-(N)),0*REGION(M,1,LENGTH(M),1,N))
+
+!-----------------------------------------------------------------------
+!
+! SHIFTR shifts a matrix to the right by any number of columns.  Each
+! row is moved right by the indicated number of columns, the extreme
+! right columns are lost, and the matrix is padded on the left with
+! zeros.
+!
+!     M = matrix to shift right
+!     N = number of positions (columns) to shift right by
+
+SHIFTR(M,N)     RAVEL(0*REGION(M,1,LENGTH(M),1,(N)),REGION(M,1,LENGTH(M),1, SERCOUNT(M)-(N)))
+
+!**********************************************************************!
+!                                                                      !
+!                             POINT CHANGE                             !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! SETPM replaces an entry of the current matrix with a scalar, analogous
+! for series to SETPT without a series argument.
+!
+!     V = scalar to substitute in
+!     R = row number of entry
+!     C = column number of entry
+
+SETPM(V,R,C)   SUBSTCOL(CURRENT,C,SETPT(COL(CURRENT,C),V,R))
+
+!-----------------------------------------------------------------------
+!
+! SETPMS replaces an entry of any matrix with a scalar, analogous for
+! series to SETPT with a series argument.
+!
+!     M = matrix to substitute into
+!     V = scalar to substitute in
+!     R = row number of entry
+!     C = column number of entry
+
+SETPMS(M,V,R,C)  SUBSTCOL(M,C,SETPT(COL(M,C),V,R))
+
+!**********************************************************************!
+!                                                                      !
+!                              DIMENSIONS                              !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! MINDIM returns either the number of rows or the number of columns,
+! whichever is less.
+!
+!     M = input matrix
+
+MINDIM(M)      INT(MIN(GSER(NUMCOLS(M),NUMROWS(M))))
+
+!-----------------------------------------------------------------------
+!
+! MAXDIM returns either the number of rows or the number of columns,
+! whichever is greater.
+!
+!     M = input matrix
+
+MAXDIM(M)      INT(MAX(GSER(NUMCOLS(M),NUMROWS(M))))
+
+!**********************************************************************!
+!                                                                      !
+!                        ELEMENTARY STATISTICS                         !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! COLTOTAL returns a row vector in which each column of the matrix is
+! summed.
+!
+!     M = input matrix
+
+COLTOTAL(M)    COLREDUCE(M,'+')
+
+!-----------------------------------------------------------------------
+!
+! ROWTOTAL returns a column vector in which each row of the matrix is
+! summed.
+!
+!     M = input matrix
+
+ROWTOTAL(M)    ROWREDUCE(M,'+')
+
+!-----------------------------------------------------------------------
+!
+! ROWMAX returns a vector in which each entry is the maximum of each
+! row.
+!
+!     M = input matrix
+
+ROWMAX(M)      TRANSPOSE(COLMAX(TRANSPOSE(M)))
+
+!-----------------------------------------------------------------------
+!
+! ROWMEAN returns a vector in which each entry is the mean of each row.
+!
+!     M = input matrix
+
+ROWMEAN(M)     ROWTOTAL(M)/SERCOUNT(M)
+
+!-----------------------------------------------------------------------
+!
+! ROWMEDIAN returns a vector in which each entry is the median of each
+! row.
+!
+!     M = input matrix
+
+ROWMEDIAN(M)   TRANSPOSE(COLMEDIAN(TRANSPOSE(M)))
+
+!-----------------------------------------------------------------------
+!
+! ROWMIN returns a vector in which each entry is the minimum of each
+! row.
+!
+!     M = input matrix
+
+ROWMIN(M)      TRANSPOSE(COLMIN(TRANSPOSE(M)))
+
+!-----------------------------------------------------------------------
+!
+! ROWSTDEV returns a vector in which each entry is the standard
+! deviation of each row.
+!
+!     M = input matrix
+
+ROWSTDEV(M)    TRANSPOSE(COLSTDEV(TRANSPOSE(M)))
+
+!**********************************************************************!
+!                                                                      !
+!                      OVERALL MATRIX STATISTICS                       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! GRANDTOTAL returns the sum of all the entries of a matrix.
+!
+!     M = input matrix
+
+GRANDTOTAL(M)  REDUCE(UNRAVEL(M),'+')
+
+!-----------------------------------------------------------------------
+!
+! GRANDCOUNT returns total number of entries in a matrix.
+!
+!     M = input matrix
+
+GRANDCOUNT(M)  LENGTH(UNRAVEL(M))
+
+!-----------------------------------------------------------------------
+!
+! GRANDMEAN returns the mean of all the entries of a matrix.
+!
+!     M = input matrix
+
+GRANDMEAN(M)   MEAN(UNRAVEL(M))
+
+!-----------------------------------------------------------------------
+!
+! GRANDMAX returns the maximum of all the entries of a matrix.
+!
+!     M = input matrix
+
+GRANDMAX(M)    MAX(UNRAVEL(M))
+
+!-----------------------------------------------------------------------
+!
+! GRANDMIN returns the minimum of all the entries of a matrix.
+!
+!     M = input matrix
+
+GRANDMIN(M)    MIN(UNRAVEL(M))
+
+!-----------------------------------------------------------------------
+!
+! GRANDSTDEV returns the standard deviation of all the entries of a
+! matrix.
+!
+!     M = input matrix
+
+GRANDSTDEV(M)  STDEV(UNRAVEL(M)) 
+
+!**********************************************************************!
+!                                                                      !
+!                          TOEPLITZ MATRICES                           !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! TOEPLITZ creates a Toeplitz matrix from a vector.  A Toeplitz matrix
+! is a matrix which is constant on each one of its diagonals.  The
+! constants are specified in the input vector, and the output matrix
+! is a square matrix with the same number of rows as the input vector.
+
+TOEPLITZ(V)    LOWERTRI(TOELOW(V))+UPPERTRIX(TRANSPOSE(TOEUP(V)))
+TOELOW(V)      RAVEL(EXTRACT(REPLICATE(EXTRACT(V,1,LENGTH(V)+1),LENGTH(V)),1,LENGTH(V)^2),LENGTH(V))
+TOEUP(V)       RAVEL(EXTRACT(REPLICATE(CONCAT(GSER(0),EXTRACT(V,2,LENGTH(V))),LENGTH(V)),1,LENGTH(V)^2),LENGTH(V))
+
+!**********************************************************************!
+!                                                                      !
+!                         VANDERMONDE MATRICES                         !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! VANDERMONDE computes the Vandermonde matrix from a vector.
+!
+!     V = input vector
+
+VANDERMONDE(V) OUTERPROD(V,REVERSE(GVINDEX(LENGTH(V))-1),'^')
+
+!**********************************************************************!
+!                                                                      !
+!                          REGION PROCESSING                           !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! FLIPROW reverses the positions of the rows of a matrix.
+!
+!     M = matrix to be flipped
+
+FLIPROW(M)     REVERSE(M)
+
+!-----------------------------------------------------------------------
+!
+! FLIPCOL reverses the positions of the columns of a matrix.
+!
+!     M = matrix to be flipped
+
+FLIPCOL(M)     TRANSPOSE(REVERSE(TRANSPOSE(M)))
+
+!-----------------------------------------------------------------------
+!
+! TRSEC transposes the matrix about the secondary diagonal.
+!
+!     M = matrix to be transposed
+
+TRSEC(M)       TRANSPOSE(REVERSE(M))
+
+!-----------------------------------------------------------------------
+!
+! RESHAPEM changes the number of rows and columns in a matrix.  All of
+! its columns are laid end to end, and then it is put back into a
+! matrix of a specified number of rows and columns.  If the original
+! matrix is too small, the result is padded with zeros; if it is too
+! large, the result is truncated.
+!
+!     M    = matrix to be reshaped
+!     NROW = new number of rows
+!     NCOL = new number of columns
+!
+! Note: Previously named RESPAPE.
+
+RESHAPEM(M,NROW,NCOL)        RAVEL(EXTRACT(UNRAVEL(M),1,(NROW)*(NCOL)),NROW)
+
+!-----------------------------------------------------------------------
+!
+! UPPERTRI returns the upper triangle of a matrix, including the main
+! diagnonal, with the lower triangle zeroed out.
+!
+!     M = input matrix
+
+UPPERTRI(M)   (M)*(ROWNOS(M)<=COLNOS(M))
+
+!-----------------------------------------------------------------------
+!
+! UPPERTRIX returns the upper triangle of a matrix, excluding the main
+! diagnonal, with the lower triangle zeroed out.
+!
+!     M = input matrix
+
+UPPERTRIX(M)   (M)*(ROWNOS(M)<COLNOS(M))
+
+!-----------------------------------------------------------------------
+!
+! LOWERTRI returns the lower triangle of a matrix, including the main
+! diagnonal, with the upper triangle zeroed out.
+!
+!     M = input matrix
+
+LOWERTRI(M)    (M)*(ROWNOS(M)>=COLNOS(M))
+
+!-----------------------------------------------------------------------
+!
+! LOWERTRIX returns the lower triangle of a matrix, excluding the main
+! diagnonal, with the upper triangle zeroed out.
+!
+!     M = input matrix
+
+LOWERTRIX(M)   (M)*(ROWNOS(M)>COLNOS(M))
+
+
+
+!**********************************************************************!
+!                                                                      !
+!                    SINGULAR VALUE DECOMPOSITION                      !
+!                                                                      !
+!**********************************************************************!
+
+! These macros support the DADiSP SVD function.
+!
+! For more information on SVD, see:
+!
+! [1] Press, Flannery, Teukolsky, Vetterling
+!     Numerical Recipes in C
+!     Cambridge Press, 1988
+!     pp. 407-552
+!
+
+!-----------------------------------------------------------------------------
+!
+! SVDDIV performs matrix division using SVD.
+!
+! 	M1 = first input matrix
+!       M2 = second input matrix
+!
+! Solves the set of simultaneous equations as specified by M1 and M2.
+! Given the matrix equation A * X = B, SVDDIV calculates:
+!
+!                 X = V * [diag(1/W)] * (transpose(U) * B)
+!
+! where A = U * diag(W) * transpose(V) as calculated by SVD. See [1] for 
+! further details.
+!
+
+SVDDIV(M1, M2) SVD(M1,11);MMULT(MMULT(VSVD(CURR),IWSVD(CURR)),MMULT(TRANSPOSE(USVD(CURR)),M2))
+
+
+!-----------------------------------------------------------------------------
+!
+! SVDCOND returns the condition number of a matrix.
+! 
+!	M = input matrix
+!
+! The condition number is infinite for a singular matrix, thus a large 
+! condition number indicates an ill conditioned matrix. 
+
+SVDCOND(M)    (MAX(SVD(M))/MIN(SVD(M)))
+
+
+!-----------------------------------------------------------------------------
+!
+! USVD returns the left side of a pre-calculated SVD matrix.
+! 
+!	svdm = SVD matrix
+!
+! Given a SVD matrix SVDM, USVD returns the left matrix. This is equivalent
+! to SVD(M, 10) where M is the original input matrix. USVD is useful for 
+! extracting the left side from a matrix where the full SVD has already 
+! been calculated.
+!
+
+USVD(SVDM)    (REGION(SVDM,1,LENGTH(SVDM),2,SVDSIZE(SVDM)))
+
+
+!-----------------------------------------------------------------------------
+!
+! VSVD returns the right side of a pre-calculated SVD matrix.
+! 
+!	SVDM = SVD matrix
+!
+! Given a SVD matrix SVDM, VSVD returns the right matrix. This is equivalent
+! to SVD(M, 01) where M is the original input matrix. VSVD is useful for 
+! extracting the right side from a matrix where the full SVD has already 
+! been calculated.
+!
+
+VSVD(SVDM)    (REGION(SVDM,1,LENGTH(SVDM),SVDSIZE(SVDM)+2,SVDSIZE(SVDM)))
+
+
+!-----------------------------------------------------------------------------
+!
+! WSVD returns the diagonal of a pre-calculated SVD matrix.
+! 
+!	SVDM = SVD matrix
+!
+! Given a SVD matrix SVDM, WSVD returns the singular values in diagonal
+! form. This is equivalent to Diagonal(SVD(M)) where M is the original input 
+! matrix. WSVD is useful for extracting the diagonal from a matrix where the 
+! full SVD has already been calculated.
+!
+
+WSVD(SVDM)    (DIAGONAL(COL(SVDM,1)))
+
+
+!-----------------------------------------------------------------------------
+!
+! IWSVD returns the inverse diagonal of a pre-calculated SVD matrix.
+! 
+!	SVDM = SVD matrix
+!
+! Given a SVD matrix SVDM, IWSVD returns the inverse of the singular values 
+! in diagonal form. This is equivalent to Diagonal(1/SVD(M)) where M is the 
+! original input matrix. IWSVD is useful for extracting the inverse diagonal 
+! from a matrix where the full SVD has already been calculated. Note that
+! 0 values of the original diagonal matrix are set to 0 for the inverse
+! diagonal matrix.
+!
+
+IWSVD(SVDM)   (DIAGONAL(1/COL(SVDM,1)))
+
+
+!-----------------------------------------------------------------------------
+!
+! SVDSIZE returns the number of rows/columns of left/right SVD matrix.
+!
+!	SVDM = SVD matrix
+!
+
+SVDSIZE(SVDM)    (INT((-1+NUMCOLS(SVDM))/2))
+
+
+
+!**********************************************************************!
+!                                                                      !
+!                    RANK OF A SQUARE MATRIX                           !
+!                                                                      !
+!**********************************************************************!
+
+! Calculates the rank of a square matrix using singular value decomposition.
+! Given an N x N matrix A, if A is non-singular, then the rank of A is N.
+! If A is singular, the rank will be less than N.
+!
+!
+! For more information, see:
+!
+! [1] Press, Flannery, Teukolsky, Vetterling
+!     Numerical Recipes in C Second Edition
+!     Cambridge Press, 1988, 1992
+!     pp. 61-65
+
+!----------------------------------------------------------------------------
+!
+! RANK returns the rank of a square matrix.
+! 
+!	M = square matrix    
+!
+! The rank of a square matrix is the number of singular values larger than
+! RTOTAL as defined below.
+!
+! Example:
+!
+! W1:   1  2  3
+!       4  5  6
+!       7  8  9
+!
+! Rank(W1) returns 2
+!
+
+RANK(M)     (MAX(PARTSUM((SVD(M) > RTOTAL(M)))))
+
+RTOTAL(M)   (MAX(COLLEN(M))*NORM(M)*TOL)
+NORM(M)     (GETPT(SVD(M), 1))
+TOL         (NUMSTR(GETCONF("MATRIX_TOLERANCE")))
+
+
+!**********************************************************************!
+!                                                                      !
+!                        INTERPOLATE MATRIX                            !
+!                                                                      !
+!**********************************************************************!
+
+! Linearly interpolates of a matrix.
+
+!----------------------------------------------------------------------------
+!
+! INTERP2D returns the linear interpolation of a matrix.
+!
+!	S = input matrix
+!	N = integer used to interpolate the series.
+
+INTERP2D(S, N) 		TRANSPOSE(INTERP(TRANSPOSE(INTERP(S, N)), N))
+
+!=============================== END ===================================

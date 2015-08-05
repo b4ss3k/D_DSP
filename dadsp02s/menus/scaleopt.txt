@@ -1,0 +1,17 @@
+No Scales
+X bottom Y left
+X bottom Y left with labels
+X bottom Y right with labels
+X bottom Y right
+X top Y right
+X top Y left
+X top Y left with labels
+X top Y right with labels
+Y left
+Y right
+X bottom
+X top
+Y left with labels
+Y right with labels
+X bottom with labels
+X top with labels

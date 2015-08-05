@@ -1,0 +1,36 @@
+@tabbed
+@apply
+
+{sprintf("Chart Properties for W%d", getwnum)} 
+{setvar("_replot", 0);setvar("_rdraw", 0)}
+{defvar("_chart_page", 0)}
+
+{setmenupage(_chart_page)}
+
+! axis
+~_mfaxis()
+
+! grids
+~_mfgrid()
+
+! units
+~_mfunits()
+
+! labels
+~_mflabel()
+
+! series attributes 
+~_mfsctl()
+
+! Window attributse
+~_mf("winatts.pan")
+
+! table attributse
+~_mf("tblconf.pan")
+
+
+~~setvar("_chart_page", getmenupage)
+
+! replot window if necessary
+~~if(_replot, plotmode(1, 2))
+

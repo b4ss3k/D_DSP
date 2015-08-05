@@ -1,0 +1,9 @@
+_isser(str)
+{
+	local form, len;
+
+	form = sprintf("length(%s)", str);
+	len = eval(form);
+
+	return(len);
+}

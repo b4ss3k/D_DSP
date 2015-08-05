@@ -1,0 +1,35 @@
+! WksConf.hlp
+WORKSHEET CONFIGURATION
+
+DISPLAY PRECISION:
+Set the number of significant digits to display after the decimal place.  
+This affects only the display of a value; it does not affect the internal 
+precision used for calculations. Setting the Display Precision affects all 
+numerical displays in each Window of a Worksheet, including Window annotation.
+To observe the change in precision, the Window must be redrawn. 
+
+DEFAULT MATH VALUE:
+The math exemption return value is what is returned, for example, when there
+is a divide-by-zero error.
+
+BEEP:
+Turn automatic error beep on or off.
+
+DEBUG FILE OPTION:
+Monitor file searches and show path and filename all searches, only the 
+successful file opens, only the failed file opens, or no monitoring at all.
+This option is helpful for debugging and troubleshooting.
+
+TOOLBAR:
+The DADiSP Toolbar can be disabled.  A redraw is required for the Toolbar to
+appear/disappear.
+
+CLOCK:
+The clock can be displayed or disabled.  
+
+IGNORE SESSION:
+Configuration parameters changed during a DADiSP session are saved in the
+DADiSP session file, and are the defaults for the next session.  If you 
+ignore a session, then DADiSP will not write the session file at the end 
+before exiting, but it will read it upon the next startup.
+

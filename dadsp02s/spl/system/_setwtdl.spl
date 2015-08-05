@@ -1,0 +1,67 @@
+
+/* set writetable delimiters */
+_setwtdl(tab, space, comma, semi, other, otherstr, tocnf)
+{
+	local delim = "";
+
+	/* default args */
+	if (argc < 7) {
+		if (argc < 6) {
+			if (argc < 5) {
+				if (argc < 4) {
+					if (argc < 3) {
+						if (argc < 2) {
+							if (argc < 1) {
+								tab = "0";
+							}
+							space = "0";
+						}
+						comma = "0";
+					}
+					semi = "0";
+				}
+				other = "0";
+			}
+			otherstr = "";
+		}
+		tocnf = 0;
+	}
+
+
+	if (comma == "1") {
+		delim = strcat(delim, ",");
+	}
+	if (semi == "1") {
+		delim = strcat(delim, ";");
+	}
+	if (tab == "1") {
+		delim = strcat(delim, strescape("\t"));
+	}
+	if (other == "1") {
+		delim = strcat(delim, otherstr);
+	}
+	if (space == "1") {
+		delim = strcat(delim, " ");
+	}
+
+	if (strlen(delim) > 0) {
+		if (tocnf) {
+			/* add single quotes */
+			delim = sprintf("'%s'", delim);
+			setconf("column_separator", delim);
+		}
+		else {
+			setvar("_writet_delimiters", delim);
+		}
+	}
+	else { /* reset to default */
+		if (tocnf) {
+			setconf("column_separator", "");
+		}
+		else {
+			setvar("_writet_delimiters", "");
+		}
+	}
+}
+
+			

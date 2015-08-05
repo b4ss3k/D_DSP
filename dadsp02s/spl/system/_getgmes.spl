@@ -1,0 +1,41 @@
+
+/* return configuration of gui based messages */
+_getgmes(n)
+{
+	local val, retval;
+
+	if (argc < 1) n = 0;
+
+	/* gui based messages configuration value */
+	val = castint(getconf("gui_messages"));
+
+	switch (n) {
+		case 1:
+			/* status messages in status line */
+			retval = (val == 0 || val & 0x04);
+			break;
+
+		case 2:
+			/* status messages in message box */
+			retval = (val & 0x01);
+			break;
+
+		case 3:
+			/* error messages in status line */
+			retval = (val == 0 || val & 0x08);
+			break;
+
+		case 4:
+			/* error messages in message box */
+			retval = (val & 0x02);
+			break;
+
+		default:
+			retval = 0;
+			break;
+	}
+	return(retval != 0);
+}
+
+
+		

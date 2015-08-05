@@ -1,0 +1,447 @@
+/*****************************************************************************
+*                                                                            *
+*   STRIPCHART.SPL  Copyright (C) 2007 DSP Development Corporation           *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:         Randy Race                                               *
+*                                                                            *
+*   Synopsis:       Overlays multiple series in a stripchart fashion         *
+*                                                                            *
+*   Revisions:      27 Feb 2007  RRR  Creation                               *
+*                    1 Mar 2007  RRR  color support                          *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_STRIPCHART
+
+    STRIPCHART  
+
+    Purpose: Overlays multiple series with separate stacked scales.
+                                                                        
+    Format:  STRIPCHART(s1, ..., sN, altscales, gap, xgrid, ygrid, color1, ... colorN)
+ 
+                     sN - Optional. One or more series to stack. Defaults 
+                          to the series in the current window.
+
+              altscales - Optional. An integer, the scales location.
+
+                            0: left side of window (default)
+                            1: alternate left and right sides
+
+                    gap - Optional. A real bewteen 0 and 100. The 
+                          percentage gap between each overlay. Defaults
+                          to 0.0, no gap.
+
+                  xgrid - Optional. An integer, the X grid style for 
+                          each overlay.
+
+                           -1: inherit current window style (default)
+                            0: no grids
+                            1: solid
+                            2: dashed
+                            3: dotted
+
+                  ygrid - Optional. An integer, the Y grid style for 
+                          each overlay. Defaults to XGRID.
+
+                           -1: inherit current window style
+                            0: no grids
+                            1: solid
+                            2: dashed
+                            3: dotted
+
+                 colorN - Optional. A list of integers, the color for each
+                          series. Defaults to -1, each series automatically
+                          set to a different color. If only one color is
+                          specified, all the series are set to that color.
+
+
+    Returns: Nothing, the series are displayed as a stacked stripchart.
+
+    Example:
+             W1: stripchart(gnorm(100,1), integ(gnorm(100,1)), 10..80)
+
+             W1 contains a stripchart of 3 series spaced equally apart.
+
+    Example:
+             W1: stripchart(gnorm(100,1), integ(gnorm(100,1)), 10..80, 1, 10, 3, 3, lblue)
+
+             Same as above accept the scales alternate, a 10 percent gap is
+             inserted between each overlay, dotted grids are displayed and
+             each series is plotted in light blue.
+ 
+    Example:
+             W1: stripchart(gnorm(100,1), integ(gnorm(100,1)), 10..80, 1, 10, 3)
+             W2: integ(w1);stripchart(1, 10, 3, 3, lblue, lgreen, lred)
+
+             W1 contains a 3 trace stripchart. W2 integrates each trace and
+             displays a stripchart with alternating scales, a 10 percent gap
+             and dotted grids. The color of the third trace is set to light
+             red.
+
+             When W1 changes, W2 will automatically integrate each series in
+             W1 and display the result in W2 as a stripchart.
+ 
+   Remarks:
+             STRIPCHART can operate on a list of input series as shown
+             in the first example. STRIPCHART can also be used to set
+             a plot style as part a Window formula (shown in W2 of the
+             last example) or on a standalone basis.
+
+             STRIPCHART uses SPANY and SETY to arrange the series as
+             overlays with separate, stacked scales.
+
+             If no colors are specified, each series is automatically
+             plotted in a different color.
+
+             If only one color is specified, all series are plotted in
+             that color.
+
+             STRIPCHART also works with XY series. For example:
+
+                 a = xy(1..100, gnorm(100, 1));
+                 b = integ(a);
+                 c = deriv(a);
+                 W1: stripchart(a, b, c);
+
+             The X plotting range is set to the minimum and maximum of all
+             the traces.
+
+    See Also:
+             Setyauto
+             Spany
+             Staggery
+#endif
+
+
+/* create a stripchart display */
+stripchart(argv)
+{
+	local i, k, gap, alt, s, s1, nc, xgrid, ygrid, nfoc;
+	local n, color, colors, colset, incolors, xmin, xmax;
+
+	/* disable display */
+	poff;
+
+	numser = 0;
+	alt    = 0;    /* alternating scales - off */
+	gap    = 0.0;  /* gap between overlays as percentage - none */
+	xgrid  = -1;   /* xgrid style - unspecified */
+	ygrid  = -1;   /* ygrid style - unspecified */
+	colset = 0;    /* color unspecified */
+
+	/* parse args */
+	if (argc > 0) {
+		loop (i = 1..argc) {
+			if (IS_ARRAY(getargv(i))) {
+				/* input series */
+				numser++;
+			}
+			else {
+				/* alternative scales, gap percentage and grids */
+				alt = castint(getargv(i));
+				if (argc > i) {
+					gap = castreal(getargv(i+1));
+				}
+				if (argc > i + 1) {
+					xgrid = castint(getargv(i+2));
+				}
+				if (argc > i + 2) {
+					ygrid = castint(getargv(i+3));
+				}
+				else {
+					ygrid = xgrid;
+				}
+				if (argc > i + 3) {
+					/* remaining values are colors */
+					n = argc - i - 3;
+					incolors = -1 * ones(n, 1);
+					loop (k = 1..n) {
+						incolors[k] = castint(getargv(k + i + 3));
+					}
+					colset = 1;
+				}
+				break;
+			}
+		}
+	}
+	if (numser > 0) {
+
+		/* stick empty series in window to preserve window formula */
+		{};
+
+		/* have list of series - create overlays */
+		loop (i = 1..numser) {
+			if (itemtype(getargv(i)) == 2) {
+				/* multicolumn list */
+				nc = numcols(getargv(i));
+				loop (k = 1..nc) {
+					s = col(getargv(i), k);
+					if (i == 1 && k == 1) {
+						/* primary series */
+						s;
+					}
+					/* overlays */
+					else {
+						overlay(s);
+					}
+				}
+			}
+			else {
+				/* XY or XYZ item */
+				if (i == 1) {
+					getargv(i);
+				}
+				else {
+					overlay(getargv(i));
+				}
+			}
+		}
+		/* default grids to primary series grid style */
+		if (xgrid < 0) {
+			xgrid = getgridstyle(1);
+		}
+		if (ygrid < 0) {
+			ygrid = getgridstyle(2);
+		}
+	}
+	else {
+		/* no series args - check window for resident series */
+		if (getfocus(-1) == 1) {
+			nc = numitems;
+			if (nc > 1 && itemtype(refseries(W0, 1)) != 0) {
+				stripchart_setitems(w0, nc, 1);
+				loop (k = 1..nc) {
+					if (k == 1) {
+						eval(sprintf("_tempitem_%d", k));
+
+					}
+					else {
+						eval(sprintf("overlay(_tempitem_%d)", k));
+					}
+				}
+				stripchart_setitems(w0, nc, 0);
+			}
+			else {
+				/* have series but no overlays */
+				nc = numcols(W0);
+				/* get all series */
+				s = w0[.., ..];
+				loop (k = 1..nc) {
+					s1 = col(s, k);
+					if (k == 1) {
+						/* set primary series */
+						s1;
+					}
+					else {
+						/* overlay spans */
+						overlay(s1);
+					}
+				}
+			}
+			/* default grids to primary series grid style */
+			if (xgrid < 0) {
+				xgrid = getgridstyle(1);
+			}
+			if (ygrid < 0) {
+				ygrid = getgridstyle(2);
+			}
+		}
+	}
+
+	/* number of overlays */
+	nfoc = getfocus(-1);
+
+	/* overlay colors */
+	colors = -1 * ones(nfoc, 1);
+	if (colset) {
+		if (length(incolors) == 1) {
+			/* special case, set all colors */
+			color = incolors[1];
+			if (color == -1) {
+				/* default to primary series color */
+				color = getwcolor(1);
+			}
+			colors[1..nfoc] = color;
+		}
+		else {
+			/* use passed in colors */
+			n = min(nfoc, length(incolors));
+			colors[1..n] = incolors[1..n];
+		}
+	}
+
+	(xmin, xmax) = stripchart_xminmax(nfoc);
+
+	/* arrange all overlays with span and y range */
+	loop (i = 1..nfoc) {
+		stripchart_arrange(i, nfoc, alt, gap, xgrid, ygrid, xmin, xmax, colors[i]);
+	}
+
+	/* sync XY */
+	sync(3);
+
+	/* process as one item, allows dependent windows to process overlays */
+	itemprocess(1);
+
+	/* show it */
+	pon;
+}
+
+
+/* set span and y range for stripchart display */
+stripchart_arrange(n, nfoc, alt, gap, xgrid, ygrid, xmin, xmax, color)
+{
+	local f, yt, rt, rb, off, s, k;
+
+	if (argc < 2) nfoc  = getfocus(-1);
+	if (argc < 3) alt   = 0;
+	if (argc < 4) gap   = 0;
+	if (argc < 5) xgrid = -1;
+	if (argc < 6) ygrid = xgrid;
+	if (argc < 7) color = -1;
+
+	/* get current focus and sync */
+	f = getfocus();
+	s = getsync();
+
+	/* focus on current trace with no syncing */
+	focus(1);
+	sync(0);
+	focus(n);
+
+	/* reset ytics and autoscale to find plot range */
+	setytic(-1);
+	setyauto(-1, -1);
+	setxtic(-1);
+	setxauto(-1, -1);
+	if (n == 1 && itemtype(refseries(1)) == 1) {
+		/* range fix if first item is XY */
+		sety(min, max);
+	}
+	else {
+		autoscale();
+	}
+
+	/* set scales - check for alternating y scale location */
+	if (n == 1) {
+		/* first trace - Y left, X bottom with labels */
+		scales(2);
+	}
+	else {
+		if (alt) {
+			/* Y left or right with labels */
+			(n % 2 == 0) ? scales(14) : scales(13);
+		}
+		else {
+			/* Y left with labels */
+			scales(13);
+		}
+	}
+
+	/* stagger and span for this focus */
+	staggery(0);
+	spany(min, max);
+
+	/* save tic interval */
+	yt = ytic;
+
+	if (getylog) {
+		/* handle log scales */
+#if 0
+		rt = real(ceil(log10(max / 10^yt)) + yt);
+		rb = real(floor(log10(min / 10^yt)) + yt);
+#else
+		/* use automatic range */
+		rt = log10(getyt);
+		rb = log10(getyb);
+#endif
+	}
+	else {
+		/* linear scales */
+		rt = ceil(max / yt)  * yt;
+		rb = floor(min / yt) * yt;
+	}
+
+	/* total plot range including gap percentage */
+	rg = (rt - rb) * (1 + gap /100);
+
+	/* offset in window for this plot */
+	off = (nfoc + 1 - 2 * n);
+
+	/* plot factors for this plot */
+	k = (nfoc - 1) / 2;
+	off = (k - n + 1) * rg;
+
+	/* set y range to position this focus */
+	if (getylog) {
+		sety(10^(rb + (1 - n) * rg), 10^(rt + (2 * k + 1 - n) * rg));
+	}
+	else {
+		sety(rb + (1 - n) * rg, rt + (2 * k + 1 - n) * rg);
+	}
+
+	/* tics and grids */
+	setytic(yt);
+	if (xgrid >= 0) {
+		setgridstyle(1, xgrid);
+	}
+	if (ygrid >= 0) {
+		setgridstyle(2, ygrid);
+	}
+
+	if (color >= 0) {
+		setcolor(color);
+	}
+
+	/* set Y autoscale parameters */
+	setyauto(getyb, getyt);
+
+	/* set X axis */
+	setx(xmin, xmax);
+	setxauto(xmin, xmax);
+
+	focus(f);
+	sync(s);
+
+	return();
+}
+
+
+stripchart_setitems(win, nc, mode)
+{
+	local i, n;
+
+	if (mode == 1) {
+		n = getwnum(win);
+		loop (i = 1..nc) {
+			eval(sprintf("setvar('_tempitem_%d', refseries(castwin(%d), %d))", i, n, i));
+		}
+	}
+	else {
+		loop (i = 1..nc) {
+			eval(sprintf("delvar(_tempitem_%d)", i));
+		}
+	}
+}
+
+
+/* min/max of stripchart */
+stripchart_xminmax(nfoc)
+{
+	local i, xmin, xmax;
+
+	xmin = min(xvals(refseries(1)));
+	xmax = max(xvals(refseries(1)));
+
+	if (nfoc > 1) {
+		loop (i = 2..nfoc) {
+			xmin = min(xmin, min(xvals(refseries(i))));
+			xmax = max(xmax, max(xvals(refseries(i))));
+		}
+	}
+	return(xmin, xmax);
+}

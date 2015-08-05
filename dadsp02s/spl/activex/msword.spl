@@ -1,0 +1,95 @@
+/*****************************************************************************
+*                                                                            *
+*   MSWORD.SPL      Copyright (C) 2000 DSP Development Corporation           *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Example of ActiveX support with MS Word                    *
+*                                                                            *
+*   Revisions:    20 Mar 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_MSWORD
+
+    MSWORD    
+
+    Purpose: Writes a string to MS Word using ActiveX
+                                                                        
+    Format:  MSWORD(str)
+
+              str - an optional string
+
+    Returns: Nothing - starts MS Word and inserts the string
+
+    Example:
+             msword("This is some text.")
+
+             DADiSP starts MS Word and inserts the string
+             "This is some text." into the new document.
+
+    Remarks:
+             MSWORD is a simple example of how to invoke an external
+             application (MS Word) as an ActiveX server using SPL. 
+             SPL uses an ActiveX syntax similar to C++ and Visual Basic.
+
+             Here are the pertinent SPL statements:
+
+             word = CreateObject("Word.Application");   // start Word
+             doc  = word.Documents;                     // get Doc object
+             range = doc.Add().Range();                 // get Range object
+             range.InsertAfter(str);                    // insert string
+             word.Visible = 1;                          // show on screen
+
+             See MSWORD2 for an example of copying a Worksheet into Word.
+
+    See Also:
+             Createobject
+             Getproperty
+             Msword2
+             Setproperty
+
+#endif
+
+
+
+/* demonstrates ActiveX calls to MS Word */
+msword(str)
+{
+	local word, doc, range;
+
+	// default the string if necessary
+	if (argc < 1) {
+		str = strescape("Text from DADiSP\n
+				 And More Text");
+	}
+
+	// start Word, equivalent to Visual Basic's: 
+	// Dim word As New Word.Application
+	word = CreateObject("Word.Application");
+
+	// get "Document" object, in VB: 
+	// Dim doc As word.document
+	doc  = word.Documents;
+
+	// Add a new Document and get range object
+	range = doc.Add().Range();
+
+	// Insert text
+	range.InsertAfter(str);
+
+	// let's see it!
+	word.Visible = 1;
+
+	/*
+	** Note: ActiveX objects are automatically released when the 
+	**       local (or global) variables are deleted
+	*/
+
+	// return the handle so we can assign it (if desired)
+	if (outargc > 0) {
+		return(word);
+	}
+}

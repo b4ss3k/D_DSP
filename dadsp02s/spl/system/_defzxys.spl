@@ -1,0 +1,26 @@
+#undef fxyvals
+#undef x
+#undef y
+#undef r
+#undef theta
+
+/* define x, y, r, theta for z = F(x, y) */
+_defzxys(xl, xu, xi, yl, yu, yi)
+{
+	local xval, yval, r, theta;
+
+	undefmacro("fxyvals");
+	undefmacro("x");
+	undefmacro("y");
+	undefmacro("r");
+	undefmacro("theta");
+
+	(xval, yval, r, theta) = fxyvals(xl, xu, xi, yl, yu, yi);
+
+	/* set globals */
+	setvar("x", xval);
+	setvar("y", yval);
+	setvar("r", r);
+	setvar("theta", theta);
+}
+

@@ -1,0 +1,11 @@
+! NLFilTyp.men
+! Filter Types for nonlinear 2D image Filtering
+@x40
+@y0
+@f{_fg1}
+@b{_bg1}
+Filter Types
+
+Median     ~"Median"
+Minimum    ~"Minimum"
+Maximum    ~"Maximum"

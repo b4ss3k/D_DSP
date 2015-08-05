@@ -1,0 +1,107 @@
+/*****************************************************************************
+*                                                                            *
+*   MAGIC.SPL      Copyright (C) 2002 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Generates an NxN magic square                              *
+*                                                                            *
+*   Revisions:    28 Aug 2002  RRR  Creation, adaptation of PD source        *
+*                                                                            *
+*****************************************************************************/
+
+
+
+#if @HELP_MAGIC
+
+    MAGIC
+
+    Purpose: Generates an NxN magic square.
+
+    Format:  MAGIC(n)
+
+               n - An integer, number of output rows and columns
+
+
+    Returns: A square matrix.
+
+    Example:
+             a = magic(3)
+
+             a == {{8, 1, 6},
+                   {3, 5, 7},
+                   {4, 9, 2}}
+
+             colsum(a)    == {{15, 15, 15}}
+             colsum(a')   == {{15, 15, 15}}
+             sum(diag(a)) == 15
+
+
+Remarks:
+             A magic square is a square matrix where the sum of each row 
+             equals the sum of each column and also equals the sum of the
+             main diagonal.
+
+             MAGIC(2) does not produce a true magic square since a 2x2
+             magic square does not exist.
+
+             For n <= 0, MAGIC returns the empty matrix. 
+
+See Also:
+             Colsum
+             Diag
+#endif
+
+
+/* return a nxn magic square */
+magic(n)
+{
+	local A, shift, c, r, I, J, m, k;
+
+	if (argc < 1) error("magic - input size required");
+
+	n = castint(n);
+
+	if (n <= 0) A = {};
+
+	else if (n == 2) A = {{1, 3}, {4, 2}};
+
+	else if (n % 2 == 1) {
+		A = zeros(n*n, 1);
+		shift = floor((0..n*n-1)/n);
+		c = mod((1..n*n) - shift + (n-3)/2, n);
+		r = mod((n*n..-1..1) + 2*shift, n);
+		A[c*n+r+1] = 1..n*n;
+		A = reshape(A, n, n);
+	}
+
+	else if (n % 4 == 0) {
+		A = reshape(1..n*n, n, n)';
+		I = { 1..4..n, 4..4..n }; J = rev(I);
+		A[I, I] = A[J, J];
+		I = { 2..4..n, 3..4..n }; J = rev(I);
+		A[I, I] = A[J, J];
+	}
+
+	else if (n % 4 == 2) {
+		m = n/2;
+		A = magic(m);
+		A = { {A, A+2*m*m}, {A+3*m*m, A+m*m} };
+		k = (m-1)/2;
+		if (k > 1) {
+			I = 1..m;
+			J = { 2..k, n-k+2..n };
+			A[{I,I+m}, J] = A[{I+m,I}, J];
+		}
+		I = {1..k, k+2..m};
+		A[{I,I+m}, 1] = A[{I+m,I}, 1];
+		I = k + 1;
+		A[{I,I+m}, I] = A[{I+m,I}, I];
+	}
+
+	/* set to tableview */
+	setplotstyle(A, 4);
+
+	return(A);
+}

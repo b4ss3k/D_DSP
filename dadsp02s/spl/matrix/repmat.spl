@@ -1,0 +1,99 @@
+/*****************************************************************************
+*                                                                            *
+*   REPMAT.SPL  Copyright (C) 2002 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Replicates an array down and across                         *
+*                                                                            *
+*   Revisions:   13 Aug 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_REPMAT
+
+    REPMAT  
+
+    Purpose: Replicates an array down and across
+                                                                        
+    Format:  REPMAT(m, d, a)
+
+                  m -  An array.
+
+                  d -  An integer, the number of times to replicate
+                       the columns (downward).
+
+                  a -  Optional, an integer, the number of times to
+                       replicate the rows (across). Defaults to d.
+
+
+    Returns: An array of replicated columns and rows.
+
+    Example:
+             W1: {{1, 2, 3},
+                  {4, 5, 6},
+                  {7, 8, 9}}
+
+             W2: repmat(W1, 2, 3)
+
+             W2 == {{1, 2, 3, 1, 2, 3, 1, 2, 3},
+                    {4, 5, 6, 4, 5, 6, 4, 5, 6},
+                    {7, 8, 9, 7, 8, 9, 7, 8, 9},
+                    {1, 2, 3, 1, 2, 3, 1, 2, 3},
+                    {4, 5, 6, 4, 5, 6, 4, 5, 6},
+                    {7, 8, 9, 7, 8, 9, 7, 8, 9}}
+
+
+             a = repmat(10, size(W1))
+
+             a == {{10, 10, 10},
+                   {10, 10, 10},
+                   {10, 10, 10}}
+
+
+    Remarks:
+             REPMAT(m, {a, d}) is equivalent to REPMAT(m, a, d).
+
+             REPMAT(scalar, size(array)) returns an array where each
+             element is the scalar value and the output dimensions
+             are the same as the input array.
+
+    See Also:
+             Replicate
+             Ravel
+#endif
+
+
+/* replicate an array down and across */
+repmat(m, d, a)
+{
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("repmat - input array required");
+			if (IS_ARRAY(d)) {
+				a = d[2];
+				d = d[1];
+			}
+			else {
+				d  = 1;
+			}
+		}
+		if (IS_ARRAY(d)) {
+			a = d[2];
+			d = d[1];
+		}
+		else {
+			a = d;
+		}
+	}
+	if (not(IS_ARRAY(m))) m = castseries(m);
+
+	m = rep(ravel(rep(unravel(m), a), length(m)), d);
+	return(m);
+}
+
+
+	

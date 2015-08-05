@@ -1,0 +1,10 @@
+@tabbed
+Generate Inverse Hyperbolic Trig. Series 
+
+~_MF("invhyp.pan")
+~_MF("genset.pan")
+
+~~_formstr = _addhvx(_formstr)
+~~eval(sprintf('setwf(%s, "%s")', _dwin, _formstr))
+
+

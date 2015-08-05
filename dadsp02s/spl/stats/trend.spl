@@ -1,0 +1,70 @@
+/*****************************************************************************
+*                                                                            *
+*   TREND.SPL    Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Fits a line to a series                                     *
+*                                                                            *
+*   Revisions:    2 Jul 1998  RRR  Creation                                  *
+*                23 Oct 1998  RRR  Polyfit does not create spec file         *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_TREND
+
+    TREND   
+
+    Purpose: Fits a line to a series     
+                                                                        
+    Format:  TREND(series)
+
+              series - a series, the input data
+
+    Returns: A series
+
+    Example:
+             W1: Integ(gnorm(1000,1))
+             W2: Trend(w1);overp(w1, lred)
+
+             W2 contains the least squares best linear fit of the data.
+             The resulting line is plotted with the original data.
+
+             W3: Xy(w1, deriv(w1))
+             W4: Trend(w3);overp(w3, lred)
+
+             W4 contains the best linear fit to the XY data in W3.
+
+    Remarks:
+             (fit, coeff) = trend(s) returns both the resulting fit and
+             the linear coefficients {a0, a1} of the equation
+
+                              y = a0 + a1 * x
+
+    See Also:
+             Polyfit
+             Polygraph
+#endif
+
+
+trend(s)
+{
+	local coef, fit, nr, nc;
+
+	/* linear fit coefficients */
+	coef = polyfit(s, 1, -1);
+
+	/* generate fitted data */
+	fit = polygraph(coef, xvals(s), ISXYSERIES(s));
+
+	/* return fit and coefficients */
+	if (outargc > 1) {
+		return(fit, coef);
+	}
+	else {
+		return(fit);
+	}
+}

@@ -1,0 +1,109 @@
+/*****************************************************************************
+*                                                                            *
+*   ORTH.SPL         Copyright (C) 2001 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Computes orthonormal basis series using SVD                 *
+*                                                                            *
+*   Revisions:    9 Jul 2001  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_ORTH
+
+    ORTH   
+
+    Purpose: Computes an orthonormal basis of an array using SVD
+                                                                        
+    Format:  ORTH(a)
+
+              a - input array
+
+
+    Returns: An orthonormal array of n columns where n == rank(a)
+
+
+    Example:
+
+             W1: {{1,  3}, 
+                  {2,  2},
+                  {3, -1}}
+
+             W2: orth(w1)
+
+             W2 contains the array:
+
+                 {{-0.666667, -0.447214},
+                  {-0.666667,  0.000000},
+                  {-0.333333,  0.894427}}
+
+
+             Since W2 is an orthonormal basis for W1, 
+
+             col(w2, 1)' *^ col(w2, 1) == {1}              // orthonormal
+
+             col(w2, 1)' *^ col(w2, 2) == {-1.665335E-016} // orthogonal
+
+             w2' *^ w2 == {{1, 0},                         // identity
+                           {0, 1}}
+
+
+
+             Now construct a new series that is a linear combination
+             of the original series:
+
+             W3: 2*col(w1, 1) - 5*col(w1, 2)
+
+             W3 == {-13, -6, 11}
+
+             W3 can also be expressed as a linear combination of W2, the
+             orthonormal basis:
+
+             a1 = w3' *^ col(w2, 1)
+             a2 = w3' *^ col(w2, 2)
+
+             W4: a1 * col(w2, 1) + a2 * col(w2, 1)
+
+             a1 == {9.0}
+             a2 == {15.652476}
+             W4 == {-13, -6, 11}
+
+    Remarks:
+             ORTH uses SVD to compute the orthonormal basis. The number
+             of output columns is limited to the RANK of the input
+             array.
+
+    See Also:
+             Norm
+             Rank
+             SVD
+#endif
+
+
+/* find orthonormal basis using SVD */
+orth(a)
+{
+	local u, w, v, rank, nc, nr, tol;
+
+	(nr, nc) = size(a);
+
+	/* check if empty */
+	if (nr == 0) return(a);
+
+	if (not(IS_ARRAY(a))) a = {a};
+
+	/* find u, orthogonal matrix via svd */
+	(u, w, v) = svd(a);
+
+	/* find number of output columns by computing rank */
+	tol = maxval(nr, nc) * w[1] * eps;
+	rank = sum(w > tol);
+
+	/* extract columns */
+	return(u[.., 1..rank]);
+}
+

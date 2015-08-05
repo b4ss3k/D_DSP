@@ -1,0 +1,20 @@
+! mainhelp.men -- main help menu
+@y1
+@b{_helpbg}
+@f{_helpfg}
+                      Function Keys in DADiSP
+___________________________________________________________________
+
+ Function keys provide a shortcut method for performing some of
+ the more frequently used DADiSP functions. Most function key
+ features are available as command line functions or menu choices
+ in the appropriate submenu.
+
+ DADiSP function keys are context-sensitive.  That means that a
+ single function key may activate different functions depending
+ on the context.  For example, when a Worksheet window is active,
+ pressing the F9 key turns on the crosshair cursor.  If no window
+ is active, pressing F9 allows you to save a series.
+
+ For a list of the function key mappings, press the F1 key.
+ The F1 key provides HELP on special keys at all DADiSP levels.

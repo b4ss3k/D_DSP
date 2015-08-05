@@ -1,0 +1,74 @@
+/*****************************************************************************
+*                                                                            *
+*   MOVSTD.SPL   Copyright (C) 1999 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the moving standard deviation                    *
+*                                                                            *
+*   Revisions:    6 May 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_MOVSTD
+
+    MOVSTD
+
+    Purpose: Calculates the "moving" standard deviation of a series
+                                                                        
+    Format:  MOVSTD(series, n, rampflag)
+
+              series   - the input series
+              n        - an integer, the block size 
+              rampflag - an optional integer, 0:down 1:up, defaults 
+                         to 1
+
+    Returns: A series or table
+
+    Example:
+             
+             W1: {1, 2, 4, 7}
+             W2: Movstd(w1, 3)
+
+             returns the series {0, 0.612, 1.528, 2.517, 1.837, 0} 
+
+
+             W3: Movstd(w1, length(w1))
+
+             W3[length(w1)] == stdev(w1) == 2.645751 
+
+
+
+    Remarks:
+             For speed, this routines uses the builtin function MOVAVG.
+        
+
+    See Also
+             Movavg
+             Stdev
+#endif
+
+
+movstd(s, n, ramp)
+{
+	local mstd;
+
+	/* hurdles */
+	if (argc < 3) {
+		if (argc < 2) {
+			error("movstd - series and block size required");
+		}
+		ramp = 1;
+	}
+
+	if (n <= 1) error("movstd - n must be > 1");
+
+	mstd = sqrt((movavg(s^2, n, ramp) - movavg(s, n, ramp)^2) * n/(n-1));
+
+	/* restore units */
+	setvunits(mstd, getvunits(s));
+
+	return(mstd);
+}
+

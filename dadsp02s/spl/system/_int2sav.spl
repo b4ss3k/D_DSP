@@ -1,0 +1,26 @@
+/* integer to save mode */
+_int2sav(ival)
+{
+	local str;
+
+	switch (ival) {
+		case 0:
+		default:
+			str =  _promptstr;
+			break;
+
+		case 1:
+			str =  _overwritestr;
+			break;
+
+		case -1:
+			str =  _cancelstr;
+			break;
+
+		case 2:
+			str =  _appendstr;
+			break;
+
+	}
+	return(str);
+}

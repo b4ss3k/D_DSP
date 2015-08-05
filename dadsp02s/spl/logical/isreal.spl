@@ -1,0 +1,83 @@
+/*****************************************************************************
+*                                                                            *
+*   ISREAL.SPL Copyright (C) 2000 DSP Development Corporation                *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns 1 if input is real                                  *
+*                                                                            *
+*   Revisions:   14 Jun 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_ISREAL
+
+    ISREAL
+
+    Purpose: Returns 1 if input parameter is real
+                                                                        
+    Format:  ISREAL(val)
+
+              val - series, scalar or string input
+
+    Returns: The scalar 1 if the input is real or a real
+             series, else 0.
+
+    Example:
+             isreal(3i)
+
+             returns 0
+
+    Example:
+
+             isreal("string")
+
+             returns 0
+
+    Example:
+
+             isreal(mag(fft({1, 2, 3, 4})))
+
+             returns 1
+
+    Remarks:
+             If the input series is empty, isreal returns 0.
+
+
+    See Also:
+             Iscomplx
+
+#endif
+
+
+
+/* is input real ? */
+isreal(s)
+{
+	local v;
+
+	if (argc < 1) {
+		if (length > 0) {
+			/* first sample of current window */
+			v = w0[1];
+		}
+		else return(0);
+	}
+	else {
+		if (not(IS_ARRAY(s))) {
+			v = s;
+		}
+		else if (length(s) > 0) {
+			v = s[1];
+		}
+		else {
+			return(0);
+		}
+	}
+	/* test value for real */
+	return(IS_REAL(v));
+}

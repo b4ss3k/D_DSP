@@ -1,0 +1,10 @@
+! Filter.men - Filter Design Main Menu
+@x0
+@y0
+@b{blue}
+  Digital Filter Design
+__________________________
+
+  FIR Filter Design       ~dmf("demofilb.men")
+
+  IIR Filter Design       

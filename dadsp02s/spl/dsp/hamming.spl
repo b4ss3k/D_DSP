@@ -1,0 +1,59 @@
+/*****************************************************************************
+*                                                                            *
+*   HAMMING.SPL   Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Multiplies a series with a Hamming Window                  *
+*                                                                            *
+*   Revisions:    17 Feb 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_HAMMING
+
+    HAMMING    
+
+    Purpose: Multiplies a series with a Hamming window
+                                                                        
+    Format:  HAMMING(s, ampflag)
+
+                    s - a series or array
+              ampflag - an optional integer, 0:do not correct amplitude,
+                        1:correct amplitude, defaults to 0.
+
+    Returns: A series or array
+
+    Example:
+             W1: gsin(1000, .001, 45)
+             W2: Spectrum(Hamming(W1))
+             W3: Spectrum(Hamming(W1, 1))
+
+             The MAX of W2 == 0.539 and the MAX of W3 == 1.0. The amplitude
+             of the spectrum in W3 has been corrected to take into account
+             amplitude effects of the Hamming window.
+ 
+    Remarks:
+             HAMMING was implemented as a macro in versions prior to
+             DADiSP 2000. You may need to remove the macro definition
+             with:
+                                undefmacro("hamming")
+
+             from old worksheets.
+
+             The correction factor is is the mean of the Hamming window. 
+
+    See Also
+             Hanning
+             Kaiser
+             Winfunc
+#endif
+
+
+/* multiply a series with a hamming window */
+hamming(s, fixamp)
+{
+	return(winfunc(0, s, fixamp));
+}

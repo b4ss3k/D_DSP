@@ -1,0 +1,689 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!			        TIMEDATE.MAC				     !
+!                                                                            !
+!  			       April 10, 1995				     !
+!                                                                            !
+!  Time and date format conversion macros.  Since DADiSP does not support    !
+!  direct time and date arithmetic, these macros were developed to convert   !
+!  time and date information between a variety of different numeric and      !
+!  string formats.  Time formats include:  hour-minute-second series;        !
+!  hour-minute-second encoded integer; second of day; and		     !
+!  hour-minute-second string.  Date formats include:  year-month-day         !
+!  series; year-month-day encoded integer; Julian integer; year-month-day    !
+!  string, month-day-year string, and day-month-year string.  Combined       !
+!  date-time macros allow the combination of date and time information in    !
+!  the same data structure, including a floating-point Julian date.  In the  !
+!  date formats, the year may have 2 or  4 digits.  Also calculate day of    !
+!  the week, and convert between names and numbers of days of the week and   !
+!  months.								     !
+!                                                                            !
+!  		 Copyright (C) 1995 DSP Development Corp.                    !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!**********************************************************************!
+!								       !
+!			TIME FORMAT CONVERSION			       !
+!								       !
+!**********************************************************************!
+
+! Time format conversion macros convert time measurements from one
+! format to another.  Time macros always use 24-hour time.  The
+! following formats are supported:
+!
+! HMS vector:  a single time measurement, a series with three points:
+! hour, minute and second.  The second may be fractional.
+!
+! HMS table:  a table of many time measurements, with a row for each
+! time measurement and three columns: hours in the first column,
+! minutes in the second, and seconds in the third.  The seconds may
+! be fractional.
+!
+! HMS code:  a numerical value which embeds hours, minutes and seconds
+! in the digits: hours in the hundred thousands and ten thousands
+! places, minutes in the thousands and hundreds places, and seconds in
+! the tens and units places.  If there is a fractional part of the 
+! second, it will be the fractional part of the HMS code.  This format
+! is useful for display but not for arithmetic.
+!
+! Second of day:  the number of seconds since midnight, which ranges
+! from 0 to 24*60*60 = 86400.  It may be fractional.  This format is
+! useful for arithmetic but usually not for display.
+!
+! HMS string:  a string in the format HH:MM:SS.  There is no fractional
+! part of the second.
+!
+! Time format examples:
+!
+!	Description		Name	  Example 
+! 	    				  
+! 	HMS vector      	HMSVEC    9, 5, 45.87
+! 	HMS table       	HMS       (table)
+! 	HMS code		COD       90545.87
+! 	Second of day		SEC   	  32745.87      
+! 	HMS string		STR       "09:05:45"  
+
+!-----------------------------------------------------------------------
+! 
+! TIMEDELIM is the character which separates hours, minutes, and
+! seconds in time strings.  You may change this if desired.  Make sure
+! it is exactly one character.
+
+TIMEDELIM		':'
+
+!-----------------------------------------------------------------------
+! 
+! CODHMS converts an HMS table to a series of HMS codes.  See
+! description above.
+!
+!     HMS = HMS table
+
+CODHMS(HMS)	 	(COL(HMS,1))*10000+(COL(HMS,2))*100+(COL(HMS,3))
+
+!-----------------------------------------------------------------------
+! 
+! HMSCOD converts a series of HMS codes to an HMS table.  See
+! description above.
+!
+!     COD = series of HMS codes
+
+HMSCOD(COD)		RAVEL(FLOOR((COD)/10000),IMOD(FLOOR((COD)/100),100),RMOD((COD),100))
+MOD(A,B)                ((A)/(B)-INT((A)/(B)))*(B)
+IMOD(A,B)               FLOOR(((A)/(B)-INT((A)/(B)))*(B)+0.5)
+RMOD(A,B)       (IMOD(A,B)+(A)-INT(A))
+
+!-----------------------------------------------------------------------
+! 
+! SECHMS converts an HMS vector to a second of day.  See description
+! above.
+!
+!     HMSVEC = HMS vector
+
+SECHMS(HMSVEC)		(GETPT(HMSVEC,1))*3600+(GETPT(HMSVEC,2))*60+(GETPT(HMSVEC,3))
+
+!-----------------------------------------------------------------------
+! 
+! HMSSEC converts a second of day to an HMS vector.  See description
+! above.
+!
+!     SEC = second of day
+
+HMSSEC(SEC)		GSERIES(FLOOR((SEC)/3600),IMOD(FLOOR((SEC)/60),60),RMOD(SEC,60))
+
+!-----------------------------------------------------------------------
+! 
+! STRHMS converts an HMS vector to an HMS string.  See description above.
+!
+!     HMSVEC = HMS vector
+
+STRHMS(HMSVEC)		STRCAT(STREXT(STRNUM(FLOOR((GETPT(HMSVEC,1))+100)),2,2),TIMEDELIM,STREXT(STRNUM(FLOOR((GETPT(HMSVEC,2))+100)),2,2),TIMEDELIM,STREXT(STRNUM(FLOOR((GETPT(HMSVEC,3))+100)),2,2))
+
+!-----------------------------------------------------------------------
+! 
+! HMSSTR converts an HMS string to an HMS vector.  See description
+! above.
+!
+!     STR = HMS string
+
+HMSSTR(STR)		GSERIES(NUMSTR(STREXT(STR,1,2)),NUMSTR(STREXT(STR,4,2)),NUMSTR(STREXT(STR,7,2)))
+
+!**********************************************************************!
+!								       !
+!			DATE FORMAT CONVERSION			       !
+!								       !
+!**********************************************************************!
+
+! Date format conversion macros convert date measurements from one
+! format to another.  The following formats are supported:
+!
+! YMD vector:  a single date, a series with three points: year, month
+! number, and day number.
+!
+! YMD table:  a table of many dates, with a row for each date and three
+! columns: years in the first column, month numbers in the second, and
+! day numbers in the third.
+!
+! YMD code:  a numerical value which embeds years, months and days in
+! the digits:  years in the ten millions through the ten thousands
+! places, months in the thousands and hundreds places, and days in the
+! tens and units places.  This format is useful for display but not
+! for arithmetic.
+!
+! Julian integer:  a standard system of numbering days.  The Julian
+! integer is purely sequential numbering of days, starting with Julian
+! day 0 on 4713 BC January 1.  The complete Julian date is a floating
+! point number: the integer part is the Julian day; and the fractional
+! part is the fraction of the day which has elapsed since noon UT
+! (GMT).  This format is useful for arithmetic but usually not for
+! display.
+!
+! YMD string: a string in year-month-day format: YY/MM/DD or
+! YYYY/MM/DD.
+!
+! MDY string: a string in month-day-year format: MM/DD/YY or
+! MM/DD/YYYY.
+!
+! DMY string: a string in day-month-year format: DD/MM/YY or
+! DD/MM/YYYY.
+!
+! Date format examples:
+!
+!       Description        Digits   Name      Example 	      
+!                                             		      
+!       YMD vector            4     YMDVEC    1991, 7, 21     
+!                             2                 91, 7, 21	      
+! 	YMD table       	    YMD       (table)
+!       YMD code              4     COD       19910721.	      
+!                             2                 910721.	      
+!       Julian integer              JUL       2448459.	      
+!   	YMD string            4     YMD       "1991/07/21"
+!   	                      2               "91/07/21"
+!   	MDY string            4     MDY       "07/21/1991"
+!   	                      2               "07/21/91"
+!   	DMY string            4     DMY       "21/07/1991"
+!                             2               "21/07/91"
+
+!-----------------------------------------------------------------------
+! 
+! CENTURY is the default century used in 2-digit dates.  You may change
+! this if desired.  Make sure it is always an integer ending in two
+! zeroes.  Set CENTURY to 1900 for the years 1900-1999, to 2000 for the
+! years 2000-2099, etc.
+
+CENTURY			1900
+
+!-----------------------------------------------------------------------
+! 
+! DATEDELIM is the character which separates years, months, and days in
+! date strings.  You may change this if desired.  Make sure it is
+! exactly one character.
+
+DATEDELIM		'/'
+
+!-----------------------------------------------------------------------
+! 
+! YMDVEC4 converts a 2-digit YMD vector to a 4-digit YMD vector.  See
+! description above.
+!
+!     YMDVEC = 2-digit YMD vector
+
+YMDVEC4(YMDVEC)		GSERIES(GETPT(YMDVEC,1)+(CENTURY),GETPT(YMDVEC,2),GETPT(YMDVEC,3))
+
+!-----------------------------------------------------------------------
+! 
+! YMDVEC2 converts a 4-digit YMD vector to a 2-digit YMD vector.  See
+! description above.
+!
+!     YMDVEC = 4-digit YMD vector
+
+YMDVEC2(YMDVEC)		GSERIES(IMOD(GETPT(YMDVEC,1),100),GETPT(YMDVEC,2),GETPT(YMDVEC,3))
+
+!-----------------------------------------------------------------------
+! 
+! YMD4 converts a 2-digit YMD table to a 4-digit YMD table.  See
+! description above.
+!
+!     YMD = 2-digit YMD table
+
+YMD4(YMD)		RAVEL(COL(YMD,1)+(CENTURY),COL(YMD,2),COL(YMD,3))
+
+!-----------------------------------------------------------------------
+! 
+! YMD2 converts a 4-digit YMD table to a 2-digit YMD table.  See
+! description above.
+!
+!     YMD = 4-digit YMD table
+
+YMD2(YMD)		RAVEL(IMOD(COL(YMD,1),100),COL(YMD,2),COL(YMD,3))
+
+!-----------------------------------------------------------------------
+! 
+! CODYMD4 converts a 4-digit YMD table to a series of 4-digit YMD
+! codes.  See description above.
+!
+!     YMD = 4-digit YMD table
+
+CODYMD4(YMD)		(COL(YMD,1))*10000+(COL(YMD,2))*100+(COL(YMD,3))
+
+!-----------------------------------------------------------------------
+! 
+! CODYMD2 converts a 2-digit YMD table to a series of 2-digit YMD
+! codes.  See description above.
+!
+!     YMD = 2-digit YMD table
+
+CODYMD2(YMD)		IMOD(COL(YMD,1),100)*10000+(COL(YMD,2))*100+(COL(YMD,3))
+
+!-----------------------------------------------------------------------
+! 
+! YMDCOD4 converts a series of 4-digit YMD codes to a 4-digit YMD
+! table.  See description above.
+!
+!     COD = series of 4-digit YMD codes
+
+YMDCOD4(COD)		RAVEL(FLOOR((COD)/10000),IMOD(FLOOR((COD)/100),100),IMOD(COD,100))
+
+!-----------------------------------------------------------------------
+! 
+! YMDCOD2 converts a series of 2-digit YMD codes to a 2-digit YMD
+! table.  See description above.
+!
+!     COD = series of 2-digit YMD codes
+
+YMDCOD2(COD)		RAVEL(FLOOR((COD)/10000),IMOD(FLOOR((COD)/100),100),IMOD(COD,100))
+
+!-----------------------------------------------------------------------
+! 
+! JULYMD4 converts a 4-digit YMD vector to a Julian integer.  See
+! description above.  This macro is valid only for dates from 1900
+! March 1 to 2100 February 29.
+!
+!     YMDVEC = 4-digit YMD vector
+
+JULYMD4(YMDVEC)		GETPT(YMDVEC,3)-1+FLOOR(GETPT(DAY4,FLOOR(GETPT(YMDVEC,2)+12*(IMOD(GETPT(YMDVEC,1),4)))))+1461*FLOOR(GETPT(YMDVEC,1)/4)+1721045
+DAY4			PARTSUM(CONCAT(GSERIES(0.5,31,29,31,30,31,30,31,31,30,31,30,31),REPLICATE(GSERIES(31,28,31,30,31,30,31,31,30,31,30,31),3)))
+
+!-----------------------------------------------------------------------
+! 
+! JULYMD2 converts a 2-digit YMD vector to a Julian integer.  See
+! description above.  This macro is valid only for dates from 1900
+! March 1 to 2100 February 29.
+!
+!     YMDVEC = 2-digit YMD vector
+
+JULYMD2(YMDVEC)		GETPT(YMDVEC,3)-1+FLOOR(GETPT(DAY4,FLOOR(GETPT(YMDVEC,2)+12*(IMOD(GETPT(YMDVEC,1),4)))))+1461*FLOOR(GETPT(YMDVEC,1)/4)+36525*FLOOR((CENTURY)/100)+1721045
+
+!-----------------------------------------------------------------------
+! 
+! YMDJUL4 converts a Julian integer to a 4-digit YMD vector.  See
+! description above.  This macro is valid only for dates from 1900
+! March 1 to 2100 February 29.
+!
+!     JUL = Julian integer
+
+YMDJUL4(JUL)		GSERIES(4*FLOOR((JUL-1721045)/1461)+FLOOR((DAY4LOOK(IMOD(JUL-1721045,1461)))/12),IMOD(DAY4LOOK(IMOD(JUL-1721045,1461)),12),CEILING(IMOD(JUL-1721045,1461)-GETPT(DAY4,DAY4LOOK(IMOD(JUL-1721045,1461)))+1))
+DAY4LOOK(Y)		FLOOR(GETPT(XVALS(LEVELCROSS(DAY4,Y,0,4)),1))+1
+
+!-----------------------------------------------------------------------
+! 
+! YMDJUL2 converts a Julian integer to a 2-digit YMD vector.  See
+! description above.  This macro is valid only for dates from 1900
+! March 1 to 2100 February 29.
+!
+!     JUL = Julian integer
+
+YMDJUL2(JUL)		GSERIES((IMOD(4*(FLOOR((JUL-1721045)/1461)),100))+FLOOR((DAY4LOOK(IMOD(JUL-1721045,1461)))/12),IMOD(DAY4LOOK(IMOD(JUL-1721045,1461)),12),CEILING(IMOD(JUL-1721045,1461)-GETPT(DAY4,DAY4LOOK(IMOD(JUL-1721045,1461)))+1))
+
+!-----------------------------------------------------------------------
+! 
+! STRYMD4 converts a 4-digit YMD vector to a 4-digit date string.  See
+! description above.
+!
+!     YMDVEC = 4-digit YMD vector
+!     TYPE   = 1 for YMD string, 2 for MDY string, 3 for DMY string
+
+STRYMD4(YMDVEC,TYPE)	STRCAT(LEADZER(GETPT(YMDVEC,IF(TYPE==1,1,IF(TYPE==2,2,3))),IF(TYPE==1,4,2)),DATEDELIM,LEADZER(GETPT(YMDVEC,IF(TYPE==2,3,2)),2),DATEDELIM,LEADZER(GETPT(YMDVEC,IF(TYPE==1,3,1)),IF(TYPE==1,2,4)))
+LEADZER(VAL,PLACE)	STREXT(STRNUM(FLOOR((VAL)+10^(PLACE))),2,FLOOR(PLACE))
+
+!-----------------------------------------------------------------------
+! 
+! STRYMD2 converts a 2-digit YMD vector to a 2-digit DMY string.  See
+! description above.
+!
+!     YMDVEC = 2-digit YMD vector
+!     TYPE   = 1 for YMD string, 2 for MDY string, 3 for DMY string
+
+STRYMD2(YMDVEC,TYPE)	STRCAT(LEADZER(GETPT(YMDVEC,IF(TYPE==1,1,IF(TYPE==2,2,3))),2),DATEDELIM,LEADZER(GETPT(YMDVEC,IF(TYPE==2,3,2)),2),DATEDELIM,LEADZER(GETPT(YMDVEC,IF(TYPE==1,3,1)),2))
+
+!-----------------------------------------------------------------------
+! 
+! YMDSTR4 converts a 4-digit date string to a 4-digit YMD vector.  See
+! description above.
+!
+!     STR  = 4-digit date string
+!     TYPE = 1 for YMD string, 2 for MDY string, 3 for DMY string
+
+YMDSTR4(STR,TYPE)	GSERIES(NUMSTR(STREXT(STR,IF(TYPE==1,1,7),4)),NUMSTR(STREXT(STR,IF(TYPE==1,6,IF(TYPE==2,1,4)),2)),NUMSTR(STREXT(STR,IF(TYPE==1,9,IF(TYPE==2,4,1)),2)))
+
+!-----------------------------------------------------------------------
+! 
+! YMDSTR2 converts a 2-digit date string to a 2-digit YMD vector.  See
+! description above.
+!
+!     STR  = 2-digit date string
+!     TYPE = 1 for YMD string, 2 for MDY string, 3 for DMY string
+
+YMDSTR2(STR,TYPE)	GSERIES(NUMSTR(STREXT(STR,if(type==1,1,7),2)),NUMSTR(STREXT(STR,if(type==2,1,4),2)),NUMSTR(STREXT(STR,if(type==1,7,if(type==2,4,1)),2)))
+
+!**********************************************************************!
+!								       !
+!		     DATE-TIME FORMAT CONVERSION		       !
+!								       !
+!**********************************************************************!
+
+! Date-time macros convert combined date and time measurements from one
+! format to another.  The time portion always uses 24-hour time.  The
+! following formats are supported:
+!
+! YMDHMS vector:  a single date and time, a series with six points:
+! year, month number, day number, hour, minute and second.  The second
+! may be fractional.
+!
+! YMDHMS table:  a table of many date-times, with a row for each 
+! date-time measurement and six columns: years in the first column,
+! month numbers in the second, day numbers in the third, hours in the
+! fourth, minutes in the fifth, and seconds in the sixth.  Seconds may
+! be fractional.
+!
+! YMDHMS code:  a numerical value which embeds years, months, days,
+! hours, minutes and seconds in the digits, with the date to the left
+! of the decimal point and time of day to the right of the decimal
+! point:  years are in the ten millions through the ten thousands
+! places, months in the thousands and hundreds places, days in the tens
+! and units places, hours in the tenths and hundredths places, minutes
+! in the thousandths and ten thousandths places, and seconds in the
+! hundred thousandths and millionths places.  If there is a fractional
+! part of the second, it will trail the millionths place.  This format
+! is useful for display but not for arithmetic.
+!
+! Julian date:  a standard system of numbering days and time of day.
+! The Julian integer is purely sequential numbering of days, starting
+! with Julian day 0 on 4713 BC January 1.  The complete Julian date is
+! a floating point number: the integer part is the Julian day; and the
+! fractional part is the fraction of the day which has elapsed since
+! noon UT (GMT).  This format is useful for arithmetic but usually not
+! for display.
+!
+! YMDHMS string: a string in year-month-day plus time format:
+! "YY/MM/DD HH:MM:SS" or "YYYY/MM/DD HH:MM:SS".
+!
+! MDYHMS string: a string in month-day-year plus time format:
+! "MM/DD/YY HH:MM:SS" or "MM/DD/YYYY HH:MM:SS".
+!
+! DMYHMS string: a string in day-month-year plus time format:
+! "DD/MM/YY HH:MM:SS" or "DD/MM/YYYY HH:MM:SS".
+!
+! Date-time format examples:
+!
+!   	Description        Digits   Name      Example 		       
+!   			            		  		       
+!   	YMDHMS vector         4     YMDHMS    1991,7,21,9,5,45.87      
+!   	                      2                 91,7,21,9,5,45.87      
+!   	YMDHMS code           4     COD       19910721.09054587	       
+!   	                      2               910721.09054587	       
+!   	Julian date                 JUL       2448459.87900315	       
+!   	YMDHMS string         4     YMD       "1991/07/21 09:05:45"    
+!   	                      2               "91/07/21 09:05:45"      
+!   	MDYHMS string         4     MDY       "07/21/1991 09:05:45"    
+!   	                      2               "07/21/91 09:05:45"      
+!   	DMYHMS string         4     DMY       "21/07/1991 09:05:45"    
+!                             2               "21/07/91 09:05:45"      
+
+!-----------------------------------------------------------------------
+! 
+! DATETIMESEP is the character which separates date from the time of
+! day in date-time strings.  You may change this if desired.  Make sure
+! it is exactly one character.
+
+DATETIMESEP		' '
+
+!-----------------------------------------------------------------------
+! 
+! YMDHMSVEC4 converts a 2-digit YMDHMS vector to a 4-digit YMDHMS vector.
+! See description above.
+!
+!     YMDHMSVEC = 2-digit YMDHMS vector
+
+YMDHMSVEC4(YMDHMSVEC)		GSERIES(GETPT(YMDHMSVEC,1)+(CENTURY),EXTRACT(YMDHMSVEC,2,5))
+
+!-----------------------------------------------------------------------
+! 
+! YMDHMSVEC2 converts a 4-digit YMDHMS vector to a 2-digit YMDHMS vector.  
+! See description above.
+!
+!     YMDHMSVEC = 4-digit YMDHMS vector
+
+YMDHMSVEC2(YMDHMSVEC)		GSERIES(IMOD(GETPT(YMDHMSVEC,1),100),EXTRACT(YMDHMSVEC,2,5))
+
+!-----------------------------------------------------------------------
+! 
+! YMDHMS4 converts a 2-digit YMDHMS table to a 4-digit YMDHMS table.  See
+! description above.
+!
+!     YMDHMS = 2-digit YMDHMS table
+
+YMDHMS4(YMDHMS)		RAVEL(COL(YMDHMS,1)+(CENTURY),REGION(YMDHMS,1,LENGTH(YMDHMS),2,5))
+
+!-----------------------------------------------------------------------
+! 
+! YMDHMS2 converts a 4-digit YMDHMS table to a 2-digit YMDHMS table.  See
+! description above.
+!
+!     YMDHMS = 4-digit YMDHMS table
+
+YMDHMS2(YMDHMS)		RAVEL(IMOD(COL(YMDHMS,1),100),REGION(YMDHMS,1,LENGTH(YMDHMS),2,5))
+
+!-----------------------------------------------------------------------
+! 
+! CODYMDHMS4 converts a 4-digit YMDHMS table to a series of 4-digit
+! YMDHMS codes.  See description above.
+!
+!     YMDHMS = 4-digit YMDHMS table
+
+CODYMDHMS4(YMDHMS)	(CODYMD4(REGION(YMDHMS,1,LENGTH(YMDHMS),1,3)))+(CODHMS(REGION(YMDHMS,1,LENGTH(YMDHMS),4,3)))/1000000
+
+!-----------------------------------------------------------------------
+! 
+! CODYMDHMS2 converts a 2-digit YMDHMS table to a series of 2-digit
+! YMDHMS codes.  See description above.
+!
+!     YMDHMS = 2-digit YMDHMS table
+
+CODYMDHMS2(YMDHMS)	(CODYMD2(REGION(YMDHMS,1,LENGTH(YMDHMS),1,3)))+(CODHMS(REGION(YMDHMS,1,LENGTH(YMDHMS),4,3)))/1000000
+
+!-----------------------------------------------------------------------
+! 
+! YMDHMSCOD4 converts a series of 4-digit YMDHMS codes to a 4-digit
+! YMDHMS table.  See description above.
+!
+!     COD = series of 4-digit YMDHMS codes
+
+YMDHMSCOD4(COD)		RAVEL(YMDCOD4(FLOOR(COD)),HMSCOD(((COD)-FLOOR(COD))*1000000))
+
+!-----------------------------------------------------------------------
+! 
+! YMDHMSCOD2 converts a series of 2-digit YMDHMS codes to a 2-digit
+! YMDHMS table.  See description above.
+!
+!     COD = series of 2-digit YMDHMS codes
+
+YMDHMSCOD2(COD)		RAVEL(YMDCOD2(FLOOR(COD)),HMSCOD(((COD)-FLOOR(COD))*1000000))
+
+!-----------------------------------------------------------------------
+! 
+! JULYMDHMS4 converts a 4-digit YMDHMS vector to a Julian date.  See
+! description above.  This macro is valid only for dates from 1900
+! March 1 to 2100 February 29.
+!
+!     YMDHMSVEC = 4-digit YMDHMS vector
+
+JULYMDHMS4(YMDHMSVEC)	(JULYMD4(EXTRACT(YMDHMSVEC,1,3)))-0.5+(SECHMS(EXTRACT(YMDHMSVEC,4,3)))/86400
+
+!-----------------------------------------------------------------------
+! 
+! JULYMDHMS2 converts a 2-digit YMDHMS vector to a Julian date.  See
+! description above.  This macro is valid only for dates from 1900
+! March 1 to 2100 February 29.
+!
+!     YMDHMSVEC = 2-digit YMDHMS vector
+
+JULYMDHMS2(YMDHMSVEC)	(JULYMD2(EXTRACT(YMDHMSVEC,1,3)))-0.5+(SECHMS(EXTRACT(YMDHMSVEC,4,3)))/86400
+
+!-----------------------------------------------------------------------
+! 
+! YMDHMSJUL4 converts a Julian date to a 4-digit YMDHMS vector.  See
+! description above.  This macro is valid only for dates from 1900
+! March 1 to 2100 February 29.
+!
+!     JUL = Julian date
+
+YMDHMSJUL4(JUL)		CONCAT(YMDJUL4(FLOOR((JUL)+0.5)),HMSSEC(((JUL)+0.5-FLOOR((JUL)+0.5))*86400))
+
+!-----------------------------------------------------------------------
+! 
+! YMDHMSJUL2 converts a Julian date to a 2-digit YMDHMS vector.  See
+! description above.  This macro is valid only for dates from 1900
+! March 1 to 2100 February 29.
+!
+!     JUL = Julian date
+
+YMDHMSJUL2(JUL)		CONCAT(YMDJUL2(FLOOR((JUL)+0.5)),HMSSEC(((JUL)+0.5-FLOOR((JUL)+0.5))*86400))
+
+!-----------------------------------------------------------------------
+! 
+! STRYMDHMS4 converts a 4-digit YMDHMS vector to a 4-digit date-time
+! string.  See description above.
+!
+!     YMDHMSVEC = 4-digit YMDHMS vector
+!     TYPE      = 1 for YMD string, 2 for MDY string, 3 for DMY string
+
+STRYMDHMS4(YMDHMSVEC,TYPE)	STRCAT(STRYMD4(EXTRACT(YMDHMSVEC,1,3),TYPE),DATETIMESEP,STRHMS(EXTRACT(YMDHMSVEC,4,3)))
+
+!-----------------------------------------------------------------------
+! 
+! STRYMDHMS2 converts a 2-digit YMDHMS vector to a 2-digit date-time
+! string.  See description above.
+!
+!     YMDHMSVEC = 2-digit YMDHMS vector
+!     TYPE      = 1 for YMD string, 2 for MDY string, 3 for DMY string
+
+STRYMDHMS2(YMDHMSVEC,TYPE)	STRCAT(STRYMD2(EXTRACT(YMDHMSVEC,1,3),TYPE),DATETIMESEP,STRHMS(EXTRACT(YMDHMSVEC,4,3)))
+
+!-----------------------------------------------------------------------
+! 
+! YMDHMSSTR4 converts a 4-digit date-time string to a 4-digit YMDHMS
+! vector.  See description above.
+!
+!     STR  = 4-digit date-time string
+!     TYPE = 1 for YMD string, 2 for MDY string, 3 for DMY string
+
+YMDHMSSTR4(STR,TYPE)		CONCAT(YMDSTR4(STREXT(STR,1,10),TYPE),HMSSTR(STREXT(STR,12,8)))
+
+!-----------------------------------------------------------------------
+! 
+! YMDHMSSTR2 converts a 2-digit date-time string to a 2-digit YMDHMS
+! vector.  See description above.
+!
+!     STR  = 2-digit date-time string
+!     TYPE = 1 for YMD string, 2 for MDY string, 3 for DMY string
+
+YMDHMSSTR2(STR,TYPE)		CONCAT(YMDSTR2(STREXT(STR,1,10),TYPE),HMSSTR(STREXT(STR,12,8)))
+
+!**********************************************************************!
+!								       !
+!		      MISCELLANEOUS DATE MACROS			       !
+!								       !
+!**********************************************************************!
+
+! DAYDATE4 determines the day of the week from a 4-digit YMD vector. 
+! The result is a number from 1 to 7: 1 is Monday, 2 is Tuesday, 3 is
+! Wednesday, 4 is Thursday, 5 is Friday, 6 is Saturday, and 7 is
+! Sunday.
+!
+!     YMDVEC = 4-digit YMD vector
+
+DAYDATE4(YMDVEC)	IMOD(JULYMD4(YMDVEC),7)+1
+
+!-----------------------------------------------------------------------
+! 
+! DAYDATE2 determines the day of the week from a 2-digit YMD vector. 
+! The result is a number from 1 to 7: 1 is Monday, 2 is Tuesday, 3 is
+! Wednesday, 4 is Thursday, 5 is Friday, 6 is Saturday, and 7 is
+! Sunday.
+!
+!     YMDVEC = 2-digit YMD vector
+
+DAYDATE2(YMDVEC)	IMOD(JULYMD2(YMDVEC),7)+1 
+
+!-----------------------------------------------------------------------
+! 
+! DAYNO determines the number of the day of the week from its name. 
+! The name can be upper or lower case or mixed, and only the first
+! three letters are checked.  The result is a number from 1 to 7: 1 is
+! Monday, 2 is Tuesday, 3 is Wednesday, 4 is Thursday, 5 is Friday, 6
+! is Saturday, and 7 is Sunday.
+!
+!     DN = day-of-the-week name
+
+DAYNO(DN)		IF(C3(DN,'MON'),1,IF(C3(DN,'TUE'),2,IF(C3(DN,'WED'),3,IF(C3(DN,'THU'),4,IF(C3(DN,'FRI'),5,IF(C3(DN,'SAT'),6,IF(C3(DN,'SUN'),7,0))))))) 
+C3(DN,NN)		STRCMP(STREXT(TOUPPER(DN),1,3),NN)==0
+
+!-----------------------------------------------------------------------
+! 
+! DAYNAME outputs a three-letter uppercase name of the day of the week
+! from its number.  Enter 1 for Monday, 2 for Tuesday, 3 for Wednesday,
+! 4 for Thursday, 5 for Friday, 6 for Saturday, and 7 for Sunday.
+!
+!     NO = day-of-the-week number
+
+DAYNAME(NO)		IF(NO==1,'MON',IF(NO==2,'TUE',IF(NO==3,'WED',IF(NO==4,'THU',IF(NO==5,'FRI',IF(NO==6,'SAT',IF(NO==7,'SUN,'UNK')))))))
+
+!-----------------------------------------------------------------------
+! 
+! MONTHNO determines the month number from the month name.  The month
+! name can be upper or lower case or mixed, and only the first three
+! letters are checked.
+!
+!     MN = month name
+
+MONTHNO(MN)		IF(C3(MN,'JAN'),1,IF(C3(MN,'FEB'),2,IF(C3(MN,'MAR'),3,IF(C3(MN,'APR'),4,IF(C3(MN,'MAY'),5,IF(C3(MN,'JUN'),6,IF(C3(MN,'JUL'),7,IF(C3(MN,'AUG'),8,IF(C3(MN,'SEP'),9,IF(C3(MN,'OCT'),10,IF(C3(MN,'NOV'),11,IF(C3(MN,'DEC'),12,0)))))))))))) 
+
+!-----------------------------------------------------------------------
+! 
+! MONTHNAME outputs a three-letter uppercase month name from the month
+! number.
+!
+!     NO = month number
+
+MONTHNAME(NO)		IF(NO==1,'JAN',IF(NO==2,'FEB',IF(NO==3,'MAR',IF(NO==4,'APR',IF(NO==5,'MAY',IF(NO==6,'JUN',IF(NO==7,'JUL',IF(NO==8,'AUG',IF(NO==9,'SEP',IF(NO==10,'OCT',IF(NO==11,'NOV',IF(NO==12,'DEC','UNK'))))))))))))
+
+!-----------------------------------------------------------------------
+! 
+! GREGCORR4 corrects a Julian date generated by JULYMD4 for dates 
+! outside the year range 1900-2100.  Add it to JULYMD4.  Please observe
+! that, outside the years 1900-2100, the date that YMDJUL4 calculates
+! is in error by the amount of GREGCORR4 for the actual date.  Observe
+! also that GREGCORR4 corrects only for dates in the Gregorian
+! calendar, also known as the "New Style" calendar; it does not correct
+! for "Old Style" or Julian calendar dates that were phased out at
+! various times in various countries.  
+!
+! Example: Calculate the Julian date for 1650 July 21 (New Style):
+!     JULYMD4(GSERIES(1650,7,21))+GREGCORR4(GSERIES(1650,7,21))
+!
+!     YMDVEC = 4-digit YMD vector
+
+GREGCORR4(YMDVEC)	(19-FLOOR(GETPT(YMDVEC,1)/100))+(FLOOR(GETPT(YMDVEC,1)/400)-4)+(((GETPT(YMDVEC,1)/100)==FLOOR(GETPT(YMDVEC,1)/100))&&(NOT((GETPT(YMDVEC,1)/400)==FLOOR(GETPT(YMDVEC,1)/400)))&&(GETPT(YMDVEC,2)<3))
+
+!-----------------------------------------------------------------------
+! 
+! GREGCORR2 corrects a Julian date generated by JULYMD2 for dates 
+! outside the year range 1900-2100.  Add it to JULYMD2.  Please observe
+! that, outside the years 1900-2100, the date that YMDJUL2 calculates
+! is in error by the amount of GREGCORR2 for the actual date.  Observe
+! also that GREGCORR2 corrects only for dates in the Gregorian
+! calendar, also known as the "New Style" calendar; it does not correct
+! for "Old Style" or Julian calendar dates that were phased out at
+! various times in various countries.  
+!
+! Example: Calculate the Julian date for 1650 July 21 (New Style) with
+! CENTURY set to 1600:
+!     JULYMD2(GSERIES(50,7,21))+GREGCORR4(GSERIES(50,7,21))
+!
+!     YMDVEC = 2-digit YMD vector
+
+GREGCORR2(YMDVEC)	(19-FLOOR((CENTURY)/100))+(FLOOR((CENTURY)/400)-4)+((GETPT(YMDVEC,1)==0)&&(NOT(((CENTURY)/400)==FLOOR((CENTURY)/400)))&&(GETPT(YMDVEC,2)<3))
+
+!--------------------------------- END --------------------------------------

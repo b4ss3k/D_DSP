@@ -1,0 +1,58 @@
+/* multiredb */
+rmbfname(fname)
+{
+	local orgname, fn;
+
+	/* set default name to appear in dialog box */
+	if (argc > 0) {
+		/* use input filename */
+		setvar("_rmbfname", fname);
+		setvar("_rmbpickdir", strrev(strfind(pathchar, strrev(_rmbfname))));
+	}
+	else {
+		/* just define the variable */
+		defvar("_rmbfname", "");
+	}
+
+	/* define start directory if it doesn't already exist */
+	defvar("_rmbpickdir", "");
+
+	/* define numser if it doesn't already exist */
+	defvar("_rmbnumser", "1");
+
+	/* define datatype if it doesn't already exist */
+	defvar("_rmbdtype", "SINT");
+
+	/* define offset if it doesn't already exist */
+	defvar("_rmboffset", "0");
+
+	/* define byteswap if it doesn't already exist */
+	defvar("_rmbswap", 0);
+
+	/* _pickfile_status == 1 if dialog was successful */
+	setvar("_pickfile_status", 0);
+
+	/* remember original name */
+	orgname = _rmbfname;
+
+	/* invoke dialog box */
+	_mf("mreadb.pan");
+
+	if (_pickfile_status == 1) { /* dialog was successful */
+		/* remember default directory */
+		setvar("_rmbpickdir", strrev(strfind(pathchar, strrev(_rmbfname))));
+		if (strlen(_rmbfname) > 0) {
+			fn = sprintf('"%s"', _rmbfname);
+			if (setwfmode > 0) {
+				eval(sprintf("setwf('Multireadb(%s, %s, %s, 1, %s, %d, %s)')", fn, _rmbdtype, _rmbnumser, _rmboffset, _rmbswap, _dwin));
+			}
+			else {
+				eval(sprintf('Multireadb(%s, %s, %s, 1, %s, %d, %s)', fn, _rmbdtype, _rmbnumser, _rmboffset, _rmbswap, _dwin));
+			}
+		}
+	}
+	else {
+		/* reset to original name */
+		setvar("_rmbfname", orgname);
+	}
+}

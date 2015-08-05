@@ -1,0 +1,17 @@
+/* return time precision as integer */
+_gtprec(tprec, tauto)
+{
+	local tp;
+
+	if (argc < 2) {
+		tp = castint(getconf("TIME_PRECISION"));
+		if (tp == -1) tauto = 1;
+		if (argc < 1) {
+			if (tauto) 	tprec = 3;
+		}
+	}
+	if (tauto) tp = 3;
+	else tp = tprec;
+
+	return(tp);
+}

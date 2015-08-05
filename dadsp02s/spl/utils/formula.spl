@@ -1,0 +1,507 @@
+/*****************************************************************************
+*                                                                            *
+*   FORMULA.SPL   Copyright (C) 1995-2002 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Cathy Zouval                                                *
+*                                                                            *
+*   Synopsis:    Functions for reading and writing worksheet formulas,       *
+*                labels, and comments to and from files.					 *
+*                                                                            *
+*   Revisions:    7 Jun 1995   CZ  Creation                                  *
+*                17 Jul 1997  RRR  for syntax, formating                     *
+*                25 Jul 2002  RRR  error handlers                            *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+/*************************************************************************
+*                                                                        *
+*  FORMWRITE writes all the formulas of the current worksheet to a file. *
+*  in the file, each formula is on a separate line and is preceded by    *
+*  its window number.  If a file already exists with same name before    *
+*  FORMWRITE, it is overwritten without warning.                         *
+*                                                                        *
+*      file = "filename" in quotes                                       *
+*                                                                        *
+*************************************************************************/
+
+formwrite(file) 
+{
+	local npathchr, n_win, j, wstr, str, zz, cstr;
+
+	/* verify file argument */
+	if (argc < 1) {
+		error("formwrite - filename required");
+	}
+
+	if (not(IS_STRING(file))) {
+		error("formwrite - filename required");
+	}
+
+	if (fopen(file, "w") != TRUE) {
+		error(sprintf("formwrite - cannot open %s", file));
+	}
+
+	npathchr = 0;
+	n_win = numwin;
+
+	for (j=1; j<=n_win; j++) {
+		wstr = eval(strcat('getwform(w',strnum(j),')'));
+		str = strget(1,wstr,"\");
+		npathchr = strlen(wstr)-(length(delete(not(charstrs(wstr)==92),(not(charstrs(wstr)==92))==0)))+1; 
+		if (npathchr > 1){
+			 for(zz=2; zz<=npathchr; zz++){
+				  str=strcat(str,"\\",strget(zz,wstr,"\"));
+			 }
+		}
+
+		/* prepend space if necessary */
+		cstr = charstrs(str);
+		if (cstr[1] != 32) str = strcat(" ", str);
+
+		formstr = strcat('w',strnum(j),':',str,'\n');
+		fputs(formstr,file);
+	 }
+	fclose(file);
+}
+
+formwrite_error(errnum, errmes) 
+{
+	/* close files if error */
+	fcloseall();
+}
+
+
+
+
+/**************************************************************************
+*                                                                         *
+* FORMREAD reads one formula from a file and puts it into a window.       *
+* due to limitations in the setwform function, no dataset references      *
+* can be read in.  The file must be in a format similar to that produced  *
+* by FORMWRITE, where the line to be read in has a label, followed by a   *
+* space, followed by the window formula.                                  *
+*                                                                         *
+* Example:  formread('wrksht.for',5,3) retrieves the formula from the     *
+* 5th line of wrksht.for and puts into window 3.                          *
+*                                                                         *
+*	  file  = file name in quotes                                         *
+*	  fln	= file line number to retrieve formula from (default 1)       *
+*	  dwn	= destination window number (default current window)          *
+*                                                                         *
+**************************************************************************/
+
+
+formread(file, fln, dwn) 
+{
+	local winform, j;
+
+	/* verify file argument */
+	if (argc < 1) {
+		error("formread - filename required");
+	}
+
+	if (not(IS_STRING(file))) {
+		error("formread - filename required");
+	}
+
+	if (fopen(file, "r") != TRUE) {
+		error(sprintf("formread - cannot open %s", file));
+	}
+
+	/* default line number and destination window */
+	if (argc < 3) {
+		dwn = getwnum();
+		if (argc < 2) {
+			fln = 1;
+		}
+	}
+
+	for(j=1; j<=fln; j++) (
+		winform = strfind(' ',fgets(file));
+	)
+	fclose(file);
+	eval(strcat('setwform(w',strnum(dwn),',strextract(winform,2,strlen(winform)-2))'));
+}
+
+formread_error(errnum, errmes) 
+{
+	/* close files if error */
+	fcloseall();
+}
+
+
+
+/*****************************************************************************
+*                                                                            *
+* FORMREADN reads the specified number of formulas starting with the         *
+* designated formula.  Remember the number of windows available is a         *
+* limiting factor.  Also due to limitations in the setwform function,        *
+* no dataset references can be read in.                                      *
+*                                                                            *
+* The file must be in a format similar to that produced by FORMWRITE,        *
+* where each line has a label, followed by a space, followed by the          *
+* window formula, and the first line contains the first window formula.      *
+* If comments have been added to the top of the file, you can use the file   *
+* line offset parameter with a value of greater than 1. If the file is       *
+* unmodified from a FORMWRITE or if the first formula is on the first        *
+* line, the file line offset should be used with a value of 1.               *
+* FORMREADALL reads in as many lines as there are windows in the             *
+* worksheet.                                                                 *
+*                                                                            *
+*	  file  = "filename" in quotes                                           *
+*	  sln	= file line number to start retrieving formulas from             *
+*	  fnum  = number of formulas to retrieve                                 *
+*                                                                            *
+*****************************************************************************/
+
+formreadn(file, sln, fnum) 
+{
+	local n_win, j, zz, winform;
+
+	/* verify file argument */
+	if (argc < 1) {
+		error("formreadn - filename required");
+	}
+
+	if (not(IS_STRING(file))) {
+		error("formreadn - filename required");
+	}
+
+	if (fopen(file, "r") != TRUE) {
+		error(sprintf("formreadn - cannot open %s", file));
+	}
+
+	calc(off);
+	n_win = numwin;
+
+	for (j=1; j<sln; j++) {
+		winform = strfind(' ',fgets(file));
+	}
+
+	for (zz = 1; zz <= n_win; zz++) {
+		if (zz <= fnum) {
+			 winform = strfind(' ',fgets(file));
+			 eval(strcat('setwform(w',strnum(zz),',strextract(winform,2,strlen(winform)-2))'));
+		}
+	}
+	calc(on);
+	fclose(file);
+}
+
+formreadn_error(errnum, errmes) 
+{
+	/* close files if error */
+	fcloseall();
+}
+
+
+
+/****************************************************************************
+*                                                                           *
+* FORMREADALL reads enough formulas from a file to fill up the current      *
+* worksheet.  Due to limitations in the setwform function, no dataset       *
+* references can be read in.  The file must be in a format similar to       *
+* that produced by FORMWRITE, where each line has a label, followed by      *
+* a space, followed by the window formula, and the first line contains      *
+* the first window formula.                                                 *
+*                                                                           *
+* If comments have been added to the top of the file, you can use the       *
+* file line offset parameter with a value of greater than 1. If the file    *
+* is unmodified from a formwrite or if the first formula is on the first    *
+* line, the file line offset should be used with a value of 1.              *
+* FORMREADALL reads in as many lines as there are windows in the            *
+* worksheet.                                                                *
+*                                                                           *
+*	  file = "filename" in quotes                                           *
+*	   tnl = number of formulas in the file                                 *
+*                                                                           *
+****************************************************************************/
+
+formreadall(file, tnl) 
+{	
+	local n_win, j, winform;
+
+	/* verify file argument */
+	if (argc < 1) {
+		error("formreadn - filename required");
+	}
+
+	if (not(IS_STRING(file))) {
+		error("formreadn - filename required");
+	}
+
+	if (fopen(file, "r") != TRUE) {
+		error(sprintf("formreadn - cannot open %s", file));
+	}
+
+	n_win = numwin;
+
+	if (argc < 2) {
+		tnl = n_win;
+	}
+	calc(off);
+
+	for (j=1; j<=n_win; j++) {
+		if (j <= tnl) {	
+			winform = strfind(' ',fgets(file));
+			eval(strcat('setwform(w',strnum(j),',strext(winform,2,strlen(winform)-2))'));
+		}
+	}
+
+	calc(on);
+	fclose(file);
+}
+
+formreadall_error(errnum, errmes) 
+{
+	/* close files if error */
+	fcloseall();
+}
+
+
+
+/***********************************************************************
+*        	                                                           *
+*         read and write formulas, labels, and comments                *
+*                                                                      *
+***********************************************************************/
+
+/*************************************************************************
+*                                                                        *
+* WINWRITE writes the formula, label, and comment of all the windows of  *
+* the current worksheet to a file.  In the file, three lines are output  *
+* for each window: the first line contains the window number and the     *
+* formula. The second line contains the window's label and the thir d    *
+* line contains the window's comment.  Ff a file already exists with     *
+* same name before winwrite, it is overwritten without warning.          *
+*                                                                        *
+*     file = "filename" in quotes                                        *
+*                                                                        *
+*************************************************************************/
+
+winwrite(file) 
+{
+	local npathchr, n_win, j, wstr, str, zz, wlab_str, lab_str;
+	local wcom_str, com_str, formstr, cstr;
+
+	/* verify file argument */
+	if (argc < 1) {
+		error("winwrite - filename required");
+	}
+
+	if (not(IS_STRING(file))) {
+		error("winwrite - filename required");
+	}
+
+	if (fopen(file, "w") != TRUE) {
+		error(sprintf("winwrite - cannot open %s", file));
+	}
+
+	n_win = numwin;
+	npathchr = 0;
+
+	for (j=1; j<=n_win; j++) {
+		wstr = eval(strcat('getwform(w',strnum(j),')'));
+		str = strget(1,wstr,"\");
+		npathchr = strlen(wstr)-(length(delete(not(charstrs(wstr)==92),(not(charstrs(wstr) ==92))==0)))+1; 
+		if (npathchr > 1) {
+			for (zz=2; zz<=npathchr; zz++) {
+				str = strcat(str,"\\",strget(zz,wstr,"\"));
+			}
+		}
+		wlab_str = eval(strcat('getlabel(w',strnum(j),')'));
+		lab_str = strget(1,wlab_str,"\");
+		npathchr = strlen(wlab_str)-(length(delete(not(charstrs(wlab_str)==92),(not(charstrs(wlab_str) ==92))==0)))+1; 
+		if (npathchr > 1) {
+			for (zz=2; zz<=npathchr; zz++) {
+				lab_str = strcat(lab_str,"\\",strget(zz,wlab_str,"\"));
+			}
+		}
+		wcom_str = eval(strcat('getcomment(w',strnum(j),')'));
+		com_str = strget(1,wcom_str,"\");
+		npathchr = strlen(wcom_str)-(length(delete(not(charstrs(wcom_str)==92),(not(charstrs(wcom_str) ==92))==0)))+1; 
+		if (npathchr > 1) {
+			for (zz=2; zz<=npathchr; zz++) {
+				com_str = strcat(com_str,"\\",strget(zz,wcom_str,"\"));
+			}
+		}
+
+		/* prepend space if necessary */
+		cstr = charstrs(str);
+		if (cstr[1] != 32) str = strcat(" ", str);
+
+		formstr = strcat('w',strnum(j),':',str,'\n	 ',lab_str,'\n	 ',com_str,'\n');
+		fputs(formstr,file);
+	}
+	fclose(file);
+}
+
+winwrite_error(errnum, errmes) 
+{
+	/* close files if error */
+	fcloseall();
+}
+
+
+
+/***************************************************************************
+*                                                                          *
+* WINREAD reads the formula, label, and comment from a file and puts       *
+* them into a window.  Due to limitations in the setwform function, no     *
+* dataset references can be read into the formula.  The file must be in    *
+* a format similar to that produced by WINWRITE, where the block of three  *
+* lines to be read in has the following format: the first line has a       *
+* label, followed by a space, followed by the window formula; the second   *
+* line has 4 spaces, followed by the window label; and the third line has  *
+* 4 spaces, followed by the window comment.                                *
+*                                                                          *
+* Example:  winread('wksht.win',15,3) retrieves the formula from the       *
+* 15th line of wksht.win and puts into window 3, then reads the label      *
+* from the 16th line and sets it, then reads the comment from the 17th     *
+* line and sets it.                                                        *
+*                                                                          *
+*     file = "filename" in quotes                                          *
+*	    fl = file line number at which to start reading                    *
+*	   dwn = destination window number                                     *
+*                                                                          *
+***************************************************************************/
+
+
+winread(file, fln, dwn) 
+{
+	local winform, j, temp, putform;
+
+	/* verify file argument */
+	if (argc < 1) {
+		error("winread - filename required");
+	}
+
+	if (not(IS_STRING(file))) {
+		error("winread - filename required");
+	}
+
+	if (fopen(file, "r") != TRUE) {
+		error(sprintf("winread - cannot open %s", file));
+	}
+
+	/* default line number and destination window */
+	if (argc < 3) {
+		dwn = getwnum();
+		if (argc < 2) {
+			fln = 1;
+		}
+	}
+
+	if(not(fln==1)) {
+		for(j=1; j<fln; j++) {
+			temp = fgets(file);
+		}
+	}
+	winform = strfind(" ",fgets(file));
+	putform = strcat('setwform(w',strnum(dwn),',strextract(winform,2,strlen(winform)-2))');
+	labelstr = fgets(file);	
+	putlabel = strcat('label(w',strnum(dwn),',strextract(labelstr,5,strlen(labelstr)-5))');
+	commstr = fgets(file);
+	putcomm = strcat('comment(w',strnum(dwn),',strextract(commstr,5,strlen(commstr)-5))');
+
+	eval(putform);
+	eval(putlabel);
+	eval(putcomm);
+	
+	fclose(file);
+}
+
+winread_error(errnum, errmes) 
+{
+	/* close files if error */
+	fcloseall();
+}
+
+
+
+/***************************************************************************
+*                                                                          *
+* WINREADALL reads enough formulas, labels, and comments from a file to    *
+* fill up the current worksheet.  Due to limitations in the setwform       *
+* function, no dataset references can be read into the formula.            *
+* The file must be in a format similar to that produced by WINWRITE,       *
+* where each block of three lines to be read in has the following format:  *
+* the first line has a label, followed by a space, followed by the window  *
+* formula; the second line has 4 spaces, followed by the window label;     * 
+* and the third line has 4 spaces, followed by the window comment.         *
+*                                                                          *
+* If comments have been added to the top of the file, you can use the      *
+* file line offset parameter with a value of greater than 1; if the        *
+* file is unmodified from a winwrite or if the first formula is on the     *
+* first line, the file line offset should be used with a value of 1.       *
+* WINREADALL reads in as many blocks of three lines as there are           *
+* windows in the worksheet.                                                *
+*                                                                          *
+*	  file   = "filename" in quotes                                        *
+*	  fln	 = file line number to start retrieving formulas from          *
+*	  nforms = total number of window formulas in the file                 *
+*                                                                          *
+***************************************************************************/
+
+winreadall(file, fln, nforms) 
+{	
+	local winform, j, temp, putform, n_win, putlabel, putcomm, labelstr;
+
+	/* verify file argument */
+	if (argc < 1) {
+		error("winreadall - filename required");
+	}
+
+	if (not(IS_STRING(file))) {
+		error("winreadall - filename required");
+	}
+
+	if (fopen(file, "r") != TRUE) {
+		error(sprintf("winreadall - cannot open %s", file));
+	}
+
+	n_win = numwin;
+
+	/* default arguments */
+	if (argc < 3) {
+		nforms = n_win;
+		if (argc < 2) {
+			fln = 1;
+		}
+	}
+
+	if (not(fln==1)) {
+		for(j=1; j<fln; j++) {
+			temp = fgets(file);
+		}
+	}
+
+	for(j=1; j<=n_win; j++) {
+		if (j <= nforms ) {
+			winform = strfind(" ",fgets(file));
+			putform = strcat('setwform(w',strnum(j),',strextract(winform,2,strlen(winform)-2))');
+
+			labelstr = fgets(file);	
+			putlabel = strcat('label(w',strnum(j),',strextract(labelstr,5,strlen(labelstr)-5))');
+
+			commstr = fgets(file);
+			putcomm = strcat('comment(w',strnum(j),',strextract(commstr,5,strlen(commstr)-5))');
+
+			eval(putform);
+			eval(putlabel);
+			eval(putcomm);
+		}
+	}
+
+	fclose(file);
+}
+
+winreadallall_error(errnum, errmes) 
+{
+	/* close files if error */
+	fcloseall();
+}
+

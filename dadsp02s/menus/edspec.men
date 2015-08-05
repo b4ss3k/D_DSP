@@ -1,0 +1,16 @@
+! Edspec.men -- Reordering and Miscellaneous Functions
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+  Reordering & Misc.
+
+ Lookup             ~_deffname('LOOKUP   Lookup Values in a Series') |_defformat('Lookup(series1, series2)') |_defxamp('Lookup(W2, W1)')|_getser2("Input Series:  ","Lookup Series: ")|_ser2form("Lookup")
+ Transpose          ~_deffname('TRANSPOSE Transpose a Table')|_defformat('Transpose(table)')|_defxamp('Transpose(W1)') | _getser|_serform("Transpose")
+ Sort               ~_deffname('SORT     Sort a Series')|_defformat('Sort(series,order)')|_defxamp('Sort(W1,1)') | _getserint1("Input Series:   ", "Order (0 or 1): ")|_serint1form("Sort")
+ Rank               ~_deffname('GRADE    Rank a Series')|_defformat('Grade(series,order)')|_defxamp('Grade(W1,1)') | _getserint1("Input Series:   ","Order (0 or 1): ") |_serint1form("Grade")
+ Reorder            ~_deffname('REORDER  Rearrange a Series Based on Indices')|_defformat('Reorder(series1, series2)')|_defxamp('Reorder(W1,Grade(W1))')|_getser2("Series 1: ", "Series 2: ")|_ser2form("Reorder")
+ Ravel              ~_deffname('RAVEL    Break 1 Series into Multiple Series')|_defformat('Ravel(series, length)')|_defxamp('Ravel(W1,10)')|_getserint1("Input Series: ", "Length:       ")|_serint1form("Ravel")
+ UnRavel            ~_deffname('UNRAVEL  Create 1 Series from Multiple')|_defformat('Unravel(series)')|_defxamp('Unravel(W1)') | _getser|_serform("Unravel")
+ Reshape            ~_deffname('RESHAPE  Break 1 Series into Multiple Series, Varying Lengths')|_defformat('Reshape(series, series of lengths)')|_defxamp('Reshape(W1,W2)')|_getser2("Input Series: ", "Series of Lengths: ")|_ser2form("Reshape")
+ 

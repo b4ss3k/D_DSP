@@ -1,0 +1,17 @@
+!  Menu for HP54510 / DADiSP 
+@y3
+   Data I/O 
+_______________
+
+ Acquire Ch. 1  ~menuc();pause(1);defmacro("acqch",1,1);Setwform("ACQUIRE");label("Channel 1");Echo("Acquisition Complete")
+ Acquire Ch. 2  ~menuc();pause(1);defmacro("acqch",1,1);Setwform("ACQUIRE");label("Channel 2");Echo("Acquisition Complete")
+
+ 
+ Ch. 1 Raw Data ~menuclear()|defmacro("acqch",1,1)|Setwform("ACQUIRE")|label("Channel 1")|Echo("Acquisition Complete")
+ Ch. 2 Raw Data ~menuclear()|defmacro("acqch",2,1)|setwform("ACQUIRE2")|label("Channel 2")|Echo("Acquisition Complete")
+  
+
+ Acquire Mem 0  ~menuc()|Gsin(250,.01)
+ Acquire Mem 1  ~menuc()|Gsqr(250,.03)
+ Acquire Mem 2  ~menuc()|Gtri(250,.02)
+ Acquire Mem 3  ~menuc();Grand(250,.01)  

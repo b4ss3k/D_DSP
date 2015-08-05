@@ -1,0 +1,105 @@
+/*****************************************************************************
+*                                                                            *
+*   MAXVAL.SPL   Copyright (C) 1997-2001 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns maximum of one or two input arguments               *
+*                                                                            *
+*   Revisions:    9 Jun 1997  RRR  Creation                                  *
+*                 6 Nov 1997  RRR  accepts single input argument             *
+*                18 Mar 2000  RRR  also accepts no arguments                 *
+*                27 Jul 2001  RRR  use refseries for speed                   *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_MAXVAL
+
+    MAXVAL  
+
+    Purpose: Returns the maximum of one or two input arguments
+                                                                        
+    Format:  MAXVAL(val1, val2)
+
+                 val1  -  series or numeric argument
+                 val2  -  series or numeric argument
+
+    Returns: A real or series
+
+    Example:
+             Maxval(10, 20)
+
+             returns 20
+
+             Maxval({1, 2, 3}, {0, 4, 2})
+
+             returns the series {1, 4, 3}
+
+    Example:
+             W1:{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}
+             W2: maxval(w1)
+
+             W2 == {7, 8, 9} the maximums of each column of W1.
+
+    Remarks:
+             MAXVAL with no input arguments uses the current Window.
+
+    See Also:
+             Max
+             Min
+             Minval
+
+#endif
+
+
+maxval(a, b)
+{
+	local idx, m;
+
+	if (argc < 2) {
+		if (argc < 1) {
+			a = refseries();
+		}
+		/* single series or array */
+		if (IS_NUMERIC(a)) return(a); /* just return the scalar */
+
+		/* else cast to series */
+		else if (not(IS_ARRAY(a))) a = castseries(a);
+
+		if (numcols(a) > 1) {
+			/* find maxs of each column and transpose into a series */
+			m = colmax(a)';
+		}
+		else {
+			m = max(a);
+		}
+
+		if (outargc > 1) { /* return value and index */
+			/*
+			** generate "unraveled" indices and re-ravel - works
+			** for non-equal column lengths
+			*/
+			idx = reshape(1..length(unravel(a)), collength(a)');
+
+			/* sort indices based on data */
+			idx = reorder(idx, grade(a, 0));
+
+			/* first row contains indices of maximums */
+			idx = idx[1, ..]';
+
+			return(m, idx);
+		}
+		else {
+			return(m);
+		}
+	}
+	/* return larger of two items */
+
+	if (IS_STRING(a)) a = castseries(a);
+	if (IS_STRING(b)) b = castseries(b);
+
+	return((a >= b) * a + (b > a) * b);
+}

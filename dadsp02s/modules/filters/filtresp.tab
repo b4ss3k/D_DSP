@@ -1,0 +1,12 @@
+@active_tabbed
+
+{_filtcharstr}
+
+{defvar("_filtresp_page", 0)}
+{setmenupage(_filtresp_page)}
+
+~_mff("filtresp.pan")
+~_mff("filtpz.pan")
+
+
+~~setvar("_filtresp_page", getmenupage)

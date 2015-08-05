@@ -1,0 +1,15 @@
+@active_tabbed
+
+DADiSP/Filters
+
+{defvar("_filter_page", 0)}
+{setmenupage(_filter_page)}
+
+~_mff("iirf.pan")
+~_mff("firf.pan")
+~_mff("filtresp.pan")
+~_mff("filtpz.pan")
+~_mff("filtdata.pan")
+
+
+~~setvar("_filter_page", getmenupage)

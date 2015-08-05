@@ -1,0 +1,13 @@
+! Axes.men - Axes Type
+@x56
+@y-1
+@b{_bg2}
+@f{_fg2}
+  Axes Selection
+___________________
+
+ Linear           ~echo("");defmacro("_axes", 0, 1);" LINEAR"
+
+ Log              ~echo("");defmacro("_axes", 1, 1);" LOG"
+___________________
+

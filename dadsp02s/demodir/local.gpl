@@ -1,0 +1,11 @@
+! Commands to be issued to interface card
+@display
+@x0
+@y0
+  Local 
+__________
+
+  Hello   ~Echo("GPIB Interface Card")
+
+  Status  ~Echo("C 07 I G0 S0 E00 T0 C0 P0 OK")
+

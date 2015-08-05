@@ -1,0 +1,11 @@
+! Corr.men -- Correlation functions
+@x0
+@y0
+@b{_bg3}
+@f{_fg3}
+    Correlation
+
+ Auto-Correlation   ~_deffname('AUTOCOR  Time Domain Autocorrelation')|_defformat('Autocor(series)')|_defxamp('Autocor(W1)')|_getser|_serform("Autocor")
+ Cross-Correlation  ~_deffname('CROSSCOR Time Domain Crosscorrelation')  |_defformat('Crosscor(series1, series2)')|_defxamp('Crosscor(W1,W2)')|_getser2("Input Series 1:","Input Series 2:")|_ser2form("Crosscor")
+
+ Convolve 2 Windows ~_deffname('CONV     Time Domain Convolution')  |_defformat('Conv(series1, series2)')|_defxamp('Conv(W1,W2)')|_getser2("Input Series 1:","Input Series 2:")|_ser2form("Conv")

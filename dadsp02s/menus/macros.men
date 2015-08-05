@@ -1,0 +1,19 @@
+! macros.men - Macro functions
+@x0
+@y1
+@b{_bg2}
+@f{_fg2}
+  Macros/Command Files
+
+ Macro Definitions       ~_MC | eval('macros')
+ Define Macro            ~_deffname('DEFMACRO Define a Macro') |_defformat('Defmacro("macroname",macrodef)') | _defxamp('Defmacro("mymacro","w1*w1")') | _getstr2("Macro Name       ","Macro Definition ")  | _evalstr2form("Defmacro")
+ Undefine Macro          ~_deffname('#UNDEFINE  Undefine a Macro Definition') |_defformat('#Undefine macroname') | _defxamp('#Undefine mymacro') | _getstr1("Macro name") | _evalstrcommand("#Undefine")
+ Erase All Macros        ~if(strcmp(strextract(input(3,"DELETE ALL Macros?"),1,1),"y",0)==0,"#undefall")
+ Init Default Macros     ~#default
+
+ Save Macro Definitions  ~_deffname('MACWRITE Write Macros to File')  |_defformat('Macwrite("filename")')|_defxamp('Macwrite("mymacros.mac")')|_getstr1("Macros Filename")|_evalstrform("Macwrite")
+ Load Macro Definitions  ~_deffname('MACREAD  Load Macros Definitions')  |_defformat('Macread("filename")')|_defxamp('Macread("mymacros.men")')|_getstr1("Macros Filename")|_evalstrform("Macread")
+
+ Pop-up a Menu File      ~_deffname('MENUFILE Load a Menu File')  |_defformat('MENUFILE("filename")')|_defxamp('Menufile("mymenu.men")')|_getstr1("Menu Filename")|_evalstrform("Menufile")
+
+ Read a Command File     ~_deffname('LOAD     Load a Command File')  |_defformat('Load("filename")')|_defxamp('Load("command.dsp")')|_getstr1("Command Filename")|_evalstrform("Load")

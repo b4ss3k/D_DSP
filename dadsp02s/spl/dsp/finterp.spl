@@ -1,0 +1,142 @@
+/*****************************************************************************
+*                                                                            *
+*   FINTERP.SPL  Copyright (C) 2007 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    FIR low pass series interpolation                           *
+*                                                                            *
+*   Revisions:   12 Apr 2007  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_FINTERP
+
+    FINTERP  
+
+    Purpose: Calculates Sinx/x interpolation using FIR low pass filtering.
+                                                                        
+    Format:  FINTERP(s, n, edge, attn)
+             
+             (out, f) = FINTERP(s, n, edge, attn)
+
+              s    - the input series
+
+              n    - an optional integer, interpolation factor (default 2)
+
+              edge - an optional real, the transition band of the low pass 
+                     filter (default 0.95)
+
+              attn - an optional real, the attenuation in dB of the
+                     low pass filter (default 60.0 db)
+
+
+    Returns: A series or array.
+
+             (out, lpf) = FINTERP(s, n) returns the series result and the 
+             low pass filter coefficients.
+
+    Example:
+             W1: integ(gnorm(1000, .001))
+             W2: finterp(W1, 5)
+             W3: spectrum(W1)
+             W4: spectrum(W2);overp(W3, lred);
+
+             W2 interpolates the synthesized data int W1 by a factor  
+             of 5. The original sample rate is 1000 Hz and the sample
+             rate of the resulting interpolated data is 5000 Hz.
+
+    Example:
+             W1: integ(gnorm(1000, .001))
+             W2: finterp(W1, 5, 0.85)
+             W3: spectrum(W1)
+             W4: spectrum(W2);overp(W3, lred);
+
+             Same as above, but the transition band of the FIR
+             low pass filter is widened, resulting in fewer filter
+             taps and faster processing.
+
+    Remarks:
+             FINTERP zero merges the original data and low pass filters
+             the merged data with an FIR Kaiser Window filter. Use:
+
+                      (out, lpf) = finterp(s, n)
+
+             to return both the output data and the low pass filter
+             coefficients in impulse response form.
+
+             The edge frequencies of the filter are determined as 
+             follows:
+
+                     Fcut = rate(s) / 2
+                     Fstop = Fcut + Fcut * (1 - edge)
+
+             Where rate(s) is the sample rate of the data.
+
+             FINTERP requires that DADiSP/Filters be loaded.
+
+    See Also:
+             DADiSP/Filters
+             Decimate
+             Interp
+             Xylookup
+#endif
+
+
+/* FIR low pass interpolation (sinx/x) */
+finterp(s, n, edge, attn)
+{
+	local y, nyq, f, z;
+
+	/* default args */
+	if (argc < 4) {
+		attn = 60.0;
+		if (argc < 3) {
+			edge = 0.95;
+			if (argc < 2) {
+				if (argc < 1) error("finterp - input series required");
+				n = 2;
+			}
+		}
+	}
+
+	/* interpolation factor must be an integer */
+	n = int(n);
+
+	if (n < 2) {
+		if (n == 1) {
+			return(s);
+		}
+		else {
+			error("finterp - positive decimation factor required");
+		}
+	}
+	if (edge < 0.0 || edge > 1.0) {
+		error(sprintf("finterp - edge is %g, must lie between 0.0 and 1.0", edge));
+	}
+	if (attn <= 0.0) {
+		error("finterp - positive attenuation required");
+	}
+
+	/* create zeros to merge */
+	z = zeros(length(s), 1);
+	setdeltax(z, deltax(s));
+	setxoffset(z, xoffset(s));
+
+	/* nyquist frequency */	
+	nyq = rate(s) / 2;
+
+	/* merge zeros */
+	s = merge(s, z, n-1);
+
+	/* design FIR low pass Kaiser filter */
+	f = kwlpass(rate(s), nyq, nyq * (2.0 - edge), attn, "unity_dc");
+
+	/* interpolate via direct filter convolution */
+	y = firfilter(s, f) * n;
+
+	return(y, f);
+}

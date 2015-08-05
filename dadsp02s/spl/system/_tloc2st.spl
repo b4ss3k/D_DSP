@@ -1,0 +1,18 @@
+_tloc2str()
+{
+	local tloc, str;
+
+	tloc = _gticloc();
+
+	switch (tloc) {
+		case 1:
+		default:
+			str = _inticstr;
+			break;
+
+		case 2:
+			str = _outticstr;
+			break;
+	}
+	return(str);
+}

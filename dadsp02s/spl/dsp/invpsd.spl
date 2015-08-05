@@ -1,0 +1,146 @@
+/*****************************************************************************
+*                                                                            *
+*   INVPSD.SPL   Copyright (C) 2006 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Constructs a time series given a PSD                       *
+*                                                                            *
+*   Revisions:    17 May 2006  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_INVPSD
+
+    INVPSD    
+
+    Purpose: Constructs a time series with a PSD that matches the PSD input.
+                                                                        
+    Format:  INVPSD(psd, rpflag)
+
+                psd - A series, the input PSD to match.
+
+             rpflag - Optional. An integer.
+
+                       0: Use zero phase to construct time series.
+                       1: Use random phase to construct time series (default).
+
+
+    Returns: A real time series with a PSD identical to the input.
+
+    Example:
+
+             W1: 1..4
+             W2: psd(w1)
+             W3: invpsd(w2)
+             W4: psd(w3)
+
+             W1 contains a 4 point linear ramp. The PSD of the series
+             is calculated in W2. A time series with the same PSD as
+             W1 is constructed in W3. The PSD of the constructed time
+             series is dislayed in W4. Although the values of W1 and W3
+             differ, the PSD's of the two series are identical.
+
+                 W2 == {25, 4, 1}
+                 W4 == {25, 4, 1}
+
+             Since random phase is used to construct W3, the values will
+             change if the formula is re-evaluated even if the input does
+             not change. However, W4 will remain identical to W2 for the
+             same input.
+
+    Example:
+             W1: 1..4
+             W2: psd(w1)
+             W3: invpsd(w2, 0)
+             W4: psd(w3)
+
+             Same as above except the inverse PSD in W3 is calculated with
+             zero phase and the time series is displayed as an autocorrelation
+             sequence. The series in W2 and W4 are identical. 
+
+                 W3 == {1.5858, 2, 4.4142, 2}
+
+             Since zero phase was used, the values in W3 will remain constant 
+             upon re-evaluation for the same input series. Also notice that
+
+                 sum(w1) == sum(w3)
+ 
+    Remarks:
+             INVPSD finds a time series for the given PSD by reconstructing
+             the original FFT of the PSD and computing the inverse FFT. Since
+             the phase information is not available with the PSD, an infinite
+             number of time series exist with the same PSD.
+
+             If rpflag is 1 (the default), a random, odd symmetric phase is
+             used to reconstruct the time series.
+
+             If rpflag is 0, a phase of all zeros is used to reconstruct the 
+             time series and the result is plotted as an autocorrelation
+             series.
+
+             INVPSD always returns a real time series.
+
+    See Also:
+             Fft
+             Ifft
+             PSD
+#endif
+
+
+/* calculate an inverse PSD */
+invpsd(psd, rpflag)
+{
+	local len1, len2, dx, s, theta, u;
+
+	if (argc < 2) {
+		if (argc < 1) error("invpsd - input series required");
+		rpflag = 1;
+	}
+
+	len1 = length(psd);
+	len2 = 2 * (len1 - 1);
+	dx = len2 * deltax(psd);
+
+	/* undo PSD scaling */
+	s = psd * len2 * dx;
+
+	/* preserve DC and nyquist scaling */
+	s /= 2.0;
+	s[1]   *= 2.0;
+	s[len1] *= 2.0;
+
+	/* mag from mag^2 */
+	s = sqrt(s);
+
+	/* form double sided PSD */
+	s = concat(s, rev(extract(s, 2, len1 - 2)));
+
+	if (rpflag) {
+		/* add odd symmteric random phase */
+		theta = grand(int(length(s)/2), deltax(s), -pi, pi);
+		theta = {theta, pi, -rev(extract(theta, 2, -1))};
+		theta[1] = 0;
+		s = s * exp(i*theta);
+	}
+
+	/* inverse transform */
+	s = real(ifft(s));
+
+	/* zero phase - use autocorrelation form */
+	if (not(rpflag)) {
+		s = fftshift(s);
+	}
+
+	/* units */
+	u = extract(psd, 1, 1);
+	u = sqrt(integ(u));
+	setvunits(s, getvunits(u));
+
+	return(s);
+}
+
+
+ 

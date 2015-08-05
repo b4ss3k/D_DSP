@@ -1,0 +1,12 @@
+Acosh                  !_PDC_EXEC114  $Hyperbolic Inverse Cos
+Acoth                  !_PDC_EXEC118  $Hyperbolic Inverse Cot
+Acsch                  !_PDC_EXEC117  $Hyperbolic Inverse Csc
+Asech                  !_PDC_EXEC116  $Hyperbolic Inverse Sec
+Asinh                  !_PDC_EXEC113  $Hyperbolic Inverse Sin
+Atanh                  !_PDC_EXEC115  $Hyperbolic Inverse Tan
+Cosh                   !_PDC_EXEC108  $Hyperbolic Cosine
+Coth                   !_PDC_EXEC112  $Hyperbolic Cotangent
+Csch                   !_PDC_EXEC111  $Hyperbolic Cosecant
+Sech                   !_PDC_EXEC110  $Hyperbolic Secant
+Sinh                   !_PDC_EXEC107  $Hyperbolic Sine
+Tanh                   !_PDC_EXEC109  $Hyperbolic Tangent

@@ -1,0 +1,68 @@
+/*****************************************************************************
+*                                                                            *
+*   GETRGB.SPL   Copyright (C) 1998-2004 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns separate RGB components of an image                 *
+*                                                                            *
+*   Revisions:    8 Jun 1998  RRR  Creation                                  *
+*                10 Sep 2004  RRR  (r,g,b) = getcolormap(m) returns rbg      *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_GETRGB
+
+    GETRGB
+
+    Purpose: Returns the separate RGB components of an image
+                                                                        
+    Format:  (r, g, b) = GETRGB(image)
+
+              image  - an array, the input image
+              r      - an array, the output red values
+              g      - an array, the output green values
+              b      - an array, the output blue values
+
+    Returns: Up to three arrays with the same size as the input.
+
+    Example:
+             W1: readbmp("mandrill.bmp")
+             (r, g, b) = getrgb(w1);
+             g *= 1.2;
+             W2: rgbimage(r, g, b);
+
+             W2 contains a new RGB image formed by increasing the green
+             component of W1 by 20%.
+
+    Remarks:
+             Each RGB value ranges from 0.0 to 1.0.
+
+    See Also:
+             Getcolormap
+             Image24
+             Rgbimage
+             Readbmp
+#endif
+
+
+/* get separate rgb components as arrays */
+getrgb(s)
+{
+	local r, g, b;
+
+	if (argc < 1) error("getrgb - input image required");
+
+	/* getcolormap can do it all */
+	(r, g, b) = getcolormap(s);
+
+	/* unity deltas */
+	setdeltay(r, 1.0);
+	setdeltay(g, 1.0);
+	setdeltay(b, 1.0);
+
+	return(r, g, b);
+}
+

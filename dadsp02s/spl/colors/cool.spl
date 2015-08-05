@@ -1,0 +1,78 @@
+/*****************************************************************************
+*                                                                            *
+*   COOL.SPL       Copyright (C) 1997 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Generate a colormap of shades of blue                       *
+*                                                                            *
+*   Revisions:    4 Aug 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_COOL
+
+    COOL
+
+    Purpose: Generates a colormap of shades of blue
+                                                                        
+    Format:  COOL(len)                           
+
+               len - optional colormap length, defaults to
+                     the length of the current colormap
+                                                                        
+
+    Returns: A table of RGB triples suitable for the SETCOLORMAP function.   
+                                                                        
+    Example:                                                            
+
+             clen = length(getcolormap());
+             density(ravel(rep(0..(clen-1), 32), clen)');
+             cool();
+                                                                        
+             Creates a table of 32 x colormap length RBG values and   
+             displays the resulting colors. The resulting image is a    
+             vertical plot of colors ranging from aqua (lowest) to 
+             violet (highest).
+
+     Remarks:
+
+             Cool() by itself sets the colormap and shading.
+
+             a = cool() or setcolormap(cool()) returns the rgb values.
+             In this case, use SETSHADING to make the new colormap
+             take effect on an existing density or 2D plot.
+
+     See Also:
+
+             Hot
+             Rainbow             
+             Setcolormap
+             Setshading
+             Showcmap
+
+#endif
+
+
+cool(mlen)
+{
+	local red, cmap;
+
+	if (argc < 1) {
+		mlen = length(getcolormap());
+	}
+	red  = (0..mlen-1) / maxval(mlen-1,1);
+	cmap = ravel(red, 1-red, ones(mlen,1));
+
+	if (outargc == 0) {
+		setcolormap(cmap);setshading();
+	}
+	else {
+		setvunits(cmap, "Red",   1);
+		setvunits(cmap, "Green", 2);
+		setvunits(cmap, "Blue",  3);
+		return(cmap);
+	}
+}

@@ -1,0 +1,33 @@
+@modeless 1
+               Remez Exchange Bandpass FIR Filter Parameters
+
+
+ Magnitude (dB) |
+                |
+                |                   
+     +Ripple -- |                --------------      
+          0  -- |               /\/\/\/\/\/\/\/\              _
+     -Ripple -- |              / -------------- \              |
+                |             /                  \             | 
+                | Stop Band  /     Pass Band      \  Stop Band | Attenuation
+                |     1     /                      \     2     |
+                |          /                        \          |
+       -Attn __ | ________/                          \____    _|
+                |
+                |________________________________________________________
+                         |      |             |      |      Frequency (Hz)
+                         f      f             f      f
+                          stop1  pass1         pass2  stop2
+
+
+  frate  -  Sample Rate                 Hz 
+
+  fstop1 -  First Stopband Frequency    Hz
+  fpass1 -  Passband Begin              Hz
+  fpass2 -  Passband End                Hz
+  fstop2 -  Second Stopband Frequency   Hz
+
+  ripple -  Passband Ripple             dB
+  attn   -  Stopband Attenuation        dB
+
+               0 < fstop1 < fpass1 < fpass2 < fstop2 < frate/2

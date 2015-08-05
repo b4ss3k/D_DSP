@@ -1,0 +1,980 @@
+/*****************************************************************************
+*                                                                            *
+*   FILTERS.SPL  Copyright (C) 2005 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Various filter conversion and response functions            *
+*                                                                            *
+*   Revisions:   30 Mar 2005  RRR  Creation, from FILTER.MAC                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#include <series.h>
+
+/* remove old macro versions */
+#undef grpdelay
+#undef firfilter
+
+#if @HELP_FILTERS
+
+                             DADiSP/Filters        
+
+  This module supports the design, analysis, and processing of FIR
+  (Finite Impulse Response) and IIR (Infinite Impulse Response) digital
+  filters.
+
+  The FIR module includes the Remez Exchange (Parks-McClellan) optimal
+  filter design and the Kaiser Window method.
+
+  The IIR module supports Butterworth, Chebychev I, Chebychev II, Elliptical 
+  and Bessel designs by employing the Bilinear Transform or Matched Z 
+  Transform to map an analog filter prototype into the digital domain.
+
+       Now that DADiSP/Filters is active, just press the Filters button
+       or type:
+                                  filters
+
+               to pop up the main Filter menu directly.
+
+#endif
+
+
+
+
+/* convert cascade biquad to direct B(z)/A(z) coefficients */
+cas2dir(c)
+{
+	local z, p;
+	
+	/* check inputs */
+	if (argc < 1)         cas2dir_args_err("cas2dir");
+	if (not(IS_ARRAY(c))) cas2dir_args_err("cas2dir");
+	if (length(c) == 0)   cas2dir_args_err("cas2dir");
+
+	/* convert to direct form */
+	z = zerocoef(c);
+	p = polecoef(c);
+
+	/* label */
+	setcomment(z, "Num");
+	setcomment(p, "Den");
+
+	if (outargc > 1) {
+		return(z, p);
+	}
+	else {
+		return(ravel(z, p));
+	}
+}
+
+
+/* error message for cas2dir */
+cas2dir_args_err(str)
+{
+	error(sprintf("%s - Input Series Required", str));
+}
+
+
+/* convert FIR impulse to direct form */
+fir2dir(f)
+{
+	local a, b;
+
+	/* check inputs */
+	if (argc < 1)         cas2dir_args_err("fir2dir");
+	if (not(IS_ARRAY(f))) cas2dir_args_err("fir2dir");
+	if (length(f) == 0)   cas2dir_args_err("fir2dir");
+
+	/* numerator terms are the FIR coefficients */
+	b = f;
+	a = {1};
+
+	setdeltax(a, deltax(b));
+
+	setcomment(b, "Num");
+	setcomment(a, "Den");
+
+	if (outargc > 1) {
+		return(b, a);
+	}
+	else {
+		return(ravel(b, a));
+	}
+}
+
+
+/* convert FIR impulse to cascade form */
+fir2cas(a)
+{
+	local b;
+
+	/* convert to direct form */
+	(a, b) = fir2dir(a);
+
+	/* convert direct to cascade form */
+	c = dir2cas(a, b);
+
+	return(c);
+}
+
+
+/* convert direct form B(z)/(A(z) to cascaded biquad coefficients */
+dir2cas(b, a, Fs)
+{
+
+	local i, b0, a0, n, b1, a1, k, c, broots, aroots, brow, arow, fir;
+
+	if (outargc < 2) {
+		echo("Converting Direct Form to Cascaded Biquad Form ...");
+	}
+
+	// check input args
+	(b, a, Fs) = dir2cas_args(argc, b, a, Fs);
+
+	// compute gain coefficient
+	if ((b0 = b[1]) == 0) {
+		b0 = 1;
+	}
+
+	b = b / b0;
+
+	if ((a0 = a[1]) == 0) {
+		a0 = 1;
+	}
+
+	a = a / a0;
+	b0 = b0 / a0;
+
+	fir = (length(a) == 1);
+
+	// make coeff equal lengths 
+	n = max(length(b), length(a));
+
+	b = extract(b, 1, n);
+	a = extract(a, 1, n);
+
+	k = floor(n/2);
+	b1 = zeros(k, 3);
+	a1 = zeros(k, 3);
+
+	if (k * 2 == n) {
+		b = {b, 0};
+		a = {a, 0};
+	}
+
+	// group poles and zeros in complex conjugate pairs
+	broots = cplxpair(roots(b));
+	if (not(fir)) {
+		aroots = cplxpair(roots(a));
+	}
+	else {
+		aroots = {0};
+	}
+
+	// make roots equal lengths 
+	n = max(length(broots), length(aroots));
+
+	broots = extract(broots, 1, n);
+	if (not(fir)) aroots = extract(aroots, 1, n);
+
+	// find corresponding polynomials for poles and zeros
+	if (not(fir)) {
+		loop (i = 1..2..2*k) {
+			// IIR case
+			brow = broots[i..1..i+1, ..];
+			brow = real(poly(brow));
+			b1[fix((i+1)/2), ..] = brow';
+
+			arow = aroots[i..1..i+1, ..];
+			arow = real(poly(arow));
+			a1[fix((i+1)/2), ..] = arow';
+		}
+	}
+	else {
+		// FIR case
+		a1[.., 1] = 1;
+		loop (i = 1..2..2*k) {
+			brow = broots[i..1..i+1, ..];
+			brow = real(poly(brow));
+			b1[fix((i+1)/2), ..] = brow';
+		}
+	}
+
+	if (outargc > 2) {
+		setdeltax(b1, 1/Fs);
+		setdeltax(a1, 1/Fs);
+		setxoffset(b1, xoffset(b));
+		setxoffset(a1, xoffset(a));
+
+		return(b0, b1, a1);
+	}
+	else {
+		// standard DADiSP cascade format: 
+		// G, b10, b11, b12, a11, a12, b20, b21, b22, a21, a22, ...
+
+		c = concat(transpose(b1), transpose(a1[.., 2..numcols(a1)]));
+		c = {b0, unravel(c)};
+
+		setdeltax(c, 1/Fs);
+		setxoffset(c, xoffset(b));
+
+		echo("");
+
+		return(c);
+	}
+}
+
+
+/* get sample rate from coefficients */
+dir2cas_rate(b, a)
+{
+	local cas_rate;
+
+	if (rate(b) == rate(a)) {
+		cas_rate = rate(b);
+	}
+	else if (length(b) == 1) {
+		cas_rate = rate(a);
+	}
+	else if (length(a) == 1) {
+		cas_rate = rate(b);
+	}
+	else {
+		cas_rate = 1.0;
+	}
+	return(cas_rate);
+}
+
+
+/* parse dir2cas input arguments */
+dir2cas_args(cnt, b, a, Fs)
+{
+
+	/* parse args */
+	if (cnt < 3) {
+		if (cnt < 2) {
+			if (cnt < 1) {
+				dir2cas_args_err();
+			}
+			if (not(IS_ARRAY(b))) {
+				dir2cas_args_err();
+			}
+
+			a = {1};
+		}
+		if (not(IS_ARRAY(a))) {
+			Fs = a;
+			a = {1};
+		}
+		if (numcols(b) == 2) {
+			/* B(z), A(z) as columns */
+			a = col(b, 2);
+			b = col(b, 1);
+		}
+		Fs = dir2cas_rate(b, a);
+	}
+
+	if (not(IS_ARRAY(b)) || not(IS_ARRAY(a)) || not(IS_NUMERIC(Fs))) {
+		dir2cas_args_err();
+	}
+	if (length(b) == 0 || length(a) == 0) {
+		dir2cas_args_err();
+	}
+
+	return(b, a, Fs);
+}
+
+
+/* error function for dir2cas */
+dir2cas_args_err()
+{
+	error("dir2cas - B and A Coefficient Series Required");
+}
+
+
+/* return complex pairs */
+ITERATE cplxpair(z, tol)
+{
+	local y, q, idx, n, i;
+
+	if (argc < 1 || argc > 2) {
+		error("(z, n) = cplxpair(z [, tol]);"); 
+	}
+
+	if (argc < 2) tol = 100*eps;
+
+	y = zeros(size (z));
+	if (length(z) == 0) return({});
+
+	// Sort the sequence in terms of increasing real values
+	idx = grade(real(z), 1);
+	z = z[idx];
+
+	// Put the purely real values at the end of the returned list
+	idx = find(mag(imag(z)) / (mag(z)+realmin) < tol);
+	n = length(z) - length(idx);
+	if (length(idx) > 0) {
+		y[n+1..length(z)] = z[idx];
+		z[idx] = {};
+	}
+
+	// For each remaining z, place the value and its conjugate at the
+	// start of the returned list, and remove them from further
+	// consideration.
+
+	if (n > 0) {
+		loop (i = 1..2..n) {
+			if (i+1 > n) {
+				error("cplxpair - could not pair all complex numbers");
+			}
+			(v, idx) = min(mag(z[i+1..n] - conj(z[i])));
+			if (v > tol) {
+				error ("cplxpair - could not pair all complex numbers");
+			}
+			if (imag(z[i]) < 0) {
+				y[{i, i+1}] = z[{i, idx+i}];
+			}
+			else {
+				y[{i, i+1}] = z[{idx+i, i}];
+			}
+			z[idx+i] = z[i+1];
+		}
+	}
+
+	return(y, n);
+}
+
+
+/* FIR filter with linear phase throughout entire filter bandwidth */
+fullfir(s)
+{
+	return(conv(s, rev(s)));
+}
+
+
+/* normalize FIR so DC == 0 */
+firunitydc(f)
+{
+	return(f / sum(f));
+}
+
+
+/* magnitude response */
+filtmag(b, a, len, iform)
+{
+	local m;
+
+	(b, a, len, iform) = filtresp_args("filtmag", 512, b, a, len, iform);
+
+	if (iform == 0) {
+		/* FIR form */
+		m = mag(zfreq(b, {1}, len));
+	}
+	else if (iform == 2) {
+		/* direct form */
+		m = mag(zfreq(b, a, len));
+	}
+	else {
+		/* cascade or direct form */
+		m = mag(zfreq(b, len));
+	}
+	return(m);
+}
+
+
+/* phase response */
+filtphase(b, a, len, iform)
+{
+	local p;
+
+	(b, a, len, iform) = filtresp_args("filtphase", 512, b, a, len, iform);
+
+	if (iform == 0) {
+		/* FIR form */
+		p = phase(zfreq(b, {1}, len));
+	}
+	else if (iform == 2) {
+		/* direct form */
+		p = phase(zfreq(b, a, len));
+	}
+	else {
+		/* cascade or direct form */
+		p = phase(zfreq(b, len));
+	}
+	return(p);
+}
+
+
+/* impulse response */
+filtimp(b, a, len, iform)
+{
+	local t;
+
+	(b, a, len, iform) = filtresp_args("filtimp", -1, b, a, len, iform);
+
+	if (iform == 0) {
+		/* FIR form */
+		t = impz(b, {1}, len);
+	}
+	else if (iform == 2) {
+		/* direct form */
+		t = impz(b, a, len);
+	}
+	else {
+		/* cascade or direct form */
+		t = impz(b, len);
+	}
+	return(t);
+}
+
+
+/* group delay */
+filtgrpdelay(b, a, len, iform)
+{
+	local t, g;
+
+	(b, a, len, iform) = filtresp_args("filtgrpdelay", 512, b, a, len, iform);
+
+	if (iform == 0) {
+		/* FIR form */
+		g = grpdelay(b, {1}, len);
+	}
+	else if (iform == 2) {
+		/* direct form */
+		g = grpdelay(b, a, len);
+	}
+	else {
+		/* cascade or direct form */
+		g = grpdelay(b, len);
+	}
+
+	return(g);
+}
+
+
+/* parse args for filter response functions */
+filtresp_args(name, ndefault, b, a, n, iform)
+{
+	local numeric, cascade;
+
+	(b, a, numeric, cascade) = filtresp_args_ba(name, b, a);
+
+	switch (argc) {
+		case 3:
+			if (cascade) {
+				/* filtfunc(c) */
+				n = ndefault;
+				iform = -1;
+			}
+			else {
+				filtfunc_args_err(name);
+			}
+			break;
+
+		case 4:
+			if (cascade) {
+				/* filtfunc(c, n) */
+				if (IS_NUMERIC(numeric)) {
+					iform = -1;
+					n = numeric;
+				}
+				else {
+					filtfunc_args_err(name);
+				}
+			}
+			else {
+				/* filtfunc(b, a) */
+				n = ndefault;
+				iform = 2;
+			}
+			break;
+
+		case 5:
+			if (cascade) {
+				/*          b, a,  n     */
+				/* filtfunc(c, n, iform) */
+				if (IS_NUMERIC(n)) {
+					iform = n;
+					n = numeric;
+					if (iform >= 2) {
+						if (numcols(b) < 2) {
+							filtfunc_args_err(name);
+						}
+						else {
+							iform = -1;
+						}
+					}
+				}
+				else {
+					filtfunc_args_err(name);
+				}
+			}
+			else {
+				/* filtfunc(b, a, n) */
+				if (IS_NUMERIC(n)) {
+					iform = 2;
+				}
+				else {
+					filtfunc_args_err(name);
+				}
+			}
+			break;
+
+		case 6:
+			if (cascade) {
+				filtfunc_args_err(name);
+			}
+			else {
+				/* filtfunc(b, a, n, iform) */
+				if (not(IS_NUMERIC(n) && IS_NUMERIC(iform))) {
+					filtfunc_args_err(name);
+				}
+			}
+			break;
+
+		default:
+			filtfunc_args_err(name);
+			break;
+	}
+	return(b, a, n, iform);
+}
+
+
+/* get B(z) and A(z) coefficients from input args */
+filtresp_args_ba(name, b, a)
+{
+	local cascade, numeric;
+
+	numeric = 0;
+
+	if (argc < 2) {
+		filtfunc_args_err(name);
+	}
+	else if (not(IS_ARRAY(b))) {
+		filtfunc_args_err(name);
+	}
+	else if (length(b) == 0) {
+		filtfunc_args_err(name);
+	}
+
+
+	switch (argc) {
+		case 2:
+		default:
+			cascade = 1;
+			a = {};
+			break;
+
+		case 3:
+			if (IS_ARRAY(a)) {
+				if (length(a) == 0) {
+					filtfunc_args_err(name);
+				}
+				cascade = 0;
+			}
+			else {
+				numeric = a;
+				a = {};
+				/* set cascade for further argument processing */
+				cascade = 1;
+			}
+			break;
+	}
+
+	return(b, a, numeric, cascade);
+}
+
+
+/* error function for filter responses */
+filtfunc_args_err(name)
+{
+	error(sprintf("%s - B and A Coefficients or Cascade Coefficients Required", name));
+}
+
+
+/* filter data using FFT method */
+filtdataf(x, b, a)
+{
+	local y, cascade;
+
+	(b, a, cascade) = filter_args("filtdataf", b, a);
+
+	if (cascade) {
+		/* IIR biquad coefficients */
+		y = iirfilter(x, b);
+	}
+
+	else {
+		if (length(a) == 1) {
+			/* FIR form */
+			y = firfilterf(x, b);
+		}
+		else {
+			/* Direct form */
+			y = dirfilterf(x, b, a);
+		}
+	}
+	return(y);
+}
+
+
+/* filter data using CASCADE or direct convolution */
+filtdata(x, b, a)
+{
+	local y, cascade;
+
+	(b, a, cascade) = filter_args("filtdata", b, a);
+
+	if (length(x) == 0) {
+		y = {};
+	}
+	else if (cascade) {
+		/* IIR cascade form */
+		y = iirfilter(x, b);
+	}
+	else {
+		if (length(a) == 1 && a[1] == 1.0) {
+			/* FIR form */
+			y = firfilter(x, b);
+		}
+		else {
+			/* Direct form */
+			y = dirfilter(x, b, a);
+		}
+	}
+	return(y);
+}
+
+
+/* parser args for filtdata */
+filter_args(str, b, a)
+{
+	local cascade;
+
+	cascade = 0;
+
+	if (argc < 3) {
+		if (argc < 2) filter_args_err(str);
+		if (IS_ARRAY(b)) {
+			if (length(b) == 0) {
+				filter_args_err(str);
+			}
+			if (numcols(b) > 1) {
+				a = col(b, 2);
+				b = col(b, 1);
+				cascade = 0;
+			}
+			else {
+				cascade = 1;
+				a = {};
+			}
+		}
+		else filter_args_err(str);
+	}
+	else if (IS_ARRAY(b) && IS_ARRAY(a)) {
+		if (length(b) == 0 || length(a) == 0) {
+			filter_args_err(str);
+		}
+		cascade = 0;
+	}
+	else filter_args_err(str);
+
+	return(b, a, cascade);
+}
+
+
+/* error function for filtdata args */
+filter_args_err(str)
+{
+	error(sprintf("%s - Series and Filter Coefficients Required", str));
+}
+
+
+/* filter with FIR coefficients using the FFT method */
+firfilterf(x, f)
+{
+	local y, len;
+
+	(x, f) = filtdata_args("firfilterf", x, f);
+
+	if (length(x) == 0) {
+		y = {};
+	}
+	else {
+		// get best power of 2 length 
+		len = filtfftlen(x, f);
+
+		// filter via fft
+		y = real(ifft(fft(x, len) * fft(f, len)));
+
+		// time offset
+		filtsetdxoff(y, x, f);
+
+		// reshape
+		y = extract(y, ceil(length(f)/2), length(x));
+
+		if (deltax(x) == deltax(f)) {
+			setdeltax(y, deltax(x));
+		}
+		else {
+			setdeltax(y, 1.0);
+		}
+	}
+
+	return(y);
+}
+
+
+/* filter with FIR coefficients using convolution */
+firfilter(x, f)
+{
+	local y;
+
+	(x, f) = filtdata_args("firfilter", x, f);
+
+	if (length(x) == 0) {
+		y = {};
+	}
+	else {
+		/* convolve and extract correct length */
+		y = extract(conv(x, f), ceil(length(f)/2), length(x));
+	}
+	return(y);
+}
+
+
+/* filter with Direct B, A coefficients using FILTEQ */
+dirfilter(x, b, a)
+{
+	local y;
+
+	if (length(x) == 0) {
+		y = {};
+	}
+	else {
+		/* evaluate as a difference equation */
+		y = filteq(b, a, x);
+		filtsetdxoff(y, x, b);
+	}
+	return(y);
+}
+
+
+/* filter with Direct B, A coefficients using the FFT */
+dirfilterf(x, b, a)
+{
+	local y, len;
+
+	(x, b, a) = dirfilter_args("dirfilterf", x, b, a);
+
+	if (length(x) == 0) {
+		y = {};
+	}
+	else {
+		// get best power of 2 length 
+		len = max(length(b), length(a));
+		len = filtfftlen2(length(x), len);
+
+		// filter via fft
+		y = real(ifft((fft(x, len) * fft(b, len)) / fft(a, len)));
+
+		// time offset
+		filtsetdxoff(y, x, b);
+
+		// reshape
+		y = extract(y, 1, length(x));
+	}
+
+	return(y);
+}
+	
+
+/* filter with IIR cascade coefficients using the FFT */
+iirfilterf(x, c)
+{
+	local y, len, num, den, stage;
+
+	(x, c) = filtdata_args("iirfilterf", x, c);
+
+	if (length(x) == 0) {
+		y = {};
+	}
+	else {
+		if (numcols(c) == 2) {
+			/* Direct form */
+			y = filtdataf(x, col(b, 1), col(b, 2));
+		}
+		else {
+			/* FFT each stage and multiply */
+			len = filtfftlen(x, c);
+			stage = ravel(extract(c, 2, -1), 5);
+			num = extract(stage, 1, 3);
+			den = {ones(1, numcols(stage)), extract(stage, 4, -1)};
+
+			num = rowprod(fft(num, len));
+			den = rowprod(fft(den, len));
+
+			y = real(ifft(fft(x, len) * num / den));
+
+			/* apply gain and extract correct length */
+			y = c[1] * extract(y, 1, length(x));
+
+			filtsetdxoff(y, x, c);
+
+			setvunits(y, getvunits(x));
+		}
+	}
+	return(y);
+}
+
+
+/* set deltax and offset for filter result */
+filtsetdxoff(y, x, b)
+{
+	setxoffset(y, xoffset(x) + xoffset(b));
+
+	if (deltax(x) == deltax(b)) {
+		setdeltax(y, deltax(x));
+	}
+	else {
+		setdeltax(y, 1.0);
+	}
+}
+
+
+		
+/* find best power of two length for series x and f */
+filtfftlen(x, f)
+{
+	local len;
+
+	len = filtfftlen2(length(x), length(f));
+
+	return(len);
+}
+
+
+/* find best power of two of input lengths */
+filtfftlen2(len1, len2)
+{
+	local len;
+
+	len = 2 * max(len1, len2);
+	len = int(2^ ceil(log2(len)));
+
+	return(len);
+}
+
+
+/* calculate filter poles */
+filtpoles(b, a)
+{
+	local p, cascade;
+
+	(b, a, cascade) = filter_args("filtpoles", b, a);
+
+	if (cascade) {
+		p = iirpoles(b);
+	}
+
+	else if (length(a) > 0) {
+		len = max(length(a), length(b));
+		if (length(a) == 1 && length(b) > 1) {
+			/* FIR case */
+			p = zeros(length(b) - 1, 1);
+		}
+		else {
+			p = roots(extract(a, 1, len));
+		}
+	}
+	else {
+		p = {};
+	}
+
+	return(p);
+}
+
+
+/* calculate filter zeros */
+filtzeros(b, a)
+{
+	local z, cascade;
+
+	(b, a, cascade) = filter_args("filtzeros", b, a);
+
+	if (cascade) {
+		z = iirzeros(b);
+	}
+
+	else {
+		len = max(length(a), length(b));
+
+		/* get zeros, if any */
+		if (length(b) > 0) {
+			if (length(b) == 1 && length(a) > 1) {
+				/* IIR case */
+				z = zeros(length(a) - 1, 1);
+			}
+			else {
+				z = roots(extract(b, 1, len));
+			}
+		}
+		else {
+			z = {};
+		}
+	}
+
+	return(z);
+}
+
+
+
+/* arg parsing for filtering routine */
+filtdata_args(str, data, f)
+{
+	if (argc < 3) {
+		filtdata_args_err(str);
+	}
+	if (not(IS_ARRAY(data)) || not(IS_ARRAY(f))) {
+		filtdata_args_err(str);
+	}
+	if (length(f) == 0) {
+		filtdata_args_err(str);
+	}
+	if (length(data) == 0) {
+		/* handles empty window case */
+		data = {};
+	}
+	return(data, f);
+}
+
+		
+/* error message for filtering args */
+filtdata_args_err(str)
+{
+	error(sprintf("%s - Non Zero Length Input Series Required", str));
+}
+
+
+/* arg parsing for dirfilter */
+dirfilter_args(str, data, b, a)
+{
+	if (argc < 4) {
+		filtdata_args_err(str);
+	}
+	if (not(IS_ARRAY(data)) || not(IS_ARRAY(b)) || not(IS_ARRAY(a))) {
+		filtdata_args_err(str);
+	}
+	if (length(b) == 0 || length(a) == 0) {
+		filtdata_args_err(str);
+	}
+	if (length(data) == 0) {
+		/* handles empty window case */
+		data = {};
+	}
+	return(data, b, a);
+}
+

@@ -1,0 +1,12 @@
+! PScr.men
+! Screen Printing Options
+@x40
+@y0
+@f{_fg1}
+@b{_bg1}
+ Output Format
+_______________
+Bitmap Dump    ~defmacro("_pscrn",0,3);"Bitmap Dump"
+PostScript     ~defmacro("_pscrn",1,3);"PostScript"
+HPGL           ~defmacro("_pscrn",2,3);"HPGL"
+System Printer ~defmacro("_pscrn",3,3);"System Printer"

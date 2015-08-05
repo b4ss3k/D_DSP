@@ -1,0 +1,16 @@
+! wrksht.men - Functions pertaining to worksheet
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+ Worksheet Functions
+
+ Windows             ~_MF("winctrl.men")
+
+ Macros              ~_MF("macros.men")
+
+ ReEvaluate          ~_MC | refresh
+ Load Command File   ~_deffname('LOAD     Load a Command File')  |_defformat('Load("filename")')|_defxamp('Load("command.dsp")')|_getstr1("Command Filename")|_strform("Load")
+ Open a Shell        ~_MC | shell
+
+ Settings            ~_MF("set.men")

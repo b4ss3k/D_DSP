@@ -1,0 +1,17 @@
+/* get xtic, ticval or -1 */
+_gxtic(w)
+{
+	local tic;
+
+	if (argc < 1) {
+		if (getxticset) tic = getxtic;
+		else tic = -1;
+	}
+	else {
+		if (getxticset(w)) tic = getxtic(w);
+		else tic = -1;
+	}
+	return(tic);
+}
+
+

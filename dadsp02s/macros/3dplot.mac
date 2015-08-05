@@ -1,0 +1,219 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!                                3DPLOT.MAC                                  !
+!                                                                            !
+!                               April 10, 1995	                             !
+!                                                                            !
+!  Three-dimensional plotting:  waterfall spectral plots; x-y grids;	     !
+!  and sombrero plots.							     !
+!                                                                            !
+!  		   Copyright (C) 1995 DSP Development Corp.	             !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!**********************************************************************!
+!                                                                      !
+!		       WATERFALL SPECTRAL PLOTS			       !
+!                                                                      !
+!**********************************************************************!
+
+! SPEC3D produces a waterfall plot of a spectrum.  Specify the number
+! of time slices (segments), and the number of points that each time
+! slice is to overlap.  The overlap must be less than the resulting
+! length of each time slice.
+!
+! Example:  SPEC3D(W1,10,25) performs a waterfall spectrum from a time
+! series in W1, such that 10 time slices are taken from W1, and each
+! slice overlaps the previous slice by 25 points.
+!
+!    SER  = input series to create waterfall spectrum from
+!    NSEG = number of time slices
+!    OLAP = number of points to overlap
+
+SPEC3D(SER,NSEG,OLAP)		WATER(SPECTRUM(RAVEL(SER,FLOOR(LENGTH(SER)/(NSEG)),1,OLAP)))
+
+!-----------------------------------------------------------------------
+!
+! DBSPEC3D produces a waterfall plot of a spectrum with the output
+! amplitude in decibels.  Specify the number of time slices (segments), 
+! and the number of points that each time slice is to overlap.  The
+! overlap must be less than the resulting length of each time slice.
+!
+!    SER  = input series to create waterfall spectrum from
+!    NSEG = number of time slices
+!    OLAP = number of points to overlap
+
+DBSPEC3D(SER,NSEG,OLAP)		WATER(20*LOG10(SPECTRUM(RAVEL(SER,FLOOR(LENGTH(SER)/(NSEG)),1,OLAP))))
+
+!-----------------------------------------------------------------------
+!
+! LSPEC3D produces a waterfall plot of a spectrum.  Specify the number
+! of points in each time slice (segment), and the number of points that
+! each time slice is to overlap.  The overlap must be less than the
+! length of the time slice.
+!
+! Example:  LSPEC3D(W1,100,10) performs a waterfall spectrum such that
+! each time slice is 100 points long and each 100 point slice overlaps
+! the previous slice by 10 points.
+!
+!    SER  = input series to create waterfall spectrum from
+!    SLEN = number of points in each time slice
+!    OLAP = number of points to overlap
+
+LSPEC3D(SER,SLEN,OLAP)		WATER(SPECTRUM(RAVEL(SER,SLEN,1,OLAP)))
+
+!-----------------------------------------------------------------------
+!
+! DBLSPEC3D produces a waterfall plot of a spectrum with the output
+! amplitude in decibels.  Specify the number of points in each time
+! slice (segment), and the number of points that each time slice is to
+! overlap.  The overlap must be less than the length of the time slice.
+!
+!    SER  = input series to create waterfall spectrum from
+!    SLEN = number of points in each time slice
+!    OLAP = number of points to overlap
+
+DBLSPEC3D(SER,SLEN,OLAP)	WATER(20*LOG10(SPECTRUM(RAVEL(SER,SLEN,1,OLAP))))
+
+!**********************************************************************!
+!                                                                      !
+!			      X-Y GRIDS				       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! XNMAT generates a matrix in which each column is an identical
+! straight line x = z over a given x-y rectangle, by specifying the
+! values and the number of points in the x and y directions.
+!
+!     LX = extreme left x value
+!     LY = extreme left y value
+!     RX = extreme right x value
+!     RY = extreme right y value
+!     NX = number of points in the x direction
+!     NY = number of points in the y direction
+
+XNMAT(LX,LY,RX,RY,NX,NY)	RAVEL(REPLICATE(GLINE(NX,((RX)-(LX))/(NX),1,LX),NY),NX)
+
+!-----------------------------------------------------------------------
+!
+! XDMAT generates a matrix in which each column is an identical
+! straight line x = z over a given x-y rectangle, by specifying the x
+! and y values, and the delta x and delta y.
+!
+!     LX = extreme left x value
+!     LY = extreme left y value
+!     RX = extreme right x value
+!     RY = extreme right y value
+!     DX = delta x
+!     DY = delta y
+
+XDMAT(LX,LY,RX,RY,DX,DY)	RAVEL(REPLICATE(GLINE(CEILING(((RX)-(LX))/(DX)),DX,1,LX),CEILING(((RY)-(LY))/(DY))),CEILING(((RX)-(LX))/(DX)))
+
+!-----------------------------------------------------------------------
+!
+! YNMAT generates a matrix in which each row is an identical straight
+! line y = z over a given x-y rectangle, by specifying the values and
+! the number of points in the x and y directions.
+!
+!     LX = extreme left x value
+!     LY = extreme left y value
+!     RX = extreme right x value
+!     RY = extreme right y value
+!     NX = number of points in the x direction
+!     NY = number of points in the y direction
+
+YNMAT(LX,LY,RX,RY,NX,NY)	TRANSPOSE(XNMAT(LY,LX,RY,RX,NY,NX))
+
+!-----------------------------------------------------------------------
+!
+! YDMAT generates a matrix in which each row is an identical straight
+! line y = z over a given x-y rectangle, by specifying the x and y
+! values, and the delta x and the delta y.
+!
+!     LX = extreme left x value
+!     LY = extreme left y value
+!     RX = extreme right x value
+!     RY = extreme right y value
+!     DX = delta x
+!     DY = delta y
+
+YDMAT(LX,LY,RX,RY,DX,DY)	TRANSPOSE(XDMAT(LY,LX,RY,RX,DY,DX))
+
+!-----------------------------------------------------------------------
+!
+! RNMAT generates a matrix in which each entry is the distance from the
+! origin (the radius vector) over a given x-y rectangle, by specifying
+! the values and the number of points in the x and y directions.
+!
+!     LX = extreme left x value
+!     LY = extreme left y value
+!     RX = extreme right x value
+!     RY = extreme right y value
+!     NX = number of points in the x direction
+!     NY = number of points in the y direction
+
+RNMAT(LX,LY,RX,RY,NX,NY)		SQRT((XNMAT(LX,LY,RX,RY,NX,NY))^2+(YNMAT(LX,LY,RX,RY,NX,NY))^2)
+
+!-----------------------------------------------------------------------
+!
+! RDMAT generates a matrix in which each entry is the distance from the
+! origin (the radius vector) over a given x-y rectangle, by specifying
+! the x and y values and the delta x and delta y.
+!
+!     LX = extreme left x value
+!     LY = extreme left y value
+!     RX = extreme right x value
+!     RY = extreme right y value
+!     DX = delta x
+!     DY = delta y
+
+RDMAT(LX,LY,RX,RY,DX,DY)		SQRT((XDMAT(LX,LY,RX,RY,DX,DY))^2+(YDMAT(LX,LY,RX,RY,DX,DY))^2)
+
+!-----------------------------------------------------------------------
+!
+! ANMAT generates a matrix in which each entry is the phase angle relative
+! to the origin, over a given x-y rectangle, by specifying the values
+! and the number of points in the x and y directions.
+!
+!     LX = extreme left x value
+!     LY = extreme left y value
+!     RX = extreme right x value
+!     RY = extreme right y value
+!     NX = number of points in the x direction
+!     NY = number of points in the y direction
+
+ANMAT(LX,LY,RX,RY,NX,NY)		ANGLE((XNMAT(LX,LY,RX,RY,NX,NY))+I*(YNMAT(LX,LY,RX,RY,NX,NY)))
+
+!-----------------------------------------------------------------------
+!
+! ADMAT generates a matrix in which each entry is the phase angle relative
+! to the origin, over a given x-y rectangle, by specifying the x and y
+! values, and the delta x and delta y.
+!
+!     LX = extreme left x value
+!     LY = extreme left y value
+!     RX = extreme right x value
+!     RY = extreme right y value
+!     DX = delta x
+!     DY = delta y
+
+ADMAT(LX,LY,RX,RY,DX,DY)		ANGLE((XNMAT(LX,LY,RX,RY,DX,DY))+I*(YNMAT(LX,LY,RX,RY,DX,DY)))
+
+!**********************************************************************!
+!                                                                      !
+!			       SOMBRERO				       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+!
+! SOMBRERO is an example of an f(x,y) plot.  Try SOMBRERO(5,0.25).
+!
+!     R  = radius of plot area
+!     DR = increment of plot area
+
+SOMBRERO(R,DR)			WATER(SINC(RDMAT(-(R),-(R),R,R,DR,DR)))
+
+!=============================== END ===================================

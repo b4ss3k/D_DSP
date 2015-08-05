@@ -1,0 +1,58 @@
+/*****************************************************************************
+*                                                                            *
+*   REMOVENA.SPL    Copyright (C) 1998-2000 DSP Development Corporation      *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Matthew Tom                                                 *
+*                                                                            *
+*   Synopsis:    Remove NAVALUE's from a series                              *
+*                                                                            *
+*   Revisions:    3 Jul 1997  MAT  Creation                                  *
+*                21 Aug 1998  MAT  Help Menu Entry                           *
+*                18 Apr 2000  RRR  use delete and isnavalue                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_REMOVENA
+
+    REMOVENA
+
+    Purpose: Removes the NAVALUES from a series or array.
+
+
+    Format:  REMOVENA(s)
+
+              s - input series or array
+
+
+    Returns: A series or array with all of the NAVALUE's removed.
+
+
+    Examples:
+
+         W1: {5, NAVALUE, NAVALUE, 1}
+
+         W2: removena(w1)
+
+
+         W2 == {5.0, 1.0}
+
+
+    See Also:
+             Delete
+             Find
+             Isnavalue
+
+#endif
+
+removena(s)
+{
+	/* convert to series if required */
+	if (not(IS_ARRAY(s))) {
+		s = castseries(s);
+	}
+
+	return(delete(s, isnavalue(s)));
+}

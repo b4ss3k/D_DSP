@@ -1,0 +1,11 @@
+! Set EOL Delimiters
+@x13
+@y1
+@b{_bg2}
+@f{_fg2}
+  Set Delimiters
+
+Out:    <      >  ~EOL("OUT <>")~<CR LF><CR><LF><$0>
+In:     <      >  ~EOL("IN <>")~<CR LF><CR><LF><$0>
+Both:   <      >  ~EOL("<>")~<CR LF><CR><LF><$0>
+Default Vals.     ~EOL("CR LF")

@@ -1,0 +1,107 @@
+*          EXERCISE 11
+
+        IDT     'EX11'
+**************************************************************
+*       THIS PROGRAM IMPLEMENTS A LENGTH-9 LEAST-SQUARED
+*       ERROR LOWPASS FIR FILTER.  THE CUTOFF FREQUENCY
+*       IS 2.0 KHZ.  THE SAMPLING RATE IS ABOUT 20 KHZ.
+*
+*       THE RECURSIVE FORMULA OBTAINED IS OF THE FORM:
+*
+*       Y(N) = A * X(N) + B * X(N-1) + C * X(N-2) +
+*              D * X(N-3)+ E * X(N-4) + D * X(N-5) + 
+*              C * X(N-6) + B * X(N-7) + A * X(N-8)
+**************************************************************
+        AORG    0       START PROGRAM AT  00
+CLCK    EQU     0       ADDR 00 CONTAINS CLOCK  RATE
+MODE    EQU     1       ADDR 01 CONTAINS CONTROL MODE
+MASK    EQU     2       ADDR 02 CONTAINS CONTROL MODE 
+MASK2   EQU     3       ADDR 03 CONTAINS CONTROL MODE 
+X0      EQU     4       ADDR 04 CONTAINS CONTROL MODE
+X1      EQU     5       RESPECTIVE VALUES IN RECURSION
+X2      EQU     6
+X3      EQU     7
+X4      EQU     8
+X5      EQU     9
+X6      EQU     10
+X7      EQU     11
+X8      EQU     12
+Y       EQU     13      ADDR 13 CONTAINS THE OUTPUT
+A       EQU     14      ADDR 14 THROUGH 18 CONTAIN THE
+B       EQU     15      COEFFICIENTS OF THE FILTER
+C       EQU     16
+
+D       EQU     17
+E       EQU     18
+ONE     EQU     19      ADDR 19 CONTAINS VALUE `1'
+*
+        B       START
+        DATA    >0400
+        DATA    >000A
+        DATA    >7FFF
+        DATA    >8000
+        DATA    >0000
+        DATA    >0000
+        DATA    >0000
+        DATA    >0000
+        DATA    >0000
+        DATA    >0000
+        DATA    >0000
+        DATA    >0000
+        DATA    >0000
+        DATA    >0000
+        DATA    1122
+        DATA    2603
+        DATA    4004
+
+        DATA    5005
+        DATA    5368
+TBLE    DATA    1           
+*
+START   LACK    TBLE    STARTING ADDRESS OF DATA IN PM
+        LARP    0
+        LARK    0,ONE   STARTING ADDR  OF  DATA IN DM
+NEXT    TBLR    *       TRANSFER DATA
+        SUB     ONE     SET NEXT DATA ADDRESS
+        BANZ    NEXT    DONE?
+*
+        OUT     MODE,0  MODE SELECTION
+        OUT     CLCK,1  SAMPLING RATE = 20  KHZ
+*
+LOOP    BIOZ    GET     CONVERSION COMPLETE?
+        B       LOOP    WAIT UNTIL CONVERSION COMPLETE
+*
+GET     IN      X0,2    GET INPUT DATA
+        ZALS    MASK    LOAD INPUT MASK VALUE
+        XOR     X0      INVERT DATA
+        SACL    X0      LOAD   DATA    IN    X0
+*
+        ZAC             THE FOLLOWING INSTRUCTIONS
+        LT      X8      COMPUTE THE VALUE OF Y (OUTPUT)
+        MPY     A
+        LTD     X7
+        MPY     B
+        LTD     X6
+        MPY     C
+        LTD     X5
+        MPY     D
+        LTD     X4
+        MPY     E
+        LTD     X3
+        MPY     D
+        LTD     X2
+        MPY     C
+        LTD     X1
+        MPY     B
+        LTD     X0
+        MPY     A
+        APAC
+        SACH    Y,1     GET RID OF THE DOUBLE SIGN BIT
+        ZALS    MASK2
+        XOR     Y
+        SACL    Y
+        OUT     Y,2     SEND OUTPUT TO PORT 2
+        B        LOOP    REPEAT PROCESS
+        END
+
+

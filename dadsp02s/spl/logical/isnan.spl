@@ -1,0 +1,60 @@
+/*****************************************************************************
+*                                                                            *
+*   ISNAN.SPL   Copyright (C) 2002 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns 1 for each element that is NA                       *
+*                                                                            *
+*   Revisions:    9 Aug 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_ISNAN
+
+    ISNAN
+
+    Purpose: Returns 1 for each element that is a NA value
+                                                                        
+    Format:  ISNAN(ser)
+
+              ser - Series
+
+    Returns: A series where each element is 1 where the input series is
+             an NA value and 0 where the input series is not an NA value.
+
+    Example:
+             a = {1, 2, nan, 3};
+             b = 5;
+             c = {};
+
+             isnan(a) returns {0, 0, 1, 0}
+             isnan(b) returns {0}
+             isnan(c) returns {}
+
+    Remarks:
+             ISNAN always returns a series.
+
+             ISNAN returns an empty series if the input is an empty series.
+
+    See Also:
+             Finite
+             Isempty
+             Isinf
+#endif
+
+
+/* where is input NA? */
+isnan(a)
+{
+	if (argc < 1) error("isnan - input required");
+
+	/* convert to series if not already */
+	if (not(IS_ARRAY(a))) a = castseries(a);
+
+	return(isnavalue(a));
+}

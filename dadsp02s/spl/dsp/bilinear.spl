@@ -1,0 +1,226 @@
+/*****************************************************************************
+*                                                                            *
+*   BILINEAR.SPL    Copyright (C) 1998 DSP Development Corporation           *
+*                                 All Rights Reserved                        *
+*                                                                            *
+*   Author:      Matthew Tom                                                 *
+*                                                                            *
+*   Synopsis:    Bilinear transformation with optional frequency prewarping. *
+*                                                                            *
+*   Revisions:    3 May 1997  MAT  Creation                                  *
+*                 4 Jun 1998  MAT  Restructuring                             *
+*                 8 Jun 1998  MAT  Help Menu Entry                           *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_BILINEAR
+
+    BILINEAR
+
+    Purpose: Bilinear transformation with optional frequency prewarping.
+
+    Format:  (Zd,Pd,Kd) = Bilinear(Z,P,K,Fs,Fp)
+
+              Z - A row vector with the zeros of the transfer function.
+
+              P - A row vector with the poles of the transfer function.
+
+              K - A scalar gain constant.
+
+              Fs - A real specifying the sampling frequency in Hertz
+
+              Fp - Optional.  Frequency in Hertz specifying at which point
+                   the frequency responses before and after mapping match
+                   exactly.  Each of the three forms of BILINEAR accepts this
+                   optional additional input argument.
+
+             (Ad,Bd,Cd,Dd) = Bilinear(A,B,C,D,Fs,Fp)
+
+              A,B,C,D - Matrices containing the state-space representation of
+                        the filter to be transformed.
+
+             (NUMd,DENd) = Bilinear(NUM,DEN,Fs,Fp)
+
+              NUM - Column vector containing the numerator transfer
+                    function coefficients in descending powers of s.
+              DEN - Column vector containing the denominator transfer
+                    function coefficients in descending powers of s.
+
+    Returns: In the first case, two series and a constant.  Zd is the
+             vector of zeros, Pd is the vector of poles, and Kd is the
+             gain constant.
+
+             In the second case, Ad, Bd, Cd and Dd are the state-space
+             representations of the z-transform discrete equivalent
+             filter.
+
+             In the third case, NUMd and DENd are vectors containing
+             numerator and denominator transfer function coefficients.
+
+    Example: (Zd,Pd,Kd) = Bilinear(Z,P,K,Fs)
+
+             Creates the vector of zeros, the vector of poles, and the
+             gain constant for the z-transform discrete equivalent of
+             the filter defined by Z, P and K.
+
+             (NUMd,DENd) = bilinear(NUM,DEN,Fs)
+
+             Creates the vectors containing the numerator and denominator
+             transfer function coefficients for the discrete equivalent
+             of the filter defined by NUM and DEN.
+
+             If you compare (NUMd,DENd)-output of this function with the
+             output of the corresponding function in MATLAB, you'll find
+             that the NUMd's are the same, but that DADiSP's DENd is
+             missing the leading 1 and that the signs are reversed.
+
+             (A,B,C,D) = tf2ss(NUM,DEN)
+             (Ad,Bd,Cd,Dd) = Bilinear(A,B,C,D,Fs)
+
+             Creates the four matrices for the z-transform discrete
+             equivalent of the filter defined by A, B, C and D, the
+             same one defined by NUM and DEN.
+
+    Remarks:
+             Make sure that Z and P are row vectors if your inputs
+             are in (Z,P,K,Fs) form.  Similarly, make sure that NUM
+             and DEN are column vectors if your inputs are in
+             (NUM,DEN,Fs) form.
+
+    See Also:
+             Adsgn
+             Cdsgn
+
+#endif
+
+bilinear(z, p, k, fs, fp, fp1)
+{
+local mn, nn, md, nd, err1, pd, zd, kd;
+local a, b, c, d, n, t, r, t1, t2, ad, bd, cd, dd, num, den, NUMd, DENd;
+
+(mn,nn) = size(z);
+(md,nd) = size(p);
+
+if (outargc == 3)
+	/* Inputs are in zero-pole-gain form. */
+	{
+	if (mn > md)
+		{
+		error("bilinear - numerator order cannot exceed denominator");
+		}
+	if (argc == 5)
+		{
+		/* Prewarp */
+		fp = 2 * pi * fp;
+		fs = fp / tan(fp/(2*fs));
+		}
+	else
+		{
+		fs = 2 * fs;
+		}
+
+	/* remove NaN and inf but preserve if empty */
+	if (not(isempty(z))) {
+		z = delete(z, not(finite(z)));
+	}
+
+	pd = (1 + p/fs) / (1 - p/fs);
+	zd = (1 + z/fs) / (1 - z/fs);
+
+	kd = real(k * prod(fs-z) / prod(fs-p));
+	zd = {zd, -ones(length(pd)-length(zd),1)};
+
+	return(zd,pd,kd);
+
+	/* (Zd,Pd,Kd) = BILINEAR(Z,P,K,Fs) converts the s-domain transfer
+	function specified by Z, P, and K to a z-transform discrete
+	equivalent obtained from the bilinear transformation:
+
+	H(z) = H(s) |
+		    | s = 2*Fs*(z-1)/(z+1)
+
+	where column vectors Z and P specify the zeros and poles, scalar K
+	specifies the gain, and Fs is the sample frequency in Hz. */
+
+	}
+
+else if (outargc == 4)
+	{
+	/* State-space case */
+	a = z;
+	b = p;
+	c = k;
+	d = fs;
+	fs = fp;
+	if (argc == 6)
+		{
+		/* Prewarp */
+		fp = fp1;	/* Decode arguments */
+		fp = 2 * pi * fp;
+		fs = fp / (2 * tan(fp/(2*fs)));
+		}
+	/* Now do a state-space version of a bilinear transformation. */
+	n = max(size(a));
+	t = 1 / fs;
+	r = sqrt(t);
+	t1 = eye(n) + a * t/2;
+	t2 = eye(n) - a * t/2;
+	ad = t2 \^ t1;
+	bd = (t/r) * (t2 \^ b);
+	cd = r * (t2' \^ c')';
+	dd = (c' \^ t2')' *^ b * t/2 + d;
+	return(ad,bd,cd,dd);
+
+	}
+
+else if ( (nd == 1) && (nn == 1) )
+	{
+	if (mn > md)
+		{
+		error("bilinear - order of numerator cannot 
+				exceed order of denominator");
+		}
+	num = z;
+	den = p;
+	if (argc == 4)
+		{
+		fp = fs;
+		fs = k;
+		fp = 2 * pi * fp;
+		fs = fp / (2 * tan(fp / (2 * fs)));
+		}
+	else
+		{
+		/* Decode arguments */
+		fs = k;
+		}
+	/* Put num(s)/den(s) in state-space canonical form. */
+	(a,b,c,d) = tf2ss(num,den);
+
+	/* Now do a state-space version of a bilinear transformation. */
+	n = max(size(a));
+	t = 1 / fs;
+	r = sqrt(t);
+	t1 = eye(n) + a * t/2;
+	t2 = eye(n) - a * t/2;
+	ad = t2 \^ t1;
+	bd = (t/r) * (t2 \^ b);
+	cd = r * (t2' \^ c')';
+	dd = (t2' \^ c')' *^ b * t/2 + d;
+
+	/* Convert back to transfer function form. */
+	DENd = poly(ad);
+	NUMd = poly(ad - bd *^ cd) + (dd[1]-1) * DENd;
+		DENd = -1 * DENd[2..length(DENd)];
+	return(NUMd,DENd);
+
+	}
+
+else
+	{
+	error("bilinear - first two arguments must have same orientation");
+	}
+}
+

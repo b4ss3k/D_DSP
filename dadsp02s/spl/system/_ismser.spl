@@ -1,0 +1,26 @@
+#include <series.h>
+
+/* is it a multi-series, e.g. dataset in one win */
+_ismser(s)
+{
+	local status;
+
+	if (argc < 1) {
+		if (itemtype == 9) {
+			status = TRUE;
+		}
+		else {
+			status = ((itemtype == ITEM_TYPE_LIST) && (numcols() > 1) && (getplottype(0) == 6));
+		}
+	}
+	else {
+		if (itemtype(s) == 9) {
+			status = TRUE;
+		}
+		else {
+			status = ((itemtype(s) == ITEM_TYPE_LIST) && (numcols(s) > 1) && (getplottype(s, 0) == 6));
+		}
+	}
+	return(status);
+}
+

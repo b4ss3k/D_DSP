@@ -1,0 +1,30 @@
+/* initializes axis parameters */
+_initax()
+{
+	/* automatic tics */
+	setvar("_xticaut", castint(not(getxticset)));
+	setvar("_yticaut", castint(not(getyticset)));
+
+	/* tic interval */
+	setvar("_xtc",    caststring(getxtic));
+	setvar("_ytc",    caststring(getytic));
+
+	/* log scales */
+	setvar("_xlg",    castint(getxlog));
+	setvar("_ylg",    castint(getylog));
+
+	/* label subtics */
+	setvar("_xlgls",    castint(getxlog(1)));
+	setvar("_ylgls",    castint(getylog(1)));
+
+	/* exptics, 10^b log tic labels */
+	setvar("_xlgxt",    castint(getxlog(2)));
+	setvar("_ylgxt",    castint(getylog(2)));
+
+	/* scale location */
+	setvar("_axs",    _gaxstyl(caststring(getscales)));
+
+	/* autoscale */
+	setvar("_pscale", not(ascale()));
+
+}

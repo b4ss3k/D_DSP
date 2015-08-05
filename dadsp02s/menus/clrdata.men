@@ -1,0 +1,9 @@
+! clrdata.men
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+  Clear Data
+
+  Current     ~_MC;Cleardata
+  Range       ~_deffname('CLEARDATA Clear Selected Windows') | _defformat('Cleardata(window,window,...)') | _defxamp('Cleardata(W2,W3..W6)') | _getser | _evalserform("Cleardata")

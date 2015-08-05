@@ -1,0 +1,38 @@
+/* integer to colormap */
+_i2cmap(i)
+{
+	local s;
+
+	switch (i) {
+		case 0:
+			s = _nonestr;
+			break;
+
+		default:
+		case 1:
+			s = "Rainbow";
+			break;
+
+		case 2:
+			s = "Hot";
+			break;
+
+		case 3:
+			s = "Cool";
+			break;
+
+		case 4:
+			s = "Copper";
+			break;
+
+		case 5:
+			s = "Gray";
+			break;
+
+		case 6:
+			s = "Pink";
+			break;
+	}
+	return(s);
+}
+

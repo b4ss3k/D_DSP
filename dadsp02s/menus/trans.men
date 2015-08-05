@@ -1,0 +1,18 @@
+! trans.men -- Transform functions
+@x9
+@y1
+@b{_bg3}
+@f{_fg3}
+     Transforms
+
+ FFT               ~_deffname('FFT      Fast Fourier Transform')  |_defformat('Fft(series)')|_defxamp('Fft(W1*W2)')|_getser|_serform("Fft")
+ FFT: Mag & Phase  ~_deffname('FFTP     Fast Fourier Transform Polar Form')  |_defformat('Fftp(series)')|_defxamp('Fftp(W1*W2)')|_getser|_serform("Fftp")
+
+ Inverse FFT       ~_deffname('IFFT     Inverse Fast Fourier Transform')  |_defformat('Ifft(series)')|_defxamp('Ifft(W1*W2)')|_getser|_serform("Ifft")
+ IFFT: Mag & Phase ~_deffname('IFFTP    Inverse Fast Fourier Transform Polar Form')  |_defformat('Ifftp(series)')|_defxamp('Ifftp(W1*W2)')|_getser|_serform("Ifftp")
+
+ DFT               ~_deffname('DFT      Discrete Fourier Transform')  |_defformat('Dft(series)')|_defxamp('Dft(W1*W2)')|_getser|_serform("Dft")
+ IDFT              ~_deffname('IDFT     Inverse Discrete Fourier Transform')  |_defformat('Idft(series)')|_defxamp('Idft(W1*W2)')|_getser|_serform("Idft")
+
+ Spectrum          ~_deffname('Spectrum   Normalized FFT Magnitude')  |_defformat('  Spectrum(series)')|_defxamp('  Spectrum(W1*W2)')|_getser|_serform("Spectrum")
+ Power Spectrum    ~_deffname('PSD      Power Spectrum')  |_defformat('Psd(series)')|_defxamp('Psd(W1*W2)')|_getser|_serform("Psd")

@@ -1,0 +1,106 @@
+/*****************************************************************************
+*                                                                            *
+*   MINVAL.SPL   Copyright (C) 1997-2001 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns minimum of two input arguments                      *
+*                                                                            *
+*   Revisions:    9 Jun 1997  RRR  Creation                                  *
+*                 6 Nov 1997  RRR  accepts single input argument             *
+*                18 Mar 2000  RRR  also accepts no arguments                 *
+*                27 Jul 2001  RRR  use refseries for speed                   *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_MINVAL
+
+    MINVAL  
+
+    Purpose: Returns the minimum of on or two input arguments
+                                                                        
+    Format:  MINVAL(val1, val2)
+
+                 val1  -  series or numeric argument
+                 val2  -  series or numeric argument
+
+    Returns: A real or series
+
+    Example:
+             Minval(10, 20)
+
+             returns 10
+
+             Minval({1, 2, 3}, {0, 4, 2})
+
+             returns the series {0, 2, 2}
+
+    Example:
+             W1:{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}
+             W2: maxval(w1)
+
+             W2 == {1, 2, 3} the maximums of each column of W1.
+
+    Remarks:
+             MINVAL with no input arguments uses the current Window.
+
+
+    See Also:
+             Max
+             Maxval
+             Min
+#endif
+
+
+minval(a, b)
+{
+	local idx, m;
+
+	if (argc < 2) {
+		if (argc < 1) {
+			a = refseries();
+		}
+		/* single series or array */
+		if (IS_NUMERIC(a)) return(a); /* just return the scalar */
+
+		/* else cast to series */
+		else if (not(IS_ARRAY(a))) a = castseries(a);
+
+		if (numcols(a) > 1) {
+			/* find mins of each column and transpose into a series */
+			m = colmin(a)';
+		}
+		else {
+			m = min(a);
+		}
+
+		if (outargc > 1) { /* return value and index */
+			/*
+			** generate "unraveled" indices and re-ravel - works
+			** for non-equal column lengths
+			*/
+			idx = reshape(1..length(unravel(a)), collength(a)');
+
+			/* sort indices based on data */
+			idx = reorder(idx, grade(a, 1));
+
+			/* first row contains indices of minimums */
+			idx = idx[1, ..]';
+
+			return(m, idx);
+		}
+		else {
+			return(m);
+		}
+	}
+	/* return smaller of two items */
+
+	if (IS_STRING(a)) a = castseries(a);
+	if (IS_STRING(b)) b = castseries(b);
+
+
+	return((a <= b) * a + (b < a) * b);
+}

@@ -1,0 +1,5 @@
+/* return the ' character to menus don't get confused */
+_squote()
+{
+	return("'");
+}

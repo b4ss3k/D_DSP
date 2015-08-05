@@ -1,0 +1,88 @@
+/*****************************************************************************
+*                                                                            *
+*   BARSTYLE.SPL Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets bar reference bottom                                   *
+*                                                                            *
+*   Revisions:   23 Jun 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_BARSTYLE
+
+    BARSTYLE
+
+    Purpose: Sets the vertical reference of a 2D bar plot
+                                                                        
+    Format:  BARSTYLE(win, on_off)
+
+              win    - an optional window, defaults to current window
+              on_off - an integer 0:use 0.0 1:use Window bottom (default 0)
+
+    Returns: Nothing
+
+    Example:
+             W1: gnorm(10, 1);bars;barstyle(1)
+             W2: W1;bars;barstyle(0)
+
+             The bars in W1 are drawn from a vertical reference of 0.0
+             (the default), while the bars in W2 begin at the bottom of
+             the Window.
+
+    Remarks: 
+             BARSTYLE only effects 2D bar charts.
+
+             BARSTYLE is a Window property. All bar plots plotted in the
+             Window will be drawn in the current BARSTYLE mode.
+
+    See Also:
+             Bargap
+             Bars
+             Bartop
+#endif
+
+
+barstyle(win, val)
+{
+	local exstyle;
+
+	/* barstyle is a winexstyle bit */
+	if (argc < 1) {
+		return((winexstyle(W0) & EX_BAR_STYLE) != 0);
+	}
+	else if (argc == 1) {
+		if (IS_WINDOW(win)) {
+			return((winexstyle(win) & EX_BAR_STYLE) != 0);
+		}
+		else {
+			val = win != 0;
+			exstyle = winexstyle(W0);
+			/* clear EX_BAR_STYLE bit */
+			exstyle &= ~EX_BAR_STYLE;
+
+			/* set EX_BAR_STYLE bit */
+			if (val) exstyle |= EX_BAR_STYLE;
+			winexstyle(W0, exstyle);
+	
+		/* indicate window should plot */
+			plotmode(1, 0);
+		}
+	}
+	else {
+		val = val != 0;
+		exstyle = winexstyle(win);
+		/* clear EX_BAR_STYLE bit */
+		exstyle &= ~EX_BAR_STYLE;
+		if (val) exstyle |= EX_BAR_STYLE;
+		winexstyle(win, exstyle);
+
+		/* indicate window should plot */
+		plotmode(win, 1, 0);
+	}
+}
+

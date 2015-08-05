@@ -1,0 +1,52 @@
+/*****************************************************************************
+*                                                                            *
+*   LOG2.SPL   Copyright (C) 1999 DSP Development Corporation                *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates log base 2 of the input                          *
+*                                                                            *
+*   Revisions:   19 Mar 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_LOG2
+
+    LOG2  
+
+    Purpose: Returns Log base 2 of the input.
+                                                                        
+    Format:  LOG2(expr)
+
+             expr - Any expression evaluating to a scalar, series, or table.
+
+    Returns: A real, series or table
+
+    Example:
+             Log2(1024)
+
+             returns 10
+
+ 
+             Log2({2, 4, 8, 16})
+  
+             returns the series {1, 2, 3, 4}
+
+    Remarks:
+             Log2 is useful for manipulating the lengths of FFT calculations.
+
+    See Also:
+             Log
+             Log10
+#endif
+
+
+
+/* calculate log base 2 */
+log2(s)
+{
+	if (argc < 1) error("log2 - input required");
+
+	return(log(s)/log(2));
+}

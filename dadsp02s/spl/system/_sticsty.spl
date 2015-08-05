@@ -1,0 +1,10 @@
+_sticsty(outer, inner, all)
+{
+	local tstyle = 0;
+
+	if (outer > 0) tstyle |= 0x01;
+	if (inner > 0) tstyle |= 0x02;
+	if (all > 0)   tstyle |= 0x04;
+
+	setconf("tic_style", caststring(tstyle));
+}

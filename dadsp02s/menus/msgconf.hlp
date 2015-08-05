@@ -1,0 +1,35 @@
+! MsgConf.hlp
+MESSAGE CONFIGURATION
+
+COMMAND LINE INPUT:
+The command line at the top of the DADiSP screen is where keyboard inputs
+displayed.  This is where you type in commands or window formulas.  By 
+turning off the command line input, you disable the display of commands and
+input.  This is useful when running a command file, since the standard input
+is the ASCII script file.  The commands in the command file will be displayed
+just as if they were being typed in from the keyboard.  This takes time and
+can be distracting. Turning off the command line input display will speed
+the command file execution.
+
+YES/NO QUESTIONS:
+Certain functions and operations in DADiSP prompt you with a "Yes/No" 
+question, for example:  "File Exists, Overwrite Y/N?". This requires input.
+You can set the response to these to answer "Yes" all the time, answer "No"
+all the time, or continue to prompt.
+
+STATUS MESSAGES:  
+The bottom line of the DADiSP screen is the "Status Line".  This is where
+messages are like "Evaluating Window 2..." , "Calculating Math Function ...",
+and scalar results of calculations like "Max(w3)" are displayed.  By turning
+off the Status Messages, you disable the output on the "Status Line".
+
+"MORE" MESSAGES:
+The bottom line of the DADiSP screen is the "Status Line".  This is where
+messages are like "Evaluating Window 2..." , "Calculating Math Function ...",
+and scalar results of calculations like "Max(w3)" are displayed.  If your 
+application window is small, the entire message may not fit in the space 
+provided, and you are prompted by a "more" statement.  This statement 
+requires a carriage return to see the rest of the message.  By turning off 
+the "More" Messages, you will not be prompted for the continuation of 
+messages output on the "Status Line"; operation will be as if the entire 
+message fit in the space provided.

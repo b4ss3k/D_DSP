@@ -1,0 +1,22 @@
+! wavstats.men -- Statistical summary menu
+@panel
+@focus 1
+@suppress 2
+@h ~help('Viewing WAV Data Statistics',strcat(_WAVHOME, 'dspwav.hlp'))
+
+    Summary Statistics of {strcat('W', strnum(getwnum))}
+
+ Sample Size       <                    >~<{sersize}>~
+ Sample Rate       <                    >~<{rate}>~
+ Duration (sec)    <                    >~<{sersize/rate}>~
+ Median            <                    >~<{median}>~
+ Mean              <                    >~<{real(mean)}>~
+ Variance          <                    >~<{real(stdev^2)}>~
+ Std. Deviation    <                    >~<{real(stdev)}>~
+ Std. Error        <                    >~<{real(stdev/sqrt(sersize))}>~
+ Maximum           <                    >~<{max}>~
+ Minimum           <                    >~<{min}>~
+ Range             <                    >~<{max-min}>~
+ RMS               <                    >~<{mag(RMS(W0))}>~
+ <L>
+~_mc

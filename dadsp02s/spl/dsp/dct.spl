@@ -1,0 +1,113 @@
+/*****************************************************************************
+*                                                                            *
+*   DCT.SPL      Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the Discrete Cosine Transform                    *
+*                                                                            *
+*   Revisions:   16 Mar 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_DCT
+
+    DCT    
+
+    Purpose: Calculates the Discrete Cosine Transform
+                                                                        
+    Format:  DCT(s, n)
+
+              s - input series or array
+              n - optional integer, transform length (defaults to length 
+                  of input)
+
+    Returns: A series or array
+
+    Example:
+             Dct(gcos(100, 1/100, 20))
+
+             returns a series with a peak at 20 Hz.
+
+             Dct(gcos(100, 1/100, 20), 1024)
+
+             Same as above, but the input is zero padded to length 1024
+             before the DCT is calculated.
+
+
+    Remarks:
+             The transform is applied to each column if the input is an
+             array.  The DCT is often used in image processing
+             applications to perform image compression.
+
+
+    See Also
+             Dct2
+             Idct
+             Idct2
+             Fft
+
+    For more information, see:
+
+    [1] Jae S. Lim, "Two-dimensional Signal and Image Processing",
+        pp. 148-162.  Implements an even-symmetrical DCT.
+
+    [2] Jain, "Fundamentals of Digital Image Processing", pp. 150-153.
+
+    [3] Wallace, "The JPEG Still Picture Compression Standard",
+        Communications of the ACM, April 1991.
+
+#endif
+
+dct(a, n)
+{
+	local m, aa, y, w, W, b;
+
+	if (argc < 2) {
+		n = length(a);
+		aa = a;
+	}
+	else {
+		aa = extract(a, 1, n);
+	}
+	m = numcols(a);
+
+	if (n % 2 == 1) { // odd case
+		// Form intermediate even-symmetric matrix.
+		y = zeros(2*n,m);
+		y[1..n,..] = aa;
+		y[(n+1)..(n+n),..] = reverse(aa);
+
+		// Perform FFT
+		yy = fft(y);
+
+		// Compute DCT coefficients
+		ww = exp(-i*(0..n-1)*pi/(2*n));
+		ww = ravel(rep(ww, m), n);
+		b = ww*yy[1..n,..];
+	}
+	else { // even case, courtesy of Steven L. Eddins
+
+		// Re-order the elements of the columns of x
+		y = concat(aa[1..2..n,..], aa[n..-2..2,..]) ;
+
+		// Compute weights to multiply DFT coefficients
+		ww = 2*exp(-i*(0..n-1)*pi/(2*n));
+		W = ravel(rep(ww, m), n);
+
+		// Compute DCT using equation (5.92) in Jain
+		b = W * fft(y);
+	}   
+
+	if (IS_REAL(max(a))) { 
+		b = real(b);
+	}
+
+	// set correct deltax
+	setdeltax(b, 1/(2*n*deltax(a)));
+
+	return(b);
+}

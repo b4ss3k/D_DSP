@@ -1,0 +1,11 @@
+
+/* remove the mean (DC value) from a series */
+demean(s, opt)
+{
+	if (argc < 2) {
+		if (argc < 1) error("demean - input series required");
+		opt = 0;
+	}
+
+	return(s - colmean(s));
+}

@@ -1,0 +1,77 @@
+
+PC/CrossWare Family Linker v2.4 85.158  06/18/87  08:57:40            Page   1
+ Copyright (C) 1985, Texas Instruments Inc.  All Rights Reserved                
+ Command List
+
+ TASK     MAIN
+ PROGRAM  >0
+ COMMON   >200 CPMFIR
+ COMMON   >200 CKFIR
+ COMMON   >300 XIIR
+ COMMON   >300 DPMFIR
+ COMMON   >300 DKFIR
+ INCLUDE  MAIN.MPO
+ INCLUDE  IIR.MPO
+ INCLUDE  PMFIR.MPO
+ INCLUDE  KFIR.MPO
+ END
+PC/CrossWare Family Linker v2.4 85.158  06/18/87  08:57:40            Page   2
+ Copyright (C) 1985, Texas Instruments Inc.  All Rights Reserved                
+ Link Map
+
+ Control File = MAIN.CTL
+
+ Linked Output File = MAIN.LOD
+
+ List File = MAIN.MAP
+
+ Output Format = ASCII
+
+1 ---->OVERWRITTEN SEGMENTS STARTING AT 0200 IN MODULE MAIN    .
+2 ---->OVERWRITTEN SEGMENTS STARTING AT 0300 IN MODULE MAIN    .
+3 ---->OVERWRITTEN SEGMENTS STARTING AT 0300 IN MODULE MAIN    .
+PC/CrossWare Family Linker v2.4 85.158  06/18/87  08:57:40            Page   3
+ Copyright (C) 1985, Texas Instruments Inc.  All Rights Reserved                
+
+ Phase 0     MAIN      Module  Origin = 0000    Length = 0000
+
+ Module    No   Origin    Length      Type         Date       Time     Creator
+
+ MAIN       1    0000*     0083     INCLUDE      06-18-87   08:57:32   ASM320
+ IIR        2    0083*     005A     INCLUDE      06-18-87   08:56:54   ASM320
+ PMFIR      3    00DD*     0082     INCLUDE      06-18-87   08:57:03   ASM320
+ KFIR       4    015F*     0091     INCLUDE      06-18-87   08:56:58   ASM320
+
+
+
+ Common    No   Origin    Length
+
+ CPMFIR     3    0200*     0065
+ CKFIR      4    0200*     0074
+ XIIR       2    0300*     0015
+ DPMFIR     3    0300*     0066
+ DKFIR      4    0300*     0075
+
+
+
+
+                             D E F I N I T I O N S
+
+
+  Name    Value No    Name    Value No    Name    Value No    Name    Value No
+
+  FIIR    009E*  2    FILTT   0061*  1    FKFIR   01E1*  4    FPMFIR  0150*  3
+  IIIR    0092*  2    IKFIR   01D3*  4    IPMFIR  0142*  3    VIIR    0060*  1
+  VKFIR   0060*  1    VPMFIR  0060*  1
+
+
+ Length of Region for Task             = 0000
+
+ Number of Warning Messages Printed    =    3
+
+ Number of Records for Module MAIN     =   37
+
+ Total Records Written                 =   37
+
+ **** Linking Completed    06/18/87  08:57:42
+

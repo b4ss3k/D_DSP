@@ -1,0 +1,12 @@
+/* defaults parameters for ZFREQ panel */
+_defzf()
+{
+
+	defvar("_zfser1", "{1}");
+	defvar("_zfser2", "{1, -0.5, 0.2}");
+	defvar("_zfser3", "{}");
+	defvar("_zfn", 1024);
+	defvar("_zfr", 1.0);
+	defvar("_ser2chk", 0);
+}
+

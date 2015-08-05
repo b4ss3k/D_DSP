@@ -1,0 +1,19 @@
+! maxerrcv.mnu - extracts the Maximum abs difference between target & network
+!                for cross-validation data
+! changed for demo.
+@x 0
+@y 0
+@panel
+
+  Cross-Validation Maximum Error
+
+  Extracts the Maximum absolute difference 
+
+  between the target & the network for 
+
+  cross-validation data.
+
+  Inputs:
+       Source Window:  Wn
+       Run Number:     N
+~menuc()

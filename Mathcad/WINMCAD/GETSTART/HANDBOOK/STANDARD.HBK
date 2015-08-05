@@ -1,0 +1,173 @@
+; REVISED STANDARD HANDBOOK FEBRUARY 1992
+;© 1992 MathSoft, Inc.
+
+.version 3.0
+.titleMANUEL ELECTRONIQUE STANDARD
+
+SPLASH          splash.mcd      : Bienvenue !
+about1  about1.mcd      : Manuels Electroniques de Mathcad
+about2  about2.mcd      : Manuel Electronique Standard
+;--------------------------------------------------------------------------------
+;
+TOC             contents.mcd    : Table des matières
+;-------------------------------------------------------------------------------
+; 1 CONSTANTES PHYSIQUES ET UNITES
+;
+; 1.1 UNITES
+1.1             1_1.mcd : 1.1 Unités dans Mathcad
+1.1.1           1_1_1.mcd       : 1.1.1 Unités MKS
+1.1.2           1_1_2.mcd       : 1.1.2 Unités CGS
+1.1.3           1_1_3.mcd       : 1.1.3 Unités US
+; 1.2 CONSTANTES PHYSIQUES
+1.2             1_2.mcd : 1.2 Constantes physiques
+;--------------------------------------------------------------------------------
+; 2. IDENTITES MATHEMATIQUES
+2.1             2_1.mcd         : 2.1 Polynômes
+2.2             2_2.mcd         : 2.2 Exposants et logarithmes
+2.3             2_3.mcd         : 2.3 Trigonométrie
+2.4             2_4.mcd         : 2.4 Formules de différentiation
+2.5             2_5.mcd         : 2.5 Formules d'intégration
+;---------------------------------------------------------------------------------
+; 3 FORMULES GEOMETRIQUES
+;
+; 3.1 AIRES ET PERIMETRES
+3.1             3_1.mcd : 3.1 Aires et périmètres
+3.1.1           3_1_1.mcd       : 3.1.1 Aires: Triangle
+3.1.2           3_1_2.mcd       : 3.1.2 Aires: Rectangle
+3.1.3           3_1_3.mcd       : 3.1.3 Aires: Parallélogramme
+3.1.4           3_1_4.mcd       : 3.1.4 Aires: Trapèze
+3.1.5           3_1_5.mcd       : 3.1.5 Aires: Cercle
+3.1.6           3_1_6.mcd       : 3.1.6 Aires: Cercle inscrit
+3.1.7           3_1_7.mcd       : 3.1.7 Aires: Cercle circonscrit
+3.1.8           3_1_8.mcd       : 3.1.8 Aires: Secteur d'un cercle
+3.1.9           3_1_9.mcd       : 3.1.9 Aires: Segment circulaire
+3.1.10          3_1_10.mcd      : 3.1.10 Aires: Polygone régulier
+3.1.11          3_1_11.mcd      : 3.1.11 Aires: Polygone inscrit
+3.1.12          3_1_12.mcd      : 3.1.12 Aires: Polygone circonscrit
+3.1.13          3_1_13.mcd      : 3.1.13 Aires: Segment parabolique
+3.1.14          3_1_14.mcd      : 3.1.14 Aires: Ellipse
+3.1.15          3_1_15.mcd      : 3.1.15 Aires: Cardioïde
+3.1.16          3_1_16.mcd      : 3.1.16 Aires: Cycloïde
+3.1.17          3_1_17.mcd      : 3.1.17 Aires: Hypocycloïde
+3.1.18          3_1_18.mcd      : 3.1.18 Aires: Lemniscate
+; 
+; 3.2 VOLUMES ET SURFACES
+3.2             3_2.mcd : 3.2 Volumes et surfaces
+3.2.1           3_2_1.mcd       : 3.2.1 Volumes: Prisme rectangulaire
+3.2.2           3_2_2.mcd       : 3.2.2 Volumes: Parallélépipède
+3.2.3           3_2_3.mcd       : 3.2.3 Volumes: Cylindre droit
+3.2.4           3_2_4.mcd       : 3.2.4 Volumes: Cylindre oblique
+3.2.5           3_2_5.mcd       : 3.2.5 Volumes: Cylindre quelconque
+3.2.6           3_2_6.mcd       : 3.2.6 Volumes: Pyramide
+3.2.7           3_2_7.mcd       : 3.2.7 Volumes: Cône droit
+3.2.8           3_2_8.mcd       : 3.2.8 Volumes: Tronc de cône droit
+3.2.9           3_2_9.mcd       : 3.2.9 Volumes: Sphère
+3.2.10          3_2_10.mcd      : 3.2.10 Volumes: Calotte sphérique
+3.2.11          3_2_11.mcd      : 3.2.11 Volumes: Triangle sphérique
+3.2.12          3_2_12.mcd      : 3.2.12 Volumes: Tore
+3.2.13          3_2_13.mcd      : 3.2.13 Volumes: Ellipsoïde
+3.2.14          3_2_14.mcd      : 3.2.14 Volumes: Paraboloïde
+;
+; 3.3 TRANSFORMATIONS DE COORDONNEES
+3.3             3_3.mcd : 3.3. Transformations de coordonnées
+3.3.1           3_3_1.mcd       : 3.3.1 Carthésiennes en polaires
+3.3.2           3_3_2.mcd       : 3.3.2 Polaires en carthésiennes
+3.3.3           3_3_3.mcd       : 3.3.3 Carthésiennes en cylindriques
+3.3.4           3_3_4.mcd       : 3.3.4 Cylindriques en carthésiennes
+3.3.5           3_3_5.mcd       : 3.3.5 Carthésiennes en sphériques
+3.3.6           3_3_6.mcd       : 3.3.6 Sphériques en carthésiennes
+;--------------------------------------------------------------------------
+; 4 MECANIQUE
+;
+; 4.1 BARYCENTRES
+4.1             4_1.mcd         : 4.1 Barycentres
+4.1.1           4_1_1.mcd       : 4.1.1 Surface triangulaire
+4.1.2           4_1_2.mcd       : 4.1.2 Surface d'un quart de disque
+4.1.3           4_1_3.mcd       : 4.1.3 Surface d'un demi-disque
+4.1.4           4_1_4.mcd       : 4.1.4 Secteur circulaire
+4.1.5           4_1_5.mcd       : 4.1.5 Surface demi-parabolique
+4.1.6           4_1_6.mcd       : 4.1.6 Surface parabolique (A)
+4.1.7           4_1_7.mcd       : 4.1.7 Surface parabolique (B)
+4.1.8           4_1_8.mcd       : 4.1.8 Arc d'un quart de cercle
+4.1.9           4_1_9.mcd       : 4.1.9 Arc d'un demi-cercle
+4.1.10          4_1_10.mcd      : 4.1.10 Arc de cercle
+;
+; 4.2 MOMENTS D'INERTIE
+4.2             4_2.mcd         : 4.2 Moments d'inertie
+4.2.1           4_2_1.mcd       : 4.2.1 Tige fine
+4.2.2           4_2_2.mcd       : 4.2.2 Plaque rectangulaire mince
+4.2.3           4_2_3.mcd       : 4.2.3 Disque mince
+4.2.4           4_2_4.mcd       : 4.2.4 Cylindre circulaire
+4.2.5           4_2_5.mcd       : 4.2.5 Prisme rectangulaire
+4.2.6           4_2_6.mcd       : 4.2.6 Sphère
+4.2.7           4_2_7.mcd       : 4.2.7 Cône circulaire
+;---------------------------------------------------------------------
+; 5 ELECTROMAGNETIQUE
+;
+;5.1 CAPACITES
+5.1             5_1.mcd         : 5.1 Capacités
+5.1.1           5_1_1.mcd       : 5.1.1 Capacité: Plaques parallèles
+5.1.2           5_1_2.mcd       : 5.1.2 Capacité: Cylindres coaxiaux
+5.1.3           5_1_3.mcd       : 5.1.3 Capacité: Sphère isolée
+5.1.4           5_1_4.mcd       : 5.1.4 Capacité: Sphères concentriques
+;
+; 5.2 OSCILLATEURS
+5.2             5_2.mcd         : 5.2 Oscillateurs
+5.2.1           5_2_1.mcd       : 5.2.1 Oscillateurs: RC Décalage de phase 
+5.2.2           5_2_2.mcd       : 5.2.2 Oscillateurs: Sortie réglée
+5.2.3           5_2_3.mcd       : 5.2.3 Oscillateurs: Colpitts
+5.2.4           5_2_4.mcd       : 5.2.4 Oscillateurs: Clapp
+5.2.5           5_2_5.mcd       : 5.2.5 Oscillateurs: Hartley
+5.2.6           5_2_6.mcd       : 5.2.6 Oscillateurs: Pierce
+;
+; 5.3 ANTENNES
+5.3     5_3.mcd         : 5.3. Antennes
+5.3.1   5_3_1.mcd       : 5.3.1 Antennes: Dipôle court
+5.3.2   5_3_2.mcd       : 5.3.2 Antennes: Dipôle
+5.3.3   5_3_3.mcd       : 5.3.3 Antennes: Circuit fermé
+5.3.4   5_3_4.mcd       : 5.3.4 Antennes: Ouverture annulaire
+5.3.5   5_3_5.mcd       : 5.3.5 Antennes: Ouverture rectang.
+5.3.6   5_3_6.mcd       : 5.3.6 Antennes: Ouverture Mode TE O1
+5.3.7   5_3_7.mcd       : 5.3.7 Antennes: Ouverture uniforme
+5.3.8   5_3_8.mcd       : 5.3.8 Antennes: Ouverture circulaire
+5.3.9   5_3_9.mcd       : 5.3.9 Antennes: Ouverture circulaire
+5.3.10  5_3_10.mcd      : 5.3.10 Antennes: Ouverture circulaire
+;------------------------------------------------------------------------------
+; 6 PROPRIETES DES METAUX
+; 
+6.1     6_1.mcd : 6.1 Métaux: Conductivité thermique
+6.2     6_2.mcd : 6.2 Métaux: Densité
+6.3     6_3.mcd : 6.3 Métaux: Coeff. d'expansion
+6.4     6_4.mcd : 6.4 Métaux: Résistivité électrique
+6.5     6_5.mcd : 6.5 Métaux: Module de Poisson
+6.6     6_6.mcd : 6.6 Métaux: Module d'élasticité
+6.7     6_7.mcd : 6.7 Métaux: Point de fusion
+6.8     6_8.mcd : 6.8 Métaux: Coeff. de température
+;--------------------------------------------------------------------------------
+; 7 PROPRIETES DES LIQUIDES
+;
+7.1     7_1.mcd : 7.1 Liquides: Masse volumique
+7.2     7_2.mcd : 7.2 Liquides: Viscosité
+7.3     7_3.mcd : 7.3 Liquides: Densité
+7.4     7_4.mcd : 7.4 Liquides: Vitesse du son
+7.5     7_5.mcd : 7.5 Liquides: Tension superficielle
+7.6     7_6.mcd : 7.6 Liquides: Constante diélectrique
+7.7     7_7.mcd : 7.7 Liquides: Indice de réfraction
+7.8     7_8.mcd : 7.8 Liquides: Masse moléculaire
+;----------------------------------------------------------------------------------
+; 8 PROPRIETES DES SOLIDES
+;
+8.1     8_1.mcd : 8.1 Solides: Masse volumique
+8.2     8_2.mcd : 8.2 Solides: Densité
+8.3     8_3.mcd : 8.3 Solides: Chaleur spécifique
+8.4     8_4.mcd : 8.4 Solides: Conductivité thermique
+;----------------------------------------------------------------------------------
+; 9 TABLES DES ELEMENTS
+;
+9.1     9_1.mcd : 9.1 Numéros atomiques
+9.2     9_2.mcd : 9.2 Masses atomiques
+;----------------------------------------------------------------------------------
+; INDEX
+;
+INDX    index.mcd       : Index
+ 

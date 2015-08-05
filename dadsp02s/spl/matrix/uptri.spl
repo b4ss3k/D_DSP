@@ -1,0 +1,60 @@
+/*****************************************************************************
+*                                                                            *
+*   UPTRI.SPL   Copyright (C) 2000 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns the upper triangle of an array                      *
+*                                                                            *
+*   Revisions:    3 Apr 2000  RRR  Creation - from MATRIX.MAC by             *
+*                                             Kevin Carmondy                 *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_UPTRI
+
+    UPTRI  
+
+    Purpose: Returns the upper triangle of a matrix including the main diagonal
+                                                                        
+    Format:  UPTRI(m)
+
+                  m -  input array
+
+
+    Returns: An array of size(m) consisting of the upper triangle of m
+             including the main diagonal with the other elements set
+             to 0.
+
+    Example:
+             W1: ones(3)
+             W2: UPTRI(W1)
+
+             W2 == {{1, 1, 1},
+                    {0, 1, 1},
+                    {0, 0, 1}}
+
+
+    Remarks:
+             UPTRI includes the main diagonal. Use UPTRIX to exclude
+             the main diagonal.
+
+    See Also:
+             Colnos
+             Lotri
+             Lotrix
+             Rownos
+             Uptrix  
+
+#endif
+
+/*
+** UPTRI returns the upper triangle of a matrix, including the main
+** diagnonal, with the lower triangle zeroed out.
+*/
+
+uptri(M)
+{
+	return((M)*(rownos(M) <= colnos(M)));
+}

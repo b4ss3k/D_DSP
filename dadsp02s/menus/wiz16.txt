@@ -1,0 +1,13 @@
+Acos                   !_PDC_EXEC102  $Inverse Cos
+Acot                   !_PDC_EXEC106  $Inverse Tangent
+Acsc                   !_PDC_EXEC105  $Inverse Csc
+Asin                   !_PDC_EXEC101  $Inverse Sin
+Asec                   !_PDC_EXEC104  $Inverse Sec
+Atan                   !_PDC_EXEC103  $Inverse Tan
+Cos                    !_PDC_EXEC095  $Cosine
+Cot                    !_PDC_EXEC099  $Cotangent
+Csc                    !_PDC_EXEC098  $Cosecant
+Sin                    !_PDC_EXEC094  $Sine
+Sinc                   !_PDC_EXEC100  $Sin(x)/x
+Sec                    !_PDC_EXEC097  $Secant
+Tan                    !_PDC_EXEC096  $Tangent

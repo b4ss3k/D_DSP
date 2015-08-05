@@ -1,0 +1,12 @@
+! Bessel.men
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+  Error/Bessel/Gamma
+
+ JN - Bessel           ~_deffname('JN       Bessel Function')|_defformat('JN(series, order)') |_defxamp('JN(W1,1)')|_getserint1("Series: ", "Order:  ")|_serint1form("JN")
+ YN - Bessel           ~_deffname('YN       Bessel Function')|_defformat('YN(series, order)') |_defxamp('YN(W1,1)')|_getserint1("Series: ", "Order:  ")|_serint1form("YN")
+ Error Function        ~_deffname('ERF      Error Function') |_defformat('Erf(series)') | _defxamp('Erf(W1)') | _getser | _serform("Erf")
+ Complementary Error   ~_deffname('ERFC     Complementary Error Function') |_defformat('Erfc(series)') | _defxamp('Erfc(W1)') | _getser | _serform("Erfc")
+ GAMMA                 ~_deffname('GAMM     Gamma Function') | _defformat('Gamm(series)') |_defxamp('Gamm(W1)') | _getser | _serform("Gamm")

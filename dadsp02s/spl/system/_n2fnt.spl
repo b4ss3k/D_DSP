@@ -1,0 +1,18 @@
+/* number to font index */
+_n2fnt(n)
+{
+	local f, fonts;
+
+	fonts = {BIG,SMALL,USER1,USER2,USER3};
+
+	n = castint(n) + 1;
+
+	if (n <= length(fonts)) {
+		f = fonts[n];
+	}
+	else {
+		f = 0;
+	}
+	return(castint(f));
+}
+

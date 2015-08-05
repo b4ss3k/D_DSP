@@ -1,0 +1,21 @@
+_as3d2i(s)
+{
+	local p;
+
+	switch (s) {
+		case _ax3d0:
+			p = 0;
+			break;
+
+		case _ax3d1:
+		default:
+			p = 1;
+			break;
+
+		case _ax3d2:
+			p = 2;
+			break;
+	}
+	return(p);
+}
+

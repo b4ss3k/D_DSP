@@ -1,0 +1,13 @@
+@wizard
+
+Single Channel Header Wizard (1 of 3)
+
+{writehed()}
+{defvar("_rdfltflg", "YES")}
+{if(strcmp(_rdfltflg,"YES")==0,set_defaults)}
+
+~_mf("scheader.pan")
+~_mf("chaninfo.pan")
+~_mf("axis_mod.pan")
+
+~~write_header(_headfile)

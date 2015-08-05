@@ -1,0 +1,6 @@
+/* sets y tic from string value */
+_setytic(ticstr, auto)
+{
+	if (auto) setytic(-1);
+	else setytic(castreal(ticstr));
+}

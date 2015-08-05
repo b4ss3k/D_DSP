@@ -1,0 +1,14 @@
+!PlStyle.men
+@x40
+@y0
+@f{_fg1}
+@b{_bg1}
+Lines   ~"Lines"  
+Points  ~"Points"
+Sticks  ~"Sticks"
+Bars    ~"Bars"
+Table   ~"Tableview"
+Hi Lo   ~"HiLo"
+Stack   ~"Stack"
+% Stack ~"PctStack"
+Steps   ~"Steps"

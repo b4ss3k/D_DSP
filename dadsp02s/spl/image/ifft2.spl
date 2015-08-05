@@ -1,0 +1,78 @@
+/*****************************************************************************
+*                                                                            *
+*   IFFT2.SPL    Copyright (C) 1998-2000 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Performs 2D IFFT of an input array                          *
+*                                                                            *
+*   Revisions:   12 Mar 1998  RRR  Creation                                  *
+*                13 Oct 1999  RRR  1D case                                   *
+*                19 May 2000  RRR  optional lengths                          *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_IFFT2
+
+    IFFT2    
+
+    Purpose: Calculates the 2D IFFT of an array
+                                                                        
+    Format:  IFFT2(array, rowlen, collen)
+
+              array - a multi-column series
+
+             rowlen - optional intger, IFFT row size, defaults to
+                      numrows(a)
+
+             collen - optional integer, IFFT column size, defaults to
+                      numcols(a)
+
+
+    Returns: A complex array
+
+    Example:
+             ifft2(fft2({{1, 2}, {3, 4}}))
+
+             returns the complex array {{1+0i, 2+0i},
+                                        {3+0i, 4+0i}}
+
+
+    Remarks:
+             Since IFFT2 returns a complex result, the result can be converted
+             into real form using the REAL function.
+
+             If the input data is a series (i.e. a single column), a 1D IFFT 
+             is performed. 
+
+
+    See Also
+             FFT2
+             IFFT
+
+#endif
+
+
+/* 2D IFFT */
+ifft2(a, rowlen, collen)
+{
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("ifft2 - input array required");
+			rowlen = numrows(a);
+			collen = numcols(a);
+		}
+		else {
+			collen = numcols(a);
+		}
+	}
+	if (numcols(a) > 1) {
+		/* amazingly simple one liner */
+		return(transpose(ifft(transpose(ifft(a, rowlen)), collen)));
+	}
+	else {
+		return(ifft(a, rowlen));
+	}
+}
+

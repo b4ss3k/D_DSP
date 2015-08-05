@@ -1,0 +1,246 @@
+/*****************************************************************************
+*                                                                            *
+*   READMAT.SPL   Copyright (C) 1997-1998 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Read a binary Matlab .mat file with colormap                *
+*                                                                            *
+*   Revisions:   21 Aug 1997  RRR  Creation                                  *
+*                 8 Dec 1998  RRR  Added support for non-byte strings        *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#define MATHEADSIZE 5
+
+
+#if @HELP_READMAT
+
+    READMAT    
+
+    Purpose: Reads a Matlab .mat file
+                                                                        
+    Format:  READMAT("fname")
+
+              fname - file name in quotes
+
+
+    Returns: A series or array
+
+    Example:
+
+             Readmat("mymat.mat")
+
+             reads the matrix file "mymat.mat" and creates global array 
+             variables with the same names as each of the stored 
+             matrices.
+
+
+    Remarks:
+             If the matrix is an image, the image is displayed using
+             the saved colormap, if any.
+
+
+    See Also
+             Freadb
+             Readascii
+             Readbinary
+             Readtable
+
+#endif
+
+
+/* read MATLAB .mat file */
+readmat(fname, num)
+{
+	local nc, nr, head, data, map, swap, cmap;
+	local name, names[], nlen, mtype, stype, mtype, count, temp;
+
+	if (argc < 1) {
+		error("readmat - filename required");
+	}
+
+	if (fopen(fname, "rb") != TRUE) {
+		error(sprintf("readmat - cannot open %s", fname));
+	}
+
+	if (argc < 2) num = -1;
+
+	/* keep track of how many we read */
+	count = 0;
+
+	while (TRUE) {
+
+		/* get header */
+		head = freadb(fname, LONG, MATHEADSIZE);
+
+		/* all done if header length is 0 */
+		if (length(head) < MATHEADSIZE) break;
+
+		/* if data type is strange, swap the bytes */
+		swap = (head[1] < 0 || head[1] > 1050);
+
+		if (swap) head = byteswap(head, LONG);
+
+		/* get name */
+		if ((nlen = castint(head[5])) > 0) {
+			name = strchars(freadb(fname, UBYTE, nlen));
+		}
+
+		/* is array a colormap? */
+		cmap = (strcmp(name, "map") == 0);
+
+		/* get rows & cols */
+		nc = castint(head[2]);
+		nr = castint(head[3]);
+
+		/* get data type */
+		mtype = head[1];
+		stype = m_gettype(mtype);
+
+		/* here we go ... */
+		printf("readmat - reading %s %dx%d Name:%s Type:%d ...", fname, nr, nc, name, stype);
+
+		data = freadb(fname, stype, nc*nr);
+		if (swap) data = byteswap(data, stype);
+
+		if (nc > 1 && nr > 1) {
+			if (cmap) {
+				/* colormap */
+				data = ravel(data, nc);
+				sethunits(getvariable(strchars(names[.., count])), "Pixels");
+				setvunits(getvariable(strchars(names[.., count])), "Pixels");
+				if (count > 0) {
+					/*
+					** Since we are reading a colormap, we'll assume the
+					** previous array is an image. We need to flip and 
+					** transpose the image to display it properly. The name
+					** is stored in the array name[].
+					*/
+					temp = getvar(strchar(names[.., count]));
+					temp = rev(temp)';
+					setyoffset(temp, 0.0);
+					setvar(strchar(names[.., count]), temp);
+				}
+			}
+			else {
+				/* multi-column data */
+				data = ravel(data, nc);
+				setyoffset(data, 0.0);
+				setdeltay(data, 1.0);
+			}
+			if (mtype == 11) {
+				/* array of strings as floats */
+				data = data';
+			}
+		}
+		else if (mtype == 11) {
+			/* single string stored as floats */
+			data = strchars(data);
+		}
+		if (IS_ARRAY(data)) {
+			setxoffset(data, 0.0);
+			setdeltax(data, 1.0);
+		}
+
+		/* create global variable using matrix name */
+		setvariable(eval("name"), data);
+
+		if (cmap) {
+			map = data;
+			break;
+		}
+
+		/* keep track of the variable names */
+		names = ravel(names, charstrs(name));
+
+		count++;
+		if (num > 0 && (count >= num)) break;
+
+	} /* while */
+
+	fclose(fname);
+
+	if (cmap) {
+		if (outargc == 0) {
+			/* setup for density plot */
+			setcolormap(map);
+			getvariable(strchars(names[.., 1]));
+			setplottype(w0, 3);
+			setplotstyle(w0, 0);
+		}
+		else {
+			return(data, map);
+		}
+	}
+	else if (count >= 1) {
+		/* return the first matrix */
+		return(getvariable(strchars(names[.., 1])));
+	}
+}
+
+
+/* get matlab data type and convert to SPL data type */
+m_gettype(mtype)
+{
+	local stype;
+
+	if (mtype >= 1000) {
+		if ((mtype = (mtype - 1000)) > 10) {
+			mtype /= 10;
+		}
+		else if (mtype > 0) mtype--;
+	}
+	stype = mtype_to_stype(mtype);
+	return(stype);
+}
+
+
+
+/* convert Matlab data type to SPL data type */
+mtype_to_stype(mtype)
+{
+	local stype;
+
+	switch (mtype) {
+		case 0:
+			stype = DOUBLE;
+			break;
+
+		case 1:
+		case 10:
+		case 11: /* string saved as floats */
+			stype = FLOAT;
+			break;
+
+		case 2:
+			stype = LONG;
+			break;
+
+		case 3:
+			stype = SINT;
+			break;
+
+		case 4:
+			stype = UINT;
+			break;
+
+		case 5:
+		default:
+			stype = UBYTE;
+			break;
+
+	}
+	return(stype);
+}
+
+
+readmat_error(err)
+{
+	/* close files on error */
+	fcloseall();
+}
+

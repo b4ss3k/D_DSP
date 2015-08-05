@@ -1,0 +1,13 @@
+/* gets canvas show mode for panels */
+_gcshow()
+{
+	local cs, ca;
+
+	cs = getconf("CANVAS_SHOW");
+	ca = getconf("CANVAS_AUTOSIZE");
+
+	/* normal show and use last size */
+	if ((cs == "1") && (ca == "0")) return(4);
+	else return(castint(cs));
+}
+

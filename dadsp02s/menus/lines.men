@@ -1,0 +1,11 @@
+! lines.men
+@panel
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+   Line Styles
+___________________
+
+ Series Number:
+ SOLID/DASHED/DOTTED/DASHDOT 

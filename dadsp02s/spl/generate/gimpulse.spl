@@ -1,0 +1,110 @@
+/*****************************************************************************
+*                                                                            *
+*   GIMPULSE.SPL Copyright (C) 2002 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Generates an impulse with a sampling rate                   *
+*                                                                            *
+*   Revisions:   30 Jan 2002  RRR  Creation                                  *
+*                17 Jul 2002  RRR  Set to default style, override table view *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_GIMPULSE
+
+    GIMPULSE  
+
+    Purpose: Generates an impulse with a specified detax
+                                                                        
+    Format:  GIMPULSE(length, deltax, offset)
+
+              length - An integer, the length of the impulse series
+
+              deltax - Optional. A real, the spacing between each sample,
+                       defaults to 1.0
+
+              offset - Optional. A real, the location of the impulse. 
+                       Defaults to 0.0.
+
+    Returns: A series
+
+    Example:
+             W1: gimpulse(100)
+
+             creates a 100 point impulse such that W1[1] == 1 and
+             W1[n] == 0 for 1 < n <= 100
+
+             
+             W1: gsin(200, .01, 1)
+             W2: gimpulse(200, .01)
+             W3: gimpulse(200, .01, .5)
+             W4: conv(W1, W2)
+             W5: conv(W1, W3)
+
+             W1 contains 200 samples of a 1 Hertz sinewave sampled at 100
+             samples per second.
+
+             W2 contains a 200 point impulse and W3 contains the same impulse
+             delayed by 0.5 seconds.
+
+             W4 and W5 demonstrate the delay effect by convolving the sinewave 
+             with each impulse.
+
+    Remarks:
+
+             Unlike IMPULSE, GIMPULSE generates an impulse with a
+             given delta x and delay.
+
+             If specified, 0.0 <= offset < length * deltax. 
+
+    See Also:
+             Extract
+             Impulse
+             Ones
+
+#endif
+
+
+/* generate an impulse with a given delta x */
+gimpulse(len, dx, offset)
+{
+	local s;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("gimpulse - length required");
+			dx = 1.0;
+		}
+		offset = 0;
+	}
+
+	if (len < 0) error("gimpulse - length must be positive");
+	if (dx <= 0) error("gimpulse - deltax must be positive");
+
+	if (offset <= 0) {
+		s = extract({1}, 1, len);
+		setxoffset(s, offset);
+
+	}
+	else {
+		offset = int(offset / dx);
+		if (offset >= len) {
+			error(sprintf("gimpulse - offset must be < %g", len*dx));
+		}
+		s = extract({1}, 1-offset, len);
+		setxoffset(s, 0.0);
+	}
+	setdeltax(s, dx);
+
+	// set to default style
+	setplotstyle(s, castint(getconf("PLOT_STYLE")));
+
+	// units
+	sethunits(s, _gethunits);
+	setvunits(s, _getvunits);
+
+	return(s);
+}

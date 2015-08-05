@@ -1,0 +1,17 @@
+!  Menu for HP54510 / DADiSP 
+@y3
+@f{_fg2}
+@b{_bg2}
+    Data I/O 
+___________________
+
+ Acquire Ch. 1  
+ Acquire Ch. 2 
+
+ Ch. 1 Raw Data     ~_MC
+ Ch. 2 Raw Data     ~_MC
+
+ Acquire Mem 0  
+ Acquire Mem 1  
+ Acquire Mem 2  
+ Acquire Mem 3  

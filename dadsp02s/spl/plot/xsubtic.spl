@@ -1,0 +1,64 @@
+/*****************************************************************************
+*                                                                            *
+*   XSUBTIC.SPL Copyright (C) 1998 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets X subtic labeling for log plots                        *
+*                                                                            *
+*   Revisions:   23 Jun 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_XSUBTIC
+
+    XSUBTIC
+
+    Purpose: Sets subtic labeling for log X axis
+                                                                        
+    Format:  XSUBTIC(win, on_off)
+
+              win    - an optional window, defaults to current window
+              on_off - an integer 0:OFF 1:label subtics (default 0)
+
+    Returns: Nothing
+
+    Example:
+             W1: Gnorm(200, 1);setxlog(1);xsubtic(0)
+             W2: W1;setxlog(1);xsubtic(1)
+
+             Only the decades of the log plot in W1 are labeled (the
+             default), where each subtic of W2 is labeled if there is
+             enough room.
+
+    Remarks: Some subtics may not be labeled if there is not enough 
+             room between tics.
+
+    See Also:
+             Setxlog
+             Setylog
+             Ysubtic
+#endif
+
+
+
+xsubtic(win, val)
+{
+	if (argc < 1) {
+		error("xsubtic - integer argument required");
+	}
+	if (argc < 2) {
+		if (IS_SCALAR(win)) {
+			setxlog(W0, -1, win);
+		}
+		else {
+			error("xsubtic - integer argument required");
+		}
+	}
+	else {
+		setxlog(win, -1, val);
+	}
+}

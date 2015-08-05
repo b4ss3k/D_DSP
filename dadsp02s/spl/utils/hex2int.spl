@@ -1,0 +1,9 @@
+/* convert hex string to integer */
+hex2int(hval)
+{
+	local hstr, ival = 0;
+
+	hstr = caststring(hval);
+	sscanf(hstr, "%x", ival);
+	return(ival);
+}

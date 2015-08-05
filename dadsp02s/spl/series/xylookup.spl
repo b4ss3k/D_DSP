@@ -1,0 +1,282 @@
+/*****************************************************************************
+*                                                                            *
+*   XYLOOKUP.SPL  Copyright (C) 2003 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Interpolates a Y value from a series                        *
+*                                                                            *
+*   Revisions:   28 Jan 2003  RRR  Creation                                  *
+*                21 Mar 2003  RRR  handle scalar xi                          *
+*                 9 Apr 2003  RRR  units                                     *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_XYLOOKUP
+
+    XYLOOKUP
+
+    Purpose: Interpolates Y values from a series given arbitrary X values.
+                                                                        
+    Format:  XYLOOKUP(series, xi, method, range)
+
+              series  - A series. The input series to interpolate from.
+
+                  xi  - A series. The desired output X values.
+
+              method  - Optional. A string. The interpolation method.
+                          "none"   : return nearest neighbor (no interpolation)
+                          "linear" : use linear interpolation (default)
+                          "spline" : use cubic spline
+
+               range  - Optional. An integer. The out of range method.
+                          0: interpolate out of range values (default)
+                          1: clip out of range values to end points
+                          2: set out of range values to NA
+
+             Alternate Format:  
+
+             XYLOOKUP(xseries, yseries, xi, method, range)
+
+              xseries - A series. The input X series to interpolate from.
+
+              yseries - A series. The input Y series to interpolate from.
+
+                  xi  - A series. The desired output X values.
+
+              method  - Optional. A string. The interpolation method.
+                          "none"   : return nearest neighbor (no interpolation)
+                          "linear" : use linear interpolation (default)
+                          "spline" : use cubic spline
+
+               range  - Optional. An integer. The out of range method.
+                          0: interpolate out of range values (default)
+                          1: clip out of range values to end points
+                          2: set out of range values to NA
+
+
+    Returns: An XY series where the Y values are the interpolated output
+             result.
+
+    Example:
+             W1: {1, 2, 3, 2}
+             W2: xylookup(w1, {0.2, 1.5, 2.4})
+             W3: W1;overp(w2,lred);setsym(14,2);setplotstyle(1,2)
+
+             W1 contains the source series. 
+
+             W2 linearly interpolates W1 at X = {0.2, 1.5, 2.4} to
+             produce an XY series with Y values of {1.2, 2.5, 2.6}.
+
+             W3 displays the original series with the interpolated values
+             overplotted as red circles.
+
+
+    Example:
+             W4: xylookup(w1, {0.2, 1.5, 2.4}, "spline", 1)
+
+             Same as above except cubic spline interpolation is performed
+             and out of range values are clipped to the first or last point
+             of W1.
+
+
+    Example:
+             W5: xylookup(xvals(w1), yvals(w1), -1..0.2..4, "spline")
+             
+             Interpolates W1 over the range -1 to 4 using cubic splines.
+             Explicit X and Y input series are specified.
+
+    Remarks:
+
+             If the interpolated values lie outside the range of the
+             input series, the resulting output values depend on the 
+             RANGE parameter.
+
+             If RANGE is 0 or unspecified, out of range output values 
+             are computed by applying the interpolation method on the 
+             first two or last two points of the input series and 
+             extrapolating to the new X value.
+
+             If RANGE is 1, out of range output values are set to the
+             first or last point of the input series.
+
+             If RANGE is 2, out of range output values are set to NA.
+
+             If METHOD is "none", out of range values are always clipped
+             to the end point values (same as RANGE == 1).
+
+
+             To return a single Y value from a single X value as a real
+             number, use CASTREAL. In the example above, to return the
+             interpolated Y value at X = 1.5:
+
+             yi = castreal(xylookup(W1, {1.5}))
+
+    See Also:
+             Interp            
+             Spline
+             Xyinterp
+#endif
+
+
+/* interpolate a series using arbitrary X values */
+ITERATE xylookup(s1, s2, xi, method, range)
+{
+	local x, y, yo, is_interval = FALSE, scalar = FALSE;
+	local hu, vu;
+
+	if (argc < 2) error("xylookup - input series and lookup values required");
+
+	// parse input arguments, refseries avoids copying the series
+	// this is the hard part
+
+	if (argc == 5) {			// xseries, yseries, xi, method, range
+		x = refseries(s1);
+		y = refseries(s2);
+
+		if (not(IS_ARRAY(xi))) {
+			scalar = TRUE;
+			xi = castseries(xi);
+		}
+		if (not(IS_STRING(method))) {
+			method = caststring(method);
+		}
+		if (not(IS_SCALAR(range))) {
+			range = castint(range);
+		}
+
+		// get units
+		vu = getvunits(s2);
+		hu = gethunits(s2);
+	}
+	else if (argc == 4) {			
+		if (IS_STRING(xi)) {      // series, xi, method, range
+			range = castint(method);
+			method = xi;
+			if (not(IS_ARRAY(s2))) {
+				scalar = TRUE;
+				xi = castseries(s2);
+			}
+			else {
+				xi = refseries(s2);
+			}
+			x = xvals(s1);
+			y = yvals(s1);
+			is_interval = not(ISXYSERIES(s1) || ISXYZSERIES(s1));
+
+			// get units
+			vu = getvunits(s1);
+			hu = gethunits(s1);
+		}
+		else {                   // xseries, yseries, xi, method
+			x = refseries(s1);
+			y = refseries(s2);
+			if (not(IS_ARRAY(xi))) {
+				scalar = TRUE;
+				xi = castseries(xi);
+			}
+			if (not(IS_STRING(method))) {
+				method = caststring(method);
+			}
+			range = 0;
+	
+			// get units
+			vu = getvunits(s2);
+			hu = gethunits(s2);
+		}
+	}
+	else if (argc == 3) {
+		range = 0;
+		if (IS_STRING(xi)) {	// series, xi, method
+			method = xi;
+			if (not(IS_ARRAY(s2))) {
+				scalar = TRUE;
+				xi = castseries(s2);
+			}
+			else {
+				xi = refseries(s2);
+			}
+			x = xvals(s1);
+			y = yvals(s1);
+			is_interval = not(ISXYSERIES(s1) || ISXYZSERIES(s1));
+
+			// get units
+			vu = getvunits(s1);
+			hu = gethunits(s1);
+		}
+		else {					// xseries, yseries, xi
+			x = refseries(s1);
+			y = refseries(s2);
+			if (not(IS_ARRAY(xi))) {
+				scalar = TRUE;
+				xi = castseries(xi);
+			}
+			method = "linear";
+
+			// get units
+			vu = getvunits(s2);
+			hu = gethunits(s2);
+		}
+	}
+	else if (argc == 2) {		// series, xi
+		range = 0;
+		if (IS_STRING(s2) || not(IS_ARRAY(s1))) {
+			error("xylookup - input series and lookup values required");
+		}
+		if (not(IS_ARRAY(s2))) {
+			scalar = TRUE;
+			xi = castseries(s2);
+		}
+		else {
+			xi = refseries(s2);
+		}
+		method = "linear";
+
+		x = xvals(s1);
+		y = yvals(s1);
+		is_interval = not(ISXYSERIES(s1) || ISXYZSERIES(s1));
+
+		// get units
+		vu = getvunits(s1);
+		hu = gethunits(s1);
+	}
+
+	// lower case
+	method = tolower(method);
+
+	// now the easy part - just use spline or xyinterp to interpolate
+
+	if (method == "none") {
+		// nearest neighbor lookup
+		if (is_interval) {
+			// faster lookup for interval series
+			y = y[xtoidx(s1, xi)];
+		}
+		else {
+			// xy lookup
+			y = y[xtoidx(xy(x, y), xi)];
+		}
+	}
+	else if (method == "spline") {
+		y = spline(x, y, xi, range);
+	}
+	else {
+		y = xyinterp(x, y, xi, range);
+	}
+	if (scalar) { // convert result to scalar if xi was scalar
+		return(castreal(y));
+	}
+	else {
+		// convert to XY series
+		yo = xy(xi, y);
+
+		// set units 
+		sethunits(yo, hu);
+		setvunits(yo, vu);
+
+		return(yo);
+	}
+}

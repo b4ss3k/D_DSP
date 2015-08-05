@@ -1,0 +1,19 @@
+! Apply an ANN to data
+@x 0
+@y 0
+@b{_bg3}
+@f{_fg3}
+@h {_NNMENUHOME}apply.hlp
+@panel
+
+      Apply MLP Network to Data
+________________________________________
+
+  Input Pattern Window:        W<    > ~defmacro('_TTTW1','w<1>',2)~_SRCWIN
+  Network Weight Window:       W<    > ~defmacro('_TRTW1','w<2>',2)~_SRCWIN
+
+  Number of Input Patterns:    <     > ~defmacro('_IPAT2','<1>',2)~inp(2)
+!~defmacro('_TMPS',eval(strcat('getcomment(',_TRTW1,')')),2)
+!~menuc();clear();echo('Applying Network...');setwf(MAKEAPPLYSTR)
+!;label('Network Outputs')
+~_mc;echo("Here it would apply the neural network....")

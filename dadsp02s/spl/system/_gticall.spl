@@ -1,0 +1,14 @@
+/* gets tic corners, 1 == all */
+_gticall(def)
+{
+	local tstyle = 0;
+
+	if (argc < 1) {
+		def = 0;
+	}
+		
+	tstyle = (def) ? castint(getconfdef("tic_style")) : castint(getconf("tic_style"));
+	tstyle &= 0x04;
+
+	return(tstyle > 0);
+}

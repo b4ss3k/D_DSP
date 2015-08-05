@@ -1,0 +1,38 @@
+@modeless 1
+
+ HILBERT
+ _________________________________________________________________________
+
+ Purpose:    Designs an FIR Hilbert transformer.
+
+ Format:     HILBERT(order, rate, pb1, pb2)
+
+             order         Optional filter length. If specified, order
+                           must be an integer value.
+
+             rate          A real number specifying the sample rate in 
+                           Hertz of the filter.
+
+             pb1           Optional real number specifying the lower
+                           passband edge. Defaults to 0.0.
+
+             pb2           Optional real number specifying the upper
+                           passband edge. Defaults to rate / 2.0.
+
+ Returns:    The time domain impulse response of the Hilbert transformer.
+
+ Example:    W1: Hilbert(1000.0)
+
+             creates a 20 point Hilbert transformer with a passband
+             extending from 0.0 to 500.0 Hz.
+
+             W1: Hilbert(32, 1000.0)
+
+             Creates a filter similar to above except the order is set
+             to 32 points.
+
+
+ Remarks:    The optional band edges must lie between 0.0 and rate/2.0 Hz.
+
+ See Also:   FIRPHASE
+

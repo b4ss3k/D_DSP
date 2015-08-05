@@ -1,0 +1,85 @@
+/*****************************************************************************
+*                                                                            *
+*   MODFM.SPL    Copyright (C) 2007 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    FM modulation of an input series                            *
+*                                                                            *
+*   Revisions:    5 Feb 2007  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_MODFM
+
+    MODFM  
+
+    Purpose: Performs frequency modulation of a series.
+                                                                        
+    Format:  MODFM(s, fmin, fmax)
+ 
+              s - the input series
+
+           fmin - Optional, a real. The minimum modulation frequency.
+                  Defaults to 0.0.
+
+           fmax - Optional, a real. The maximum modulation frequency.
+                  Defaults to rate(s) / 2.
+
+
+    Returns: A series, the frequency modulated output.
+
+    Example:
+             W1: gtriwave(1000,.001, 4)
+             W2: modfm(w1)
+             W3: demodfm(w2)
+             W4: specgram(w2, 64, 63, 1024)
+
+             The triangle waveform of W1 is frequency modulated between
+             0 Hz and 500 Hz in W2. W3 recovers the modulated
+             series and W4 displays the joint time-frequency plot
+             of the frequency modulated waveform.
+
+    Example:
+             W1: gtriwave(1000,.001, 4)
+             W2: modfm(w1, 100, 300)
+             W3: demodfm(w2)
+             W4: specgram(w2, 64, 63, 1024)
+
+             Same as above except the series is frequency modulated between
+             100 Hz and 300 Hz.
+
+    Remarks:
+
+             The maximum modulation frequency (fmax) should be set to
+             rate(s) / 2 or less.
+
+             See DEMODFM to demodulate a frequency modulated series.
+
+             See GSWEEP to generate a simple swept sinewave.
+
+
+    See Also:
+             Demodfm
+             Gsweep
+             Specgram
+
+#endif
+
+
+/* frequency modulate a series */
+modfm(s, fmin, fmax)
+{
+	local fm;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("modfm - input series required");
+			fmin = 0;
+		}
+		fmax = rate(s) / 2;
+	}
+	fm = cos(2*pi*integ(rescale(s, fmin, fmax)));
+	return(fm);
+}

@@ -1,0 +1,82 @@
+/*****************************************************************************
+*                                                                            *
+*   GFLATTOP.SPL   Copyright (C) 2004 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Generates a Flattop window                                  *
+*                                                                            *
+*   Revisions:   22 Jan 2004  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_GFLATTOP
+
+    GFLATTOP
+
+    Purpose: Generates a Flattop Window.
+
+    Format:  GFLATTOP(points, spacing)
+
+               points  - Number of points to generate.
+
+               spacing - Spacing between points.
+
+
+    Returns: A series.
+
+    Example:
+
+             gflattop(100, .01)
+
+             Creates a 100-point Flattop window with points spaced with an 
+             interval of 0.01 using the following formula:
+
+             w[k] = 0.2810639 - 0.5208972 * cos(2*pi*(k-1)/(N-1)) + 
+                    0.1980399 * cos(4*pi*(k-1)/(N-1))
+
+
+             where k is the kth point (1 <= k <= N) and N is 100, the number 
+             of points to generate. The spacing between points is set to 0.01.
+
+    Remarks:
+             Use the Flattop function to automatically create and multiply 
+             a Flattop Window with a series. For example:
+
+             flattop(W2)
+
+             multiplies Window 2 with a Flattop Window calculated to the same 
+             length and spacing as the series in W2. 
+
+             Hamming, Hanning, Kaiser and Flattop Windows are useful in 
+             creating FIR filters and in preprocessing series for FFT 
+             calculations.
+
+    See Also:
+             FFT
+             GHAMMING
+             GHANNING
+             GKAISER
+             PSD
+             SPECTRUM
+#endif
+
+
+
+/* generate an N point Flattop window */
+gflattop(n, dx)
+{
+	local i, w;
+
+	if (argc < 2) {
+		if (argc < 1) error("gflattop - number of points required");
+		dx = 1.0;
+	}
+	i = 0..(n-1);
+	w = 0.2810639 - 0.5208972*cos(2*pi*i/(n-1)) + 0.1980399*cos(4*pi*i/(n-1));
+	setdeltax(w, dx);
+
+	return(w);
+}

@@ -1,0 +1,60 @@
+/*****************************************************************************
+*                                                                            *
+*   ISINF.SPL   Copyright (C) 2002 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns 1 for each element that is inf                      *
+*                                                                            *
+*   Revisions:    9 Aug 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_ISINF
+
+    ISINF
+
+    Purpose: Returns 1 for each element that is infinite (inf)
+                                                                        
+    Format:  ISINF(ser)
+
+              ser - Series
+
+    Returns: A series where each element is 1 where the input series has
+             an INF value and 0 where the input series is not INF.
+
+    Example:
+             a = {1, 2, inf, 3};
+             b = 5;
+             c = {};
+
+             isinf(a) returns {0, 0, 1, 0}
+             isinf(b) returns {0}
+             isinf(c) returns {}
+
+    Remarks:
+             ISINF always returns a series.
+
+             ISINF returns an empty series if the input is an empty series.
+
+    See Also:
+             Finite
+             Isempty
+             Isnan
+#endif
+
+/* where is input inf? */
+isinf(a)
+{
+	if (argc < 1) error("isinf - input required");
+
+	/* convert to series if not already */
+	if (not(IS_ARRAY(a))) a = castseries(a);
+
+	/* look for inf and set any NA result to 0 */
+	return(setnavalue(a==inf||a==-inf, 0));
+}

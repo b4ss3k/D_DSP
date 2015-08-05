@@ -1,0 +1,18 @@
+! DemModul.men - Module Topics demo menu for DADiSP 4.0 
+@x20
+@y0
+DADiSP Module Demo Topics
+
+ DADiSP/AdvDSP             ~_MC;demoload("demadsp.dsp")
+
+ DADiSP/Controls           ~_MC;demoload("demctrls.dsp")
+
+ DADiSP/Filters            ~_MC;demoload("demofil1.dsp")
+
+ DADiSP/GPIBLab            ~_MC;demoload("demo488.dsp")
+
+ DADiSP/Stats              ~_MC;demoload("demostat.dsp")
+
+ DADiSP/NeuralNet          ~_MC;demoload("neural.dsp")
+
+ Return to Demo Main Menu  ~_MC;DMF("DemoMenu.men")

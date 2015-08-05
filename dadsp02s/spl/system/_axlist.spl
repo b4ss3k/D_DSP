@@ -1,0 +1,26 @@
+_axlist(mode)
+{
+	local i, s = "", p;
+
+	if (argc < 1) {
+		mode = 0;
+	}
+
+	if (mode) { /* 3d scales */
+		for (i = 0; i <= 2; i++) {
+			if (strlen(s) > 0) s = strcat(s, strescape("\n"));
+			p = eval(sprintf("_ax3d%d", i));
+			s = strcat(s, p);
+		}
+	}
+	else {
+		for (i = 0; i <= 16; i++) {
+			if (strlen(s) > 0) s = strcat(s, strescape("\n"));
+			p = eval(sprintf("_ax%d", i));
+			s = strcat(s, p);
+		}
+	}
+	return(s);
+}
+
+		

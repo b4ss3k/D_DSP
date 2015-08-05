@@ -1,0 +1,20 @@
+! Trig2.pan - Hyperbolic and Inverse Trig Functions
+@x0
+@y1
+@b{_bg2}
+@f{_fg2}
+Hyperbolic & Inverse
+
+   SINH     ~_deffname('SINH     Hyperbolic Sine') | _defformat('Sinh(series)') | _defxamp('Sinh(W1)') | _getser | _serform("Sinh")
+   COSH     ~_deffname('COSH     Hyperbolic Cosine') | _defformat('Cosh(series)') | _defxamp('Cosh(W1)') | _getser | _serform("Cosh")
+   TANH     ~_deffname('TANH     Hyperbolic Tangent') | _defformat('Tanh(series)') | _defxamp('Tanh(W1)') | _getser | _serform("Tanh")
+   SECH     ~_deffname('SECH     Hyperbolic Secant') | _defformat('Sech(series)') | _defxamp('Sech(W1)') | _getser | _serform("Sech")
+   CSCH     ~_deffname('CSCH     Hyperbolic Cosecant') | _defformat('Csch(series)') | _defxamp('Csch(W1)') | _getser | _serform("Csch")
+   COTH     ~_deffname('COTH     Hyperbolic Cotangent') | _defformat('Coth(series)') | _defxamp('Coth(W1)') | _getser | _serform("Coth")
+
+   ASINH    ~_deffname('ASINH    Hyperbolic ArcSine') | _defformat('ASinh(series)') | _defxamp('ASinh(W1)') | _getser | _serform("ASinh")
+   ACOSH    ~_deffname('ACOSH    Hyperbolic ArcCosine') | _defformat('ACosh(series)') | _defxamp('ACosh(W1)') | _getser | _serform("ACosh")
+   ATANH    ~_deffname('ATANH    Hyperbolic ArcTangent') | _defformat('ATanh(series)') | _defxamp('ATanh(W1)') | _getser | _serform("ATanh")
+   ASECH    ~_deffname('ASECH    Hyperbolic ArcSecant') | _defformat('ASech(series)') | _defxamp('ASech(W1)') | _getser | _serform("ASech")
+   ACSCH    ~_deffname('ACSCH    Hyperbolic ArcCosecant') | _defformat('ACsch(series)') | _defxamp('ACsch(W1)') | _getser | _serform("ACsch")
+   ACOTH    ~_deffname('ACOTH    Hyperbolic ArcCotangent') | _defformat('ACoth(series)') | _defxamp('ACoth(W1)') | _getser | _serform("ACoth")

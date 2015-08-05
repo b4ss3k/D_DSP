@@ -1,0 +1,30 @@
+_collist(serstr, ncstr)
+{
+	local i, s = "", p, nc;
+
+	if (argc < 1) {
+		ser = current;
+		nc = numcols(ser);
+	}
+	else {
+		if (_isser(serstr)) {
+			nc = numcols(eval(serstr));
+		}
+		else {
+			nc = 1;
+		}
+	}
+
+	if (argc > 1) {
+		setvname(ncstr, nc);
+	}
+	
+	for (i = 1; i <= nc; i++) {
+		if (strlen(s) > 0) s = strcat(s, strescape("\n"));
+		p = sprintf("%d", i);
+		s = strcat(s, p);
+	}
+	return(s);
+}
+
+		

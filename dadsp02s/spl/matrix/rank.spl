@@ -1,0 +1,82 @@
+/*****************************************************************************
+*                                                                            *
+*   RANK.SPL    Copyright (C) 2001 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns number of independent rows or columns               *
+*                                                                            *
+*   Revisions:   24 Jul 2001  RRR  Creation                                  *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_RANK
+
+    RANK  
+
+    Purpose: Estimates the number of independent rows or columns of an array
+                                                                        
+    Format:  RANK(m, tol)
+
+                  m - input array, defaults to the current series
+
+                tol - optional real, singular value tolerance, defaults to
+                      (max of rows or cols) * max(singular values) * eps
+                      
+
+    Returns: An integer, the estimated rank.
+
+    Example:
+             W1: rand(3)
+             W2: ravel(W1, W1)
+             W3: rand(6)
+
+             rank(w1) == 3
+
+             rank(w2) == 3
+
+             rank(w3) == 6
+
+    Remarks:
+             RANK use SVD to compute the singular values of an array.
+
+    See Also:
+             Norm
+             Svd
+#endif
+
+
+/* estimate rank using singular values */
+rank(m, tol)
+{
+	local w, rank, nc, nr;
+
+	/* default  series */
+	if (argc < 1) {
+		m = refseries(1);
+	}
+
+	if (not(IS_ARRAY(m))) m = {m};
+
+	/* find w, singular values via svd */
+	w = svd(m);
+	
+	if (argc < 2) {
+		/* array size */
+		(nr, nc) = size(m);
+
+		/* array tolerance */
+		tol = maxval(nr, nc) * w[1] * eps;
+	}
+
+	/* compute rank using tolerance */
+	rank = sum(w > tol);
+
+	return(rank);
+
+}
+

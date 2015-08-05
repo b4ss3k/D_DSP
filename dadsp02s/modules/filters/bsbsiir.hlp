@@ -1,0 +1,32 @@
+@modeless 1
+                     Bessel Bandstop IIR Filter Parameters
+
+ Magnitude (dB) |
+                |
+                |
+          0  __ | _________                       ________   _
+                |          \                     /            |
+                |           \                   /             |
+                |            \                 /              |
+                | Pass Band   \   Stop Band   /  Pass Band    | Attenuation
+                |     1        \             /       2        |            
+                |               \           /                 |
+       -Attn __ |                \_________/                 _|
+                |        
+                |_________________________________________________________
+                          |       |         |      |      Frequency (Hz)
+                          f       f         f      f
+                           pass1   stop1     stop2  pass2
+
+
+
+  frate  -  Sample Rate                 Hz 
+
+  fpass1 -  First Passband Frequency    Hz
+  fstop1 -  Stopband Begin              Hz
+  fstop2 -  Stopband End                Hz
+  fpass2 -  Second Passband Frequency   Hz
+
+  attn   -  Stopband Attenuation        dB
+
+               0 < fpass1 < fstop1 < fstop2 < fpass2 < frate/2

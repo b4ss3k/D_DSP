@@ -1,0 +1,22 @@
+/* shows correct axis menu based on data in current window */
+_mfaxis()
+{
+
+	if (_is3d()) { // 3D data
+		_initax3(); // axis dialog parameters
+		_MF("axis3d.pan");
+	}
+	else if (_is2d()) { // 2D data
+		_initax(); // axis dialog parameters
+		_MF("axis2d.pan");
+	}
+	else if (getfocus(-1) > 1) { // series with overlays
+		_initax(); // axis dialog parameters
+		_MF("axisfoc.pan");
+	}
+	else { // series with no overlays
+		_initax(); // axis dialog parameters
+		_MF("axis.pan");
+	}
+}
+

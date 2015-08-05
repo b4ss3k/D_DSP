@@ -1,0 +1,203 @@
+/*****************************************************************************
+*                                                                            *
+*   SGRID.SPL     Copyright (C) 1997 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Grids XYZ data using cubic splines                          *
+*                                                                            *
+*   Revisions:   10 Oct 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_SGRID
+
+    SGRID   
+
+    Purpose: Grids XYZ data using spline interpolation
+                                                                        
+    Format:  SGRID(x, y, z, xi, yi)
+
+               x - a series, x or horizontal range
+               y - a series, y or vertical range
+               z - a series, z or height data
+              xi - an optional series, output x range
+              yi - an optional series, output y range
+
+    Returns: An array
+
+    Example:
+             (x, y) = fxyvals(-10, 10, 2, -10, 10, 2)
+             z = cos(x*y)
+             xyz = sgrid(x[..], y[..], z[..], -10..0.5..10, -10..0.5..10)
+
+             Grids the function cos(x*y) over the range -10 to 10 
+             interpolated with an increment of 0.5.
+
+    Remarks:
+             SGRID first interpolates in the direction with the most
+             variability.  The output X and Y ranges (xi, yi)
+             are determined from the data if not specified.
+
+
+    See Also
+             Spline
+#endif
+
+
+
+sgrid(x, y, z, xi, yi)
+{
+	local trans, zi;
+
+	/* interpolate in the most variable dimension first */
+	trans = distinct_vals(x) > distinct_vals(y);
+
+	if (trans) {
+		zi = splinegrid(y, x, z, yi, xi)';
+	}
+	else {
+		zi = splinegrid(x, y, z, xi, yi);
+	}
+	return(zi);
+}
+
+
+splinegrid(x, y, z, xi, yi)
+{
+
+	local yinc, yidx, ys, yc;
+	local xinc, xidx, xs, xval;
+	local zi, zs, zval;
+
+	/* if interpolated range not specified, determine from data */
+	if (argc < 4) {
+		(xi, yi, xinc, yinc) = xyz_xyvals(x, y);
+	}
+	else {
+		/* get increment from range - assumes ranges are sorted */
+		xinc = xi[2] - xi[1];
+		yinc = yi[2] - yi[1];
+	}
+
+	/* sort based on Y data */
+	yidx = grade(y, 1);
+
+	ys = reorder(y, yidx);
+	xs = reorder(x, yidx);
+	zs = reorder(z, yidx);
+
+	/* find non-duplicate Y values */
+	yc = extract(ys - delay(ys, 1), 2, -1);
+
+	/* generate the distinct Y indices and prepend a 0 */
+	yidx = {0, delete(1..length(y), yc == 0.0)};
+
+
+	/*
+	** generate the lengths of constant Y's by raveling into a
+	** 2 x n array and subtracting the indices - yc is a series
+	** that contains the lengths of each column of constant Y
+	*/
+
+	yc = ravel(yidx, 2, 1, 1);
+	yc = (yc[2, ..] - yc[1, ..])';
+
+	/* order X and Z based on constant Y lenghts */
+	xval = reshape(xs, yc);
+
+	if (min(collength(xval)') < 2) {
+		error("splinegrid - require 2 or more constant Y samples of X");
+	}
+
+	xidx = grade(xval, 1);
+	xval = reorder(xval, xidx);
+
+	zval = reshape(zs, yc);
+	zval = reorder(zval, xidx);
+
+	/* spline in X direction */
+	zi = spline(xval, zval, xi)';
+
+	/* Y values */
+	yval = ravel(rep(ys[extract(yidx, 2, -1)], numcols(zi)), numrows(zi));
+
+	/* spline in Y direction */
+	zi = spline(yval, zi, yi)';
+
+	/* Z data units */
+	setdeltax(zi, xinc);
+	setxoffset(zi, min(xi));
+	sethunits(zi, getvunits(x));
+
+	setdeltay(zi, yinc);
+	setyoffset(zi, min(yi));
+	setvunits(zi, getvunits(y));
+
+	return(zi);
+}
+
+
+/* find xy grid from xyz data */
+xyz_xyvals(x, y)
+{
+	
+	local j, xinc, yinc, xind, yind, xyz;
+
+	/* minimum x and y increment */
+	xinc = mininc(x);
+	yinc = mininc(y);
+
+	/* length of x and y data */
+	xdim = dim(x);
+	ydim = dim(y);
+
+	/* generate x and y series */
+	xvals = min(x) + (0..(xdim-1)) * xinc;
+	yvals = min(y) + (0..(ydim-1)) * yinc;
+
+	return(xvals, yvals, xinc, yinc);
+}
+
+
+/* minimum increment from non-monotonic data */
+mininc(s)
+{
+	local t;
+
+	t = sort(s, 1);
+	t = extract(t - delay(t, 1), 2, length(t)-1);
+	t = delete(t, t == 0);
+
+	return(min(t), max(t));
+}
+
+
+/* range from non-monotonic data */
+dim(s)
+{
+	local dim, inc;
+
+	inc = mininc(s);
+
+	if (inc > 0) {
+		dim = 1 + ceil((max(s) - min(s)) / inc);
+	}
+	else dim = 0;
+
+	return(castint(dim));
+}
+
+
+/* number of non-duplicate values in a series */
+distinct_vals(s)
+{
+	s = sort(s, 1);
+	s = s - delay(s, 1);
+	return(length(delete(s, s == 0.0)));
+}
+
+

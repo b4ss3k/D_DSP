@@ -1,0 +1,12 @@
+! acep.dmn -- Cepstrum Analysis menu. modified for the demo
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+ Cesptrum Analysis 
+
+ Real Cepstrum       ~echo('Calculate the Real Cepstrum')
+
+ Complex Cepstrum    ~echo('Calculate the Complex Cepstrum')
+
+ Phase Unwrapping    ~echo('Perform Linear Delay Phase Unwrapping')

@@ -1,0 +1,19 @@
+!  Commands to enter & leave remote mode
+@display
+@x0
+@y0
+Remote Commands:
+________________
+
+  Abort         ~echo("ABORT")
+  Clear         ~echo("Device cleared")
+  Buffered      ~echo("Buffered")
+  Local         ~echo("Device in local mode")
+  Local Lock    ~echo("Front panel locked")
+  Pass Control  ~echo("Control passed")
+  Remote        ~echo("Device in remote")
+  Reset         ~echo("RESET")
+  Resume        ~echo("RESUME")
+  Spoll         ~echo("0")
+  Trigger       ~echo("Trigger sent")
+

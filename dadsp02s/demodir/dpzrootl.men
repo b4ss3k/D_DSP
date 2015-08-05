@@ -1,0 +1,16 @@
+! This is a DSPTrial menu for DADiSP/Controls
+@x10
+@y5
+@f{_fg1}
+@b{_bg1}
+! @h{_Controlhelp("pzrootl")}
+    PZ-Root Locus
+______________________
+
+ Pole-Zero Map        ~DMF("dpzmap.men")
+ Root Locus Plot      ~DMF("drtlocus.men")
+ Pole-Zero Grid       ~echo("Overlay a Grid of Natural Frequency & Damping Ratio Lines with DADiSP/Controls")
+ 
+ Disc Pole-Zero Map   ~echo("Map the Open & Closed-loop Pole and Zero Locations in the Z-plane with DADiSP/Controls")
+ Disc Root Locus Plot ~echo("Produce a Plot of the Pole & Zero Locations in the Z-plane with DADiSP/Controls")
+ Disc Pole-Zero Grid  ~echo("Overlay a Grid of Constant Discrete Natural Frequency & Damping Ratio Lines with DADiSP/Controls")

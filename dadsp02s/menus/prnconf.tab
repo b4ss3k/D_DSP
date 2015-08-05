@@ -1,0 +1,92 @@
+! prnconf.tab - default print configuration settings
+@tabbed
+Print & Plot Preferences
+
+! printinf elements
+{setvar("_opscnt", 0)}
+{defvar("_prnconf_page", 0)}
+
+
+! postscript settings
+{setvar("_ps_fnt", getconf("POSTSCRIPT_FONT"))}
+{setvar("_ps_ort", castint(getconf("POSTSCRIPT_LANDSCAPE"))==0)}
+{setvar("_ps_lns", getconf("POSTSCRIPT_LANDSCAPE"))}
+{setvar("_ps_gry", getconf("POSTSCRIPT_GREYSCALE"))}
+{setvar("_ps_fil", getconf("POSTSCRIPT_FILE"))}
+{setvar("_ps_xpr", getconf("POSTSCRIPT_XPAPER"))}
+{setvar("_ps_ypr", getconf("POSTSCRIPT_YPAPER"))}
+{setvar("_ps_x",   getconf("POSTSCRIPT_X"))}
+{setvar("_ps_y",   getconf("POSTSCRIPT_Y"))}
+{setvar("_ps_fs",  getconf("POSTSCRIPT_FONT_SCALE"))}
+{setvar("_ps_lw",  getconf("POSTSCRIPT_LINEWIDTH"))}
+{setvar("_ps_alo", getconf("POSTSCRIPT_ONEFILE"))}
+
+
+! hpgl settings
+{setvar("_hpgl_pro", getconf("HPGL_PROLOGUE"))}
+{setvar("_hpgl_epi", getconf("HPGL_EPILOGUE"))}
+{setvar("_hpgl_fil", getconf("HPGL_FILE"))}
+{setvar("_hpgl_x",   getconf("HPGL_X"))}
+{setvar("_hpgl_y",   getconf("HPGL_Y"))}
+{setvar("_hpgl_whi", getconf("HPGL_WHITE"))}
+{setvar("_hpgl_yel", getconf("HPGL_YELLOW"))}
+{setvar("_hpgl_blk", getconf("HPGL_BLACK"))}
+{setvar("_hpgl_blu", getconf("HPGL_BLUE"))}
+{setvar("_hpgl_red", getconf("HPGL_RED"))}
+{setvar("_hpgl_mag", getconf("HPGL_MAGENTA"))}
+{setvar("_hpgl_grn", getconf("HPGL_GREEN"))}
+{setvar("_hpgl_cyn", getconf("HPGL_CYAN"))}
+{setvar("_hpgl_gl2", castint(getconf("HPGL_HPGL2")))}
+{setvar("_hpgl_fw",  getconf("HPGL_FONT_WIDTH"))}
+{setvar("_hpgl_fh",  getconf("HPGL_FONT_HEIGHT"))}
+{setvar("_hpgl_alo", getconf("HPGL_ONEFILE"))}
+{setvar("_hpgl_np",  getconf("HPGL_NUMPENS"))}
+
+
+! metafile settings
+{setvar("_mfdwi",  numstr(getconf("metafile_width")))}
+{setvar("_mfdhi",  numstr(getconf("metafile_height")))}
+{setvar("_mfres",  castint(getconf("metafile_use_printer")))}
+{setvar("_mfdim",  numstr(getconf("metafile_width")) > 0)}
+{setvar("_mfwi",   (_mfdwi > 0.0) ? _mfdwi : 6)}
+{setvar("_mfhi",   (_mfdhi > 0.0) ? _mfdhi : 4)}
+{setvar("_mffn",   getconf("METAFILE_FILENAME"))}
+{setvar("_mftof",  castint(getconf("METAFILE_USE_FILE")))}
+{setvar("_mftyp",  castint(getconf("metafile_type")))}
+
+
+! misc print settings
+{setvar("_prntmi", numstr(getconf("prt_yt")))}
+{setvar("_prnlmi", numstr(getconf("prt_xl")))}
+{setvar("_prnrmi", numstr(getconf("prt_xr")))}
+{setvar("_prnbmi", numstr(getconf("prt_yb")))}
+
+{setvar("_prndec",   castint(getconf("PRT_DECIMATE")))}
+{setvar("_prnadp",   castint(getconf("PRT_ADJUST_PORTRAIT")))}
+{setvar("_prnort",   castint(getconf("PRT_ORIENTATION")))}
+{setvar("_prnfn",    getconf("PRT_FILE"))}
+{setvar("_prncoe",   castint(getconf("PRT_CHECK_ERROR")))}
+{setvar("_prntof",   castint(getconf("PRT_USE_FILE")))}
+{setvar("_prnlw",    castint(getconf("PRT_LINEWIDTH"))+1)}
+{setvar("_prnfs",    numstr(getconf("PRT_FONT_SCALE")))}
+{setvar("_prnxext",  getconf("PRT_X"))}
+{setvar("_prnyext",  getconf("PRT_Y"))}
+{setvar("_prnsdg",   castint(getconf("PRT_SETUP_DIALOG")))}
+
+{setvar("_prncontin", castint(getconf("PRT_CONTINUOUS")))}
+{setvar("_prnphm",    castint(getconf("PRT_PAGE_HEIGHT")))}
+{setvar("_prnpwm",    castint(getconf("PRT_PAGE_WIDTH")))}
+{setvar("_prn_pwa",   castint(_prnpwm < 0))}
+{setvar("_prn_pha",   castint(_prnphm < 0))}
+
+{setmenupage(_prnconf_page)}
+
+~_MF("printopt.pan")
+~_MF("setprnsc.pan")
+~_MF("setpsp.pan")
+~_MF("hpgl.pan")
+~_MF("metafile.pan")
+~_MF("prtsize.pan")
+~_MF("setsysp.pan")
+
+~~setvar("_prnconf_page", getmenupage)

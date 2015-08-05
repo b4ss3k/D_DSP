@@ -1,0 +1,66 @@
+/*****************************************************************************
+*                                                                            *
+*   SAVECMAP.SPL   Copyright (C) 2001 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Saves and resets colormap for windows containing an image   *
+*                                                                            *
+*   Revisions:   18 Jan 2001  RRR  Creation                                  *
+*                11 Dec 2001  RRR  checkc if color range was set             *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_SAVECMAP
+
+    SAVECMAP
+
+    Purpose: Saves and automatically restores the Worksheet colormap
+                                                                        
+    Format:  SAVECMAP
+
+
+    Returns: Nothing, the colormap is saved to a global variable and 
+             automatically restored when the Worksheet is loaded.
+
+
+    Example:
+             W1: spline2(rand(10), 4);setplottype(3)
+             rainbow
+             savecmap
+
+             Creates a density plot in W1 by interpolating a grid of
+             10x10 random values. The image is shaded with the RAINBOW 
+             colormap and the colormap is saved with the Worksheet.
+
+             When the Worksheet is reloaded, the RAINBOW colormap is
+             automatically restored.
+
+    Remarks:
+             SAVECMAP uses RESETMAP to restore the colormap.
+
+    See Also:
+             Getcolormap
+             Resetmap
+             Setcolormap
+#endif
+
+
+/* save colormap so it is automatically restored */
+savecmap()
+{
+	/* save colormap to global "$cmap" */
+	setvar("$cmap", getcolormap());
+
+	/* check if color range set */
+	if (getcrange()) {
+		setvar("$clo", getcrange(0));
+		setvar("$chi", getcrange(1));
+		defmacro("$INITWKS", "resetmap($cmap, $clo, $chi)");
+	}
+	else {
+		/* $INITWKS automatically runs when the worksheet is loaded */
+		defmacro("$INITWKS", "resetmap($cmap)");
+	}
+}

@@ -1,0 +1,12 @@
+_gticsty()
+{
+	local tstyle;
+
+	tstyle = castint(getconf("tic_style"));
+
+	outer = bitand(tstyle, 0x01) > 0;
+	inner = bitand(tstyle, 0x02) > 0;
+	corners = bitand(tstyle, 0x04) > 0;
+
+	return(outer, inner, corners);
+}

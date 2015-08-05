@@ -1,0 +1,11 @@
+! Conform.men
+@x0
+@y0
+@f{_fg1}
+@b{_bg1}
+@h %conformity
+  CONFORMITY   Set Data Conformity
+
+ Align By Point Values, Pad Zeros at End     ~_mc;conformity(0)
+ Union: Align by X Values, Pad NAVALUES      ~_mc;conformity(1)
+ Intersection: Align by X Values, Don't Pad  ~_mc;conformity(2)

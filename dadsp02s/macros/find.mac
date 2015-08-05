@@ -1,0 +1,534 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!                                  FIND.MAC                                  !
+!                                                                            !
+!                               March 30, 1992                               !
+!                                                                            !
+!  Find data: find x and y values satisfying a condition; find x and y       !
+!  values of a matrix satisfying a condition; values at beginning and        !
+!  end of condition block; find x at maximum and minumum of a series;        !
+!  find series embedded in another series; and invert series.		     !
+!	                                                                     !
+!                    Copyright (C) 1995 DSP Development Corp.                !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!**********************************************************************!
+!                                                                      !
+!	       GET X AND Y VALUES SATISFYING CONDITION		       !
+!                                                                      !
+!**********************************************************************!
+
+! These macros are easier to use than the macros for finding the start
+! and end of a condition block.  However, they are less efficient on
+! large series.
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDYS finds all y values for a series that satisfies a condition
+! COND, which is a logical expression involving a series.  The result
+! is a series of y values.
+!
+!     S     = series to search
+!     COND  = logical condition involving S
+
+GETCONDYS(S,COND)	DELETE(S,NOT(COND))
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDY finds the n-th y value for a series that satisfies COND. 
+! The result is a scalar.
+! 
+!     S    = series to search
+!     COND = logical condition involving S
+!     N    = place in condition table
+
+GETCONDY(S,COND,N)	GETPT(GETCONDYS(S,COND),N)
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDXS finds all x values for a series that satisfies a condition
+! COND, which is a logical expression involving a series.  The result
+! is a series of x values.
+!
+!     COND = logical condition
+
+GETCONDXS(COND)		DELETE(XVALS(COND),NOT(COND))
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDX finds the n-th x value for a series that satisfies COND. 
+! The result is a scalar.
+! 
+!     COND = logical condition
+!     N    = place in condition table
+
+GETCONDX(COND,N)	GETPT(GETCONDXS(COND),N)
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDNS finds all indexes for a series that satisfies COND.  The
+! result is a series of indexes.
+!
+!     COND = logical condition
+
+GETCONDNS(COND)		INDS(COND,GETCONDXS(COND))
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDN finds the n-th index for a series that satisfies COND.  The
+! result is an integer.
+!
+!     COND = logical condition
+!     N    = place in condition table
+
+GETCONDN(COND,N)	INDS(COND,GETCONDX(COND,N))
+
+
+!**********************************************************************!
+!                                                                      !
+!     FIND X AND Y VALUES SATISFYING CONDITION OF A MATRIX 	       !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+! 
+! FXYMIN finds the minimum value of each column of a table and its 
+! corresponding x value.  Because logical series usually cannot locate 
+! any point at which a series is exactly equal to its maximum or minimum, 
+! an expression such as W1>MIN(W1)-EPSILON, where EPSILON is a small value
+! relative to the data, yet large enough so that subtracing it from the
+! minimum makes a difference.
+!
+!       Example:        W1:  a table of data
+!                       W2:  FXYMIN(W1,0.00001)
+!
+!       the result in window 2 will have all the x-values in
+!       column 1 and the min values of each column in column 2.
+!
+!	M   = input table
+!	EPS = epsilon
+!
+
+
+FXYMIN(M,EPS) TRANSPOSE(CONCAT(DELETE(XVALS(M)*(MINCOND(M,EPS)),MINCOND(M,EPS)==0),DELETE(M*(MINCOND(M,EPS)),MINCOND(M,EPS)==0)))
+MINCOND(M,EPS) (M)>(REPLICATE(COLMIN(M),LENGTH(M))-EPS)
+
+!-----------------------------------------------------------------------
+! 
+! FXYMAX finds the maximum value of each column of a table and its 
+! corresponding x value. 
+! 
+!       Example:        W1:  a table of data
+!                       W2:  FXYMAX(W1,0.00001)
+!
+!       the result in window 2 will have all the x-values in
+!       column 1 and the max values of each column in column 2.
+!
+!	M   = input table
+!	EPS = epsilon
+!
+
+FXYMAX(M,EPS) TRANSPOSE(CONCAT(DELETE(XVALS(M)*(MAXCOND(M,EPS)),MAXCOND(M,EPS)==0),DELETE(M*(MAXCOND(M,EPS)),MAXCOND(M,EPS)==0)))
+MAXCOND(M,EPS) (M)>(REPLICATE(COLMAX(M),LENGTH(M))-EPS)
+
+!-----------------------------------------------------------------------
+! 
+! FXYMEAN finds the mean value of each column of a table and its 
+! corresponding x value.  
+!
+!       Example:        W1:  a table of data
+!                       W2:  FXYMEAN(W1,0.00001)
+!
+!       the result in window 2 will have all the x-values in
+!       column 1 and the mean values of each column in column 2.
+!
+!	M   = input table
+!	EPS = epsilon
+!
+
+FXYMEAN(M,EPS) TRANSPOSE(CONCAT(DELETE(XVALS(M)*(MEANCOND(M,EPS)),MEANCOND(M,EPS)==0),DELETE(M*(MEANCOND(M,EPS)),MEANCOND(M,EPS)==0)))
+MEANCOND(M,EPS) (M)>(REPLICATE(COLMEAN(M),LENGTH(M))-EPS)
+
+!**********************************************************************!
+!                                                                      !
+!	GET X AND Y VALUES AT START AND END OF CONDITION BLOCK	       !
+!                                                                      !
+!**********************************************************************!
+
+! These macros, although harder to use, are more efficient on large
+! series than the macros for finding all x any y values that satisfy
+! a condition.
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDBYS finds all y values for a series that satisfies a condition
+! COND, which is a logical expression involving a series.  The result
+! is a series of y values.
+!
+!     S    = series to search
+!     COND = logical condition involving S
+!     TYPE = 1 for beginning of block, 2 for end of block
+
+GETCONDBYS(S,COND,TYPE)		LOOKUP(GETCONDBNS(COND,TYPE),S)
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDBY finds the n-th y value for a series that satisfies COND. 
+! The result is a scalar.
+! 
+!     S    = series to search
+!     COND = logical condition involving S
+!     TYPE = 1 for beginning of block, 2 for end of block
+!     N    = place in condition table
+
+GETCONDBY(S,COND,TYPE,N)	GETPT(GETCONDBYS(S,COND,TYPE),N)
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDBXS finds all x values for a series that satisfies a condition
+! COND, which is a logical expression involving a series.  The result
+! is a series of x values.
+!
+!     COND = logical condition
+!     TYPE = 1 for beginning of block, 2 for end of block
+
+GETCONDBXS(COND,TYPE)	XVALS(LEVELCROSS(COND,0.9,TYPE,4))+2*(XOFFSET(COND))
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDBX finds the n-th x value for a series that satisfies COND. 
+! The result is a scalar.
+! 
+!     COND = logical condition involving S
+!     TYPE = 1 for beginning of block, 2 for end of block
+!     N    = place in condition table
+
+GETCONDBX(COND,TYPE,N)	GETPT(GETCONDBXS(COND,TYPE),N)
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDBNS finds all indexes for a series that satisfies COND.  The
+! result is a series of indexes.
+!
+!     COND = logical condition
+!     TYPE = 1 for beginning of block, 2 for end of block
+
+GETCONDBNS(COND,TYPE)	INDS(COND,GETCONDBXS(COND,TYPE))
+
+!-----------------------------------------------------------------------
+! 
+! GETCONDBN finds the n-th index for a series that satisfies COND.  The
+! result is an integer.
+!
+!     COND = logical condition involving S
+!     TYPE = 1 for beginning of block, 2 for end of block
+!     N    = place in condition table
+
+GETCONDBN(COND,TYPE,N)	INDS(COND,GETCONDBX(COND,TYPE,N))
+
+!**********************************************************************!
+!                                                                      !
+!		    FIND X AT MAXIMUM AND MINIMUM		       !
+!                                                                      !
+!**********************************************************************!
+
+! The maximum and minimum of a series may occur at more than one point.
+! Finding them is in theory a straightforward use of the GETCOND or
+! GETCONDB macros, but limitations of logical series introduce a
+! difficulty.  Because logical series usually cannot locate any point
+! at which a series is exactly equal to its maximum or minimum, an
+! expression such as W1>MAX(W1)-EPSILON, where EPSILON is a small value
+! relative to the data, yet not so small that subtracing it from the
+! maximum makes no difference.
+!
+! If you explicitly give an epsilon, enter a number which is greater
+! than zero, is less than the minimum increment between y values
+! without repetition, and is within a few orders of magnitude of that
+! minimum increment.  You can also generate an epsilon using the macros
+! below.
+!
+! Examples of determining an epsilon: 
+!
+! In the series GSER(1.2,1.5,1.55,1.3), the minimum increment between y
+! values is 0.05; hence, use an epsilon such as 0.01.
+!
+! In the series GSER(12,15,15.5,15.5,13), the minimum increment
+! between y values is 0, but without repetition it is 0.5; hence 
+! use an epsilon such as 0.1.
+!
+! The following macros generate expressions which you can use in the
+! GETCOND or GETCONDB macros.  The GETCONDB macros, although harder to
+! use, are more efficient on large series, and they find the maximum
+! and minimum with the same accuracy as the GETCOND macros.  With the
+! GETCONDB macros, you can look for either the beginning or end of the
+! block.
+
+!-----------------------------------------------------------------------
+!
+! MAXE generates a logical condition which can be used to find the
+! maximum of a series.  Specify a series and an explicit epsilon.  See
+! explanation above.
+!
+! Example: Find all occurences of the maximum of W1: 
+! GETCONDXS(W1,MAXE(W1,0.001)).
+!
+!     S   = series to be searched
+!     EPS = epsilon
+
+MAXE(S,EPS)		(S)>(MAX(S)-(EPS))
+
+!-----------------------------------------------------------------------
+!
+! MINE generates a logical condition which can be used to find the
+! minimum of a series.  Specify a series and an explicit epsilon.  See
+! explanation above.
+!
+! Example: Find all occurences of the minimum of W1: 
+! GETCONDXS(W1,MINE(W1,0.001)).
+!
+!     S   = series to be searched
+!     EPS = epsilon
+
+MINE(S,EPS)		(S)<(MIN(S)+(EPS))
+
+!-----------------------------------------------------------------------
+!
+! MAXF generates a logical condition which can be used to find the
+! maximum of a series.  It finds an epsilon which can be used in most
+! cases; the epsilon cannot be used only when any one y value occurs
+! more than once in the series.  See explanation above.
+!
+! Example: Find all occurences of the maximum of W1, assuming that all
+! y values occur no more than once in the series:
+! GETCONDBNS(W1,MAXF(W1),1).
+!
+!     S   = series to be searched
+
+MAXF(S)			(S)>(MAX(S)-MIN(ABS(DERIV(S)))/2)
+
+!-----------------------------------------------------------------------
+!
+! MINF generates a logical condition which can be used to find the
+! minimum of a series.  It finds an epsilon which can be used in most
+! cases; the epsilon cannot be used only when any one y value occurs
+! more than once in the series.  See explanation above.
+!
+! Example: Find all occurences of the minimum of W1, assuming that all
+! y values occur no more than once in the series:
+! GETCONDBNS(W1,MINF(W1),1).
+!
+!     S   = series to be searched
+
+MINF(S)			(S)<(MIN(S)+MIN(ABS(DERIV(S)))/2)
+
+!-----------------------------------------------------------------------
+!
+! MAXG generates a logical condition which can be used to find the
+! maximum of a series.  It finds an epsilon which can be used in all
+! cases, but the series must be differentiated and sorted, and this can
+! take a prohibitively long time on long series.  See explanation
+! above.
+!
+! Example: Find all occurences of the maximum of W1, assuming that the
+! series is not too long for a sort: GETCONDBXS(W1,MAXG(W1),2).
+!
+!     S   = series to be searched
+
+MAXG(S)			(S)>(MAX(S)-IF(MIN(ABS(DERIV(S)))==0,GETCONDBY(SORT(ABS(DERIV(S)),1),SORT(ABS(DERIV(S)),1)>0,1,1),MIN(ABS(DERIV(S))))/2)
+
+!-----------------------------------------------------------------------
+!
+! MING generates a logical condition which can be used to find the
+! minimum of a series.  It finds an epsilon which can be used in all
+! cases, but the series must be differentiated and sorted, and this can
+! take a prohibitively long time on long series.  See explanation
+! above.
+!
+! Example: Find all occurences of the minimum of W1, assuming that the
+! series is not too long for a sort: GETCONDBXS(W1,MING(W1),2).
+!
+!     S   = series to be searched
+
+MING(S)			(S)<(MIN(S)+IF(MIN(ABS(DERIV(S)))==0,GETCONDBY(SORT(ABS(DERIV(S)),1),SORT(ABS(DERIV(S)),1)>0,1,1),MIN(ABS(DERIV(S))))/2)
+
+!**********************************************************************!
+!                                                                      !
+!		FIND SERIES EMBEDDED IN ANOTHER SERIES		       !
+!                                                                      !
+!**********************************************************************!
+
+! These macros search for a series embedded in a longer series.  The
+! main problem with this kind of search is that the series to be
+! searched for may not exactly match the data in the larger series. 
+! This search method uses an algorithm which measures closeness of fit,
+! and you must either specify a tolerance within which you expect the
+! fit to occur, or you must search the table of fits for whatever looks
+! reasonable.
+! 
+! If you are unsure of how closely the series to be searched for
+! matches the data to be searched in, you can use SERMATCH.  If you
+! know that the data to be searched for matches the data to be searched
+! in to a certain tolerance, you can use the other macros by specifying
+! that tolerance.  For instance, if you know that the two series
+! will be within 0.001 of each other, specify that number as the
+! tolerance.
+!
+! However, you must never specify a tolerance of zero, even if you know
+! that there is an exact match.  In this case, simply specify a small
+! tolerance.
+
+!-----------------------------------------------------------------------
+! 
+! SERMATCH is an elementary series for searching for a series embedded
+! in another series.  Specify a series to search in and a series to
+! search for.  SERMATCH returns a series which has the same length as
+! the series to search in.  At each point it contains a positive
+! number which becomes small when the search is close; ideally, this
+! number becomes zero if the fit is exact.  You can examine this series
+! if you are unsure how precisely the search should match.  Taking the
+! LOG of this series is often useful. 
+!
+!     SERIN  = series to be searched in
+!     SERFOR = series to be searched for
+
+SERMATCH(SERIN,SERFOR)		ROWREDUCE(REGION(RAVEL(UNRAVEL(OUTERPROD(SERIN,SERFOR,'-')^2),LENGTH(SERIN),1,-1),1,LENGTH(SERIN)-LENGTH(SERFOR)+1,1,LENGTH(SERFOR)),'+')
+
+!-----------------------------------------------------------------------
+! 
+! SERFINDXS searches for a series embedded in another series to a
+! specified tolerance, and returns the x values of the starting points
+! at which matches are detected.  See explanation above.
+! 
+!     SERIN  = series to be searched in
+!     SERFOR = series to be searched for
+!     TOL    = tolerance
+
+SERFINDXS(SERIN,SERFOR,TOL)	XVALS(LEVELCROSS(SERMATCH(SERIN,SERFOR),(TOL)^2*LENGTH(SERFOR),2,4))+2*XOFFSET(SERIN)
+
+!-----------------------------------------------------------------------
+! 
+! SERFINDX returns the n-th x value of the starting point at which a
+! match is found of a series occurring in another series.  See
+! explanation above.
+!
+!     SERIN  = series to be searched in
+!     SERFOR = series to be searched for
+!     TOL    = tolerance
+!     N      = place in match table
+
+SERFINDX(SERIN,SERFOR,TOL,N)	GETPT(SERFINDXS(SERIN,SERFOR,TOL),N)
+
+!-----------------------------------------------------------------------
+! 
+! SERFINDNS searches for a series embedded in another series to a
+! specified tolerance, and returns the indexes of the starting points
+! at which matches are detected.  See explanation above.
+! 
+!     SERIN  = series to be searched in
+!     SERFOR = series to be searched for
+!     TOL    = tolerance
+
+SERFINDNS(SERIN,SERFOR,TOL)	INDS(SERIN,SERFINDXS(SERIN,SERFOR,TOL))
+
+!-----------------------------------------------------------------------
+! 
+! SERFINDN returns the n-th index of the starting point at which a
+! match is found of a series occurring in another series.  See
+! explanation above.
+!
+!     SERIN  = series to be searched in
+!     SERFOR = series to be searched for
+!     TOL    = tolerance
+!     N      = place in match table
+
+SERFINDN(SERIN,SERFOR,TOL,N)	INDS(SERIN,SERFINDX(SERIN,SERFOR,TOL,N))
+
+!---------------------------------------------------------------------
+! YSLICE selects a section of data from a series where the yvalues
+! are greater than a low cut point and less than the high cut point.  
+! In other words, the resulting series meets the condition:
+!
+!                            l < y_out < h
+!
+!           Note that the output is an XY series. To further process
+!           the result, use XYINTERP.
+!
+! Example:
+!             Yslice(W1, 0.2, 0.4)
+!
+! Returns the XY pairs from W1 where W1 is both greater than 0.2 and 
+! less than 0.4
+!
+!	S = series to select data from
+! 	L = low select threshold
+! 	H = high select threshold
+!
+
+YSLICE(S,L,H)    (S)*(((S)>(L))&&((S)<(H)));XY(DELCURR(XVALS(CURR)),DELCURR(CURR));SETXYUNITS(S)
+DELCURR(S)      (DELETE(S,CURR==0.0))
+SETXYUNITS(S) SETVUNITS(GETVUNITS(S));SETHUNITS(GETHUNITS(S))
+
+!**********************************************************************!
+!                                                                      !
+!                        INVERSION OF SERIES                           !
+!                                                                      !
+!**********************************************************************!
+
+!-----------------------------------------------------------------------
+! 
+! INVERSE accepts a strictly monotonically increasing series and returns
+! a series which is the mathematical inverse and has approximately the
+! same number of points.
+!
+!     S = strictly monotonically increasing series to be inverted
+
+INVERSE(S)              XYINTERP(YVALS(S),XVALS(S),(MAX(S)-MIN(S))/(LENGTH(S)))
+
+!-----------------------------------------------------------------------
+! 
+! INVERSED accepts a strictly monotonically increasing series and a
+! delta x, and returns a series which is the mathematical inverse with
+! the specified x interval.
+!
+!     S = strictly monotonically increasing series to be inverted
+!     D = delta x of inverse series
+
+INVERSED(S,D)           XYINTERP(YVALS(S),XVALS(S),D)
+
+!-----------------------------------------------------------------------
+! 
+! INVERSES finds all x values at which a series crosses a given y
+! value.  The result is a series of x values.
+!
+!     S = series to be searched
+!     Y = y value to be detected
+
+INVERSES(S,Y)           XVALS(LEVELCROSS(S,Y,0,4))+2*(XOFFSET(S))
+
+!-----------------------------------------------------------------------
+! 
+! INVERSEX finds the n-th x value at which a series crosses a given y
+! value.  The result is a scalar.
+! 
+!     S = series to be searched
+!     Y = y value to be detected
+!     N = place in x value table
+
+INVERSEX(S,Y,N)         GETPT(INVERSES(S,Y),N)
+
+!-----------------------------------------------------------------------
+! 
+! INVERSEN finds the index of the n-th x value at which a series
+! crosses a given y value.  The result is an integer.
+! 
+!     S = series to be searched
+!     Y = y value to be detected
+!     N = place in x value table
+
+INVERSEN(S,Y,N)         INDS(S,INVERSEX(S,Y,N))
+INDS(S,X)               FLOOR(((X)-XOFFSET(S))/DELTAX(S)+0.5)+1
+
+!=============================== END ===================================
+

@@ -1,0 +1,14 @@
+!  GPIBLab On-Screen Display Setup Menu
+@display
+          Display
+__________________________
+
+ Connect:     [<      >] ~eval("<>")~<ON><OFF>
+ Graph Format:[<      >] ~eval("<>")~<2><4><1>
+ Graticule:   [<      >] ~echol(" ")~<OFF><GRID><AXES><FRAME>
+ Inverse:     [<      >] ~eval(" <>")~<OFF><ON>
+ Screen:      [<      >] ~eval(" <>")~<ON><OFF>
+ Source:      [<      >] ~eval("<>")~<0><1><2><3>
+ Time Mark Vals: [<   >] ~eval(" <>")~<OFF><ON>
+ Volt Mark Vals: [<   >] ~eval(" <>")~<OFF><ON>
+ Display A Message       ~(input(3,"Enter Message: "))

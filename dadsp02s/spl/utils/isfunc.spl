@@ -1,0 +1,44 @@
+/*****************************************************************************
+*                                                                            *
+*   ISFUNC.SPL   Copyright (C) 1997 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns 1 if input is the name of a loaded SPL function     *
+*                                                                            *
+*   Revisions:   30 Sep 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_ISFUNC
+
+    ISFUNC   
+
+    Purpose: Returns 1 if input is a loaded SPL function, else 0
+                                                                        
+    Format:  ISFUNC("funcname")
+
+              funcname  - a string specifying the SPL function
+
+    Returns: An integer 1 or 0
+
+    Example:
+             zeros(1, 1);
+             Isfunc("zeros");
+
+	         returns 1 since DADiSP automatically loaded ZEROS.SPL.
+
+    See Also
+             Getspl
+#endif
+
+
+
+isfunc(f)
+{
+	if (argc < 1) return(0);
+
+	/* getspl takes a varname, so we cast to a string */
+	return(strlen(getspl(caststring(f), 1)) > 0);
+}

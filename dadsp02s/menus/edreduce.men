@@ -1,0 +1,21 @@
+! Edreduce.men -- Edit Series Functions
+! x5,y2 orig.
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+    Data Reduction
+
+ Extract Region      ~_deffname('EXTRACT  Extract a Portion of a Series')  |_defformat('Extract(series, start, numpts)')|_defxamp('Extract(W1,1,256)')|_getserint2("Input Series:  ", "Starting Point:", "Number of Pts :")|_serint2form("Extract")
+ Concatenate Series  ~_deffname('CONCAT   Concatenate Two or More Series End to End')  |_defformat('Concat(series1, series2, ..., seriesN)')|_defxamp('Concat(W1,W2)')|_getser2("Series 1: ", "Series 2: ")|_ser2form("Concat")
+ Merge Series        ~_deffname('MERGE    Merge Together Two or More Series')  |_defformat('Merge(series1, series2, ..., seriesN)')|_defxamp('Merge(W1,W2)')|_getser2("Series 1: ", "Series 2: ")|_ser2form("Merge")
+ Replicate Series    ~_deffname('REP      Replicate (repeat) a Series N Times')  |_defformat('Rep(series, points)')|_defxamp('Rep(W1,10)')|_getserint1("Input Series: ", "Replications: ")|_serint1form("Rep")
+ Reverse             ~_deffname('REVERSE  Reverse a Series')|_defformat('Reverse(series)')|_defxamp('Reverse(W1)')|_getser|_serform("Reverse")
+
+ Interpolate         ~_deffname('INTERP   Linearly Interpolate a Series')  |_defformat('Interp(series, points)')|_defxamp('Interp(W1,2)')|_getserint1("Input Series:", "Factor:      ")|_serint1form("Interp")
+ Decimate            ~_deffname('DECIMATE Linearly Decimate a Series')  |_defformat('Decimate(series, points)')|_defxamp('Decimate(W1,2)')|_getserint2("Input Series:", "Factor:      ","Start Point: ")|_serint2form("Decimate")
+
+ Clip                ~_deffname('CLIP     Clip a Series to a Threshold')  |_defformat('Clip(series, max, min)')|_defxamp('Clip(W1,1.5,-1.5)')|_getserreal2("Input Series:  ", "Max Threshold:","Min Threshold:")|_serreal2form("Clip")
+ Remove Points       ~_deffname('REMOVE   Remove Every Nth Point from a Series')  |_defformat('Remove(series, factor)')|_defxamp('Remove(W1,3)')|_getserint1("Input Series:", "Factor:      ")|_serint1form("Remove")
+ Set NA Values       ~_deffname('SETNAVALUE Set NA Values to a Number') | _defformat('SetNAvalue(series,value)') | _defxamp('SetNAvalue(W1,-9999)')| _getserreal1("Input Series:","New Value:   ")|_serreal1form("SetNAvalue")
+ Delete (conditional)~_deffname('DELETE   Delete Elements of a Series') | _defformat('Delete(series, condition)')|_defxamp('Delete(W1, W1 < 0)')|_getser2("Series  1: ", "Condition: ")|_ser2form("Delete")

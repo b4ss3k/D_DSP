@@ -1,0 +1,43 @@
+#include <series.h>
+
+/* is plot in a 2D view */
+_is2d(s, mode)
+{
+	local itype, ptype, status;
+
+	if (argc < 2) {
+		if (argc < 1) {
+			itype = itemtype;
+			ptype = getplottype;
+			mode = 0;
+		}
+		else if (IS_ARRAY(s)) {
+			itype = itemtype(s);
+			ptype = getplottype(s);
+			mode = 0;
+		}
+		else {
+			itype = itemtype;
+			ptype = getplottype;
+			mode = castint(s);
+		}
+	}
+
+	/* check for chartplot in table mode */
+	if (ptype == 4) {
+		/* check for chart style of series */
+		if (getplottype(0) == 6) {
+			ptype = 6;
+		}
+	}
+
+	/* is a list and plotstyle not a chart */
+	status = ((itype == 9) || (itype == 2)) && (ptype > -1) && (ptype != 6);
+
+	if (mode == 0) {
+		/* plotstyle also not a Z Surface */
+		status = (status && (ptype != 4));
+	}
+	return(status);
+}
+

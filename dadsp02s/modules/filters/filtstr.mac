@@ -1,0 +1,208 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!   FILTSTR.MAC  Copyright (C) 2005 DSP Development Corporation              !
+!                               All Rights Reserved                          !
+!                                                                            !
+!   Author:      Randy Race                                                  !
+!                                                                            !
+!   Synopsis:    String Macros for DADiSP/Filters                            !
+!                                                                            !
+!   Revisions:    6 Apr 2005  RRR  Creation                                  !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                 !
+!           Filter Dialog Box Strings             !
+!                                                 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+! FILTER.MEN
+
+_filtloadstr    "Loading DADiSP/Filters ..."
+
+_filtmenstr     "DADiSP/Filters"
+_filtmfirstr    "&FIR Filter Design"
+_filtmiirstr    "&IIR Filter Design"
+_filtmrespstr   "Filter &Response"
+_filtmmiscstr   "&Other Functions"
+_filtmfiltstr   "Filter &Data"
+
+_iirmenstr      "Design IIR Filter"
+_iirmentip      "Design an Infinite Impulse Response Filter"
+
+_firmenstr      "Design FIR Filter"
+_firmentip      "Design a Finite Impulse Response Filter"
+
+_filtrespstr    "Filter Response"
+_filtresptip    "Calculate Time or Frequency Response of a Filter"
+
+_filtfiltstr    "Filter Data"
+_filtfilttip    "Apply Filter to Input Data"
+
+_filtmiscstr    "Poles and Zeros"
+_filtmisctip    "Find Filter Poles and/or Zeros"
+
+
+! FIRF.PAN and IIRF.PAN
+
+_ffirdstr       "FIR Filter Design"
+_fiirdstr       "IIR Filter Design"
+
+_fftypestr      "Filter Type:"
+_fdesstr        "Filter Design:"
+_fratestr       "Sample Rate (Hz):"
+_fcoeffstr      "Coefficient Form"
+_fpsrippstr     "Pass/Stop Ripple (dB):"
+_fdcgainstr     "Set DC Gain to 1"
+_fsbattnstr     "Stopband Atten (dB):"
+_ffulllpstr     "Full Linear Phase"
+_fforderstr     "Filter Order:"
+_fresdefstr     "Restore Defaults"
+_fqbitsstr      "Quantization Bits:"
+_fqcoeffstr     "Quantize Coefficients"
+
+_ftypelpstr     "Low Pass"
+_ftypehpstr     "High Pass"
+_ftypebpstr     "Band Pass"
+_ftypebsstr     "Band Stop"
+_ftypedfstr     "Differentiator"
+_ftypehbstr     "Hilbert"
+
+_fcoefimpstr    "Impulse Response"
+_fcoefcasstr    "Cascade"
+_fcoefdirstr    "Direct Form"
+
+_fratetip       "Sample Frequency of Filter in Hertz"
+
+
+_fpassriptip    "Passband or Stopband Ripple in decibels"
+_fudctip        "Set Frequency Response at 0 Hz to 1 (0 dB)"
+_fstopatttip    "Stopband Attenuation in decibels"
+_fautotip       "Automatically Calculate Filter Order Based on Specifications"
+
+_fresettip      "Reset All Parameters to Default Values"
+_fquanttip      "2^Bits Quantization Levels"
+_fqcoefftip     "Quantize Output Coefficients to 2^Bits Levels"
+
+_fcutfrqstr     "Cutoff Freq (Hz):"
+_fstopfrqstr    "Stopband Freq (Hz):"
+_fstop1str      "Stopband 1 (Hz):"
+_fpass1str      "Pass Edge 1 (Hz):"
+_fstop2str      "Stopband 2 (Hz):"
+_fpass2str      "Pass Edge 2 (Hz):"
+
+_fslopestr      "Slope:"
+_fpassstr       "Passband (Hz):"
+_fsbedgestr     "Stopband Edge (Hz):"
+_fpbbegstr      "Passband Begin (Hz):"
+_fsbbegstr      "Stopband Begin (Hz):"
+_fpbendstr      "Passband End (Hz):"
+_fsbendstr      "Stopband End (Hz):"
+
+_flptip         "Low Pass Filter Cutoff Frequency in Hertz"
+_fhptip         "High Pass Filter Stopband Frequency in Hertz"
+_fbp1tip        "Band Pass Filter Stopband 1 Frequency in Hertz"
+_fbs1tip        "Band Stop Filter Pass Edge 1 Frequency in Hertz"
+_fdifftip       "Differentiator Slope (typically 1.0)"
+_fhilbtip       "Hilbert Transformer Passband Begin in Hertz (typically 0.0)"
+
+_flpsetip       "Low Pass Filter Stopband Edge Frequency in Hertz"
+_fhpcftip       "High Pass Filter Cutoff Frequency in Hertz"
+_fbppbtip       "Band Pass Filter Passband Begin Frequency in Hertz"
+_fbssbtip       "Band Stop Filter Stopband Begin Frequency in Hertz"
+_fdiffcftip     "Differentiator Cutoff Frequency in Hertz"
+_fhilbpetip     "Hilbert Transformer Passband End in Hertz (typically rate/2)"
+
+_fbpendtip      "Band Pass Filter Passband End Frequency in Hertz"
+_fbsendtip      "Band Stop Filter Stopband End Frequency in Hertz"
+
+_fbpstop2tip    "Band Pass Filter Stopband 2 Frequency in Hertz"
+_fbspass2tip    "Band Stop Filter Pass Edge 2 Frequency in Hertz"
+
+
+! FIRF.PAN
+
+_fircoeftip     "Output Coefficients as Standard FIR Impulse Response (Recommended) | Output Coefficients as Cascaded 2nd Order Biquad Sections | Output Coefficients in Direct B(z) / A(z) Form of Ascending Powers of z^-1"
+_firmtip        "Kaiser Windowing Method or Optimal Remez Exchange Method"
+_firmkwstr      "Kaiser Window"
+_firmrzstr      "Remez Exchange"
+_firlptip       "Linear Phase in both Stopband and Passband - Doubles Filter Order"
+_firordertip    "Filter Order - Length of the Resulting FIR Filter"
+
+
+! IIRF.PAN
+
+_iirbutstr      "Butterworth"
+_iircb1str      "Chebychev 1"
+_iircb2str      "Chebychev 2"
+_iirelpstr      "Elliptic"
+_iirbesstr      "Bessel"
+
+_iirmtip        "Analog Filter Prototype"
+
+_iirmblstr      "Bilinear Transform"
+_iirmmzstr      "Matched Z"
+
+_iirordertip    "Filter Order - Number of 2nd Order Cascaded Stages"
+_iirtranstr     "Transform Method"
+_iircoeftip     "Output Coefficients as Cascaded 2nd Order Biquad Sections (Recommended) | Output Coefficients in Direct B(z) / A(z) Form of Ascending Powers of z^-1"
+_iirtrantip     "Preserve Analog Frequency Response (Recommended) | Preserve Analog Impulse Response"
+
+
+! FILTRESP.PAN
+_frespstr       "Filter Response"
+_ffuncstr       "Function"
+_fsigcserstr    "Single Series of Combined B(z), A(z) Terms"
+_fnumsampstr    "Number of Samples:"
+
+_fmagstr        "Magnitude"
+_flogmagstr     "20Log10(Mag)"
+_fphasestr      "Phase"
+_fuphasestr     "Unwrapped Phase"
+_fgrpdelstr     "Group Delay"
+_fimpstr        "Impulse"
+
+_ffunctip       "Frequency Domain Magnitude Response | Log Magnitude Response (in dB) | Phase Response from -pi to pi | Phase Response from 0 to N*pi | Group Delay in Samples | Time Domain Impulse Response"
+_fcoefftip      "Filter Coefficients in Standard FIR Impulse Response Form | Filter Coefficients in Cascaded 2nd Order Biquad Sections Form | Filter Coefficients in Direct B(z) / A(z) Form of Ascending Powers of z^-1"
+_fsigcsertip    "Input Single Series with Combined B(z) and A(z) Coefficients as Columns"
+
+_fdenstr        "Denominator A(z):"
+_fdentip        "Denominator Coefficients in Ascending Powers of z^(-1)"
+_ffircoefstr    "FIR Coefficients:"
+_ffircoeftip    "Standard FIR Impulse Coefficients"
+_fcascoefstr    "Cascade Coeffients:"
+_fcascoeftip    "Cascaded Biquad Coefficients from IIR DADiSP/Filters"
+_fdircoefstr    "Combined B(z), A(z):"
+_fdircoeftip    "Combined B(z), A(z) Coefficients as 2 Columns"
+_fnumstr        "Numerator B(z):"
+_fnumtip        "Numerator Coefficients in Ascending Powers of z^(-1)"
+
+
+! FILTER.PAN
+
+_ffdatastr      "Filter Data"
+_ffmethodstr    "Filtering Method"
+_ffmethodtip    "FFT Method | Direct Time Domain Filtering"
+_ffinpstr       "Input Data Series:"
+_ffinptip       "Input Series to Filter"
+
+
+! FILTPZ.PAN
+_fpzstr         "Filter Poles and Zeros"
+_fpzzplanestr   "Pole Zero Plot"
+_fpzzerostr     "Zeros"
+_fpzpolestr     "Poles"
+
+
+! FILTRESP.TAB
+_filtcharstr     "Filter Characteristics"
+
+
+! Filter Button
+
+_filterstr      "Filters"
+_filtertip      "Digital Filter Design" 
+
+

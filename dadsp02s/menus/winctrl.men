@@ -1,0 +1,32 @@
+! Wincrtl.men -- Manipulate display coordinates and series scales
+! here i've split it into sub menus. but left the commands here in the 
+! file, but commented out, just in case...
+@x0
+@y1
+@b{_bg2}
+@f{_fg2}
+  Window Control
+
+ Display             ~_mf("display.men")
+! Display 
+!    All Windows     ~_MC;Displayall
+!    Range           ~_deffname('DISPLAY  Display Selected Windows')|_defformat('Display(window,window,...)')|_defxamp('Display(W2,W3,W6)')|_getser|_evalserform("Display")
+!    Column Layout   ~_deffname('COLLAYOUT  Arrange Number of Windows Per COLUMN')|_defformat('  Collayout(#Windows in Col 1,...,#Windows in Col n)')|_defxamp('  Rowlayout(3,1,2)')|_getstr1("List of Windows per Column")| _evalstrlist("Collayout")
+!    Row Layout      ~_deffname('ROWLAYOUT  Arrange Number of Windows Per Row')|_defformat('  Rowlayout(#Windows in Row 1,...,#Windows in Row n)')|_defxamp('  Rowlayout(3,1,2)')|_getstr1("List of Windows per Row")| _evalstrlist("Rowlayout")
+ Clear Data & Formulas~_mf("cdatform.men") 
+! Clear Data & Formulas 
+!    Current         ~_MC;Clear
+!    Range           ~_deffname('CLEAR    Clear Selected Windows')|_defformat('Clear(window,window,...)')|_defxamp('Clear(W2,W3,W6)')|_getser|_evalserform("Clear")
+!    All Windows     ~if(strcmp(strextract(input(3,"Clear ALL Windows?"),1,1),"y",0)==0,"_MC|Clearall")
+ Clear Data          ~_mf("clrdata.men")
+! Clear Data 
+!    Current         ~_MC;Cleardata
+!    Range           ~_deffname('CLEARDATA Clear Selected Windows')|_defformat('Cleardata(window,window,...)')|_defxamp('Cleardata(W2,W3..W6)')|_getser|_evalserform("Cleardata")
+ Zoom Window        ~_MC ; _lf("zoom.dsp")
+ Unzoom Window      ~_MC;unzoom
+! Set Window Formula ~_deffname('SETWFORM Set Window Formula')|_defformat('Setwform(series,formula)')|_defxamp('Setwform(W2,"Sin(W1)")')|_getserstr1("Window:  ","Formula: ")|_setserstrform("Setwform") 
+ Show Info Box      ~_MC;_lf("showbox.dsp")
+ Edit Window Formula~_MC;_lf("editform.dsp")
+ Label Window       ~_deffname('LABEL    Label Window Contents')|_defformat('Label("title")')|_defxamp('Label("My Window")')|_getstr1("Label")|_evalstrform("Label")
+ Protect Window     ~_deffname('PROTECT  Protect Window Contents')|_defformat('Protect("title")')|_defxamp('Protect("My Window")')|_getstr1("Protect Title")|_evalstrform("Protect")
+ 

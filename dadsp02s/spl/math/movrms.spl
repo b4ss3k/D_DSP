@@ -1,0 +1,77 @@
+/*****************************************************************************
+*                                                                            *
+*   MOVRMS.SPL   Copyright (C) 1999 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the moving RMS                                   *
+*                                                                            *
+*   Revisions:    6 May 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_MOVRMS
+
+    MOVRMS
+
+    Purpose: Calculates the "moving" RMS of a series
+                                                                        
+    Format:  MOVRMS(series, n, rampflag)
+
+              series   - the input series
+
+              n        - an integer, the block size 
+
+              rampflag - an optional integer, 0:down 1:up, defaults 
+                         to 1
+
+    Returns: A series or table
+
+    Example:
+             
+             W1: {1, 2, 4, 7}
+             W2: Movrms(w1, 3)
+
+             returns the series {1, 1.581, 2.646, 4.796, 5.701, 7}
+ 
+
+             W3: Movrms(w1, length(w1))
+
+             W3[length(w1)] == rms(w1) == 4.183
+
+
+
+    Remarks:
+             For speed, this routines uses the builtin function MOVAVG.
+        
+
+    See Also
+             Movavg
+             RMS
+#endif
+
+
+movrms(s, n, ramp)
+{
+	local mrms;
+
+	/* hurdles */
+	if (argc < 3) {
+		if (argc < 2) {
+			error("movrms - series and block size required");
+		}
+		ramp = 1;
+	}
+
+	if (n <= 1) error("movrms - n must be > 1");
+
+	/* RMS calculation */
+	mrms = sqrt(movavg(s*s, n, ramp));
+
+	/* restore units */
+	setvunits(mrms, getvunits(s));
+
+	return(mrms);
+}
+

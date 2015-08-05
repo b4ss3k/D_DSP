@@ -1,0 +1,43 @@
+#if @HELP_ACTIVEX
+
+This directory contains the following non SPL files that demonstrate
+some of the ActiveX capabilities supported by DADiSP:
+
+    DSPTEST1.TXT  -  Visual Basic Example 1
+    DSPTEST2.TXT  -  Visual Basic Example 2
+    DSPTEST3.TXT  -  Visual Basic Example using Type Library
+
+    DSPDISP.CPP   -  C++ IDispatch Example
+    DSPATX1.CPP   -  C++ IDadisp Vtbl Example
+    DSPATX2.CPP   -  C++ IDadisp Vtbl Example Using SafeArrays
+
+    ACTX.H        -  ActiveX Include File
+    ACTX_I.C      -  Required ActiveX Support File
+
+The Visual Basic files demonstrate calling DADiSP as an Automation
+server from Visual Basic. These examples connect to DADiSP using
+standard Visual Basic calls.
+
+The C++ source files demonstrate calling DADiSP as an Automation
+server from a C++ program.  Each of the files create a simple
+console application that connects to DADiSP using standard COM
+interfaces.  The console applications act as the Automation clients
+and DADiSP acts as the Automation server.
+
+DSPDISP.CPP invokes DADiSP through the standard IDispatch Automation
+interface. The dispatch interface is most often used with interpreted
+languages such as Visual Basic but is rather clumsy for compiled 
+languages like C/C++. Because DADiSP offers a dual interface, C/C++
+programs can bypass the dispatch interface can make direct Vtbl function
+calls.
+
+DSPATX1.CPP demonstrates the direct Vtbl approach using the custom
+DADiSP IDadisp interface.  DSPATX1.CPP is easier and faster for most
+C/C++ programs, but requires the ACTX.H and ACTX_I.C files from DSP
+(included here). DSPATX1 uses Variants to transfer SafeArrays of data.
+
+DSPATX2.CPP also uses the direct Vtbl method, but transfers arrays directly
+through SafeArrays. This is the preferred method for C/C++ programs for
+simple array transfers.
+
+#endif

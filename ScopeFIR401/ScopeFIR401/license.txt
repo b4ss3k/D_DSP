@@ -1,0 +1,91 @@
+SCOPEFIR GENERAL LICENSE AGREEMENT
+
+NOTICE: BY INSTALLING AND USING SCOPEFIR YOU ARE AGREEING TO BE
+BOUND BY THE TERMS OF THIS AGREEMENT. IF YOU DO NOT AGREE TO THE
+TERMS OF THIS AGREEMENT, PROMPTLY DELETE ALL SCOPEFIR FILES FROM
+YOUR COMPUTER.
+
+1) OWNER: The manufacturer of this software and the owner of all
+associated copyrights and licenses is IOWEGIAN INTERNATIONAL
+CORPORATION of Overland Park, Kansas.  "SCOPEFIR" is a trademark
+of IOWEGIAN INTERNATIONAL CORPORATION.
+
+2) APPLICABILITY: This AGREEMENT is a GENERAL LICENSE AGREEMENT
+which applies to all users of SCOPEFIR.  If you have other
+licensing agreements with IOWEGIAN INTERNATIONAL CORPORATION for
+the use of SCOPEFIR, terms of this agreement which are not
+specifically addressed in those agreements shall be considered
+amendments to those agreements.
+
+3) AS IS: SCOPEFIR, WHETHER OR NOT REGISTERED, IS PROVIDED "AS
+IS" WITHOUT WARRANTY OF ANY KIND. IOWEGIAN INTERNATIONAL
+CORPORATION DISCLAIMS ALL WARRANTIES, EITHER EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+NONINFRINGEMENT. IN NO EVENT SHALL IOWEGIAN INTERNATIONAL
+CORPORATION OR ITS SUPPLIERS BE LIABLE FOR ANY DAMAGES
+WHATSOEVER (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF
+BUSINESS PROFITS, BUSINESS INTERRUPTION, LOSS OF BUSINESS
+INFORMATION, OR OTHER PECUNIARY LOSS) ARISING OUT OF THE USE
+OF OR INABILITY TO USE ANY SCOPEFIR SOFTWARE, EVEN IF IOWEGIAN
+INTERNATIONAL CORPORATION HAS BEEN ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGES.  BECAUSE SOME STATES DO NOT ALLOW THE EXCLUSION
+OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL
+DAMAGES, THE ABOVE LIMITATION MAY NOT APPLY TO YOU.
+
+4) DISTRIBUTION: You may freely copy and distribute the SCOPEFIR
+DISTRIBUTION FILE in unmodified form.  However, it is prohibited
+to modify the DISTRIBUTION FILE or to distribute any components
+extracted from it.  Exception: Shareware distributors who receive
+the DISTRIBUTION FILE from Iowegian may modify it by adding a zip
+comment.
+
+5) TRIAL PERIOD:  When you install the SCOPEFIR program by
+extracting files from the DISTRIBUTION FILE and copying them to
+a given computer, a trial period of 60 days begins.  SCOPEFIR
+may be used freely for 60 days operating in an "unregistered"
+mode.  If you do not register SCOPEFIR, you agree to remove the
+SCOPEFIR extraction files from the computer within 60 days after
+installation.  SCOPEFIR will stop functioning at the end of its
+trial period.
+
+6) REGISTRATION: REGISTRATION is the process by which you gain
+full license to use SCOPDSP.  REGISTRATION is initiated when you
+provide a suggested REGISTRATION NAME, an e-mail and/or postal
+address, and the required registration fee, if any, to IOWEGIAN
+INTERNATIONAL CORPORATION.  Upon receipt of your registration
+information and fee, IOWEGIAN INTERNATIONAL CORPORATION will
+send you return registration information consisting of your
+official REGISTRATION NAME, the corresponding REGISTRATION KEY
+NUMBER and the version(s) of SCOPEFIR to which your REGISTRATION
+applies. IOWEGIAN INTERNATIONAL CORPORATION may assign a
+REGISTRATION NAME other than what you suggest.  Your receipt of
+this information completes REGISTRATION, which licenses you to
+use applicable version(s) of SCOPEFIR on a single computer
+indefinitely. You are licensed to use any past, present or future
+version of SCOPEFIR which accepts your REGISTRATION NAME and
+REGISTRATION KEY NUMBER.  Entering your REGISTRATION information
+into SCOPEFIR will enable its additional "Registered User"
+features.
+
+7) REGISTRATION KEY NUMBER USAGE: You agree not to disclose your
+confidential REGISTRATION KEY NUMBER to any third party. A single
+registration may be used only on a single computer; you must
+purchase multiple REGISTRATIONS to use SCOPEFIR on multiple
+computers.  Your REGISTRATION may be transferred to a another
+computer owned by you simply by installing the SCOPEFIR files on
+the new computer and deleting them from the previous computer;
+however, because the REGISTRATION process gives you knowledge of
+the confidential REGISTRATION KEY NUMBER, your REGISTRATION is
+not transferable to a third party.
+
+8) FREE REGISTRATION: IOWEGIAN INTERNATIONAL CORPORATION may
+grant FREE REGISTRATIONS for promotional purposes.  If IOWEGIAN
+INTERNATIONAL CORPORATION has granted you FREE REGISTRATION, it
+does not imply, acknowledge, or grant any ownership or other
+rights whatsoever to SCOPEFIR beyond that of REGISTRATION, as
+described above.
+
+9) GOVERNING STATE: IOWEGIAN INTERNATIONAL CORPORATION is
+incorporated in the state of Kansas.  This Agreement shall be
+governed by the laws of the State of Kansas.

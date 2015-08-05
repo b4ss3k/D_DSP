@@ -1,0 +1,39 @@
+Sub DSPTest()
+
+''' Connect to DADiSP using Type Library
+Dim DADiSP As New DADiSPApp
+
+Dim VBData(1000) As Double
+
+
+''' Create VB Data Array
+For i = 0 To 999
+    VBData(i) = Rnd()
+    Next i
+
+''' Create a 2 Window Worksheet (unconditional)
+DADiSP.Execute("NewWorksheet(2, 0)")
+
+''' Put Array to DADiSP
+DADiSP.PutData "W1", VBData
+
+''' Label W1
+DADiSP.Execute("Label('Data from Visual Basic')")
+
+''' Moveto W2
+DADiSP.Execute("Moveto(W2)")
+
+''' Calculate Power Spectrum
+DADiSP.Execute("PSD(Hamming(W1))")
+
+''' Add Y Log and Grids
+DADiSP.Execute("SetyLog(1);GridSol;GridHV")
+
+''' Show DADiSP
+DADiSP.Visible = 1
+
+''' Get PSD from DADiSP
+newdata = DADiSP.GetData("W2")
+
+End Sub
+

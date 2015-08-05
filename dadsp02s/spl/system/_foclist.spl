@@ -1,0 +1,16 @@
+/* returns a list over foci - i.e. overlays */
+_foclist()
+{
+	local i, s = "", p, nc;
+
+	/* number of foci */
+	nc = getfocus(-1);
+
+	for (i = 1; i <= nc; i++) {
+		if (strlen(s) > 0) s = strcat(s, strescape("\n"));
+		p = sprintf("%d", i);
+		s = strcat(s, p);
+	}
+	return(s);
+}
+

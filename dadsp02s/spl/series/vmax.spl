@@ -1,0 +1,83 @@
+/*****************************************************************************
+*                                                                            *
+*   VMAX.SPL   Copyright (C) 2001 DSP Development Corporation                *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns maximum of one or more input arguments              *
+*                                                                            *
+*   Revisions:    9 Aug 2001  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_VMAX
+
+    VMAX  
+
+    Purpose: Returns the maximum of one or more input arguments
+                                                                        
+    Format:  VMAX(val1, val2, ..., valN)
+
+                 val1  -  1st series or numeric argument
+                 val2  -  2nd series or numeric argument
+                 valN  -  Nth series or numeric argument
+
+    Returns: A real or series
+
+    Example:
+             vmax(10, 15, 20)
+
+             returns 20
+
+             vmax({1, 2, 3}, {0, 4, 2}, {0, 3, 8})
+
+             returns the series {1, 4, 8}
+
+    Example:
+             W1:{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}
+             W2: vmax(w1)
+
+             W2 == {7, 8, 9} the maximums of each column of W1.
+
+    Remarks:
+             VMAX with no input arguments uses the current Window. VMAX
+             is an SPL routine that accepts a variable number of input
+             arguments.
+
+    See Also:
+             Max
+             Maxval
+             Min
+             Minval
+             Vmin
+
+#endif
+
+
+/* maximum of one or more inputs */
+vmax(argv)
+{
+	local i, s;
+
+	/* 0 or 1 arg case */
+	if (argc < 2) {
+		if (argc < 1) {
+			s = maxval();
+		}
+		else {
+			s = maxval(getargv(1));
+		}
+	}
+	else {
+		/* initialize */
+		s = maxval(getargv(1), getargv(2));	
+
+		/* compare input args */
+		for (i = 3; i <= argc; i++) {
+			s = maxval(s, getargv(i));
+		}
+	}
+	return(s);
+}

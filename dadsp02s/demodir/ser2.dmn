@@ -1,0 +1,13 @@
+! Ser2.pan - Inputs two series
+@f{_fg1}
+@b{_bg1}
+@panel
+{_funcstr}
+{_formatstr}
+{_examplestr}
+
+ {_ser1prompt} <              >~_DEFSER1(strcat("'","<W2>","'"))~_INSER("Series or Window")
+ {_ser2prompt} <              >~_DEFSER2(strcat("'","<W1>","'"))~_INSER("Series or Window")
+
+         Destination W<   >~defmacro("_dwin",strcat("W","<{getwnum}>"),2)~input(2,"Integer","Window Number","",1,numwin)
+~_mc;if(strcmp(_ser1,_dwin)==0,_DEFSER1("'curr'"));if(strcmp(_ser2,_dwin)==0,_DEFSER2("'curr'"))

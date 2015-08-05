@@ -1,0 +1,21 @@
+! mainhelp.men -- main help menu
+@y1
+@b{_helpbg}
+@f{_helpfg}
+                       The DADiSP Menu Interface
+
+ The menu interface includes both bar menus and pop-up menus.
+ Bar menus are displayed horizontally near the bottom of the screen.
+ Pop-up menus are displayed anywhere on the screen. To select an 
+ item from a bar or pop-up menu:
+
+     - Use the mouse, by clicking on the selection you want.
+                             or
+     - Use the arrow keys to position the cursor on the selection
+       you want.  Then press the ENTER key.
+                             or
+     - Type the first letter of the item you want.
+
+ Pop-up menus are used within the worksheet environment and provide 
+ the easiest method for learning DADiSP.  To invoke the DADiSP Main 
+ Menu, type "/" or click on the "/" icon.

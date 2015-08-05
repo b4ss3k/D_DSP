@@ -1,0 +1,112 @@
+/*****************************************************************************
+*                                                                            *
+*   SPIN.SPL     Copyright (C) 1998-2002 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Spins a 3D plot                                             *
+*                                                                            *
+*   Revisions:   26 May 1998  RRR  Creation                                  *
+*                23 Oct 1998  RRR  spin executes fastspin macro for speed    *
+*                 5 Apr 2000  RRR  _is3d check                               *
+*                21 May 2002  RRR  break interval                            *
+*                                                                            *
+*****************************************************************************/
+
+/* default XYZ spin increments and rotation number */
+#define SPIN_X     3.0
+#define SPIN_Y     3.0
+#define SPIN_Z     3.0
+#define SPIN_NUM   300
+
+/* for plotting speed, this macro avoids explicit "plotmode" calls */
+#define FASTSPIN(x, y, z, num) (for(j=0;j<num;j++, rotate3d(x*j, y*j, z*j)))
+
+
+#if @HELP_SPIN
+
+    SPIN
+
+    Purpose: Spins a 3D plot
+                                                                        
+    Format:  SPIN(xdegree, ydegree, zdegree, num)
+
+             xdegree - an optional real, the x rotation increment,
+                       defaults to 3 degrees
+
+             ydegree - an optional real, the y rotation increment,
+                       defaults to 3 degrees
+
+             zdegree - an optional real, the z rotation increment,
+                       defaults to 3 degrees
+
+             num     - an optional real, the number of times to rotate, 
+                       defaults to 300
+
+    Returns: Nothing
+
+    Example:
+             W1: XYZ(gsin(100,.01,4),gcos(100,.01,4),0..0.01..0.99)
+             Scalesoff
+             Spin()
+
+             Spins the spiral 3 degrees in each direction 300 times.
+
+             Spin(2, 2, 3, 200)
+
+             Spins the spiral 2 degrees in the X and Y directions, 3 
+             degress in the Z direction, 200 times.
+             
+
+    Remarks:
+             The default spin angle is 3 degrees and the default total
+             number of times to spin is 300.
+
+
+    See Also
+             Rotate3d
+             XYZ
+
+#endif
+
+
+
+spin(x, y, z, num)
+{
+	local j;
+
+	/* default input arguments */
+	if (argc < 4) {
+		num = SPIN_NUM;
+		if (argc < 3) {
+			z = SPIN_Z;
+			if (argc < 2) {
+				y = SPIN_Y;
+				if (argc < 1) {
+					x = SPIN_X;
+				}
+			}
+		}
+	}
+
+	/* we lower the interval so we can break out */
+	setconf("CNTL_BREAK_INTERVAL", "10");
+
+	if (_is3d) {
+		/* now run the macro */
+		FASTSPIN(x, y, z, num);
+	}
+
+	/* restore interval to default */
+	setconf("CNTL_BREAK_INTERVAL", getconfdefault("CNTL_BREAK_INTERVAL"));
+}
+
+
+/* executes if we break out */
+spin_error()
+{
+	/* restore interval to default */
+	setconf("CNTL_BREAK_INTERVAL", getconfdefault("CNTL_BREAK_INTERVAL"));
+}
+

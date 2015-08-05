@@ -1,0 +1,29 @@
+/* windowing panel */
+_winfun(ser, winfn, winc, dc, dwin)
+{
+	local evalstr, dataser;
+
+	/* undefine old macros if they exist - runtime */
+	undefmacro("kaiser");undefmacro("hamming");undefmacro("hanning");
+
+	/* remove mean */
+	if (dc) {
+		dataser = sprintf("demean(%s)", ser);
+	}
+	else {
+		dataser = ser;
+	}
+
+	if (winfn == _nonestr || winfn == "None") {
+		evalstr = dataser;
+	}
+	else if (winc == 0) {
+		evalstr = sprintf("%s(%s)", winfn, dataser);
+	}
+	else {
+		evalstr = sprintf("%s(%s, %d)", winfn, dataser, winc);
+	}
+
+	eval(sprintf("setwf(%s, '%s')", dwin, evalstr));
+}
+

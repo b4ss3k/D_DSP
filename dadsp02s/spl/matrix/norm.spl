@@ -1,0 +1,158 @@
+/*****************************************************************************
+*                                                                            *
+*   NORM.SPL    Copyright (C) 2001 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns the norm of a series or array                       *
+*                                                                            *
+*   Revisions:   24 Jul 2001  RRR  Creation                                  *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_NORM
+
+    NORM  
+
+    Purpose: Calculates the norm of a series or array
+                                                                        
+    Format:  NORM(m, mode)
+
+                  m - input series or array, defaults to the current series
+
+               mode - optional parameter, type of norm calculation, 
+
+                      1: 1-norm, max of the column sum 
+                      2: largest singular  value
+                    inf: max of the row sum
+                   -inf: min of the row sum
+                  "fro": Froenius norm
+
+                      defaults to 2, largest singular value
+                      
+
+    Returns: A real, the norm value
+
+    Example:
+             a = {{1, 2, 3},
+                  {4, 5, 6},
+                  {7, 8, 9}}
+
+             norm(a)        == 16.848103
+             norm(a, 1)     == 18
+             norm(a, 2)     == 16.848103
+             norm(a, inf)   == 24
+             norm(a, -inf)  == 6
+             norm(a, "fro") == 16.881943
+
+
+    Remarks:
+             The mode parameter specifies the following rank calculations:
+
+              Mode      Series               Array
+             _____________________________________________________
+
+               1        sum(mag(m))          max(colsum(mag(m)))
+               2        max(svd(m))          max(svd(m))
+               N        sum(mag(m)^N)/(1/N)  undefined
+              inf       max(mag(m))          max(colsum(mag(m)')')
+             -inf       min(mag(m))          min(colsum(mag(m)')')
+             "fro"      undefined            sqrt(sum(diag(m'*^m)))
+
+
+    See Also:
+             Rank
+             Svd
+#endif
+
+
+/* series or array norm */
+norm(m, mode)
+{
+	local nc, nr, n;
+
+	if (argc < 2) {
+		/* default mode and possible series */
+		if (argc < 1) {
+			mode = 2;
+			m = refseries(1);
+		}
+		else if (not(IS_ARRAY(m))) {
+			mode = m;
+			m = refseries(1); 
+		}
+		else {
+			mode = 2;
+		}
+	}
+
+	if (not(IS_ARRAY(m))) m = {m};
+
+	(nr, nc) = size(m);
+
+	/* check if empty */
+	if (nr == 0) return(0);
+
+	if (nc > 1) { /* array */
+		if (mode == inf) {
+			n = max(rowreduce(mag(m), "+"));
+		}
+		else if (mode == -inf) {
+			n = min(rowreduce(mag(m), "+"));
+		}
+		else {
+			switch (mode) {
+				case 1:
+					n = max(colsum(mag(m)));
+					break;
+
+				case 2:
+					n = getpt(svd(m), 1);
+					break;
+
+				case "fro":
+					n = sqrt(sum(diag(m'*^m)));
+					break;
+
+				default:
+					error('norm - use 1, 2, inf, -inf or "fro" for arrays');
+					break;
+			}
+
+		}
+	}
+
+	else { /* series */
+		if (mode == inf) {
+			n = max(mag(m));
+		}
+		else if (mode == -inf) {
+			n = min(mag(m));
+		}
+		else {
+			switch (mode) {
+				case 2:
+					/* use singular values */
+					n = getpt(svd(m), 1);
+					break;
+
+				default:
+					if (IS_NUMERIC(mode)) {
+						n = sum(mag(m)^mode) ^(1/mode);
+					}
+					else {
+						error("norm - unknown mode for series");
+					}
+			}
+		}
+	}
+
+	return(n);
+}
+
+
+

@@ -1,0 +1,7 @@
+Cartesian              !_PDC_EXEC129  $Convert to Real / Imaginary Form
+Conj                   !_PDC_EXEC130  $Complex Conjugate
+Imag                   !_PDC_EXEC125  $Imaginary Part
+Mag                    !_PDC_EXEC126  $Magnitude
+Phase                  !_PDC_EXEC127  $Phase from -PI to PI
+Polar                  !_PDC_EXEC128  $Convert to Magnitude / Phase Form
+Real                   !_PDC_EXEC124  $Real Part

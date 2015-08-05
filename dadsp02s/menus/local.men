@@ -1,0 +1,8 @@
+! Commands to be issued to interface card
+@x40
+@b{_bg1}
+@f{_fg1}
+  Local Commands 
+
+ Hello            ~Hello
+ Status           ~Status

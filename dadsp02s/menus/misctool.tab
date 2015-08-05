@@ -1,0 +1,20 @@
+
+@tabbed
+
+Miscellaneous Tools
+
+{setvar("_inmisc", 1);setvar("_miscreturn", 0)}
+{defvar("_misctool_page", 0)}
+{setmenupage(_misctool_page)}
+
+~delvar("calcval");delvar("_calcstr");_mf("calc.pan")
+
+~_mf("hex.pan")
+~_mf("mort.pan")
+~_mf("misccalc.pan")
+
+~delvar("_inmisc")
+
+~~setvar("_misctool_page", getmenupage)
+~~if(getvar("_miscreturn"), menureturn())
+

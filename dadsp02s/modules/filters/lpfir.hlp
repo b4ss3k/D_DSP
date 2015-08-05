@@ -1,0 +1,31 @@
+@modeless 1
+               Remez Exchange Lowpass FIR Filter Parameters
+
+                              Filter Specifications
+ 
+ Magnitude (dB) |
+                |
+                |                   
+    +Ripple  -- |  -----------      
+         0   -- |  /\/\/\/\/\/\                      _
+    -Ripple  -- |  ----------- \                      |
+                |               \                     |     
+                |   Pass Band    \   Stop Band        | Attenuation
+                |                 \                   |
+      -Attn  -- |                  \_______________  _|
+                |
+                |________________________________________________________
+                             |     |             |        Frequency (Hz)
+                             f     f             f
+                              cut   stop          rate/2
+
+
+
+  frate  -  Sample Rate           Hz 
+  fcut   -  Cutoff Frequency      Hz
+  fstop  -  Stopband Frequency    Hz
+
+  ripple -  Passband Ripple       dB
+  attn   -  Stopband Attenuation  dB
+
+                        0 < fcut < fstop < frate/2

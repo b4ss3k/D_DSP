@@ -1,0 +1,15 @@
+/* restores serconf.pan defaults */
+_defscnf()
+{
+
+	setvar("_plstvar", _gplst(numstr(getconfdef("PLOT_STYLE"))));
+	setvar("_dbufsz",  castint(getconfdef("BUFSIZE")));
+	setvar("_dtypvar", _gdtyp(numstr(getconfdef("DATA_TYPE"))));
+	setvar("_dlnwid",  getconfdef("LINEWIDTH"));
+	setvar("_dsymsz",  getconfdef("SYMBOL_SIZE"));
+	setvar("_dyunit",  _getdvunits);
+	setvar("_dxunit",  _getdhunits);
+	setvar("_dhucnv",  castint(getconfdef("units_convert_hunits")));
+}
+
+

@@ -1,0 +1,20 @@
+! Moushelp.men -- main help menu
+@y1
+@b{_helpbg}
+@f{_helpfg}
+                        Using the Mouse
+
+ The "point and click" features of the mouse allow you to move
+ quickly and easily through DADiSP.  You can use the mouse
+ anywhere there is a menu or picklist. The mouse buttons have
+ these keyboard equivalents:
+
+       LEFT button    -  ENTER key
+       MIDDLE button  -  END key
+       RIGHT button   -  ESC key
+
+ To choose a picklist or menu item, place the mouse over the 
+ item you want to select and press the left mouse button.  
+ To escape, or back up a level in DADiSP, press the right mouse 
+ button.  For example, clicking on the right mouse button from a 
+ zoomed window will unzoom the window.

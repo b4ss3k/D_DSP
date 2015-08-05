@@ -1,0 +1,244 @@
+rem max 48 characters across
+rem 13 lines
+123456789012345678901234567890123456789012345678       *
+rem Getting Started                          *
+data
+1
+Getting started with the EM Formulary is easy.  Select the Formula, 
+Conversion, or Reference Information you want to work with by using
+the menu bar at the top of the screen.  All formulas require some
+form of data to work with which can be entered via the input boxes
+at the right side of the screen.  Boxes labeled "n/a" are not used
+for the particular equation which is showing.  You can move from box
+to box by using TAB and SHFT-TAB. Most input boxes require a numeric
+entry but a few use alphanumeric characters.  Large and small numbers
+can be expressed in "e notation", which is the conventional way to
+use scientific notation (powers of ten) on the computer.  The input
+boxes also accept the following engineering prefixes:
+
+     T (tera, e+12
+     g (giga, e+9)
+     M (mega, e+6)
+     k (kilo, e+3)
+     m (milli, e-3)
+     u (micro, e-6)
+     n (nano, e-9) 
+     p (pico, e-12)  
+     f (femto, e-15)
+
+Please take note of the units that are called for by each equation.  Most
+formulas use MKS units but a few are better evaluated using cgs, English,
+or dB units.  You can easily convert to the requested units by using the
+Conversions menu.  Once you enter the input data, press Calculate
+and your answer should appear in the display area at the lower left hand
+corner of the screen.
+
+rem Navigating the Formulas                  *         *
+data
+2
+You may at first be overwhelmed by the number of formulas in the
+Formulary.  They are intentionally not grouped very finely to make access
+faster.  We sought to avoid the time consuming wading through menus
+that other programs entail.  Eventually, more categorization will be
+necessary but for now we stick to top level divisions only.  So how do you
+get to the equations rapidly?  There are a several ways.  First, note that by
+pressing the first few letters of the formula name, the menu list rapidly
+narrows down the formulas that match the letters you pressed.  This will
+quickly become very convenient as you use the Formulary.  Next, note
+that the Formula menu keeps track of recently used equations.  So, as you
+work out a problem you can return to recently used equations with one
+click.  Another way to rapidly access your favorite equations, or even
+rename and categorize them, is to use the Store and Recall buttons near
+the input boxes.  These buttons allow you to save a formula under a name
+of your choice and in a folder of your choice.  Therefore, you can create a
+folder of "optics" equations if you choose. Finally, you should learn to
+make use of the Search menu to find a character string within a formula
+name.  In this manner you can find all formulas that contain, for example,
+the word "force".   
+
+rem Fine Tuning a Result
+data
+3
+One of the neatest things about using spreadsheets is that you can change
+an independent variable and see the immediate effect on dependent
+variables.  The EM Formulary goes one step further by introducing what
+are called spin controls.  Spin controls are the Up/Down buttons that
+appear beside each input box.  These buttons allow you to increment or
+decrement an input variable to see the effect on output variables.  They
+provide a handy way to zero in on a desired result without having to
+actually enter in numbers by hand.  You can control the size of the
+increment by using Settings - Increment.  The default size is 10% steps but
+you can make it larger or smaller.
+
+rem Units and Dimensions
+data
+4
+Everyone has their favorite units and dimensions.  A mechanical engineer
+may like mils whereas a physicist may like femtometers or an astronomer
+may prefer lightyears.  In the interest of providing a common interface,
+the Formulary tries to adhere to MKS (meter, kilogram, second) units with
+a few exceptions.  The Conversions menu can in all cases be used to
+arrive at MKS from your favorite system (within reason).
+
+rem Hyperlinks
+data
+5
+If the requested data for an input box is colored in blue it indicates a
+hyperlink to a related formula, conversion, or data.  This speeds up the
+process of working through a problem and even has an educational
+benefit.  To return to your previous equation use the Back button.
+
+rem Search Function
+data
+6
+Since there are so many equations, conversions, and data in the
+Formulary, the Search menu is helpful in suggesting items which may be
+of interest to you.  Type in any word or part of a word and all items
+containing that string will be grouped for you in a separate list.  You can
+then go directly to any item in the search result list by clicking on the
+item.
+
+rem Tables
+data
+7
+The EM Formulary contains several useful tables of reference information
+on major science and engineering areas.  These are available with a
+couple of clicks.
+
+rem Utilities
+data
+8
+The familiar Windows Calculator and Notepad are available through the
+Utilities menu and, in addition, there is a Stop Watch, an Event Timer,
+and an Audio Generator.  These last three have come in useful from time
+to time in the lab.  There is also a Qcard utility which displays records
+of you database in random order which is useful for drilling on information
+(e.g. foreign languages).  Version 2 of the Formulary has added an image
+Viewer utility so that you can easily preview image files on your disks.
+The image files can be linked to records in your database through the
+Reference menu.
+
+Although not strictly part of the Utilities menu, the Quickmath buttons (+,
+-, *, /, 1/x, SQR) are always present on the main screen to help with
+common math operations.  The nice thing about Quickmath is that it
+automatically chains results and you can copy the final results to an input
+box.  Of course, Quickmath accepts e notation (scientific notation).
+
+Copy and Paste.  CopyText and PasteText work just like in a word processor
+and may be used with the input data boxes.  EqCopy lets you copy the
+equations and drawings for a formula to another Windows application.
+
+Session Log.  You can log all the results of your session to a text file
+(emflog.txt) by turning on the Log Results setting.  You can see this file
+and annotate it from within the Formulary by opening Notebook.  If you want
+to permanantly save the results you should save the file under a different name.
+
+rem User Formulas and Data
+data
+9
+Obviously, the Formulary will never contain all formulas for all people. 
+However, if you like the Formulary's interface then you can access just
+about any other Windows program from within the Formulary and you can
+therfore add your own calculations to the Formulary's menu.  To do
+this select File-Link To and establish the path to your calculation (e.g. an
+Excel spreadsheet). Give the calculation a familiar name and it will then
+appear under Formulas-User Defined in the Formulary.  Whenever you
+click on your formula name, EMF will open the application that contains
+your calculation and it will be available to you automatically.  No need to
+try to remember a cryptic filename or go through the cumbersome file
+openng process time after time. To delete a link from the User Defined
+menu, select the menu item and  use File-Unlink From.
+
+The Reference Information that comes with the EM Formulary is like a
+set of index cards that you can use for your work.  It is alterable if
+you care to add or delete to items.  Simply make changes in the large
+text box (can't change the title) and click Update.  Click New to add
+a new item.  Fill in the name at the top of the combo box and the 
+information that goes with the name, then click Add.  If you don't want to
+alter the information that comes with the Formulary (a good idea) then
+simply load the database called user.mdb and add data to it instead.
+Use File - Open Database to find user.mdb.  CAUTION: If you re-install
+the EM Formulary it will OVERWRITE emf.mdb and user.mdb so you should
+rename these before re-installing.  You can then use them under their
+new names.  Further note: can't use single or double quotes in the
+title for a new data item.
+
+Beginning with Version 2 of the Formulary, you can link images to the
+records in your data files.  The images should reside on the machine you
+are using and do not become part of the user database itself.  Version 2
+and higher of the Formulary cannot read Version 1 database files.    
+
+rem Misc. Notes
+data
+10
+Although the personal computer has come a long way, it can still bog down
+on some of the longer calculations in EMF, e.g. the hypergeometric
+function.  Please be patient and you will get your result before too long.
+
+Equation Display - The EM Formulary makes use of Microsoft Equation Editor
+to display equations correctly.  Equation Editor is part of Microsoft
+Office and recent versions of Office may not install Equation Editor
+automatically.  To install it, run Setup from the Office CD and choose
+Add/Remove ... then Office Tools then Change Option.  Select Equation
+Editor from the options and proceed to install it.
+
+rem The EM Formulary Philosophy
+data
+11
+The EM Formulary (EMF) is for people who like to calculate all kinds of
+things.  This is why it rapidly grew from electromagnetics to physics and
+math and why it continues to grow.  The calculations are not necessarily
+elaborate, there are plenty of codes around that can easily tie you up in
+endless details.  The EMF calculations are usually simple and designed to
+bring you down to earth.  They function as sanity checks on more complex
+calculations.  One of the beauties of science and engineering is that
+although we get to manipulate complicated and impressive looking
+equations, there comes a time when the equations must be reduced to
+actual numbers and those numbers must be checked against the real
+world.  If the equations are not taken to such an ultimate conclusion then
+they might as well be paintings and written in pretty colors.
+
+Another beauty of science and engineering is that the knowledge is not
+restricted to persons with titles and advanced degrees.  Therefore, the EM
+Formulary has attempted to interest users at all levels of education and in
+various walks of life.  If an auto mechanic clicks on a special relativity
+formula then the Formulary will have served its purpose well.  Yet, the EM
+Formulary is a tool for working professionals.  It originated from every day
+engineering calculations and is continually improved through usage and
+customer feedback.  Your experience and needs are important to us and
+we would enjoy hearing from you.
+rem PSpice and Matlab
+data
+12
+Some of the formulas or circuits have example PSpice, Matlab, TI-89,
+or Multisim Electronic Workbench (EWB) code which you can use for
+additional simulation.
+
+PSpice has been a mainstay of the electronics community for nearly
+thirty years and it is a great tool.  Student versions of PSpice are
+available free at www.microsim.com.  To use the sample code, install
+and start PSpice then File-New-Text File. Copy and Paste the sample
+code.  Save the code from within PSpice as a .cir file.  Close then
+reopen the .cir file and choose Simulation-Run. Your results can be
+accessed by View-Output File or by adding an appropriate Trace in Probe.
+Be sure to tell the folks at microsim that they have a great product
+and to please continue to support the entry of circuit descriptions as
+text files.  It makes analyzing circuits a snap and is much faster than
+schematic capture.
+
+Matlab is another easy to use tool with which you should be familiar.
+Although not free, there is a relatively low cost version available.
+Several examples of Matlab code are provided in the EM Formulary.
+Try it, you'll like it.
+
+The TI-89 is like having a small PC in your pocket.  It is easy to
+program in a Basic style language and comes loaded with pre built
+functions.  Useage is very similar to Matlab.  The EM Formulary contains
+examples of TI-89 code which you can download to the calculator using
+a special cable available from TI.  Most of the codes are small enough
+that you can just type them in.
+
+Multisim Electronics Workbench is taking schools and textbooks by storm
+because it makes it so easy to build and test circuits.  A student version
+costs less than $100.  The EM formulary install disk and directory contain
+sample EWB files (.msm) which you can run.  You will need your own copy of EWB.

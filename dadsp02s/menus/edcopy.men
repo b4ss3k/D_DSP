@@ -1,0 +1,10 @@
+! edcopy.men - File for copying tableportions
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+Copy Operations
+
+Column Copy      ~_deffname('COL      Copy a Column (Series) from a Table')|_defformat('COL(table,colnum)')|_defxamp('COL(W1,2)')|_getserint1("Input Table:   ", "Column Number: ")|_serint1form("Col")
+Row Copy         ~_deffname('ROW      Copy a Row from a Table')|_defformat('ROW(table, row)')|_defxamp('Row(W1,2)')|_getserint1("Input Table:", "Row Number: ")|_serint1form("Row")
+Area Copy        ~_deffname('REGION   Copy a Tabular Region')|_defformat('REGION(table,startrow,numrows,startcol,numcols)')|_defxamp('Region(W1,1,4,2,5)')|_getserint4("Table:","Row 1:","Rows: ","Col 1:", "Cols: ")|_serint4form("Region")

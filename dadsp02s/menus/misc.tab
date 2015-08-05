@@ -1,0 +1,9 @@
+@tabbed
+Generate Miscellaneous Functions
+
+~_MF("misc.pan")
+~_MF("genset.pan")
+
+~~_formstr = _addhvx(_formstr)
+~~if(_chkwin > 0, eval(sprintf('setwf(%s, "%s")', _dwin, _formstr)))
+

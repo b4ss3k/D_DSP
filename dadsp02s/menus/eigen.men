@@ -1,0 +1,11 @@
+! Eigen.men
+@x0
+@y0
+@f{_fg1}
+@b{_bg1}
+  Eigen Analysis
+
+ Eigenvalue        ~_deffname('EIGVAL   Eigenvalue')  |_defformat('Eigval(matrix)')|_defxamp('Eigval(W1*W2)')|_getser|_serform("Eigval")
+ Eigenvector       ~_deffname('EIGVEC   Eigenvector')  |_defformat('Eigvec(matrix)')|_defxamp('Eigvec(W1*W2)')|_getser|_serform("Eigvec")
+ Nobalance Value   ~_deffname('NBEIGVAL Unbalanced Eigenvalue Matrix')  |_defformat('Nbeigval(matrix)')|_defxamp('Nbeigval(W1*W2)')|_getser|_serform("NBeigval")
+ Nobalance Vector  ~_deffname('NBEIGVEC Unbalanced Eigenvector Matrix')  |_defformat('Nbeigvec(matrix)')|_defxamp('Nbeigvec(W1*W2)')|_getser|_serform("NBeigvec")

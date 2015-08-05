@@ -1,0 +1,108 @@
+/*****************************************************************************
+*                                                                            *
+*   FDECONV.SPL    Copyright (C) 2002-2007 DSP Development Corporation       *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Deconvolves two series using FFTs                          *
+*                                                                            *
+*   Revisions:    28 Aug 2002  RRR  Creation                                 *
+*                  1 Dec 2006  RRR  ITERATE for simple column iteration      *
+*                  6 Aug 2007  RRR  complex input check                      *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_FDECONV
+
+    FDECONV
+
+    Purpose: Deconvolves two series using FFTs.
+
+    Format:  (q, r) = FDECONV(b, a)
+
+               b - A series.
+
+               a - A series.
+
+    Returns: A series such that b = conv(a, q) + r
+
+    Example:
+             a = {0, 3, 2, 3};
+             x = {1, 2, 1};
+             b = conv(a, x);
+
+             (q, r) = fdeconv(b, a);
+
+             b == {0, 3, 8, 10, 8, 3}
+             q == {1, 2, 1}
+             r == {0, 0, 0, 0, 0, 0}
+
+
+             a = gnorm(1000,.01)
+             x = gsin(1000,.001,3)
+             b = conv(x, a)
+
+             q = fdeconv(b, a)
+
+             q recovers the 3 Hertz sinewave.
+
+Remarks:
+             FDECONV is appropriate for recovering a series from a convolution
+             process. FDECONV uses the FFT to compute the deconvolution with:
+
+             real(ifft(fft(b) / fft(a)))
+
+             If the denominator series a contains a zero, the FFT quotient 
+             value is replaced by DEFAULT_MATH_VALUE.
+
+             See DECONV for a time domain implementation that also calculates 
+             the polynomial quotient.
+
+See Also:
+             Conv
+             Deconv
+             Fconv
+#endif
+
+
+
+/* fft based deconvolution */
+ITERATE fdeconv(b, a)
+{
+	local la, lb, r, s, af, bf, flen;
+
+	lb = length(b);
+	la = length(a);
+	
+	flen = 2 ^ (nextpow2(max(lb, la)) - 1);
+
+	/* use a factor of 3 to avoid denominator zeros */
+	flen *= 3;
+
+	/* divide FFTs */
+	bf = fft(b, flen);
+	af = fft(a, flen);
+
+	s = ifft(bf / af);
+
+	/* check if result should be purely real */
+	if (not(iscomplx(a)) && not(iscomplx(b))) {
+		s = real(s);
+	}
+
+	/* proper lengths */
+	s = extract(s, 1, lb - la + 1);
+
+	setdeltax(s, deltax(b));
+
+	if (outargc > 1) {
+		/* get remainder */
+		r = b - fconv(s, a);
+		return(s, r);
+	}
+	else {
+		return(s);
+	}
+}

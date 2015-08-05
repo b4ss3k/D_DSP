@@ -1,0 +1,136 @@
+/*****************************************************************************
+*                                                                            *
+*   SIZE.SPL     Copyright (C) 1997-2002 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns dimensions of the input array                       *
+*                                                                            *
+*   Revisions:    9 Jun 1997  RRR  Creation                                  *
+*                29 Aug 1997  RRR  handle scalars and strings                *
+*                13 Nov 1997  RRR  returns (0, 0) for empty string           *
+*                 2 Aug 2001  RRR  size with no args prints string           *
+*                15 Aug 2002  RRR  size with no output prints string         *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_SIZE
+
+    SIZE    
+
+    Purpose: Returns a 2 point series containing the dimensions of an array
+                                                                        
+    Format:  SIZE(ser, n)
+
+              ser - A series or array
+
+              n   - An optional integer specifying the dimension to return,
+                    1: return numrows, 2: return numcols. If n is 
+                    unspecified, size returns the 2 point series
+                    {numrows, numcols}
+
+    Returns: A series or integer or displays the size as a string.
+
+    Example:
+             a = 1..10;
+             size(a);
+
+             returns the series {10, 1}
+
+
+             b = Ravel(a, a};
+             size(b);
+
+             returns the series {10, 2}
+
+             
+             Size also supports multiple return values:
+
+             (nr, nc) = size(b)
+
+             nr == 10
+             nc == 2
+
+
+    Remarks:
+             Size returns the series {1, 1} for scalar inputs.
+
+             Size with no arguments displays the size of the
+             current Windows as a string.
+
+             If the output from Size is not assigned, the size of
+             the input is displayed as a string. To return the size
+             as a series and place it in a Window, use:
+
+             {size(x)}
+
+
+    See Also:
+             Length
+
+#endif
+
+
+size(m, n)
+{
+	local nc, nr;
+
+	if (argc < 1) {
+		if (outargc == 0) {
+			/* report current size as string */
+			if (length == 0) {
+				nr = nc = 0;
+			}
+			else {
+				(nr, nc) = size(refseries);
+			}
+			return(sprintf("%d x %d", nr, nc));
+		}
+		else {
+			if (length == 0) {
+				return(0, 0);
+			}
+			else {
+				m = refseries;
+			}
+		}
+	}
+
+	/* get rows and columns based on data type */
+	if (IS_SCALAR(m)) {
+		nc = nr = 1;
+	}
+	else if (IS_STRING(m)) {
+		nr = strlen(m);
+		nc = nr > 0;
+	}
+	else if (IS_ARRAY(m)) {
+		if (length(m) > 0) {
+			nc = numcols(m);
+			nr = numrows(m);
+		}
+		else {
+			nc = nr = 0;
+		}
+	}
+	else {
+		error("size - invalid input");
+	}
+
+	if (argc < 2) {
+		if (outargc > 1) return(nr, nc);
+		if (outargc == 0) {
+			/* just report size since we are not assigning it */
+			return(sprintf("%d x %d", nr, nc));
+		}
+		else return({nr, nc});
+	}
+	else {
+		if (n == 1) return(nr);
+		else if (n == 2) return(nc);
+		else return(1);
+	}
+}

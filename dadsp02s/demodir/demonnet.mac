@@ -1,0 +1,5 @@
+! demonnet.mac - macros for the neural net demo
+
+nn    DMF("ann.dmn") ! NeuralNet menu shortcut
+_SRCWIN inp(2,"Source Window",1,1.0*numwin)
+nnloaded 1

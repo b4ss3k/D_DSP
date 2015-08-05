@@ -1,0 +1,153 @@
+/****************************************************************************
+*                                                                           *
+*   STD.SPL     Copyright 2007 (C) DSP Development Corporation              *
+*                                                                           *
+*   Author:     Randy Race                                                  *
+*                                                                           *
+*   Synopsis:   Column based standard deviation                             *
+*                                                                           *
+*   Revisions:  13 Aug 2007     RRR     Creation                            *
+*                                                                           *
+****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_STD
+
+    STD
+
+    Purpose: Calculates the standard deviation of each column of a series
+                                                                        
+    Format:  STD(s, mode, dim)
+ 
+                 s - input series
+
+              mode - Optional integer. The normalization mode.
+                     For N = length(s)
+
+                       0: normalize by 1/(N-1) (default)
+                       1: normalize by 1/N
+
+               dim - Optional integer. Summation dimension.
+
+                      1: calculate row-wise (default)
+                      2: calculate column-wise
+
+    Returns: A real scalar for a one column series or a 1xM real table for
+             an M column series.
+
+    Example:
+             W1: 1..10
+             std(w1)
+
+             Returns 3.0277, the sample standard deviation.
+
+    Example:
+             W1: 1..10
+             std(w1+1e7)
+
+             Returns 3.0277, same as above since the true standard deviation
+             is independent of the mean value.
+
+    Example:
+             W1: 1..10
+             std(w1, 1)
+
+             Returns 2.8723, the population standard deviation.
+
+    Example:
+             W1: ravel(1..9, 3)^2
+             W2: std(w1)
+
+             Returns the series {{4.0415, 10.0167, 16.0104}}
+
+             the standard deviation of each column.
+
+    Remarks:
+             If s is the input series and N the length of the series,
+             the basic form of the sample standard deviation (mode == 0)
+             is:
+
+                std(s) = sqrt(sum((s - mean(s))^2/(N-1)))
+
+             The population standard deviation (mode == 1) is defined as:
+
+                std(s) = sqrt(sum((s - mean(s))^2/N))
+
+            
+             STD uses a fast, highly accurate running sums algorithm that 
+             exhibits insensitivity to round-off errors.
+
+             As shown in the second example, the standard deviation is
+             independent of an additive mean value.
+
+             STD returns the standard deviation of each column for a
+             multi-column series.  See STDEV to return the standard
+             deviation of a multi-column series as a whole.
+             
+    See Also:
+             Mean
+             Stdev
+#endif
+
+
+/* standard deviation of each column */
+std(s, mode, dim)
+{
+	local N, sd;
+
+	(s, mode, dim) = std_parse_args(s, mode, dim);
+
+	/* make sure we have a series */
+	if (not(IS_ARRAY(s))) s = castseries(s);
+
+	if (dim > 1) {
+		s = s';
+	}
+
+	N = length(s);
+
+	/* stdev of each column */
+	sd = std_calc(s);
+
+	if (mode > 0) {
+		/* re-normalize to 1/N */
+		sd = sqrt(sd*sd*(N-1)/N);
+	}
+
+	if (dim > 1) {
+		sd = sd';
+	}
+	return(sd);
+}
+
+
+/* calculate stdev of each column */
+ITERATE std_calc(s)
+{
+	return(stdev(s));
+}
+
+
+/* get args */
+std_parse_args(s, mode, dim)
+{
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) {
+				s = refseries(w0);
+			}
+			mode = 0;
+		}
+		dim = 1;
+	}
+
+	/* check if we need to default the series argument */
+	if (not(IS_ARRAY(s))) {
+		dim = mode;
+		mode = s;
+		s = refseries(w0);
+	}
+	return(s, mode, dim);
+}
+

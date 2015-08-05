@@ -1,0 +1,45 @@
+/* for XY panel, 2 series and 2 columns */
+_s2c2(ser1, col1, ser2, col2, ser3, col3, xyintrp, nc1, nc2, nc3, xyitv, xyauto, xydt)
+{
+	local s;
+
+	if (numstr(col1) == 1 && nc1 == 1) {
+		s = sprintf("%s", ser1);
+	}
+	else {
+		s = sprintf("col(%s, %s)", ser1, col1);
+	}
+	if (numstr(col2) == 1 && nc2 == 1) {
+		s = sprintf("%s, %s", s, ser2);
+	}
+	else {
+		s = sprintf("%s, col(%s, %s)", s, ser2, col2);
+	}
+
+	if (xydt) {
+		if (numstr(col3) == 1 && nc3 == 1) {
+			s = sprintf("%s, %s", s, ser3);
+		}
+		else {
+			s = sprintf("%s, col(%s, %s)", s, ser3, col3);
+		}
+		s = sprintf("xydt(%s)", s);
+	}
+	else {
+
+		if (xyintrp) {
+			if (xyauto) {
+				s = sprintf("Xyinterp(%s)", s);
+			}
+			else {
+				s = sprintf("Xyinterp(%s, %g)", s, xyitv);
+			}
+		}
+		else {
+			s = sprintf("XY(%s)", s);
+		}
+	}
+	return(s);
+}
+
+		

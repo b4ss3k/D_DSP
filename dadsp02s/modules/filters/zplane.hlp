@@ -1,0 +1,103 @@
+@modeless 1
+
+    ZPLANE
+
+    Purpose: Displays a Pole-Zero plot of a Z transform.
+
+    Format:  ZPLANE(b, a)
+
+                 b - A series, the numerator coefficients in ascending
+                     powers of z^(-1).
+
+                 a - A series, the denominator coefficients in ascending
+                     powers of z^(-1).
+
+
+             Alternate Format:  ZPLANE(z, p, gain)
+
+                 z - A series, the zeros of the Z transform.
+
+                 p - A series, the poles of the Z transform.
+
+              gain - A scalar, the gain of the system.
+
+
+             Alternate Format:  ZPLANE(c)
+
+                 c - A series, the system coefficients in cascaded 
+                     biquad form.  If c contains 2 columns, c is
+                     assumed to be in direct form, where the first
+                     column is b and the second column is a.
+
+    Returns: An XY series, the poles are plotted as light red "x"s and the 
+             zeros are plotted as "o"s. The unit circle is displayed as 
+             a dashed circle.
+
+    Example:
+                             z          1
+             Given H(z) = ------- = ----------
+                          z - 0.5   1 - 0.5z^-1
+
+             W1: zplane({"{1}"}, {"{1, -0.5}"})
+
+             Displays the unit circle with a single pole at z = 0.5.
+             The input is given as a system function in ascending terms 
+             of z^(-1).
+
+    Example:
+             W1: zplane({"{0}"}, {"{0.5}"}, 1)
+
+             Displays the same plot as above. The input is given in terms
+             of zeros and poles.
+
+    Example:
+
+                              z^2 - 2z
+             Given H(z) = ----------------
+                          z^2 - 0.7z + 0.1
+
+             z = roots({"{1, -2, 0}"})
+             p = roots({"{1, -0.7, 0.1}"})
+             zplane(z, p, 1)
+
+             Displays two real poles and two zeros in the current Window.
+
+
+    Remarks:
+             For ZPLANE(b, a), the input series represent the 
+             terms of the rational polynomial H(z) = b(z)/a(z) where:
+
+             N = length(b) and M = length(a):
+        
+                     b(z)    b[1] + b[2] z^(-1) + ... + b[N] z^(-N+1) 
+             H(z) = ------ = ----------------------------------------
+                     a(z)    a[1] + a[2] z^(-1) + ... + a[N] z^(-M+1)
+
+             For ZPLANE(z, p, gain), the gain term must be present, but it
+             does not effect the resulting plot.
+             
+             The aspect ratio of the window is set to square to preserve
+             a circular unit circle.
+
+             The poles are plotted as light red x's and the zeros as black
+             circles. The unit circle is displayed as a dashed line
+             in the current series color. Dashed lines are also drawn 
+             through the origin.
+
+             Multiple zeros and poles are labeled with a multiplicity
+             number to the upper right of the symbol.
+
+             For ZPLANE(c), if the input c is a single column, the
+             coefficients are assumed to be in cascaded bi-quad form. 
+             This is the output format of IIR filters designed by
+             DADiSP/Filters.  If c contains 2 columns, the coefficients
+             are assumed to be in direct form, where the first column
+             is b and the second column is a.
+
+    See Also:
+             Filteq
+             Gimpulse
+             Impz
+             Residuez
+             Zfreq
+

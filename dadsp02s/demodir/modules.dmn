@@ -1,0 +1,16 @@
+! modules.dmn - optional modules for DADiSP. Modified for the Demo!
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+ Optional Modules
+
+ IEEE-488         ~if(gpibloaded==0,Macread(strcat("demodir",pathchar,"gpiblab.mac"));eval('M'),eval('M'))
+ Filter Design    ~echo("DADiSP/Filters") 
+ Data Acquisition ~echo("Module not available")
+ Statistics       ~if(stloaded==0,Macread(strcat("demodir",pathchar,"demostat.mac"));eval('st'),eval('st'))
+ Advanced DSP     ~if(adloaded==0,Macread(strcat("demodir",pathchar,"demoadsp.mac"));eval('ad'),eval('ad'))
+ Neural Networks  ~if(nnloaded==0,Macread(strcat("demodir",pathchar,"demonnet.mac"));eval('nn'),eval('nn'))
+ Controls         ~if(ccloaded==0,Macread(strcat("demodir",pathchar,"democtrl.mac"));splread(strcat("demodir",pathchar,"democtrl.spl"));eval('cc'),eval('cc'))
+
+ 

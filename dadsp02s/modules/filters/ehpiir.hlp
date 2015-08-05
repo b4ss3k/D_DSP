@@ -1,0 +1,30 @@
+@modeless 1
+               Elliptical Highpass IIR Filter Parameters
+
+
+ Magnitude (dB) |
+                |
+                |                   
+      +Ripple - |                 -----------     
+          0   - |                /\/\/\/\/\/\      _
+      -RIpple - |               / -----------       |
+                |              /                    |
+                | Stop Band   /    Pass Band        | Attenuation
+ -Attn+Ripple - | ---------- /                      |
+       -Attn  - | /\/\/\/\/\/                      _|
+ -Attn-Ripple - | ---------- 
+                |________________________________________________________
+                            |     |             |        Frequency (Hz)
+                            f     f             f
+                             stop  cut           rate/2
+
+
+  frate  -  Sample Rate               Hz 
+
+  fstop  -  Stopband Frequency        Hz
+  fcut   -  Cutoff Frequency          Hz
+
+  ripple -  Passband/Stopband Ripple  dB
+  attn   -  Stopband Attenuation      dB
+
+                        0 < fstop < fcut < frate/2

@@ -1,0 +1,83 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!                                                                            !
+!                             POLARPLT.MAC                                   !
+!									     !
+!			      April 5, 1995				     !                                                                            !
+! 									     !
+! Polar plots: Polar plot display and area calculation.			     !
+!                                                                            !
+!             Copyright (C) 1995 DSP Development Corporation                 !
+!                                                                            !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+! Polar plot display and area calculation. 
+! 
+! For more information, see:
+!
+! [1] Berkey            
+!     Calculus                  
+!     Saunders College Publishing, 1983
+!     pp. 706-775
+!
+! 
+
+!----------------------------------------------------------------------------
+! POLARPLOT displays a simple polar plot.
+! 
+! 	R     = radius
+! 	THETA = angle in radius
+!
+!
+! Converts R and THETA into Cartesian coordinates and draws a polar plot.
+! Note that the result is an XY plot.
+!
+! Example:
+!
+! The following creates the plots 
+!			r = 1 + cos(theta) and 
+!			r = 4*sin(3*theta) for 0 <= theta <= 2*pi
+!
+! W1: GLINE(501,1/500,1,0)*2*PI
+! W2: POLARPLOT(1+COS(W1), W1)
+! W3: POLARPLOT(4*SIN(3*W1), W1)
+!
+! W2 contains a classic cardioid and W3 a three pedal.
+!
+
+POLARPLOT(R, THETA) XY((R)*cos((THETA)), (R)*SIN((THETA)))
+
+
+
+!----------------------------------------------------------------------------
+! POLARAREA calculates the area of a closed loop.
+! 
+! 	S = closed loop series
+!
+!
+! Calculates the area of a closed loop region by evaluating the following
+! polar formula :
+!
+!   if r = f(a), then
+!
+!          2pi
+!          /
+! Area  =  | .5 * [f(a)]^2 da
+!          /
+!         0
+!
+! The area is evaluated using the trapazoidal rule.
+! 
+! Example:
+!
+! W1: GLINE(501,1/500,1,0)*2*PI
+! W2: POLARPLOT(1+COS(W1), W1)
+! W3: POLARPLOT(4*SIN(3*W1), W1)
+!
+! POLARAREA(W2) yields 1.50 pi
+! POLARAREA(W3) yields 0.25 pi
+!
+
+POLARAREA(S)   (2*PI*AREA(.5*(XVALS(S)^2+YVALS(S)^2)))
+
+!--------------------------------- END ----------------------------------

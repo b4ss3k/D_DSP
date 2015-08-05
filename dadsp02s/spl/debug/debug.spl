@@ -1,0 +1,122 @@
+/*****************************************************************************
+*                                                                            *
+*   DEBUG.SPL      Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Debugger help summary (preliminary)                        *
+*                                                                            *
+*   Revisions:    27 Jun 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_DEBUG
+
+    DEBUG
+
+    Purpose: Debugger summary
+                                                                        
+    Format:  DEBUG
+
+    Returns: Nothing, displays debugger summary
+
+
+    Example:
+
+             Assume the following two SPL routines:
+
+             mycall(x)
+             {
+                local y;
+
+                y = x + x;
+                y = myfunc(y);
+                return(y);
+             }
+
+             myfunc(x)
+             {
+                local y;
+
+                y = x*x;
+                return(y);
+             }
+
+
+             Now consider the following debugger session:
+
+
+             dbstop myfunc
+             dbcont
+
+             mycall(10)
+             dbstatus
+             dbstack
+             locals
+             dbup
+             locals
+
+
+             A breakpoint is set the routine myfunc and the function
+             mycall is executed. Since mycall calls myfunc, the debugger
+             stops in myfunc. DBSTATUS shows the debugger has stop at line
+             5 in myfunc. DBSTACK shows the debugger stepped through mycall 
+             at line 6 and myfunc at line 5.
+
+             At this point, the LOCALS command shows that the myfunc 
+             local variable x is 20, the value set by the calling
+             mycall routine.
+
+             The DBUP command moves up the call stack to the mycall
+             function. Now the LOCALS command shows x has the value
+             10, the value specified when mycall was executed at the
+             commnd line.
+
+    Remarks:
+             Use DBCONT to start the debugging process. DBSTOP sets a
+             breakpoint. Use DBSTEP or DBCONT to resume execution after 
+             a breakpoint has been reached. Use DBSTATUS for information 
+             on the current breakpoint and DBSTACK for information on
+             the current call stack. Use DBQUIT to exit debugging. 
+
+             Use DBSTEPI to step into an SPL routine and DBSTEPO
+             to step out of the current SPL routine.
+
+             DBCLEAR clears a breakpoint.
+
+             Any DADiSP command or function can be executed once a breakpoint 
+             has been reached.
+
+
+    See Also:
+             Dbclear
+             Dbcont
+             Dbdown
+             Dbquit
+             Dbstack
+             Dbstatus
+             Dbstep
+             Dbstepi
+             Dbstepo
+             Dbstop
+             Dbup
+             Locals
+             Vars
+#endif
+
+NODEBUG debug(name)
+{
+	local debugger;
+
+	/* use debugger if we have one */
+	debugger = getconf("spl_debugger");
+	if (strlen(debugger) > 0) {
+		eval(sprintf("%s('%s')", debugger, name));
+	}
+	else {
+		/* just show help */
+		help("debug");
+	}
+}

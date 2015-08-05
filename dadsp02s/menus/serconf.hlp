@@ -1,0 +1,32 @@
+! SerConf.hlp
+SERIES CONFIGURATION
+
+PLOT STYLE:
+Choose a valid plot style for the default setting.  Changes to this parameter
+will take effect the next time a series is generated in a clear or new window.  
+Valid plot styles are:  Lines, Points, Sticks, Bars, Tables, Hi Lo chart, 
+Stacks, % Stack, and Steps.
+
+LINE WIDTH:
+Set the thickness of the line for a Line Plot.  Enter an integer value.  
+Changes to this parameter will take effect the next time a series is
+generated in a clear or new window.
+
+BUFFER SIZE:
+Set the value of the series cache size (i.e. the number of points in a series
+that DADiSP will keep in memory before using the disk for further storage).
+There is a trade-off between buffer size and the number of series a Worksheet
+can process. If you are working with long data series, raising this parameter
+will improve throughput, but may cause an out-of-memory condition for Worksheets
+with large numbers of series.  The minimum value is 101.
+
+DATA TYPE:
+Set the internal type used for file storage.  Valid choices are:
+    Float    4 bytes    -10E+37 to +10E+38
+    Double   8 bytes    -10E+307 to +10E+308
+    Integer  2 bytes    -32768 to +32768
+    UInteger 2 bytes    0 to 65535
+    Byte     1 byte     -128 to +127
+    UByte    1 byte     0 to 255
+    Long     4 bytes    -2147483648 to +2147483647
+ 

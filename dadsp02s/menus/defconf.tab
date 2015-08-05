@@ -1,0 +1,39 @@
+// defconf.tab - default configuration settings
+@tabbed
+Default System Preferences
+{setvar("_rdraw", 0)}
+{defvar("_defconf_page", 0)}
+
+// start page
+{setmenupage(_defconf_page)}
+
+// wksconf.pan
+~_intwkcf()
+
+// winconf.pan
+~_intwncf()
+
+// serconf.pan
+~setvar("_plstvar", _gplst(numstr(getconf("PLOT_STYLE"))))
+~setvar("_dbufsz", castint(getconf("BUFSIZE")))
+~setvar("_dtypvar", _gdtyp(numstr(getconf("DATA_TYPE"))))
+~setvar("_dlnwid", getconf("LINEWIDTH"))
+~setvar("_dsymsz", getconf("SYMBOL_SIZE"))
+~setvar("_dyunit", _getvunits)
+~setvar("_dxunit", _gethunits)
+~setvar("_dhucnv", castint(getconf("units_convert_hunits")))
+
+~_MF("wksconf.pan")           // worksheet parameters
+~_MF("winconf.pan")           // window parameters
+~_MF("serconf.pan")           // series parameters
+~_MF("msgconf.pan")           // messages
+~_MF("scrnopt.pan")           // screen elements
+~_MF("splconf.pan")           // SPL parameters
+~_stprec                      // date/time - dt.pan
+~_initcur();_MF("cursor.pan") // cursor
+~_MF("tblconf.pan")           // tableview parameters
+~_MF("miscconf.pan")          // misc
+
+
+~~setvar("_defconf_page", getmenupage)
+~~if(_rdraw > 0, redrawall(_rdraw))

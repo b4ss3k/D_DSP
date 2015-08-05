@@ -1,0 +1,206 @@
+                                 INSTALLATION
+
+    If you are installing CGEN with DFDP,  no separate installation should 
+    be necessary.   If you are replacing an older version of CGEN,  follow 
+    these instructions:
+
+    CGEN.EXE  and  CGEN.PAR are the only files needed.   Replace  the  old 
+    CGEN.EXE  file  with  the  new CGEN.EXE file  on  your  working  disk.  
+    CGEN.PAR is a new file that you currently do not have on your  working 
+    disk.   If  you  place  it  in a directory  other  than  your  working 
+    directory  you must set the environment variable 'DP' so that CGEN can 
+    find the CGEN.PAR file.   'DP' is set in much the same way as  'PATH'.  
+    For  example,   if  CGEN.PAR  were  located  in  C:\ASPI\UTILITY,  the 
+    following  DOS  command  would  allow  CGEN.EXE to  be  able  to  find 
+    CGEN.PAR:
+
+    SET DP=C:\ASPI\UTILITY;
+
+    'DP'  can be set so that more than one directory is searched just like 
+    'PATH'.  See your DOS manual for further details.  Example:
+
+    SET DP=C:\BIN;C:\ASPI\UTILITY;
+
+
+    If the DP environment variable does not exist, PATH is used.
+
+NOTE: CGEN must also be able to locate DFDP.PAR in this same manner.
+
+***************************************************************************
+
+                                ENHANCEMENTS
+
+                                 rev. 3.21
+                                 ---------
+
+Another way to execute CGEN from the command line is given below:
+
+CGEN FILTER_FILE ASSEMBLY_FILE UNIQUE_NAME {Y|N} PROCESSOR_IMPL
+
+where
+    FILTER_FILE        is the name of the filter file (.flt default ext).
+    ASSEMBLY_FILE      is the name of the output source file.
+    UNIQUE_NAME        is the name of the 5 character unique identifier.
+    {Y|N}              indicates entering either a Y or an N to select a
+                       full implementation (including the main I/O) or not.
+    PROCESSOR_IMPL     is the processor implementation number
+
+In other words the answers to the questions that CGEN asks when run
+interactively
+
+Ex: CGEN IIR IIR IIR Y 1
+
+
+---------------------------------------------------------------------------
+
+
+The  user can customize CGEN's output to work with the users custom hardware 
+
+so  that complete filter programs can be generated,  assembled,  linked  and 
+
+downloaded  to  the users custom hardware in much the same way  as  complete 
+filter  programs are generated for the ASPI 320/PC hardware.   The following 
+is  a  description  of the the two ASCII files that the  user  can  make  to 
+customize CGEN:
+
+TMS320IO
+
+When a full implementation of a filter is request from CGEN,  CGEN looks for 
+a  file  named TM320IO.   If this file does not  exist,  CGEN  automatically 
+generates code for ASPI's 320/PC.  If the file does exist, CGEN includes the 
+file in the output file instead.   This file can be supplied by the user and 
+should  contain the initialization and main I/O loop for the  filter.   This 
+main  I/O loop is responsible for acquiring the sampled data,  then  calling 
+the filter subroutine,  then passing along the filtered data.   This routine 
+must   initialize  the  TMS320  and  the  filter  (by  calling  the   filter 
+initialization  routine).   Then the main I/O routine should place the first 
+sample  in VSAMPL.   Then it should call the filter subroutine.   On  return 
+from  the filter subroutine VSAMPL contains the filtered sample.   The  main 
+I/O  routine should then loop to acquire the next sample.   An example  main 
+I/O routine for the 320/PC-20 (TMS32020) is shown below:
+
+	B	START
+	BSS	6
+************************************************
+*         ASPI CARD INITIALIZATION CODE        *
+************************************************
+START
+	CNFD			*SET BANK 0 TO DATA MEMORY
+	LDPK	IOPAGE		*SET PAGE POINTER
+	SOVM			*SATURATION ARITHMETIC
+	SSXM			*SET SIGN EXTEND MODE ON
+	SPM	1		*SET P REGISTER OUTPUT SHIFT TO 1
+	CALL	INIT		*INITIALIZE
+************************************************
+*                MAIN I/O LOOP                 *
+************************************************
+DOUT	EQU	6		*D/A OUTPUT
+DIN	EQU	6		*A/D INPUT
+*
+LPTS	BIOZ	GET		*WAIT FOR CLOCK
+	B	LPTS		*BRANCH IF NO CLOCK
+*
+GET	OUT	VSAMPL,DOUT	*OUTPUT LAST OUTPUT
+	IN	VSAMPL,DIN	*INPUT SAMPLE
+*
+	CALL	FILTER		*EXECUTE FILTER
+	B	LPTS		*LOOP
+
+The  initialization  code should be the same or very similar for  the  users 
+custom hardware.   The main I/O loop itself will depend greatly on the users 
+hardware.
+
+
+
+TMS320DL
+
+
+When CGEN produces the file GO.BAT for a full filter implementation it looks 
+for a file named TMS320DL.   If it does not find TMS320DL, CGEN produces the 
+DOS BATCH commands to download the ASPI 320/PC.  If this file is found it is 
+read  into  a 'C' format string which is used to append text to the  end  of 
+GO.BAT.  The 'C' statement that does this is as follows:
+
+fprintf(file_handle,format_string,filename,sample_rate,filename);
+
+where file_handle is the channel that is opened to GO.BAT and  format_string 
+is  the format string containing the contents of TMS320DL,  filename is  the 
+name  of  the  object  file that the TMS320 link  editor  will  produce  and 
+sample_rate  is  the floating point sample rate,  in hertz,  for  which  the 
+filter was designed.
+
+For example,  say the user has a download program that is used from the  the 
+command line in the following manner:
+
+ADP -s20000.0 filename
+
+where  -s20000  sets  the sample rate on the users hardware to  20  KHZ  and 
+filename  is the name of the object file to be downloaded.   The contents of 
+the TMS320DL file should then be:
+
+REM %s
+ADP -s%f %s
+
+Another example might be as follows:
+
+TI_LOAD/S/B/G filename 20000
+
+where  20000  sets  the  sample rate on the users hardware  to  20  KHZ  and 
+filename is the name of the object file to be downloaded.   The contents  of 
+the TMS320DL file should then be:
+
+TI_LOAD/S/B/G %s %6.0f
+
+---------------------------------------------------------------------
+
+                                 rev. 3.31
+                                 ---------
+
+Code generated for the TMS32010 now allows the filter coefficients to
+be located anywhere in the 4 kword program space.
+
+
+***************************************************************************
+
+                                    BUGS
+
+
+None known as of release date.
+
+***************************************************************************
+
+                                 BUGS FIXED
+
+                                 rev. 3.21
+                                 ---------
+
+1)   FIR filters produce the negative of the hilbert transform and 
+differentiator.
+
+2)   FIR filters are generated wrong for filters with the last coeffiecient 
+
+equal to zero and options 1, 3 or 4 selected.
+
+3)   IIR filters are generated wrong for filters with A1 coefficient equal 
+to zero for 32010 and 32020 (options 1 - 6).
+
+4)   IIR filters:  interstage gains of > 1 are now implemented by summation 
+instead of left shifts.  The summation aproach is slower, but provides a 
+signal clipping effect rather than a loss of the most significant bits.
+
+5)   IIR filters: CGEN hangs on IBM PC/XT's with a CGA display adaptor.
+
+
+                                 rev. 3.31
+                                 ---------
+FIR modules do not include FILTT as a label reference when generating
+the filter subroutine only.
+
+
+			         rev. 3.33
+                                 ---------
+
+FIR modules do not properly scale input for filters that require and
+up shift of 4 bits.  This resulted in a zero output from the filter.
+
+

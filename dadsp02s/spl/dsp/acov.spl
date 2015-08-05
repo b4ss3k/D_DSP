@@ -1,0 +1,107 @@
+/*****************************************************************************
+*                                                                            *
+*   ACOV.SPL   Copyright (C) 2000 DSP Development Corporation                *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Auto-covariance using convolution                          *
+*                                                                            *
+*   Revisions:    2 May 2000  RRR  Creation - from FREQ.MAC                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_ACOV
+
+    ACOV
+
+    Purpose: Auto-covariance using the convolution method
+                                                                        
+    Format:  ACOV(s, norm)
+
+                  s - input series
+
+               norm - optional integer, normalization method,
+
+                      0: None, 
+                      1: Unity (-1 to 1)
+                      2: Biased
+                      3: Unbiased
+
+                      defaults to 0: None
+
+
+    Returns: A series
+
+    Example:
+             W1: gsin(1000, .001, 4)
+             W3: acorr(w1)
+
+             Performs the auto-covariance of a sinewave. The 
+             peaks of the result indicate the waveform is very similar 
+             to itself at the time intervals where the peaks occur, i.e.
+             the waveform is periodic.
+
+    Example:
+             W1: gsin(1000, .001, 4)
+             W2: gnorm(1000, .001)
+             W3: acov(w1, 1)
+             W4: acov(w2, 1)
+
+             W3 displays the auto-covariance of a sinewave normalized
+             to -1 and 1. W4 shows the normalized auto-covariance of 
+             random noise.
+             
+             The normalized maximum of both results 1.0 at time t == 0, 
+             indicating the expected perfect covariance at time t == 0
+             (true for all series). 
+
+             The waveform of W4 displays only one distinct peak at t == 0,
+             indicating that W2 is not correlated with itself and is 
+             non-periodic.
+
+             Both waveforms display a triangular envelope due to the 
+             assumption that the input series is zero before the first
+             sample and after the last sample. 
+
+
+    Remarks:
+             The auto-covariance is used to determine how similar a
+             series is to itself or if a series is periodic. ACOV 
+             performs covariance by  computing the direct convolution 
+             of the input series. 
+
+             The output length L is:
+
+                      L = 2 * length(s) + 1
+
+             The zeroth lag component is the mid point of the series.
+
+             The BIASED normalization divides the result by M, the 
+             length of the input series.
+
+             The UNBIASED normalization divides the result by
+
+                              M - abs(M - i - 1) + 1
+
+             where i is the index of the result.
+
+             See FACOV for the frequency domain implementation.
+
+
+    See Also:
+             Conv
+             Facorr
+             Fconv
+             Facorr
+             Fxcorr
+#endif
+
+
+/* time domain auto-covariance */
+acov(s, norm)
+{
+	return(acorr(s - colmean(s), norm));
+}
+
+

@@ -1,0 +1,7 @@
+
+/* for backwards compatibility */
+sercount(s)
+{
+	if (argc < 1) return(numcols(curr));
+	else return(numcols(s));
+}

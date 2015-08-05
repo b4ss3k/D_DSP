@@ -1,0 +1,12 @@
+! aparam.dmn -- Parametric Power Spectral Density menu. modified for the demo
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+         Parametric PSD Modeling   
+
+ AR    - Auto-regressive Model          ~DMF("ar.dmn")
+
+ MA    - Moving Average Model           ~echo("Use Moving Average Model")
+
+ ARMA  - Auto-regressive Moving Average ~echo("Use ARMA Model")

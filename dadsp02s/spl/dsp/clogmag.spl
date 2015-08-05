@@ -1,0 +1,108 @@
+/*****************************************************************************
+*                                                                            *
+*   CLOGMAG.SPL  Copyright (C) 1999-2002 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Evaluates the frequency response of Cascade coefficients    *
+*                                                                            *
+*   Revisions:   31 Aug 1999  RRR  Creation                                  *
+*                20 Sep 2002  RRR  units, comment and optional phase         *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_CLOGMAG
+
+    CLOGMAG  
+
+    Purpose: Evaluates the log magnitude of Cascade form coefficients
+                                                                        
+    Format:  CLOGMAG(c, N, r)
+
+                c - a series, filter coefficients in cascade format
+
+                N - an optional integer, number of output samples,
+                    defaults to 2048
+
+               Fs - an optional real, sample rate of data, defaults
+                    to rate of filter
+
+
+    Returns: A real series, log of the magnitude frequency response of filter
+
+             (m, p) = CLOGMAG(c, N, r) returns both the log magnitude and
+             phase response.
+
+
+    Example:
+             
+             W1: Wkfcoef(1000)
+             W2: clogmag(w1);setxlog(1)
+ 
+             W2 contains 2048 uniformly spaced samples of the log 
+             magnitude frequency response of the Wk filter in W1.
+             The X axis is set to log scales.
+
+
+    Remarks:
+             CLOGMAG uses the ZFREQ to evaluate N uniformly spaced
+             samples of the frequency response of the filter. The 
+             cascade coefficients are converted to direct form and the
+             frequency response is evaluated using the FFT. The log of
+             the magnitude is returned.
+
+    See Also:
+             Cphase
+             Fft
+             Zfreq
+#endif
+
+
+ITERATE clogmag(c, N, Fs)
+{
+	local f, g, cs, p;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("clogmag - input series required");
+			N = 2048;
+		}
+		/* default to rate of filter */
+		Fs = rate(c);
+	}
+
+	/* get individual stages */
+	cs = ravel(extract(c, 2, -1), 5);
+
+	/* add the leading 1 for the denominator */
+	cs = {cs[1..3, ..], ones(1, numcols(cs)), cs[4..5, ..]};
+
+	/* evaluate frequency response over upper half of the unit circle */
+	f = zfreq(cs[1..3, ..], cs[4..6, ..], N, Fs);
+
+	/* combine response from each stage */
+	f = c[1] * rowreduce(f, "*");
+
+	if (outargc > 1) {
+		p = phase(f);
+		setvunits(p, "Radians");
+		setcomment(p, "Phase Response in Radians");
+	}
+
+	/* remove zeros */
+	g = mag(f);
+	if (min(g) == 0) {
+		g = replace(g, g == 0.0, 10e-6);
+	}
+	f = 20*log10(g);
+	setvunits(f, "dB");
+	setcomment(f, "Log Magnitude Response in dB");
+
+	if (outargc <= 1) {
+		return(f);
+	}
+	else {
+		return(f, p);
+	}
+}

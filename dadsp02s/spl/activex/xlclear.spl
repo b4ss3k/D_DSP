@@ -1,0 +1,83 @@
+/*****************************************************************************
+*                                                                            *
+*   XLCLEAR.SPL  Copyright (C) 2001 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Clears Excel connection established by xlget or xlput              *
+*                                                                            *
+*   Revisions:   22 Aug 2001  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_XLCLEAR
+
+    XLCLEAR
+
+    Purpose: Clears ActiveX connection to Excel established by xlget or xlput
+                                                                        
+    Format:  XLCLEAR
+
+    Returns: 1 if a connection existed, else 0
+
+
+    Example:
+             W1: rand(10, 3);
+
+             xlput("A1:C10", W1);
+
+             W2: xlget("A1:C10");
+
+             xlclear
+
+             W1 == W2 is all ones, that is W1 and W2 are equivalent. The data
+             is retrieved from the current Sheet of the current Workbook.
+
+             The Excel connection is terminated.
+
+
+    Remarks:
+             If Excel is visible, XLCLEAR does not terminate Excel, though
+             the variables used by DADiSP are still cleared.
+
+    See Also:
+             Xlinit
+             Xlget
+             Xlput
+#endif
+
+
+
+/* clear Excel connection */
+xlclear()
+{
+	local status = 0;
+
+	if (isvar(_excel)) {
+		if (isobject(_excel)) {
+			status = 1;
+			if (_excel.visible == 0) {
+				/* shut down silently */
+				_excel.workbooks(1).saved = 1;
+				_excel.workbooks.close();
+				_excel.quit();
+			}
+			release(_excel);  /* release interface - pedantic */
+			delvar("_excel"); /* clear global */
+		}
+	}
+	return(status);
+}
+
+
+/* in case something goes wrong */
+xlclear_error()
+{
+	release(_excel);  /* release interface - pedantic */
+	delvar("_excel"); /* clear global */
+}
+
+

@@ -1,0 +1,149 @@
+/*****************************************************************************
+*                                                                            *
+*   OUTLIER.SPL Copyright (C) 2005 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Replaces outliers with linear interpolated values           *
+*                                                                            *
+*   Revisions:   21 Apr 2005  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_OUTLIER
+
+    OUTLIER  
+
+    Purpose: Linearly interpolates outlier values based on a logical condition
+                                                                        
+    Format:  OUTLIER(series, condition, endpt)
+
+                series - input series or table
+
+             condition - logical expression resulting in a binary series
+
+                 endpt - optional, an integer specifying endpoint handling. 
+
+                          0: do not replace removed beginning and end values
+
+                          1: replace removed beginning values with the first 
+                             preserved value and replace removed ending
+                             values with the last preserved value (default).
+              
+    Returns: A series.
+
+    Example:
+             W1: {1, 3, 9, 1, 2}
+             W2: outlier(W1, W1 > 3)
+
+             W2 contains the series {1, 3, 2, 1, 2}.  Any value in W1
+             greater than 3.0 is replaced with the linear interpolation
+             of the preserved neighbors.  In this case, W1[3] == 9.0. 
+             Thus, W2[3] == 2.0, since this is the linear interpolation
+             between the preserved values of W1[2] (the value 3.0) and
+             W1[4] (the value 1.0)
+
+    Example:
+             W3: {1, 3, 9, 13, 10, 1, 2}
+             W4: outlier(W3, W3 > 3);overp(W3, lred);setsym(14)
+
+             Similar to above, except multiple consecutive outliers are
+             replaced with the linear interpolation of the preserved
+             neighboring values. The original data is overplotted onto the
+             result to clearly show the process of outlier interpolation.
+
+    Example:
+             W1: {1, 3, 9, 13, 10}
+             W2: outlier(W1, W1 > 3)
+             W3: outlier(W1, W1 > 3, 0)
+
+             W2 contains the series {1, 3, 3, 3, 3} but W3 contains the
+             series {1, 3}.  Since the end points of W1 are outliers,
+             W2 replaces the removed end points with the last preserved
+             value, 3.0.  Because W3 does not replace the removed end
+             points, the series is shorter.
+
+
+    Remarks:
+             OUTLIER uses XYLOOKUP to replace removed outlier values with
+             the linear interpolation of the surrounding preserved values.
+             A value is an outlier if it meets the condition specified
+             by the binary series CONDITION.
+
+             Consecutive outlier values are replaced with the continued
+             linear interpolation of the preserved neighboring values.
+
+             If ENDPT is 1, removed values at the beginning of the series
+             are replaced with the first preserved values and removed values
+             at the end of the series are replaced with the last preserved
+             value. If ENDPT is 0, removed beginning and ending values are
+             not replaced and the resulting series is shorter than the
+             original input series.
+
+    See Also:
+             Delete
+             Find
+             Insert
+             Interp
+             Remove
+             Replace
+             Xylookup
+#endif
+
+
+/* outlier linear interpolation replacement */
+ITERATE outlier(series, condition, endpt)
+{
+	local y, isxy, mode, offset, x;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			error("outlier - input series and condition series required");
+		}
+		endpt = 1;
+	}
+	isxy = ISXYSERIES(series);
+
+	/* if endpts, clip endpoints else set endpoints to nan */
+	mode = (endpt) ? 1 : 2;
+
+	/* use xylookup to linear interpolate and clip or set end points to nan */
+	y = xylookup(delete(xvals(series), condition), delete(series, condition), xvals(series), "linear", mode);
+
+	if (not(isxy)) {
+		/* restore original attributes */
+		y = yvals(y);
+		setxoffset(y, xoffset(series));
+		setdeltax(y,  deltax(series));
+	}
+
+	if (not(endpt) && length(y) > 0) { /* remove endpoints */
+
+		if (not(isxy)) {
+			offset = xoffset(series);
+			/* find resulting offset from x values */
+			x = delete(xvals(y), isnan(y));
+			if (length(x) > 0) {
+				offset = x[1];
+			}
+		}
+
+		/* remove endpoints - endpoints marked as nan values */
+		y = removena(y);
+
+		/* restore offset */
+		if (not(isxy)) {
+			setxoffset(y, offset);
+		}
+	}
+
+	/* restore units */
+	setvunits(y,  getvunits(series));
+	sethunits(y,  gethunits(series));
+
+	return(y);
+}
+

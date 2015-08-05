@@ -1,0 +1,96 @@
+/*****************************************************************************
+*                                                                            *
+*   LINSPACE.SPL Copyright (C) 2001 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns n equally spaced samples from lo to hi value        *
+*                                                                            *
+*   Revisions:   24 Jul 2001  RRR  Creation                                  *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_LINSPACE
+
+    LINSPACE  
+
+    Purpose: Create a series of n equally spaced values from lo to hi inclusive
+                                                                        
+    Format:  LINSPACE(lo, hi, n)
+
+                 lo - optional real, the start range, defaults to 0.0, 
+
+                 hi - optional real, the end range, defaults to 1.0
+
+                  n - optional integer, the number of samples, defaults
+                      to 100.
+
+    Returns: A series of n equally spaced values.
+
+    Example:
+             linspace(1, 5, 5)
+
+             returns {1, 2, 3, 4, 5}
+
+
+    Example:
+             linspace(0, 5, 5)
+
+             returns {0, 1.25, 2.5, 3.75, 5}
+
+	
+    Example:
+             W1: cos(linspace(-pi, pi, 1000))
+             W2: gcos(1000, 2*pi/(999), 1/(2*pi), -pi);setxoffset(-pi)
+
+             W1 == W2 within the machine precision
+
+	
+    Remarks:
+             The DELTAX values of the resulting series is (hi-lo)/(n-1) and
+             the XOFFSET is set to lo.
+
+    See Also:
+             .. (Range Specifier)
+             Gline
+             Logspace
+#endif
+
+
+/* generate N evenly space values from lo to hi inclusive */
+linspace(lo, hi, n)
+{
+	local dx, l, slope = 1.0; 
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) {
+				lo = 0.0;
+			}
+			hi = 1.0;
+		}
+		n = 100;
+	}
+
+	/* use the fast gline to create series */
+
+	dx = (hi - lo) / (n - 1);
+	if (dx == 0 || n <= 1) {
+		l = {hi};
+	}
+	else {
+		if (dx < 0) {
+			slope = -1.0;
+		}
+
+		l = gline(int(n), abs(dx), slope, lo);
+		setxoffset(l, lo);
+		setdeltax(l, dx);
+	}
+
+	return(l);
+}
+

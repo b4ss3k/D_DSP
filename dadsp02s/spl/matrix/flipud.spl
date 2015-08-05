@@ -1,0 +1,65 @@
+/*****************************************************************************
+*                                                                            *
+*   FLIPUD.SPL  Copyright (C) 2002 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Flips an array element-wise                                 *
+*                                                                            *
+*   Revisions:   13 Aug 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_FLIPUD
+
+    FLIPUD  
+
+    Purpose: Reverses the elements of each column of an array
+                                                                        
+    Format:  FLIPUD(a)
+
+                  a -  input array
+
+
+    Returns: An array of size(a) where the elements of each column are 
+             in reversed order.
+
+    Example:
+             W1: {{1, 2, 3},
+                  {4, 5, 6},
+                  {7, 8, 9}}
+
+             W2: flipud(W1)
+
+             W2 == {{7, 8, 9},
+                    {4, 5, 6},
+                    {1, 2, 3}}
+
+
+    Remarks:
+             FLIPUD reverses the elements of each column which has the effect
+             of reversing the row order an array. Use FLIPLR
+             to reverse the order of the elements in each row.
+
+             The input is converted to a series if it is not already a series
+             or array.
+
+    See Also:
+             ..
+             Fliplr
+             Ravel
+             Reverse
+#endif
+
+
+/* flip an array element-wise */
+flipud(a)
+{
+	if (argc < 1) error("flipud - input array required");
+
+	if (not(IS_ARRAY(a))) a = castseries(a);
+	return(reverse(a));
+}

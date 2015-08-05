@@ -1,0 +1,145 @@
+/*****************************************************************************
+*                                                                            *
+*   SCR2PRT.SPL     Copyright (C) 2002 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets display settings to printer settings                   *
+*                                                                            *
+*   Revisions:   25 Jan 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_SCR2PRT
+
+    SCR2PRT
+
+    Purpose: Sets Worksheet display settings to the printer settings
+                                                                        
+    Format:  SCR2PRT
+
+
+    Returns: Nothing, the Worksheet is displayed on the screen with the 
+             same settings as when printed.
+
+
+    Example:
+             W1: gnorm(1000,1)
+             W2: integ(w1)
+
+             scr2prt
+             copyworksheet
+             resetscr
+
+             The Worksheet settings are set to the printer settings so the
+             Worksheet is displayed as if it will be printed. The Worksheet
+             is then copied to the clipboard as a metafile and the original
+             settings are restored. The clipboard can then be used to paste
+             the Worksheet image into another application.
+
+    Remarks:
+             SCR2PRT sets the window color, series color, header
+             justification, margin alignment and header colors. The
+             Windows are also displayed without a GUI frame.
+
+             Use RESETSCR to restore the original settings.
+
+             
+    See Also:
+             Resetscr
+#endif
+
+
+
+/* set screen settings to printer settings */
+scr2prt()
+{
+	scrnsavecnf();
+	scrnsetcnf();
+}
+
+
+/* save original display settings */
+scrnsavecnf()
+{
+	/* get current settings */
+	setvar("scrn_winstyle", getconf("GUI_WINDOW"));
+
+	/* window frame */
+	setvar("scrn_gc_wf", getgcolor(17));
+
+	/* normal caption text */
+	setvar("scrn_gc_nc_fg", getgcolor(31));
+	setvar("scrn_gc_nc_bg", getgcolor(32));
+
+	/* inactive caption text */
+	setvar("scrn_gc_ic_fg", getgcolor(36));
+	setvar("scrn_gc_ic_bg", getgcolor(35));
+
+	/* active caption text */
+	setvar("scrn_gc_ac_fg", getgcolor(38));
+	setvar("scrn_gc_ac_bg", getgcolor(37));
+
+	/* window highlight */
+	setvar("scrn_win_hilite", getgcolor(20));
+	setvar("scrn_win_shadow", getgcolor(21));
+
+	/* header justification */
+	setvar("scrn_headjust", getconf("SCREEN_HEADER_JUSTIFY_DEFAULT"));
+	setvar("scrn_winhead",  getconf("SCREEN_WINHEADER_DEFAULT"));
+	setvar("scrn_winbord",  getconf("SCREEN_WINBORDER_DEFAULT"));
+	setvar("scrn_winmarg",  getconf("SCREEN_WINMARGIN_DEFAULT"));
+	setvar("scrn_winname",  getconf("SCREEN_WINNAME_DEFAULT"));
+	setvar("scrn_align",    getconf("SCREEN_ALIGN_MARGINS"));
+}
+
+
+/* set display settings to printer settings */
+scrnsetcnf()
+{
+	local title_color;
+
+	/* set a flag for reset */
+	setvar("_scrn2prt_set", 1);
+
+	/* set window style to non-gui */
+	setconf("GUI_WINDOW", "0");
+
+	/* window frame */
+	setgcolor(17, WHITE);
+
+	/* color of printed caption */
+	title_color = castint(getconf("WINDOW_TITLE_COLOR"));
+	if (title_color < 0) title_color = BLACK;
+
+	/* caption text colors */
+	setgcolor(31, title_color);
+	setgcolor(32, WHITE);
+
+	/* inactive caption */
+	setgcolor(36, title_color);
+	setgcolor(35, WHITE);
+
+	/* active caption text */
+	setgcolor(38, title_color);
+	setgcolor(37, WHITE);
+
+	/* shadow & highlight */
+	setgcolor(20, BLACK);
+	setgcolor(21, BLACK);
+
+	/* set header justification same as print settings */
+	setconf("SCREEN_HEADER_JUSTIFY_DEFAULT", getconf("PRT_HEADER_JUSTIFY_DEFAULT"));
+	setconf("SCREEN_WINHEADER_DEFAULT",      getconf("PRT_WINHEADER_DEFAULT"));
+	setconf("SCREEN_WINBORDER_DEFAULT",      getconf("PRT_WINBORDER_DEFAULT"));
+	setconf("SCREEN_WINMARGIN_DEFAULT",      getconf("PRT_WINMARGIN_DEFAULT"));
+	setconf("SCREEN_WINNAME_DEFAULT",        getconf("PRT_WINNAME_DEFAULT"));
+	setconf("SCREEN_ALIGN_MARGINS",          getconf("PRT_ALIGN_MARGINS"));
+
+	/* redraw and update fonts */
+	redrawall(3);
+}
+
+
+

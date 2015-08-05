@@ -1,0 +1,36 @@
+/* initializes window configuration parameters */
+_intwncf()
+{
+	setvar("_xgsty",   numstr(getconf("X_GRID_STYLE")));
+	setvar("_ygsty",   numstr(getconf("Y_GRID_STYLE")));
+	setvar("_ticloc",  _gticloc);
+	setvar("_asot",    numstr(getconf("SCALE_ON_TICS")));
+	setvar("_xgr",     if(strcmp(getconf("X_GRID_ON"),"1")==0,"1","0"));
+	setvar("_ygr",     if(strcmp(getconf("Y_GRID_ON"),"1")==0,"1","0"));
+	setvar("_ticall",  _gticall);
+	setvar("_ticsz",   castint(getconf("tic_x_length")));
+
+	setvar("_xlg",     if(strcmp(getconf("X_LOG_SCALE"),"1")==0,"1","0"));
+	setvar("_xlgls",   if(strcmp(getconf("X_LABEL_SUBTICS"),"1")==0,"1","0"));
+	setvar("_xlgxt",   if(strcmp(getconf("X_EXP_LOGTICS"),"1")==0,"1","0"));
+	setvar("_lt0f",    (castint(getconf("EXP_LOGFORMAT"))&0x01)>0);
+
+	setvar("_ylg",     if(strcmp(getconf("Y_LOG_SCALE"),"1")==0,"1","0"));
+	setvar("_ylgls",   if(strcmp(getconf("Y_LABEL_SUBTICS"),"1")==0,"1","0"));
+	setvar("_ylgxt",   if(strcmp(getconf("Y_EXP_LOGTICS"),"1")==0,"1","0"));
+	setvar("_lt1f",    (castint(getconf("EXP_LOGFORMAT"))&0x02)>0);
+
+	setvar("_wrsz",    if(strcmp(getconf("RESIZE_WINDOWS"),"1")==0,'1','0'));
+	setvar("_vcurs",   if(strcmp(getconf("LABEL_ORIENT"),"1")==0,'1','0'));
+	setvar("_plabel",  caststring(getconf("CLEAR_LABELS")=='0'));
+	setvar("_daspect", caststring(getconf("DEFAULT_ASPECT")=='1'));
+
+	setvar("_xaxrev",  if(strcmp(getconf("X_AXIS_DIRECTION"),"1")==0,'1','0'));
+	setvar("_yaxrev",  if(strcmp(getconf("Y_AXIS_DIRECTION"),"1")==0,'1','0'));
+
+	setvar("_axs",     _gaxstyl(getconf("DEFAULT_SCALES")));
+	setvar("_winsync", getconf("SYNC_MODE"));
+
+	setvar("_plotinf",  if(strcmp(getconf("PLOT_INF"),"1")==0,'1','0'));
+
+}

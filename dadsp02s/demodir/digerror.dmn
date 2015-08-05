@@ -1,0 +1,16 @@
+! digerror.mnu - extracts the digital error descent curve of an MLP network
+! changed for demo.
+@x 0
+@y 0
+@panel
+
+    MLP Network Digital Error
+
+  Extracts the digital error descent curve 
+
+  of an MLP network.
+
+  Inputs:
+       Source Window:  Wn
+       Run Number:     N
+~menuc()

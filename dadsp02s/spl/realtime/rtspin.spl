@@ -1,0 +1,148 @@
+/*****************************************************************************
+*                                                                            *
+*   RTSPIN.SPL   Copyright (C) 2000 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Spins a 3D plot in real time                                *
+*                                                                            *
+*   Revisions:   16 May 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_RTSPIN
+
+    RTSPIN
+
+    Purpose: Spins a 3D plot in Real Time
+                                                                        
+    Format:  RTSPIN(win, inc)
+
+             win - an optional Window that contains a 3D plot,
+                   defaults to the current Window
+
+             inc - an optional integer, spin increment in degrees, 
+                   defaults to 3 degrees. If inc == 0, the current
+                   rtspin is terminated.
+
+
+
+    Returns: Nothing
+
+    Example:
+             W1: XYZ(gsin(100,.01,4),gcos(100,.01,4),0..0.01..0.99)
+
+             Scalesoff
+             rtspin
+
+
+             Spins the spiral 3 degrees in each direction. Because the
+             spin routine is automatically executed in the background,
+             DADiSP is still responsive to user input while the plot
+             spins.
+
+    Example:
+             W1: XYZ(gsin(100,.01,4),gcos(100,.01,4),0..0.01..0.99)
+
+             Scalesoff
+             rtspin(w1, 8)
+
+             Same as above except the spin increment is 8 degrees.
+
+
+    Remarks:
+             Use RTSPIN(0) to terminate the real time spin.
+
+             RTSPIN automatically adds itself to the real time task list
+             using RTTINIT. Currently, only one RTSPIN function is active 
+             per real time session.
+
+
+    See Also:
+             Rotate3d
+             Rttinit
+             Rttterm
+             Spin
+             XYZ
+
+#endif
+
+/* spin a 3D Window in real time */
+rtspin(w, inc)
+{
+	local x, y, z;
+
+	if (argc < 2) {
+		inc = 3;
+		if (argc < 1) {
+			if (not(addrtspin(w0, inc))) remrtspin();
+			return;
+		}
+		else if (IS_WINDOW(w)) {
+			/* add to real time list if necessary */
+			if (addrtspin(w, inc)) return;
+		}
+		else if (IS_NUMERIC(w)) {
+			if (w == 0) {
+				remrtspin();
+				return();
+			}
+			else {
+				if (addrtspin(w0, w)) return;
+			}
+		}
+	}
+	else if (IS_WINDOW(w)) {
+		/* add to real time list if necessary */
+		if (addrtspin(w, inc)) return;
+	}
+
+	if (IS_NUMERIC(w)) {
+		/* remove from realtime list */
+		remrtspin();
+	}
+	else if (_is3d(w)) {
+		x = getrotate3d(w, 1);
+		y = getrotate3d(w, 2);
+		z = getrotate3d(w, 3);
+
+		rotate3d(w, x+inc, y+inc, z+inc);
+		if (getwnum != castint(strwin(w))) plotmode(w, 1);
+	}
+	return;
+}
+
+
+/* add spin to real time task list */
+addrtspin(w, inc)
+{
+	local retval = 0;
+
+	if (not(isvar("rtspin_on")) && _is3d(w)) {
+		if (argc < 2) {
+			if (IS_WINDOW(w)) {
+				eval(sprintf("rttinit('rtspin(%s)')", strwin(w)));
+				setvar("rtspin_on", 1);
+				retval = 1;
+			}
+		}
+		else if (IS_WINDOW(w)) {
+			eval(sprintf("rttinit('rtspin(%s, %d)')", strwin(w), inc));
+			setvar("rtspin_on", 1);
+			retval = 1;
+		}
+	}
+	return(retval);
+}
+
+
+/* remove all real time tasks */
+remrtspin()
+{
+	rttterm(-1);
+	delvar("rtspin_on");
+}
+	

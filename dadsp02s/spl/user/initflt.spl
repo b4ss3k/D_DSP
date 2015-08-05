@@ -1,0 +1,42 @@
+/*****************************************************************************
+*                                                                            *
+*   INITFLT.SPL  Copyright (C) 1997 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Installs Filter module as a toolbar button                  *
+*                                                                            *
+*   Revisions:   22 Oct 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_INITFLT
+
+    INITFLT
+
+    Purpose: Installs FILTERS module as a toolbar button
+                                                                        
+    Format:  INITFLT()
+
+    Returns: Nothing
+
+    Remarks:
+             Initflt simply prepares the FILTER module to be invoked as 
+             a toolbar button. 
+
+             Initflt is invoked in splmain(), located in the
+             dadisp.spl file.
+
+#endif
+
+
+initflt()
+{
+
+	/* install Filter button - first toolbar, last button */
+	toolbar(1,-1,4, lred, "Filters",'_MFF("filter.men")', 'DADiSP/Filters');
+
+	setvar("_initfiltflg", 1)
+}

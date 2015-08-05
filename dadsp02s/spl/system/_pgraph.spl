@@ -1,0 +1,18 @@
+_pgraph(func, coef, xv, pgux, pgxy, _dwin)
+{
+	local evalstr;
+
+	if (pgux == 1) {
+		xv = sprintf("Xvals(%s)", xv);
+	}
+	if (pgxy) {
+		evalstr = sprintf("%s(%s, %s, 1)", func, coef, xv);
+	}
+	else {
+		evalstr = sprintf("%s(%s, %s)", func, coef, xv);
+	}
+	evalstr = sprintf("setwf(%s, '%s')", _dwin, evalstr);
+
+	return(evalstr);
+}
+

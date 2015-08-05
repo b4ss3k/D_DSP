@@ -1,0 +1,121 @@
+/*****************************************************************************
+*                                                                            *
+*   ROOTS.SPL    Copyright (C) 2003 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Finds roots of a polynomial using the companion matrix      *
+*                                                                            *
+*   Revisions:    7 Oct 2003  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_ROOTS
+
+    ROOTS
+
+    Purpose: Finds the roots of a polynomial.
+                                                                        
+    Format:  ROOTS(coef, method)
+
+                coef - A series, the polynomial coefficients in descending
+                       powers (highest degree to lowest).
+
+              method - Optional. An integer, the root finding method,
+                       0: companion matrix, 1:Laguare method. Defaults
+                       to 0.
+
+    Returns: A real or complex series, the roots of the polynomial.
+
+    Example:
+             r = roots({1, -1, -1})
+             r == {1.618034, -0.618034}
+             r[1] == phi
+
+             r[1] == phi indicates the positive root of x^2 - x - 1 
+             is PHI, the Golden Mean.
+
+    Example:
+             roots({1, -2, 0}) 
+
+             returns {2, 0}, the roots of x^2 - 2*x.
+
+    Example:
+             roots(poly({3, 2, 1}) 
+
+             returns {3, 2, 1}, showing that roots and poly are
+             inverse functions within machine precision.
+
+
+    Example:
+             a := rand
+             x = -10..0.01..10
+             W1: roots({a, 1, -1, -1})
+             W2: xy(W1, zeros(length(W1),1));points;setsym(14)
+             W3: a*x^3 + x^2 - x - 1;overp(W2, lred)
+
+             W3 displays a cubic of the form a*x^3 + x^2 - x - 1 over
+             the range -10 <= x <= 10.  The roots of the cubic are
+             overplotted in red and displayed as solid circles.
+
+             Executing the statement a = rand creates a new polynomial that
+             is automatically updated in W3.
+
+    Remarks:
+             By default, ROOTS calculates the roots of a polynomial by 
+             finding the eigenvalues of the companion matrix for the 
+             corresponding characteristic polynomial.
+
+             ROOTS(a) finds the roots of:
+
+                 a[n]*x^(n-1) + a[n-1]*x^(n-2) + ... + a[2]*x + a[1]
+
+             If a lower order term does not exist, the corresponding
+             coefficent must be set to 0.
+
+             See POLYROOT to determine the roots of a polynomial in
+             ascending powers (lowest degree to highest).
+
+    See Also:
+             Pfit
+             Poly
+             Polyfit
+             Polygraph
+             Polyroot
+#endif
+
+
+/* find the roots of a polynomial in descending powers */
+ITERATE roots(coef, method)
+{
+	local r;
+
+	if (argc < 2) {
+		if (argc < 1) error("roots - input series of coefficients required");
+		method = 0;
+	}
+
+	/* make sure we have a series */
+	coef = {coef};
+
+	/* check for empty series */
+	if (length(coef) == 0) return({});
+
+	if (method == 1) {
+		/* Laguare method */
+		r = rev(reserved(1009, rev(coef)));
+		/* check if imaginary part all zero */
+		if (not(any(imag(r)))) {
+			r = real(r);
+		}
+	}
+	else {
+		/* companion matrix method */
+		r = polyroot(coef, 1);
+	}
+	return(r);
+}
+
+

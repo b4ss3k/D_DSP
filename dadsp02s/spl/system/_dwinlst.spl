@@ -1,0 +1,23 @@
+/* generate list of displayed worksheet windows */
+_dwinlst(separator, addlabel)
+{
+	local i, s = "", p, q;
+
+	if (argc < 2) addlabel = 0;
+	if (argc < 1) separator = strescape("\n");
+
+	for (i = 1; i <= numwindows; i++) {
+		p = q = sprintf("W%d", i);
+		if (addlabel) {
+			p = sprintf("%s: %s", p, eval(sprintf("getlabel(W%d)", i)));
+		}
+		/* check if hidden */
+		if (eval(sprintf("Winstatus(%s, 3)", q)) == 0) {
+			if (strlen(s) > 0) s = strcat(s, separator);
+			s = strcat(s, p);
+		}
+	}
+	return(s);
+}
+
+		

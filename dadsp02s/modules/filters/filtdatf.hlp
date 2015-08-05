@@ -1,0 +1,147 @@
+@modeless 1
+
+    FILTDATAF  
+
+    Purpose: 
+             Filters a series with a direct form or cascade filter using
+             the FFT.
+                                                                        
+    Format:  
+             FILTDATAF(x, b, a)
+
+                x - a series, the input to filter
+ 
+                b - a series, numerator (i.e. zero) coefficients
+
+                a - a series, denominator (i.e. pole) coefficients
+
+
+    Alternative Format:  
+
+             FILTDATAF(x, c)
+
+                x - a series, the input to filter
+
+                c - A series, the system coefficients in cascaded 
+                    biquad form.  If C contains 2 columns, c is assumed
+                    to be in direct form, where the first column is B
+                    and the second column is A.
+
+    Returns: 
+             A series, the result of filtering the input data with the
+             filter.
+
+    Example:
+             W1: filtdataf(gimpulse(10, 1), {"{1}"}, {"{1, -0.5, 0.2}"} )
+
+             Filters a 10 point impulse with the system defined by
+             the following Z transform:
+
+                            1
+             H(z) = ------------------
+                            -1      -2
+                    1 - 0.5z  + 0.2z
+
+             The sample rate of the response is 1.0.  The input filter
+             coefficients are in direct form. The result is identical
+             to:
+
+             W1: filtimp( {"{1}"}, {"{1, -0.5, 0.2}"}, 10 )
+ 
+    Example:
+             W1: gsweep(100, 1/100, 1, 40)
+             W2: butterworth(1, 100.0, 10.0)
+             W3: filtdataf(w1, w2)
+
+             W1 contains a linear swept sinewave from 1 to 40 Hz.  W2
+             contains a 10 Hz lowpass Butterworth filter and W3
+             displays the result of filtering the swept sinewave with
+             the lowpass filter.  The filter coefficients are in
+             cascade form.
+
+    Example:
+             W1: gsweep(100, 1/100, 1, 40)
+             W2: butterworth(1, 100.0, 10.0)
+             W3: cas2dir(w2)
+             W4: filtdataf(w1, w3)
+
+             Same as the previous example except the filter coefficients
+             are in Direct Form.
+
+    Example:
+             W1: gsweep(100, 1/100, 1, 40)
+             W2: lowpass(100.0, 10.0)
+             W3: filtdataf(w1, w2, {"{1}"})
+
+             W1 contains a linear swept sinewave from 1 to 40 Hz.  W2
+             contains a 10 Hz lowpass FIR Remez Exchange filter and
+             W3 displays the result of filtering the swept sinewave
+             with the lowpass filter.  Since filter coefficients are in
+             FIR form, the denominator coefficient is set to {"{1}"}. 
+
+    Remarks:
+             FILTDATAF uses the FFT to evaluate N uniformly spaced samples
+             over the unit circle of a Z transform in direct form:
+  
+                                        -1                 -Q
+                    Y(z)   b[1] + b[2]*z   + ... + b[Q+1]*z
+             H(z) = ---- = -------------------------------------
+                                        -1                 -P
+                    X(z)    1   + a[2]*z   + ... + a[P+1]*z
+
+
+                        jw
+             where z = e    unit circle (frequency response)
+                   Q        order of zeros (numerator)
+                   P        order of poles (denominator)
+
+
+             For FILTDATAF(c, N), if the input c is a single column, the
+             coefficients are assumed to be in cascaded bi-quad form. 
+             This is the output format of IIR filters designed by
+             DADiSP/Filters.  In this case, FILTDATAF uses the FFT to
+             evaluate the following Z transform:
+
+                               -1       -2                -1       -2
+                    b10 + b11 z  + b12 z       b20 + b21 z  + b22 z
+         H(z) = G * ________________________ *  ________________________ ...
+                               -1       -2                -1       -2
+                      1 + a11 z  + a12 z         1 + a21 z  + a22 z
+
+             Where the filter coefficients are represented by a single column
+             series in the following order:
+
+             G, b10, b11, b12, a11, a12, b20, b21, b22, a21, a22, ...
+
+             For cascade coefficients, performing IIR filtering using the FFT
+             may not be as stable as using FILTDATA for a direct time domain
+             calculation.
+
+             If C contains 2 columns, the coefficients are assumed to
+             be in direct form, where the first column is B and the
+             second column is A.
+
+             The sample rate of the result is determined by the
+             sample rate of the input series and the rate of the filter 
+             coefficients. If the sample rates are not equal, the sample
+             rate of the output is set to 1.0.
+
+             See FILTDATA for a direct time domain implementation.
+
+             See FIRFILTERF for an FFT based frequency domain implementation
+             with filter coefficients in FIR form.
+
+             See IIRFILTERF for an FFT based frequency domain implementation
+             with filter coefficients in cascade form.
+
+    See Also:
+             Conv
+             Fft
+             Filtdata
+             Filteq
+             Fir
+             Firfilter
+             Firfilterf
+             Iir
+             Iirfilter
+             Iirfilterf

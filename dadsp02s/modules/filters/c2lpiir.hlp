@@ -1,0 +1,30 @@
+@modeless 1
+               Chebyshev2 Lowpass IIR Filter Parameters
+
+ Magnitude (dB) |
+                |
+                |                   
+                |                   
+         0   __ |  ____________                      _
+                |              \                      |
+                |               \                     |     
+                |   Pass Band    \   Stop Band        | Attenuation
+ -Attn+Ripple - |                 \ ----------------  |
+      -Attn   - |                  \/\/\/\/\/\/\/\/\ _|
+ -Attn-Ripple - |                   ---------------- 
+                |________________________________________________________
+                             |     |             |        Frequency (Hz)
+                             f     f             f
+                              cut   stop          rate/2
+
+
+
+  frate  -  Sample Rate           Hz 
+
+  fcut   -  Cutoff Frequency      Hz
+  fstop  -  Stopband Frequency    Hz
+
+  ripple -  Stopband Ripple       dB
+  attn   -  Stopband Attenuation  dB
+
+                        0 < fcut < fstop < frate/2

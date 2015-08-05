@@ -1,0 +1,209 @@
+/*****************************************************************************
+*                                                                            *
+*   WRITEBMP.SPL Copyright (C) 1997 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Writes a Microsoft .BMP bitmap file                         *
+*                                                                            *
+*   Revisions:    5 Dec 1997  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_WRITEBMP
+
+    WRITEBMP    
+
+    Purpose: Reads a Microsoft .BMP bitmap file
+                                                                        
+    Format:  WRITEBMP(filename, image, colormap)
+
+              filename - a string specifying the destination .BMP file
+              image    - an optional image array, defaults to current window
+              colormap - an optional 3xN colormap, defaults to current colormap
+
+    Returns: 1 if successful
+
+    Example:
+             (x, y) = fxyvals(-1, 1, 0.05, -1, 1, 0.05);
+
+             W1: Density(cos(x*y))
+
+             WRITEBMP("cos2d.bmp", w1)
+
+             writes the image displayed in W1 as a bitmap file
+
+
+    Remarks:
+
+          WRITEBMP currently supports only uncompressed .BMP files
+          with at most 256 colors. The image is automatically scaled to
+          8 bits per pixel.
+
+          WRITEBMP.SPL is based on SAVEBMP.M (Copyright 1993) written by:
+
+               Ralph Sucher
+               Dept. of Communications Engineering
+               Technical University of Vienna
+               Gusshausstrasse 25/389
+               A-1040 Vienna
+               AUSTRIA
+
+    See Also
+             Readbmp
+
+#endif
+
+
+writebmp(bmpfile, X, map)
+{
+	local fid, nCol, rgb, biBitCnt, xx, i, xmin, xmax;
+	local biHeight, biWidth, ndata, Width, Xsize, bfSize, bfOffs;
+
+	if (argc < 1) {
+		error('Writebmp: filename required');
+	}
+
+	if (argc < 2) {
+		X = current;
+	}
+	if (argc < 3) {
+		map = getcolormap();
+	}
+
+	if (strlen(strfind(".", bmpfile)) == 0) {
+		bmpfile = strcat(bmpfile, ".bmp");
+	}
+
+	(nCol, rgb) = size(map);
+
+	if (nCol > 256) {
+	   error('Writebmp supports only images with at most 256 colors.');
+	}
+	if (rgb != 3) {
+	   error('Writebmp: The colormap must have 3 columns: {R,G,B}.');
+	}
+
+	if (minval(map[..]) < 0 || maxval(map[..]) > 1) {
+		error('Writebmp: The colormap must have values between 0.0 and 1.0.');
+	}
+
+	// determine number of bits per pixel
+	if (nCol <= 2) {
+		biBitCnt = 1;
+	}
+	else if (nCol <= 16) {
+		biBitCnt = 4;
+	}
+	else {
+		biBitCnt = 8;
+	}
+
+	/* scales between 0.0 and 1.0 */
+	X = (X - min(minval(X))) / (max(maxval(X)) - min(minval(X)));
+
+	/* scale betweem 0.0 and 255 */
+	X = X * 255;
+
+	// truncate image data
+	X = round(X);
+
+	// determine image size
+	(biWidth, biHeight) = size(X);
+	Width = ceil(biWidth*biBitCnt/32)*32/biBitCnt;
+	ndata = Width*biHeight*biBitCnt/8;
+
+	if (Width - biWidth > 0) {
+		X = {X, zeros(Width-biWidth, biHeight)};
+	}
+	X = X[..];
+
+	Xsize = Width*biHeight;
+
+	fopen(bmpfile,'wb');
+	fid = bmpfile;
+
+	// ------------------------------- BMP HEADER -------------------------------
+
+	// write file identifier
+	fwriteb(fid, UBYTE, {"BM"});
+
+	// write file length (bytes)
+	bfSize=54+4*nCol+ndata;
+	fwriteb(fid, LONG, {bfSize});
+
+	// set bytes reserved for later extensions to zero
+	fwriteb(fid, LONG, {0});
+
+	// write offset from beginning of file to first data byte
+	bfOffs=54+4*nCol;
+	fwriteb(fid, LONG, {bfOffs});
+
+	// ----------------------------- BMP INFO-BLOCK -----------------------------
+
+	// *** bitmap information header ***
+
+	// write length of bitmap information header
+	fwriteb(fid, LONG, {40});
+	
+	// write width of bitmap
+	fwriteb(fid, LONG, {biWidth});
+
+	// write height of bitmap
+	fwriteb(fid, LONG, {biHeight});
+
+	// write number of color planes
+	fwriteb(fid, UINT, {1});
+
+	// write number of bits per pixel
+	fwriteb(fid, UINT, {biBitCnt});
+
+	// write type of data compression
+	fwriteb(fid, LONG, {0});
+
+	// write size of compressed image
+	fwriteb(fid, LONG, {0});
+
+	// write horizontal resolution
+	fwriteb(fid, LONG, {0});
+
+	// write vertical resolution
+	fwriteb(fid, LONG, {0});
+
+	// write number of used colors
+	fwriteb(fid, LONG, {0});
+
+	// write number of important colors
+	fwriteb(fid, LONG, {0});
+
+	// *** colormap ***
+
+	map = ravel(fix(255*map[..,3..-1..1]), zeros(nCol,1))';
+	map = map[..];
+	fwriteb(fid, UBYTE, map);
+
+	// ------------------------------ BITMAP DATA -------------------------------
+
+	if (biBitCnt == 1) {
+		xx = zeros(1,ndata);
+		for (i=1; i <= 8; i++) {
+			xx = xx+2^(8-i)*X[i..8..Xsize];
+		}
+		fwriteb(fid, UBYTE, xx);
+	}
+	else if (biBitCnt == 4) {
+		xx = 16*X[1..2..Xsize]+X[2..2..Xsize];
+		fwriteb(fid, UBYTE, xx);
+	}
+	else {
+		fwriteb(fid, UBYTE, X);
+	}
+	
+	fclose(fid);
+	return(1);
+}
+
+		

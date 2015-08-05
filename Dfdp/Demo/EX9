@@ -1,0 +1,52 @@
+*          EXERCISE 9
+
+        IDT     'EX9'
+*
+*       THIS PROGRAM MASKS OUT BITS OF THE SIGNAL
+*       TO DEMONSTRATE EFFECTS OF QUANTIZATION.
+*
+*       DATA MEMORY LOCATION ASSIGNMENTS
+*
+RATE    EQU     0       ADDR 00 CONTAINS CLOCK RATE
+MODE    EQU     1       ADDR 01 CONTAINS CONTROL MODE
+XIN     EQU     3       CURRENT DATA SAMPLE
+TEMP    EQU     4
+QMASK   EQU     5       QUANTIZATION MASK
+*
+        AORG    0       START PROGRAM AT ADDRESS 0
+        B       START   JUMP AROUND DATA
+*
+*       DATA MEMORY INITIALIZATION VALUES
+*
+DRATE   DATA    >0200   SAMPLING RATE
+DMODE   DATA    >000A   MODE
+DQMASK  DATA    >FFFF   QUANTIZATION MASK VALUE
+*
+*       THE PROGRAM
+*
+START   LDPK    0       SET DATA PAGE POINTER TO 0
+        SOVM
+        DINT
+        LACK    DRATE   LOAD
+        TBLR    RATE        CLOCK RATE,
+        LACK    DMODE           A/D MODE,
+        TBLR    MODE                AND
+        LACK    DQMASK                  MASK
+        TBLR    QMASK                       INTO DATA MEMORY
+*
+*
+        OUT     MODE,PA0        SETS AIB SAMPLING MODE
+        OUT     RATE,PA1        SET SAMPLING RATE
+*
+LOOP    BIOZ    GET             CONVERSION COMPLETE?
+        B       LOOP            WAIT UNTIL CONVERSION COMPLETE
+*
+GET     IN      XIN,PA2         READ IN DATA SAMPLE         
+        LAC     QMASK
+        AND     XIN             QUANTIZE DATA WITH QMASK
+        SACL    TEMP    
+        OUT     TEMP,PA2        WRITE OUT THE QUANTIZED DATA
+        B       LOOP            DO THIS FOREVER
+        END
+
+

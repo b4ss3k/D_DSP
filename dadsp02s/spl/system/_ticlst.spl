@@ -1,0 +1,16 @@
+/* generate the tic format list */
+_ticlst(ticfun)
+{
+	local lst, s;
+
+	s = eval(ticfun);
+
+	lst = sprintf("%s\n%s\n%s\n", _formafstr, _formfxstr, _formhxstr);
+
+	/* add custom format if necessary */
+	if (strlen(strfind(s, lst)) == 0) {
+		lst = sprintf("%s%s\n", lst, s);
+	}
+	return(strescape(lst));
+}
+

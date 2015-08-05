@@ -1,0 +1,92 @@
+/*****************************************************************************
+*                                                                            *
+*   LOGSPACE.SPL Copyright (C) 2001 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns n log spaced samples from 10^lo to 10^hi value      *
+*                                                                            *
+*   Revisions:   24 Jul 2001  RRR  Creation                                  *
+*                                                                            *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_LOGSPACE
+
+    LOGSPACE  
+
+    Purpose: Creates a series of n log spaced values from 10^lo to 10^hi inclusive
+                                                                        
+    Format:  LOGSPACE(lo, hi, n)
+
+                 lo - optional real, the start range, defaults to 0.0, 
+
+                 hi - optional real, the end range, defaults to 3.0.
+
+                  n - optional integer, the number of samples, defaults
+                      to 100.
+
+    Returns: A series of n logarithmically spaced values.
+
+    Example:
+             logspace(1, 5, 5)
+
+             returns {10, 100, 1000, 10000, 100000}
+
+
+    Example:
+             logspace(0, 5, 5)
+
+             returns {1, 17.783, 316.228, 5623.413, 100000}
+	
+    Remarks:
+             The DELTAX values of the resulting series is (10^hi - 10^lo)/(n-1) 
+             and the XOFFSET is set to 10^lo.
+
+    See Also:
+             .. (Range Specifier)
+             Gline
+             Linspace
+#endif
+
+
+/* generate N log space values from lo to hi inclusive */
+logspace(lo, hi, n)
+{
+	local dx, l, slope = 1.0; 
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) {
+				lo = 0.0;
+			}
+			hi = 3;
+		}
+		n = 100;
+	}
+
+	if (hi == pi) hi = log10(pi);
+
+	/* use the fast gline to create series */
+
+	dx = (hi - lo) / (n - 1);
+	if (dx == 0 || n <= 1) {
+		l = {hi};
+	}
+	else { 
+		if (dx < 0) {
+			dx = abs(dx);
+			slope = -1.0;
+		}
+
+		l = 10^gline(int(n), dx, slope, lo);
+
+		setxoffset(l, 10^lo);
+		setdeltax(l, abs(10^hi - 10^lo) / (n - 1));
+	}
+
+	return(l);
+}
+

@@ -1,0 +1,21 @@
+/* initializes worksheet configuration parameters */
+_intwkcf()
+{
+	setvar("_ddpdef", getconf("DISPLAY_PRECISION"));
+	setvar("_ndwdef", getconf("NUM_DEFAULT_WINDOWS"));
+	setvar("_tb",     getconf("TOOLBAR_ENABLED"));
+	setvar("_ledt",   getconf("INPUT_ENABLED"));
+	setvar("_spm",    getconf("STATUS_PROCESSING"));
+	setvar("_clk",    getconf("CLOCK_ENABLED"));
+	setvar("_savm",   getconf("SAVE_MACROS")=="1");
+	setvar("_savv",   getconf("SAVE_VARIABLES")=="1");
+	setvar("_savf",   getconf("SAVE_FUNCTIONS")=="1");
+
+	if (castint(getconf("USE_DEFAULT_MATH_VALUE"))) {
+		setvar("_dmvdef", getconf("DEFAULT_MATH_VALUE"));
+	}
+	else {
+		setvar("_dmvdef", _automaticstr);
+	}
+
+}

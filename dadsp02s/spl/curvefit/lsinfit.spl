@@ -1,0 +1,237 @@
+/*****************************************************************************
+*                                                                            *
+*   LSINFIT.SPL   Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Abraham Goldsmith                                           *
+*                                                                            *
+*   Synopsis:    Least Squares method for fitting sine curves of known       *
+*                frequency                                                   *                                                                            *
+*                                                                            *
+*   Revisions:   25 Aug 2000  AG   Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_LSINFIT
+
+    LSINFIT
+
+    Purpose: Known frequency sine curve fitting using the least squares method.
+                                                                        
+    Format:  LSINFIT(s, freq, mode)
+
+                  s - input series
+
+               freq - known frequency of the input signal
+
+               mode - specifies output in one of the two following forms :
+                  
+                  0 - returns the fitted curve and optionally the coefficients 
+                      and rms error for the equation:
+
+                      f(tn) = A1 * cos(2 * pi * freq * tn) + 
+                              B1 * sin(2 * pi * freq * tn) + C
+                      
+                      If the output is directed to variables:
+
+                      (fit, coef) = lsinfit(s, freq, mode)
+
+                      Mode 0 returns coefficients in the form 
+                      coef = {A1, B1, C, Rms error}
+                  
+                  1 - (default) returns the fitted curve and optionally the 
+                      coefficients and rms error for the equation:
+
+                      f(tn) = A * cos(2 * pi * freq * tn + theta) + C
+
+                      If the output is directed to variables:
+
+                      (fit, coef) = lsinfit(s, freq, mode)
+
+                      Mode 1 returns coefficients in the form 
+                      coef = {A, theta, C, Rms error}
+
+    Returns: A series and optionally the coefficients and rms error of 
+             the fitted curve
+
+    Example:
+             W1: gsin(1000, .001, 4)
+             W2: lsinfit(w1, 4, 0)
+
+             Fits the generated data to the function: 
+
+             f(tn) = A1 * cos(2 * pi * freq * tn) + 
+                     B1 * sin(2 * pi * freq * tn) + C.
+
+    Example:
+             W1: gsin(1000, .001, 4)
+             (fit, coef) = lsinfit(w1, 4, 1)
+             W2: fit
+             W3: coef 
+
+             Fits the generated data to the function:
+
+             f(tn) = A * cos(2 * pi * freq * tn + theta) + C.
+
+             W2 will contain the fitted curve and W3 will contain the 
+             coefficients in the form:
+
+             coef = {A, theta, C, rmserror}
+
+
+    Remarks:
+             The known frequency approach to sine curve fitting is commonly 
+             used in effective bits calculation.  The ouput of the
+             function is totally dependant on knowing the frequency
+             of the input series.
+
+
+    See Also:
+             Effbit
+             Sinfit
+
+    References:
+             IEEE Std 1057-1994 Annex A "Derivation of three parameter 
+             (known frequency) sine wave curve fit algorithm"
+#endif
+
+
+
+/* known frequency least squares sin fitting */
+lsinfit(ser, freq, mode)
+{
+	local len,tn,alpha,beta,sum_yn,sum_yn2,sum_alpha,sum_alpha_beta,sum_alpha2;
+	local sum_beta,sum_beta2,sum_yn_alpha,sum_yn_beta,y_bar,alpha_bar,beta_bar,An,Ad,A1;
+	local Bn,Bd,B1,C,fit,coef,theta,rmserror;
+	
+	if (argc < 3) {
+		if (argc < 2) error("lsinfit - input series and input frequency required");
+
+		/* default to returning the fit only */
+		mode = 1;
+	}
+
+	/* compute length of input series */
+	len = length(ser);
+
+	/* compute the discrete time intervals for the input series */
+	tn = xvals(ser);
+
+	/* series containing the value of the function cos( omega * tn ) for all values of time */
+	alpha = cos(freq*2*pi*tn);
+
+	/* series containing the value of the function sin( omega * tn ) for all values of time */
+	beta = sin(freq*2*pi*tn);
+	
+	/* Generation of the fit coeficients requires the calculation of 9 sums over all values of time */
+	/* The variable names are derived from elements shown in the IEEE abstract (see above) on the algorithm */
+	sum_yn = sum(ser);
+	sum_yn2 = sum(ser^2);
+
+	sum_alpha = sum(alpha);
+	sum_alpha_beta = sum(alpha*beta);
+	sum_alpha2 = sum(alpha^2);
+
+	sum_beta = sum(beta);
+	sum_beta2 = sum(beta^2);
+
+	sum_yn_alpha =sum(ser*alpha);
+	sum_yn_beta = sum(ser*beta);
+
+	/* mean of the input series */
+	y_bar = mean(ser);
+
+	/* mean of the alpha series */
+	alpha_bar = mean(alpha);
+
+	/* mean of the beta series */
+	beta_bar = mean(beta);
+
+	An = ((sum_yn_alpha - y_bar*sum_alpha)/(sum_alpha_beta - beta_bar*sum_alpha)) - ((sum_yn_beta - y_bar*sum_beta)/(sum_beta2 - beta_bar*sum_beta));
+	Ad = ((sum_alpha2 - alpha_bar*sum_alpha)/(sum_alpha_beta - beta_bar*sum_alpha)) - ((sum_alpha_beta - alpha_bar*sum_beta)/(sum_beta2 - beta_bar*sum_beta));
+	
+	/* coefficient corresponding to the alpha term in the solution */
+	A1 = An/Ad;
+	
+	Bn = ((sum_yn_alpha - y_bar*sum_alpha)/(sum_alpha2 - alpha_bar*sum_alpha)) - ((sum_yn_beta - y_bar*sum_beta)/(sum_alpha_beta - alpha_bar*sum_beta));
+	Bd = ((sum_alpha_beta - beta_bar*sum_alpha)/(sum_alpha2 - alpha_bar*sum_alpha)) - ((sum_beta2 - beta_bar*sum_beta)/(sum_alpha_beta - alpha_bar*sum_beta));
+	
+	/* coefficient corresponding to the beta term in the solution */
+	B1 = Bn/Bd;
+
+	/* coefficient corresponding to the vertical offset component in the solution */
+	C = y_bar - A1*alpha_bar-B1*beta_bar;
+	
+	/* generates the fitted curve */
+	fit = A1 * alpha + B1 * beta + C;
+
+	/* Generate output based on choice of output mode */	
+
+	if (mode == 0) {
+		
+		
+		
+		/* return fit and coefficients */
+		if (outargc == 2) {
+			
+			/* fits equation f(tn) = A1 * cos(2 * pi * freq * tn) + B1 * sin(2 * pi * freq * tn) + C */
+			coef = {A1,B1,C};
+			return(fit, coef);
+		}
+		
+		if (outargc > 2) {
+
+			/* generates the rms error */
+			rmserror = rms(ser-fit);
+
+			/* fits equation f(tn) = A1 * cos(2 * pi * freq * tn) + B1 * sin(2 * pi * freq * tn) + C */
+			coef = {A1,B1,C};
+			return(fit, coef, rmserror);
+		}
+
+		else {
+			return(fit);
+		}
+	}
+	
+	if (mode == 1) {
+		
+		/* return fit and coefficients */
+		if (outargc == 2) {
+		
+			/* fits the equation f(tn) = A * cos(2 * pi * freq * tn + theta) + C */
+			if (A1 >= 0) {
+				theta = atan(-B1/A1);
+			}
+		
+			else {
+				theta = atan(-B1/A1) + pi;
+			} 
+			A = sqrt(A1^2 + B1^2);
+			coef = {A, theta, C};
+			return(fit, coef);
+		}
+		
+		if (outargc > 2) {
+
+			/* generates the rms error */
+			rmserror = rms(ser-fit);
+
+			/* fits the equation f(tn) = A * cos(2 * pi * freq * tn + theta) + C */
+			if (A1 >= 0) {
+				theta = atan(-B1/A1);
+			}
+		
+			else {
+				theta = atan(-B1/A1) + pi;
+			} 
+			A = sqrt(A1^2 + B1^2);
+			coef = {A, theta, C};
+			return(fit, coef, rmserror);
+		}
+		
+		else {
+			return(fit);
+		}
+	}
+}

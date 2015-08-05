@@ -1,0 +1,98 @@
+/*****************************************************************************
+*                                                                            *
+*   TRAPZ.SPL    Copyright (C) 2000-2003 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Integration using the trapezoidal rule                      *
+*                                                                            *
+*   Revisions:    3 Jan 2000  RRR  Creation                                  *
+*                27 Mar 2003  RRR  zero first output point                   *
+*                24 Apr 2003  RRR  vertical units                            *
+*                14 May 2003  RRR  xy series support                         *
+*                14 Nov 2003  RRR  ITERATE to iterate through input array    *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_TRAPZ
+
+    TRAPZ   
+
+    Purpose: Integration using the trapezoidal rule
+                                                                        
+    Format:  TRAPZ(series)
+
+              series - a series, the input data
+
+    Returns: A series
+
+    Example:
+             W1: {0, 2, 4, 6, 8, 10}
+             W2: Integ(w1)
+             W3: Trapz(w1)
+
+             W2 == {0.0, 1.3, 4.0, 9.3, 16.0, 25.3}
+
+             W3 == {0.0, 1.0, 4.0, 9.0, 16.0, 25.0}
+
+             W2 contains the integrated series using Simpson's rule and
+             W3 contains the integrated series using the Trapezoidal rule.
+
+    Remarks:
+             For series S, the trapezoidal rule calulates the running sum
+             of:
+                        deltax * (S[i+1] + S[i]) / 2.
+
+    See Also:
+             Integ
+#endif
+
+
+/* trapezoidal rule */
+ITERATE trapz(s)
+{
+	local t, dx, x;
+
+	/* 
+	** calculate:
+	**
+	**      dx * sum( S[i] + (S[i] - S[i-1])/2 )
+	**
+	** by using the moving average without end padding
+	*/
+
+	t = movavg(s, 2, 0);
+
+	/* zero first point */
+	t[1] = 0.0;
+
+	if (ISXYSERIES(s)) {
+		/* XY series */
+		x = xvals(s);
+
+		/* delta x's */
+		dx = extract(x - delay(x, 1), 1, length(s));
+	}
+	else {
+		dx = deltax(s);
+	}
+
+	/* sum */
+	t = partsum(dx * t);
+
+	/* get correct length */
+	t = extract(t, 1, length(s));
+
+	if (ISXYSERIES(s)) {
+		/* return XY series */
+		t = xy(x, t);
+	}
+
+	/* vertical units */
+	setvunits(t, getvunits(integ({s[1..2]})));
+
+	return(t);
+}

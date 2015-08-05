@@ -1,0 +1,75 @@
+/*****************************************************************************
+*                                                                            *
+*   SHP.SPL      Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Digital emulation of single pole analog high pass filter    *
+*                                                                            *
+*   Revisions:   12 Feb 1998  RRR  Creation - from SPOLE.MAC                 *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_SHP
+
+    SHP    
+
+    Purpose: Emulates a single pole analog high pass filter.
+                                                                        
+    Format:  SHP(s, fc)
+
+              s  - input series
+
+              fc - Optional real, cutoff frequency in Hertz, defaults
+                   to rate(s) / 10.
+
+    Returns: A series
+
+    Example:
+             W1: Gsqrwave(100, .01, 4)
+             W2: Shp(w1, 10)
+
+             Highpass filters the squarewave in W1 with a cutoff frequency
+             of 10 Hz. The sample rate is set to the sample rate of the 
+             input data.
+
+    Remarks:
+
+             The single pole analog highpass filter is implemented in the
+             digital domain using the impulse invariance technique.
+
+
+    See Also
+             Iir
+             Slp
+
+#endif
+
+
+/* Single pole high pass analog filter */
+shp(s, fc)  
+{
+	local b1, rc, ts, hps;
+
+	if (argc < 2) {
+		if (argc < 1) error("shp - input series required");
+		fc = rate(s) / 10;
+	}
+	/* sample interval */
+	ts = deltax(s);
+
+	/* inverse frequency in radians */
+	rc = 1/(2*pi*fc);
+
+	/* impulse invariant transformation */
+	b1 = exp(-1.0*ts/rc);
+	
+	/* calculate via difference equation */	
+	hps = iir(fir((s)*(1-b1),{1,-1}), {b1})*(1+b1)/(2*(1-b1));
+
+	/* set output sample interval */
+	setdeltax(hps, deltax(s));
+
+	return(hps);
+}

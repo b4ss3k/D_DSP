@@ -1,0 +1,126 @@
+/*****************************************************************************
+*                                                                            *
+*   GSWEEP.SPL   Copyright (C) 2005 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Generates a swept sinewave                                  *
+*                                                                            *
+*   Revisions:   18 Jan 2005  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_GSWEEP
+
+    GSWEEP
+
+    Purpose: 
+             Generates a linearly swept sinewave.
+
+    Format:  
+             GSWEEP(len, dx, start, end)
+
+             (s, f) = GSWEEP(len, dx, start, end)
+
+                  len  - An integer, the number of points to generate.
+
+                    dx - A real, the spacing (deltax) between points.
+
+                 start - Optional. A real, the starting frequency in Hertz.
+                         Defaults to 10 Hz.
+
+                   end - Optional. A real, the ending frequency in Hertz.
+                         Defaults to 100 Hz.
+
+    Returns: 
+             A series, a linearly swept sinewave.
+
+             (s, f) = GSWEEP(len, dx, start, end) returns both the
+             swept sinewave and the instantaneous frequency series.
+
+    Example:
+             W1: gsweep(1000, .001, 2, 200)
+
+             Creates a 1000 point linear swept sinewave with points spaced at
+             an interval of 0.001 seconds (a sample rate of (1/.001 = 1000 Hz)
+             starting at 2 Hz and ending at 200 Hz
+
+    Example:
+             W2: spectrum(W1, 1024)
+             W3: specgram(W1, 128, 120, 512)
+             W4: demodfm(W1)
+
+             W2 displays the normalized FFT showing frequency information from
+             2 to 200 Hz. W3 displays the joint time-frequency plot of W1,
+             clearly displaying the linear frequency ramp. W4 demodulates 
+             W1 to approximately recover the linear frequency ramp.
+
+    Example:
+             (s, f) = gsweep(1000, .001, 2, 200)
+
+             Same as the first example except variable s contains the swept 
+             sinewave and variable f contains the instantaneous frequency
+             values.
+
+    Remarks:
+             GSWEEP returns a series that is a linear frequency sweep from
+             the starting frequency to the ending frequency. To prevent
+             aliasing,  both the starting and ending frequencies must be 
+             less than 1 / (2 * dx), the Nyquist frequency.
+
+             The sweep is created by calculating the sine of the integrated
+             linear ramp:
+
+                s = sin(2*pi*integ(t))
+
+             where:
+
+                   t = start..inc..end
+
+                   inc = (end - start) / length
+
+    See Also:
+             Demodfm
+             Gsin
+             Integ
+#endif
+
+
+
+/* generate a linear frequecny sweep */
+gsweep(len, dx, start, stop)
+{
+	local s, f, inc;
+
+	if (argc < 4) {
+		if (argc < 3) {
+			if (argc < 2) error("gsweep - input length and deltax required");
+			start = 10;
+		}
+		stop = 100;
+	}
+
+	/* frequency increment */
+	inc = abs(start - stop) / len;
+	if (inc == 0) error("gsweep - start must be less than stop");
+
+	/* swept frequency values */
+	f = start..inc..(stop-inc);
+
+	/* set deltax and offset */
+	setdeltax(f, dx);
+	setxoffset(f, 0);
+
+	/* frequency modulation */
+	s = sin(2*pi*integ(f));
+
+	if (outargc > 1) {
+		/* return swept sine and instantaneous frequency values */
+		return(s, f);
+	}
+	else {
+		return(s);
+	}
+}

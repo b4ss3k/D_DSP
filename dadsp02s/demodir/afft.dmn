@@ -1,0 +1,13 @@
+! afft.dmn -- Advanced FFT functions menu modified for the demo
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+
+  FFT Analysis  
+
+ NFFT                ~echo('Perform an N Point FFT Calculation')
+
+ Zoom FFT            ~_deffname('ZFFT     Frequency Range FFT')|_defformat('ZFFT(series, outpts, startfreq, endfreq)')|_defxamp('ZFFT(W1, 100, 10.2, 200.0)')|_agetseri1r2("Input Series   :", "Output Points  :", "Start Frequency:", "End Frequency  :")|_seri1r2form("Zfft")
+
+ Chirp Z Transform   ~echo('Perform a Chirp Z Transform')  

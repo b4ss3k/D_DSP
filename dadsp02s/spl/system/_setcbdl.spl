@@ -1,0 +1,66 @@
+/* set clipboard delimiters */
+_setcbdl(tab, space, comma, semi, other, otherstr, copy)
+{
+	local delim = "";
+
+	/* default args */
+	if (argc < 7) {
+		if (argc < 6) {
+			if (argc < 5) {
+				if (argc < 4) {
+					if (argc < 3) {
+						if (argc < 2) {
+							if (argc < 1) {
+								tab = "0";
+							}
+							space = "0";
+						}
+						comma = "0";
+					}
+					semi = "0";
+				}
+				other = "0";
+			}
+			otherstr = "";
+		}
+		copy = 0;
+	}
+
+
+	if (tab == "1") {
+		delim = strcat(delim, strescape("\t"));
+	}
+	if (space == "1") {
+		delim = strcat(delim, " ");
+	}
+	if (comma == "1") {
+		delim = strcat(delim, ",");
+	}
+	if (semi == "1") {
+		delim = strcat(delim, ";");
+	}
+	if (other == "1") {
+		delim = strcat(delim, strescape(otherstr));
+	}
+
+	if (strlen(delim) > 0) {
+		delim = sprintf("'%s'", delim);
+		if (copy) {
+			/* add single quotes */
+			setconf("column_separator", delim);
+		}
+		else {
+			setconf("clipboard_delimiters", delim);
+		}
+	}
+	else { /* reset to default */
+		if (copy) {
+			setconf("column_separator", "");
+		}
+		else {
+			setconf("clipboard_delimiters", "");
+		}
+	}
+}
+
+			

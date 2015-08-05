@@ -1,0 +1,123 @@
+/*****************************************************************************
+*                                                                            *
+*   ONES.SPL     Copyright (C) 1997-2006 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns an array of all ones                                *
+*                                                                            *
+*   Revisions:    9 Jun 1997  RRR  Creation                                  *
+*                14 Feb 2006  RRR  use builtin gvalarray for speed           *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_ONES
+
+    ONES    
+
+    Purpose: Creates an array of all ones
+                                                                        
+    Format:  ONES(numrows, numcols)
+
+              numrows - an integer specifying the number of rows
+              numcols - an optional integer for the number columns (default 1)
+
+    Returns: A series or array
+
+    Example:
+             Ones(3)
+
+             returns the series {1, 1, 1}
+
+
+             Ones(3, 2)
+
+             returns the 3x2 array {{1, 1},
+                                    {1, 1},
+                                    {1, 1}}
+
+    Remarks:
+             Ones(size(A)) returns a array of all ones with same dimension 
+             as A
+
+
+    See Also
+             Gline
+             Ravel
+             Size
+             Zeros
+
+#endif
+
+
+
+ones(a, b)
+{
+	local nr, nc, out;
+
+	if (argc > 1) {
+		/* e.g. ones(10, 3) */
+		if (IS_SCALAR(a) && IS_SCALAR(b)) {
+			/* convert to ints */
+			a = castint(a);
+			b = castint(b);
+			if (a <= 0 || b <= 0) {
+				return({}); /* empty series */
+			}
+			else if (b == 1) {
+				out = gline(a,1,0,1);
+			}
+			else {
+				out = gvalarray(1.0, a, b);
+			}
+			setdeltay(out, 1.0);
+			return(out);
+		}
+		else {
+			error("ones - series or number required");
+		}
+	}
+
+	else {
+		if (IS_ARRAY(a)) {
+			/* series argument - get size */
+			(nr, nc) = size(a);
+			if (nr == 2 && nc == 1) {
+				/* 
+				** assume series came from size function,
+				** e.g. ones(size(a)) 
+				*/
+				b = int(a[2]);
+				a = int(a[1]);
+			}
+			else {
+				/* e.g. ones(x) - obsolete */
+				a = nr; b = nc;
+			}
+		}
+     	else if (IS_SCALAR(a)) {
+			/* convert to ints */
+			a = castint(a);
+			b = a;
+		}
+		else {
+			error("ones - series or number required");
+		}
+		if (a*b == 0) {
+			out = {}; /* empty series */
+		}
+		else if (b == 1) {
+			out = gline(a,1,0,1);
+		}
+		else {
+			out = gvalarray(1.0, a, b);
+		}
+
+		return(out);
+	}               
+}
+
+

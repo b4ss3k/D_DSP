@@ -1,0 +1,131 @@
+@modeless 1
+
+    FILTIMP  
+
+    Purpose: 
+             Evaluates the impulse response of a direct form or cascade filter.
+                                                                        
+    Format:  
+             FILTIMP(b, a, N)
+
+                b - a series, numerator (i.e. zero) coefficients
+
+                a - a series, denominator (i.e. pole) coefficients
+
+                N - an optional integer, number of output samples. 
+                    If not specified or empty, the length is determined by 
+                    allowing the output to decay to -120 dB or to display 5 
+                    periods if the output is not significantly damped.
+
+    Alternative Format:  
+
+             FILTIMP(c, N)
+
+                c - A series, the system coefficients in cascaded 
+                    biquad form.  If C contains 2 columns, c is assumed
+                    to be in direct form, where the first column is B
+                    and the second column is A.
+
+                N - an optional integer, number of output samples. 
+                    If not specified or empty, the length is determined by 
+                    allowing the output to decay to -120 dB or to display 5 
+                    periods if the output is not significantly damped.
+
+    Returns: 
+             A real series, the impulse response of the filter in the
+             time domain.
+
+    Example:
+             W1: filtimp( {"{1}"}, {"{1, -0.5, 0.2}"} )
+
+             W1 contains 12 uniformly spaced samples of the impulse 
+             response of the Z transform:
+
+                            1
+             H(z) = ------------------
+                            -1      -2
+                    1 - 0.5z  + 0.2z
+
+             The sample rate of the response is 1.0.  The input filter
+             coefficients are in direct form.
+
+    Example:
+             W1: butterworth(1, 100.0, 10.0)
+             W2: filtimp(w1, 200)
+
+             creates a 10 Hz lowpass Butterworth filter and displays 200
+             samples of the impulse response.  The filter coefficients are
+             in cascade form.
+
+    Example:
+             W1: butterworth(1, 100.0, 10.0)
+             W2: cas2dir(W1)
+             W3: filtimp(w2, 200)
+
+             Same as the previous example except the filter coefficients
+             are in Direct Form.
+
+    Example:
+             W1: lowpass(100.0, 10.0)
+             W2: filtimp(w1, {"{1}"}, 200)
+
+             creates a 10 Hz lowpass FIR Remez Exchange filter and
+             displays 200 samples of the impulse response.  Since the
+             filter coefficients are in FIR form, the denominator
+             coefficient is set to {"{1}"}.  For N equal to the filter
+             length, the first N samples of the impulse response of the
+             FIR filter are identical to the filter coefficients.
+
+    Remarks:
+             FILTIMP uses IMPZ to evaluate N uniformly spaced samples over 
+             the unit circle of a Z transform in direct form:
+  
+                                        -1                 -Q
+                    Y(z)   b[1] + b[2]*z   + ... + b[Q+1]*z
+             H(z) = ---- = -------------------------------------
+                                        -1                 -P
+                    X(z)    1   + a[2]*z   + ... + a[P+1]*z
+
+
+                        jw
+             where z = e    unit circle (frequency response)
+                   Q        order of zeros (numerator)
+                   P        order of poles (denominator)
+
+
+             For FILTIMP(c, N), if the input c is a single column, the
+             coefficients are assumed to be in cascaded bi-quad form. 
+             This is the output format of IIR filters designed by
+             DADiSP/Filters.  In this case, FILTIMP uses IMPZ to
+             evaluate the following Z transform:
+
+                               -1       -2                -1       -2
+                    b10 + b11 z  + b12 z       b20 + b21 z  + b22 z
+         H(z) = G * ________________________ *  ________________________ ...
+                               -1       -2                -1       -2
+                      1 + a11 z  + a12 z         1 + a21 z  + a22 z
+
+             Where the filter coefficients are represented by a single column
+             series in the following order:
+
+             G, b10, b11, b12, a11, a12, b20, b21, b22, a21, a22, ...
+
+             If C contains 2 columns, the coefficients are assumed to
+             be in direct form, where the first column is B and the
+             second column is A.
+
+             The sample rate of the impulse response is determined by the
+             sample rate of the filter coefficients.
+
+    See Also:
+             Fft
+             Filteq
+             Filtgrpdelay
+             Filtmag
+             Filtphase
+             Fir
+             Iir
+             Impz
+             Mag
+             Phase
+             Zfreq

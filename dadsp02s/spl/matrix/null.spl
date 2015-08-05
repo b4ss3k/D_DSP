@@ -1,0 +1,90 @@
+/*****************************************************************************
+*                                                                            *
+*   NULL.SPL         Copyright (C) 2001 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Orthogonal Null space of an array                           *
+*                                                                            *
+*   Revisions:    9 Aug 2001  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_NULL
+
+    NULL   
+
+    Purpose: Computes an orthogonal basis for the Null space of an array
+                                                                        
+    Format:  NULL(a)
+
+              a - input array
+
+
+    Returns: An orthogonal array of n columns where n is the Null space size
+
+
+    Example:
+
+             a = {{1, 2, 3},
+                  {4, 5, 6},
+                  {7, 8, 9}}
+
+             b = null(a)
+
+             b == {-0.408248, 0.816497, -0.408248}
+
+             b' *^ b == {1}
+
+             a *^ b ==  {1.332268E-015, 8.881784E-016, 0.000000E+000}
+
+
+    Remarks:
+             NULL uses SVD to compute the orthogonal basis. The number
+             of output columns is the dimension of the Null space. The 
+             number of output rows is the number of input columns.
+
+             If b = null(a) exists, the output columns of b are orthogonal 
+             and have a norm of 1 such that:
+
+             conj(b') *^ b == eye(numcols(b)), the identity matrix.
+
+
+    See Also:
+             Norm
+             Orth
+             Rank
+             SVD
+#endif
+
+
+/* orthogonal Null space */
+null(a)
+{
+	local nr, nc, u, w, v, tol, rank, nspace;
+
+	(nr, nc) = size(a);
+
+	/* check if empty */
+	if (nr == 0) return(a);
+
+	/* cast non-arrays to array */
+	if (not(IS_ARRAY(a))) a = {a};
+
+	/* calc svd to get singular values and orthogonal component */
+	(u, w, v) = svd(a);
+
+	/* array tolerance */
+	tol = maxval(nr, nc) * w[1] * eps;
+
+	/* array rank */
+	rank = sum(diag(w) > tol);
+
+	/* extract null space from orthogonal component */
+	nspace = v[.., (rank+1)..nc];
+
+	return(nspace);
+}

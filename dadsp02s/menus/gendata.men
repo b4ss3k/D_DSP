@@ -1,0 +1,14 @@
+! Gen.men -- Generate signals of all types
+@x0
+@y0 
+@b{_bg2}
+@f{_fg2}
+Generate Data Series
+
+ Random Noise       ~_MF("random.men")
+ Windowing Funcs    ~_MF("winstuff.pan")
+ Trigonometric      ~_MF("trig.pan")
+ Inverse Trig.      ~_MF("invtrig.pan")
+ Hyperbolic         ~_MF("hyp.pan")
+ Inverse Hyperbolic ~_MF("invhyp.pan")
+ Miscellaneous      ~_MF("misc.pan")

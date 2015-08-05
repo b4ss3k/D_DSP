@@ -1,0 +1,14 @@
+/* get current date using format */
+_gdtdfmt(f, idate)
+{
+	local d, fmt, odate;
+
+	odate = getconf("locale_idate");
+	fmt = getconf("dt_date_format");
+	setconf("locale_idate", idate);
+	setconf("dt_date_format", caststring(f));
+	d = getdate;
+	setconf("locale_idate", odate);
+	setconf("dt_date_format", fmt);
+	return(d);
+}

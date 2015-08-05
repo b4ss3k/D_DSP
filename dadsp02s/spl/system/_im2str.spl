@@ -1,0 +1,17 @@
+/* image interpolation mode to string */
+_im2str(ival)
+{
+	local str;
+
+	switch (ival) {
+		case 0:
+		default:
+			str =  _linearstr;
+			break;
+
+		case 1:
+			str =  _splinestr;
+			break;
+	}
+	return(str);
+}

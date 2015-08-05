@@ -1,0 +1,25 @@
+Collength              !_PDC_EXEC242  $Length of Columns
+Colmax                 !_PDC_EXEC241  $Maximum of Columns
+Colmean                !_PDC_EXEC072  $Mean of Columns
+Colmedian              !_PDC_EXEC239  $Median of Columns
+Colmin                 !_PDC_EXEC240  $Minimum of Columns
+Colprod                !_PDC_EXEC329  $Product of Columns
+Colstdev               !_PDC_EXEC238  $Standard Deviation of Columns
+Colsum                 !_PDC_EXEC328  $Sum of Columns
+Descriptive Statistics !_PDC_EXEC346  $Max, Min, Mean, Stdev, etc. $Statistics and Calculus
+Errorbar               !_PDC_EXEC073  $Create Error Bar Chart
+Histogram              !_PDC_EXEC074  $Equal Bin Histogram
+Invprobn               !_PDC_EXEC349  $z Value of Probability of X <= z
+Linreg                 !_PDC_EXEC075  $Linear Regression
+Pdfnorm                !_PDC_EXEC347  $Normal Distribution Density Function
+Polyfit                !_PDC_EXEC076  $Polynomial Regression Coefficients
+Polygraph              !_PDC_EXEC078  $Polynomial Regression Curve
+Polyroot               !_PDC_EXEC353  $Find Polynomial Roots using Companion Matrix
+Probn                  !_PDC_EXEC348  $Probability of X <= z for Normal Distribution
+Rowlen                 !_PDC_EXEC368  $Length of Rows
+Rowmax                 !_PDC_EXEC367  $Maximum of Rows
+Rowmean                !_PDC_EXEC371  $Mean of Rows
+Rowmin                 !_PDC_EXEC366  $Minimum of Rows
+Rowprod                !_PDC_EXEC370  $Product of Rows
+Rowstdev               !_PDC_EXEC365  $Standard Deviation of Rows
+Rowsum                 !_PDC_EXEC369  $Sum of Rows

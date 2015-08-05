@@ -1,0 +1,9 @@
+% Basic Matrix Operations
+ This is a demonstration of some aspects of the MATLAB language.
+
+ Copyright 1984-2004 The MathWorks, Inc.
+ $Revision: 5.27.4.2 $ $Date: 2004/04/10 23:24:57 $
+ 
+%
+ First, let's create a simple vector with 9 elements called |a|.
+ 

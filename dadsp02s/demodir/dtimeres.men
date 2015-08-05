@@ -1,0 +1,22 @@
+! This is a DSPTrial menu for DADiSP/Controls
+@x10
+@y5
+@f{_fg1}
+@b{_bg1}
+! @h{_Controlhelp("timeres")}
+  Time Response  
+__________________
+
+ Impulse          ~echo("Evaluate the Impulse Response of a Continuous System with DADiSP/Controls")
+ Step             ~echo("Calculate the Response of a Continuous System to Step Input with DADiSP/Controls")
+ Ramp             ~echo("Calculate the Response of a Continuous System to Ramp Input with DADiSP/Controls")
+ Simulation       ~echo("Calculate the Response of a Continuous System to Specified Input with DADiSP/Controls")
+ Simulation Init  ~echo("Calculate the Response of a Continuous System to Specified Input & Initial Conditions with DADiSP/Controls")
+
+ Disc Impulse     ~echo("Evaluate the Impulse Response of a Discrete System with DADiSP/Controls")
+ Disc Step        ~echo("Calculate the Response of a Discrete System to Step Input with DADiSP/Controls")
+ Disc Ramp        ~echo("Calculate the Response of a Discrete System to Ramp Input with DADiSP/Controls")
+ Disc Simulation  ~echo("Calculate the Response of a Discrete System to Specified Input with DADiSP/Controls")
+ Disc Sim Init    ~echo("Calculate the Response of a Discrete System to Specified Input & Initial Conditions with DADiSP/Controls")
+
+ Time Stats       ~echo("Return Performance Parameters from the Discrete or Continuous Step Response with DADiSP/Controls")

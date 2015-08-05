@@ -1,0 +1,72 @@
+/*****************************************************************************
+*                                                                            *
+*   CIRCONV.SPL   Copyright (C) 2003 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Circular Convolution using CONV                             *
+*                                                                            *
+*   Revisions:    4 Apr 2003  RRR  Creation - from FCONV.SPL                 *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_CIRCONV
+
+    CIRCONV
+
+    Purpose: Circular convolution in the time domain
+                                                                        
+    Format:  CIRCONV(s1, s2, N)
+
+                 s1 - input series
+
+                 s2 - input series
+
+                  N - Optional. An integer, the convolution length, defaults
+                      to the maximum length of the input series.
+
+    Returns: A series
+
+    Example:
+             W1: {1, 2, 3}
+             W2: {4, 5, 6}
+             W3: circonv(w1, w2)
+
+             W3 contains the series {31, 31, 28} the result of circular
+             convolution of W1 and W2.
+
+    Remarks:
+             CIRCONV performs convolution by extending one of the input 
+             series and using the time domain linear convolution function 
+             CONV.
+
+             See FCIRCONV for a frequency domain implementation.
+
+
+    See Also:
+             Conv
+             Fcirconv
+             Fconv
+#endif
+
+
+/* time domain circular convolution */
+circonv(s1, s2, N)
+{
+	local c;
+
+	if (argc < 3) {
+		if (argc < 2) error("circonv - two input series required");
+		/* default to maximum length */
+		N = max(length(s1), length(s2));
+	}
+
+	/* use offset and length options of conv */
+	c = conv(rep(extract(s1,1,N),2), extract(s2,1,N), N+1, N);
+
+	/* set xoffset */
+	setxoffset(c, xoffset(s1) + xoffset(s2));
+
+	return(c);
+}

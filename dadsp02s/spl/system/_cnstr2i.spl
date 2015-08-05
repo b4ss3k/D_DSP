@@ -1,0 +1,21 @@
+/* conformity string to format value */
+_cnstr2i(str)
+{
+	switch (str) {
+		case _cnfrm0str:
+		default:
+			return(0);
+
+		case _cnfrm1str:
+			return(1);
+
+		case _cnfrm2str:
+			return(2);
+
+		case _formbestr:
+			return(1);
+
+		case _formlestr:
+			return(3);
+	}
+}

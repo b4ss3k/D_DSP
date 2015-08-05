@@ -1,0 +1,12 @@
+/* set plottype - deals with TABLEVIEW */
+_setptyp(ptype)
+{
+	if (ptype == 400) { /* tablev */
+		setplotstyle(4);
+	}
+	else {
+		setplottype(ptype, getfocus());
+		setplotstyle(0,getfocus());
+	}
+}
+

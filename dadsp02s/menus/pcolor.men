@@ -1,0 +1,11 @@
+! Pcolor.men - Plot Color Mode
+@x43
+@y4
+@b{_bg2}
+@f{_fg2}
+ Plot Color Mode
+
+ Color           ~echo("");defmacro("_pcolor", 1, 1);"COLOR"
+
+ Black & White   ~echo("");defmacro("_pcolor", 0, 1);"BLACK & WHITE"
+

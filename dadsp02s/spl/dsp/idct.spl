@@ -1,0 +1,112 @@
+/*****************************************************************************
+*                                                                            *
+*   IDCT.SPL     Copyright (C) 1998 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Calculates the Inverse Discrete Cosine Transform            *
+*                                                                            *
+*   Revisions:   16 Mar 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_IDCT
+
+    IDCT    
+
+    Purpose: Calculates the Inverse Discrete Cosine Transform
+                                                                        
+    Format:  IDCT(s, n)
+
+              s - input series or array
+              n - optional integer, transform length (defaults to length 
+                  of input)
+
+    Returns: A series or array
+
+    Example:
+             Idct(dct(gcos(100, 1/100, 20)))
+
+             returns a 20 Hz cosine wave.
+
+
+    Remarks:
+             The transform is applied to each column if the input is an
+             array.  The IDCT is often used in conjunction with DCT 
+             to perform image compression.
+
+
+    See Also
+             Dct
+             Dct2
+             Idct2
+             Ifft
+
+    For more information, see:
+
+    [1] Jae S. Lim, "Two-dimensional Signal and Image Processing",
+        pp. 148-162.  Implements an even-symmetrical DCT.
+
+    [2] Jain, "Fundamentals of Digital Image Processing", pp. 150-153.
+
+    [3] Wallace, "The JPEG Still Picture Compression Standard",
+        Communications of the ACM, April 1991.
+
+#endif
+
+
+idct(b, n)
+{
+	local m, bb, y, w, W, a;
+
+	if (argc < 2) {
+		n = length(b);
+		bb = b;
+	}
+	else {
+		bb = extract(b, 1, n);
+	}
+	m = numcols(b);
+
+	if ((n % 2) == 1) { // odd case
+		// Form intermediate even-symmetric matrix.
+		ww = exp(i*(0..(n-1))*pi/(2*n));
+		W = ravel(rep(ww, m), n);
+		setdeltax(W, deltax(bb));
+		yy = zeros(2*n,m);
+		yy[1..n,..] = W*bb;
+		yy[(n+2)..(n+n),..] = -i*W[2..n,..]*reverse(bb[2..n,..]);
+
+		y = ifft(yy);
+	
+		// Extract inverse DCT
+		a = y[1..n,..];
+	}
+
+	else { // even case, courtesy of Steven L. Eddins
+		// Compute precorrection factor
+		ww = exp(i*pi*(0..(n-1))/(2*n));
+		ww[1] = ww[1]/2;
+		W = ravel(rep(ww, m), n);
+		setdeltax(W, deltax(bb));
+
+		// Compute x tilde using equation (5.93) in Jain
+		y = ifft(W*bb);
+
+		// Re-order elements of each column according to equations (5.93) and
+		// (5.94) in Jain
+		a = merge(extract(y, 1, int(n/2)), rev(extract(y, int(n/2+1), n/2)));
+
+	}
+
+	if (IS_REAL(max(b))) a = real(a);
+
+	// set correct deltax
+	setdeltax(a, 1/(2*n*deltax(b)));
+
+	return(a);
+}
+

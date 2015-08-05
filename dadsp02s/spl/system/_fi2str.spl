@@ -1,0 +1,15 @@
+#include <series.h>
+
+/* format value to format string */
+_fi2str(val)
+{
+	if (strlen(val) == 0) return(_formafstr);
+
+	if (strcmp(val, "E", 1) == 0) return(_formbestr);
+	if (strcmp(val, "e", 1) == 0) return(_formlestr);
+	if (strcmp(val, "f", 1) == 0) return(_formfnstr);
+	if (strcmp(val, "g", 1) == 0) return(_formgxstr);
+	if (strcmp(val, "x", 1) == 0) return(_formhxstr);
+	if (strcmp(val, "r", 1) == 0) return(_formrtstr);
+	return(val);
+}

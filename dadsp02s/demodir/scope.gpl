@@ -1,0 +1,16 @@
+!  GPIBLab Menuing system.
+@x0
+@y0
+
+   Scope
+______________
+
+ Ch 1 Setup   ~CHONEMEN
+ Ch 2 Setup   ~CHTWOMEN
+
+ Setup Acq    ~ ACQMEN
+ GPIB System  ~SYSTEMMEN
+ Triggering   ~TRIGGERMEN
+ Display      ~DISPLAYMEN
+
+ Receive Data ~ DATAINMEN

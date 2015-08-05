@@ -1,0 +1,18 @@
+/* image interpolation mode to integer */
+_im2int(str)
+{
+	local ival;
+
+	switch (str) {
+		case _linearstr:
+		default:
+			ival = 0;
+			break;
+
+		case _splinestr:
+			ival = 1;
+			break;
+
+	}
+	return(ival);
+}

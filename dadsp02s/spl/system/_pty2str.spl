@@ -1,0 +1,29 @@
+/* plottype to string */
+_pty2str(s)
+{
+	switch (s) {
+		case 4: 
+		default:
+			return(_ZSURFSTR);
+
+		case 2: 
+			return(_CONTOURSTR);
+
+		case 1: 
+			return(_WATERFALLSTR);
+
+		case 3:
+		case 5: 
+			return(_DENSITYSTR);
+
+		case 0: 
+			return(_SERIESGRPSTR);
+
+		case 6: 
+			return(_CHARTGRPSTR);
+
+		case 400: /* special case */
+			return(_TABLEVSTR);
+	}
+}
+

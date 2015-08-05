@@ -1,0 +1,14 @@
+/* gets tic location - inner or outer */
+_gticloc(def)
+{
+	local tstyle = 0;
+
+	if (argc < 1) {
+		def = 0;
+	}
+
+	tstyle = (def) ? castint(getconfdef("tic_style")) : castint(getconf("tic_style"));
+	tstyle &= 0x03;
+
+	return(tstyle);
+}

@@ -1,0 +1,21 @@
+Balance      !_PDC_EXEC165  $Matix Balancing to Improve Condition
+Conj         !_PDC_EXEC153  $Complex Conjugate
+Diag         !_PDC_EXEC151  $Matrix Diagonal
+Det          !_PDC_EXEC150  $Matrix Determinant
+Eigval       !_PDC_EXEC161  $Eigenvalues of a Square Matrix
+Eigvec       !_PDC_EXEC162  $Eigenvectors of a Square Matrix
+Hess         !_PDC_EXEC166  $Hessenberg Form of a Matrix
+Inv          !_PDC_EXEC149  $Matrix Inverse
+LU           !_PDC_EXEC154  $LU Decomposition
+LLU          !_PDC_EXEC155  $Lower Triangle of LU Decomposition
+Mdiv         !_PDC_EXEC148  $Matrix Divide
+Mmult        !_PDC_EXEC147  $Matrix Multiply
+Nbeigval     !_PDC_EXEC163  $Eigenvalue without Balancing
+Nbeigvec     !_PDC_EXEC164  $Eigenvectors without Balancing
+QR           !_PDC_EXEC158  $QR Decomposition
+Schur        !_PDC_EXEC159  $Schur Decomposition
+SVD          !_PDC_EXEC157  $Singular Value Decomposition
+Transpose    !_PDC_EXEC152  $Swap Rows and Columns
+ULU          !_PDC_EXEC156  $Upper Triangle of LU Decomposition
+Uschur       !_PDC_EXEC160  $Unitary Schur Decomposition
+

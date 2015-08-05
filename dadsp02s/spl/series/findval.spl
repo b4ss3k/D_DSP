@@ -1,0 +1,100 @@
+/*****************************************************************************
+*                                                                            *
+*   FINDVAL.SPL   Copyright (C) 1999 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Finds X and Y values in a series                           *
+*                                                                            *
+*   Revisions:    15 Jun 1999  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_FINDVAL
+
+    FINDVAL
+
+    Purpose: Returns X and Y values of a series from a specified Y value
+                                                                        
+    Format:  FINDVAL(s, val)
+
+             s   - a series or array
+
+             val - real or series, values to search
+
+
+    Returns: An XY series or separate scalars:
+
+             b = findval(s, val)
+
+             returns an XY series
+
+
+             (x, y) = findval(s, val)
+
+             returns the X and Y values as separate scalars
+
+
+
+    Example:
+             a = {1, 12, 0, 5};
+             b = findval(a, 0);
+             (x, y) = findval(a, 0);
+
+             b == xy({2}, {0})
+             x == 2.0
+             y == 0.0
+
+
+    Example:
+             W1: gnorm(100,.1):overp(findval(curr,max),lred);setsym(CIRCLE,2)
+
+             marks the max of W1 with a red circle
+
+    Remarks:
+             Findval returns an XY series with the same units as the
+             input series. Multiple x values can be returned if val occurs
+             multiple times in the series
+
+
+             (x, y) = findval(s, val) returns the first occurance of val in s.
+
+    See Also:
+             Find
+             Findmax
+             Findmin
+
+#endif
+
+
+/* find a specific value in a series */
+findval(s, val)
+{
+	local idx, x, vxy, rval;
+
+	if (argc < 2) {
+		error("findval - input series and value required");
+	}
+
+	/* make sure val is a scalar */
+	val = castreal(val);
+
+	/* idx value */
+	idx = find(s == val);
+
+	/* convert to xvalue */
+	x = xoffset(s) + (idx - 1) * deltax(s);
+
+	if (outargc < 2) { /* return as XY series */
+		vxy = xy({x}, s[idx]);
+		/* set units */
+		sethunits(vxy, gethunits(s));
+		setvunits(vxy, getvunits(s));
+		return(vxy);
+	}
+	else { /* return separate x y values as scalars */
+		return(x[1], val);
+	}
+}

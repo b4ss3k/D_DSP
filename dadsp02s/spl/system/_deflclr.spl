@@ -1,0 +1,23 @@
+
+/* default window label colors */
+_deflclr()
+{
+	setvar("_GCV18", castint(getconfdef("window_text_color")));
+	setvar("_GCV48", castint(getconfdef("window_title_color")));
+	setvar("_GCV49", castint(getconfdef("x_label_color")));
+	setvar("_GCV50", castint(getconfdef("y_label_color")));
+	setvar("_GCV51", castint(getconfdef("z_label_color")));
+
+	setvar("_slabsclr", 1);
+	setvar("_wlabsclr", _GCV48==-1);
+	setvar("_xlabsclr", _GCV49==-1);
+	setvar("_ylabsclr", _GCV50==-1);
+	setvar("_zlabsclr", _GCV51==-1);
+
+	if(_GCV18==-1,setvar("_GCV18",castint(getconf("window_text_color"))));
+	if(_GCV48==-1,setvar("_GCV48",_GCV18));
+	if(_GCV49==-1,setvar("_GCV49",getwcolor(1)));
+	if(_GCV50==-1,setvar("_GCV50",getwcolor(1)));
+	if(_GCV51==-1,setvar("_GCV51",getwcolor(1)));
+
+}

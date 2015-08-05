@@ -1,0 +1,10 @@
+Bitquant     !_PDC_EXEC325  $Quantize to 2^N Bits
+Filteq       !_PDC_EXEC323  $Difference Equation Evaluation
+Grpdelay     !_PDC_EXEC373  $Z Transform Group Delay
+Impz         !_PDC_EXEC361  $Z Transform Impulse Response
+Residue      !setvar("_residzsd",1);_PDC_EXEC363  $S Transform Partial Fraction Expansion
+Residuez     !setvar("_residzsd",0);_PDC_EXEC363  $Z Transform Partial Fraction Expansion
+Shp          !_PDC_EXEC355  $Single Pole High Pass Filter
+Slp          !_PDC_EXEC354  $Single Pole Low Pass Filter
+Zfreq        !_PDC_EXEC324  $Z Transform Frequency Response
+Zplane       !_PDC_EXEC362  $Z Transform Pole-Zero Plot

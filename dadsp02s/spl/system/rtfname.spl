@@ -1,0 +1,111 @@
+/* gui based readt */
+rtfname(fname)
+{
+	local orgname, fn, dl, collist, rtcol, rtnaninf;
+
+	/* set default name to appear in dialog box */
+	if (argc > 0) {
+		/* use input filename */
+		setvar("_rtfname", fname);
+		setvar("_rtpickdir", strrev(strfind(pathchar, strrev(_rtfname))));
+	}
+	else {
+		/* just define the variable */
+		defvar("_rtfname", "");
+	}
+
+	/* define start directory if it doesn't already exist */
+	defvar("_rtpickdir", "");
+
+	/* define numpts if it doesn't already exist */
+	defvar("_rtnumpts", "-1");
+
+	/* define starting column if it doesn't already exist */
+	defvar("_rtstartcol", "1");
+
+	/* define column list if it doesn't already exist */
+	defvar("_rtcollist", "-1");
+
+	/* define offset if it doesn't already exist */
+	defvar("_rtoffset", "1");
+
+	/* _pickfile_status == 1 if dialog was successful */
+	setvar("_pickfile_status", 0);
+
+	/* remember original name */
+	orgname = _rtfname;
+
+	/* delimiters */
+	defvar("_rttab",     "0");
+	defvar("_rtspace",   "1");
+	defvar("_rtcomma",   "0");
+	defvar("_rtsemi",    "0");
+	defvar("_rtother",   "0");
+	defvar("_rtotherstr", "");
+	defvar("_readt_skip_delimiters", "1");
+	defvar("_rthex", "0");
+
+	/* nan and inf values */
+	defvar("_rtnanstr", getconf("READT_NA"));
+	defvar("_rtinfstr", getconf("READT_INF"));
+
+	/* default value */
+	setvar("_rtdefval", castreal(getconf("readt_default_value")));
+
+	/* invoke dialog box */
+	_mf("readt.tab");
+
+	/* add -1 to collist if necessary */
+	if (strlen(strfind("-1", _rtcollist)) == 0) {
+		collist = strcat(_rtcollist, ",-1");
+	}
+	else {
+		collist = _rtcollist;
+	}
+
+	if (_pickfile_status == 1) { /* dialog was successful */
+		/* set delimiters */
+		_setrtdl(_rttab, _rtspace, _rtcomma, _rtsemi, _rtother, _rtotherstr);
+
+		/* remember default directory */
+		setvar("_rtpickdir", strrev(strfind(pathchar, strrev(_rtfname))));
+		fn = sprintf('"%s"', _rtfname);
+
+		/* check if double quote a delimiter */
+		if (strlen(strfind('"', _readt_delimiters)) > 0) {
+			dl = sprintf("'%s'", _readt_delimiters);
+		}
+		else {
+			dl = sprintf('"%s"', _readt_delimiters);
+		}
+
+		rtcol = (castint(_rtnumcol) > 0) ? castint(_rtnumcol) : (_rtsccol ? -1 : 0);
+
+		/* nan and inf template strings */
+		rtnaninf = "";
+		if (strlen(_rtnanstr) > 0 && strcmp(_rtnanstr, getconf("READT_NA")) != 0) {
+			rtnaninf = sprintf('"%s"', _rtnanstr);
+			if (strlen(_rtinfstr) > 0 && strcmp(_rtinfstr, getconf("READT_INF")) != 0) {
+				rtnaninf = sprintf('%s, "%s"', rtnaninf, _rtinfstr);
+			}
+		}
+		else if (strlen(_rtinfstr) > 0 && strcmp(_rtinfstr, getconf("READT_INF")) != 0) {
+			rtnaninf = sprintf('"", "%s"', _rtinfstr);
+		}
+
+		if (strlen(_rtfname) > 0) {
+			if (strlen(rtnaninf) > 0) {
+				eval(sprintf("%s := Readt(%s, %s, %s, %s, %s, %s, %s, %s, %s, %d)", _dwin, fn, _rtoffset, _rtstartcol, collist, _rtnumpts, _rthex, dl, rtnaninf, _readt_skip_delimiters, rtcol));
+			}
+			else {
+				eval(sprintf("%s := Readt(%s, %s, %s, %s, %s, %s, %s, %s, %d)", _dwin, fn, _rtoffset, _rtstartcol, collist, _rtnumpts, _rthex, dl, _readt_skip_delimiters, rtcol));
+			}
+		}
+	}
+	else {
+		/* reset to original name */
+		if (strlen(orgname) > 0) {
+			setvar("_rtfname", orgname);
+		}
+	}
+}

@@ -1,0 +1,19 @@
+! sertype.men - Different line graph types
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+   Plot Styles
+_____________
+
+   Lines             ~_MC | LINES
+   Points Only       ~_MC | POINTS
+   Sticks            ~_MC | STICKS
+   Bar Graph         ~_MC | BARS
+   Table             ~_MC | TABLEVIEW
+
+   Overplot          ~_deffname('OVERPLOT Overplot a Series')  |_defformat('Overplot(series)')|_defxamp('Overplot(W2)')|_getser|_evalserform("Overplot")
+   Remove Overplots  ~_MC | unoverplot
+___________________
+
+{_EXITMES}

@@ -1,0 +1,80 @@
+/*****************************************************************************
+*                                                                            *
+*   TRIL.SPL  Copyright (C) 2002 DSP Development Corporation                 *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns lower triangle                                      *
+*                                                                            *
+*   Revisions:   13 Aug 2002  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_TRIL
+
+    TRIL  
+
+    Purpose: Returns the lower triangle of a matrix
+                                                                        
+    Format:  TRIL(m, d)
+
+                  m -  An array.
+
+                  d -  Optional An integer, the diagonal on and below which
+                       to include matrix elements. Defaults to 0, the main
+                       diagonal.
+
+
+    Returns: An array consisting of the lower triangle of m where the other
+             elements are zero.
+
+    Example:
+             W1: {{1, 2, 3},
+                  {4, 5, 6},
+                  {7, 8, 9}}
+
+             W2: tril(w1)
+
+             W2 == {{1, 0, 0},
+                    {4, 5, 0},
+                    {7, 8, 9}}
+
+
+             W3: tril(W1, 1)
+
+             W3 == {{1, 2, 0},
+                    {4, 5, 6},
+                    {7, 8, 9}}
+
+
+             W4: tril(W1, -1)
+
+             W4 == {{0, 0, 0},
+                    {4, 0, 0},
+                    {7, 8, 0}}
+
+
+    Remarks:
+             TRIL(m, -1) is equivalent to LOTRIX(m).
+
+    See Also:
+             LOTRI
+             LOTRIX
+             TRIU
+#endif
+
+
+/* lower triangle */
+tril(M, d)
+{
+	if (argc < 2) {
+		if (argc < 1) error("tril - input array required");
+		d = 0;
+	}
+	if (not(IS_ARRAY(M))) M = castseries(M);
+
+	return((M)*(rownos(M) >= (colnos(M)-d)));
+}

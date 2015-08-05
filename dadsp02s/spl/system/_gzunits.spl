@@ -1,0 +1,14 @@
+/* get z units */
+_gzunits(s)
+{
+	local zu;
+
+	zu = (argc > 0) ? getzunits(s) : getzunits;
+
+	if (strlen(zu) == 0) {
+		/* get default units */
+		zu = _getzunits;
+	}
+	return(zu);
+}
+

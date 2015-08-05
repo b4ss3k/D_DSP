@@ -1,0 +1,161 @@
+/*****************************************************************************
+*                                                                            *
+*   CTREE.SPL     Copyright (C) 1997-2004 DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Draws a binary fractal called the Pythagoras Tree           *
+*                                                                            *
+*   Revisions:   15 Dec 1997  RRR  Creation                                  *
+*                 7 Jul 2004  RRR  added autoscaling                         *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_CTREE
+
+
+    CTREE
+
+    Purpose: Creates a binary fractal
+                                                                        
+    Format:  CTREE(stages, cangle, cindex)
+
+              stages - optional integer, depth of fractal recursion,
+                       defaults to 6.
+
+              cangle - optional real, angle increment per radians,
+                       defaults to 4.
+
+              cindex - optional integer, starting color index,
+                       defaults to 15, white.
+                      
+
+    Returns: Multiple overplotted XY series
+
+
+    Example:
+             Ctree
+
+             Displays a depth 6 binary C-Tree.
+
+    Example:
+             Ctree(8)
+
+             Displays a depth 8 binary C-Tree.
+
+
+    Remarks:
+
+             CTREE draws a binary fractal called the Pythagoras Tree
+             created by A. E. Bosman.  The fractal is produced by
+             starting with a square of width W.  Two smaller squares
+             of width W * sqrt(2)/2 are connected to one side of the
+             first square to form a 45-45-90 triangle.  The process
+             is repeated with each of the smaller squares over and
+             over again.  Because each new stage creates twice as
+             many squares as the preceding stage, the Pythagoras Tree
+             is considered a binary fractal.
+
+             The SPL code is based on an algorithm by Hans Lauwerier. 
+
+
+    See Also:
+             Overplot
+             XY
+
+    References:
+             Hans Lauwerier
+             Fractals: Endlessly Repeated Geometrical Figures.
+             Princeton University Press, 1991
+             p111-112
+#endif
+
+
+
+/* create a binary fractal */
+ctree(stages, cangle, cindex)
+{
+	if (argc < 3) {
+		cindex = 15;
+		if (argc < 2) {
+			cangle = 4;
+			if (argc < 1) {
+				stages = 6;
+			}
+		}
+	}
+
+	/* add a single point series */
+	{0};
+
+	/* setup window */
+	setx(-8, 8);
+	sety(-6, 10);
+	scalesoff();
+	setplotstyle(0);
+	wincolor(lgrey);
+
+	/* set autoscale coords */
+	setxauto(-8, 8);
+	setyauto(-6, 10);
+
+	/* square aspect ratio */
+	setaspect(1);
+
+
+	/* do the recursion */
+	cptree(stages, cangle, cindex);
+}
+
+
+cptree(stages, cangle, cindex)
+{
+	local x1[4], y1[4];
+	local a[stages], m, n, l, h, x, y, f, j, k, u, v;
+
+	for (m = 0; m <= stages; m++) {
+		echo(sprintf("Stage: %d of %d ...", m, stages));
+		for (n = 2^m; n <= (2^(m + 1) - 1); n++) {
+			l = n;
+			h = 1;
+			x = 0;
+			y = 0;
+			f = 0;
+			for (k = 0; k <= m - 1; k++) {
+				a[m - k] = l % 2;
+				l = int(l / 2);
+			}
+			x = 0;
+			y = 0;
+			for (j = 1; j <= m; j++) {
+				if (a[j] == 0) {
+					x = x - h * (cos(f) + 2 * sin(f));
+					y = y + h * (2 * cos(f) - sin(f));
+					f = f + pi / cangle;
+					h = 1 / sqrt(2) * h;
+				}
+				else {
+					x = x + h * (cos(f) - 2 * sin(f));
+					y = y + h * (2 * cos(f) + sin(f));
+					f = f - pi / cangle;
+					h = 1 / sqrt(2) * h;
+				}
+			}
+
+			u = h * (cos(f) + sin(f));
+			v = h * (cos(f) - sin(f));
+	
+			x1 = {x - v, x + u, x + v, x - u, x - v};
+			y1 = {y - u, y - v, y + u, y + v, y - u};
+
+			/* 
+			** Treat each "leaf" as a separate xy overplot and draw
+			** each level in a different color. We use the higher
+			** colors of the 16 color palette to get "light" colors first.
+			*/
+			overplot(xy(x1, y1), cindex - m);
+		}
+	}
+	echo("");
+}

@@ -1,0 +1,19 @@
+/* get item and member from a column number */
+_getitem(sernum)
+{
+	local item, member;
+
+	if (sernum > getwcount()) sernum = 1;
+
+	/* get item value */
+	item = _col2itm(sernum);
+
+	/* get member value */
+	member = sernum - itemcol(item) + 1;
+
+	if ((itemtype(item) != 9 && itemtype(item) != 2) || getplottype(0) != 6) {
+		member = 1;
+	}
+
+	return(item, member);
+}

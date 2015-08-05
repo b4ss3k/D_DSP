@@ -1,0 +1,12 @@
+Brighten     !_PDC_EXEC309  $Brighten or Darken an Image
+DCT2         !_PDC_EXEC306  $2D Discrete Cosine Transform
+FFT2         !_PDC_EXEC145  $2D Fast Fourier Transform
+Histeq       !_PDC_EXEC308  $Histogram Equalization
+IDCT2        !_PDC_EXEC307  $2D Inverse Discrete Cosine Transform
+IFFT2        !_PDC_EXEC146  $2D Inverse Fourier Transform
+Image24      !_PDC_EXEC305  $Convert to 24 Bit RGB Image
+Iminterp     !_PDC_EXEC330  $Image Interpolation
+Nonlin2d     !_PDC_EXEC144  $Nonlinear 2D Filtering
+Rgb2mono     !_PDC_EXEC334  $Convert to 8 Bit Monochrome Image
+Sobel        !_PDC_EXEC143  $Sobel Edge Detection
+

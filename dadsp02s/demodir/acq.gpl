@@ -1,0 +1,9 @@
+@y3
+@panel
+ Acquisition Setup
+ Sample Rate: <               >~defmacro("srate", <{2000}>, 3)~strnum(input(2,"Enter Sampling Rate",1,10000000))
+! Sample Rate       ~defmacro("srate",strnum(input(2,"Enter Sampling Rate",1,10000000)),3)
+
+! Duration          ~defmacro("dur",strnum(input(2,"Enter Length of Acquisition ",1,9)) ,3)
+    Duration: <               >          ~defmacro("dur",<{6}>, 3)~strnum(input(2,"Enter Length of Acquisition ",1,9))
+!~_MC

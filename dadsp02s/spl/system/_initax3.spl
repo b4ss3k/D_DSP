@@ -1,0 +1,17 @@
+/* initializes 3D axis parameters */
+_initax3()
+{
+	setvar("_xticaut", castint(not(getxticset)));
+	setvar("_yticaut", castint(not(getyticset)));
+	setvar("_zticaut", castint(not(getzticset)));
+
+	setvar("_xtc",    caststring(getxtic));
+	setvar("_ytc",    caststring(getytic));
+	setvar("_ztc",    caststring(getztic));
+	setvar("_axs",    _gax3dstyl(caststring(getscales)));
+	setvar("_pscale", not(ascale()));
+
+	setvar("_xrot",getrotate3d(1));
+	setvar("_yrot",getrotate3d(1));
+	setvar("_zrot",getrotate3d(1));
+}

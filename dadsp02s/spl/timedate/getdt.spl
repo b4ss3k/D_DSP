@@ -1,0 +1,86 @@
+/*****************************************************************************
+*                                                                            *
+*   GETDT.SPL     Copyright (C) 2006 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Returns the date and time values of a series                *
+*                                                                            *
+*   Revisions:   13 Apr 2006  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_GETDT
+
+    GETDT
+
+    Purpose: Returns the date and time values of a series.
+                                                                        
+    Format:  GETDT(series)
+             (date, time, y) = GETDT(series)
+
+             series - An interval or XY series.
+
+    Returns: A 2 column table with the date and time values in
+             each column.
+
+             (date, time) = GETDT(series) returns the date and time
+             values as separate series.
+
+    Example:
+             W1: {julstr("1-1-99"), julstr("1-10-99"), julstr("4-2-99")}
+             W2: {todstr("12:00"), todstr("14:00"), todstr("9:35")}
+             W3: {1, 2, .5};setvunits("V")
+             W4: xydt(w1, w2, w3)
+             W5: getdt(w4)
+
+             The table in W5 consists of the values:
+
+             1-01-99,  12:00
+             1-10-99,  14:00
+             4-02-99,  09:35
+
+    Remarks:
+             GETDT breaks out the date and time values from any series.
+
+             The plot style is set to table view.
+
+             See DTXY to return the date, time and Y values from a series.
+
+             See XYDT to produce an XY series from separate date, time and
+             y value series.
+
+    See Also:
+             Dtxy
+             Julstr
+             Todstr
+             Julymd
+             Xy
+             Xydt
+#endif
+
+
+/* get the Date and Time values from a series */
+getdt(s)
+{
+	local dt, dval, tval;
+
+	dt = xvals(s);
+	days = int(dt/86400);
+
+	dval = days + julstr(getdate(s));
+	setvunits(dval, "Daily");
+
+	tval = (dt - days * 86400) + todstr(gettime(s));
+	setvunits(tval, "Real Time");
+
+	if (outargc > 1) {
+		return(dval, tval);
+	}
+	else {
+		dt = ravel(dval, tval);
+		setplotstyle(dt, 4);
+		return(dt);
+	}
+}

@@ -1,0 +1,31 @@
+
+#include <series.h>
+
+/* sets or gets y axis label */
+ylabel(win, argv)
+{
+	local s;
+
+	if (argc == 0) {
+		/* return y label of current window */
+		return(getylabel(W0));
+	}
+	if (argc == 1) {
+		if (not(IS_WINDOW(win))) {
+			/* set y label of current window */
+			s = caststring(win);
+			setylabel(s);
+		}
+		else {
+			/* return y label of win */
+			return(getylabel(win));
+		}
+	}
+	if (argc >= 2) {
+		if (not(IS_WINDOW(win))) error("ylabel - Window required");
+		/* set y label of win */
+		s = caststring(getargv(1));
+		setylabel(win, s);
+	}
+}
+

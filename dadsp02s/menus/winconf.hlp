@@ -1,0 +1,33 @@
+! WinConf.hlp
+WINDOW CONFIGURATION
+
+WINDOW RESIZING:
+Individual windows in the worksheet can be resized with the mouse. Click 
+the left mouse button on a window border, drag to resize, and release.  
+Enable or disable this capability for the worksheet.  Changes to this 
+parameter take effect immediately.
+
+VERTICAL CURSOR:
+Turn the Vertical Cursor on to display the index, x-value, and y-value for
+all series in the window.  Turn off to return to the crosshair cursor.  
+Changes to this parameter take effect immediately.
+
+AXIS SCALES:
+This will set the default scale location.  Axes can be located on the 
+Bottom or Top (X-axis), Left or Right (Y-axis), and with or without labels
+(in any combination).  Changes to this parameter take effect for new
+windows added to the worksheet.
+
+X and Y GRIDS:
+Turn the X (horizontal) and/or Y (vertical) grids on or off. Changes to 
+this parameter take effect for new windows added to the worksheet.
+
+X and Y GRID STYLE:
+Select the grid style for the X and Y grids.  Grid options are: Solid,
+Dashed, Dotted.  The X and Y grid styles can be different.  Changes to 
+this parameter take effect for new windows added to the worksheet.
+
+X and Y LOG SCALE:
+Set the X and/or Y axis scales to Log Scale (on) or Linear Scale (off). 
+Changes to this parameter take effect for new windows added to the 
+worksheet.

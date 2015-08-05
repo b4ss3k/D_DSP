@@ -1,0 +1,89 @@
+/*****************************************************************************
+*                                                                            *
+*   SPLINE2.SPL  Copyright (C) 1997-2000  DSP Development Corporation        *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    2 Dimensional cubic spline interpolation                    *
+*                                                                            *
+*   Revisions:   21 Jun 1997  RRR  Creation                                  *
+*                 1 Jun 2000  RRR  default to series spline                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+
+#if @HELP_SPLINE2
+
+    SPLINE2    
+
+    Purpose: Performs 2 dimensional cubic spline fitting
+                                                                        
+    Format:  SPLINE2(array, numrows, numcols)
+
+              array   - input array to interpolate
+              numrows - an integer specifying the row interpolation factor
+              numcols - an optional integer for the column interpolation 
+                        factor (default numrows)
+
+    Returns: An array
+
+    Example:
+
+             W1: Ravel(gnorm(100, 1), 10);
+             W2: Spline2(W1, 4);
+
+             W2 contains a 37x37 array of interpolated values.
+
+
+    Remarks:
+             The interpolated result from Spline2 always passes through 
+             the original data points.
+
+    See Also
+             Contour
+             Interp
+             Interp2
+             Plot3d
+             Ravel
+             Spline
+             Waterfall
+
+#endif
+
+
+spline2(s, n, m)
+{
+	local u;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("spline2 - array required"); 
+			/* interpolation factor */
+			n = 2;
+		}
+		else {
+			n = castint(n);
+		}
+		m = n;
+	}
+
+	/* check input array */
+	if (IS_ARRAY(s)) {
+		if (numcols(s) < 2) {
+			/* regular series */
+			return(spline(s, n));
+		}
+	}
+	else error("spline2 - array required");
+
+	/* spline in Y direction */
+	u = spline(s', m);
+
+	/* spline in X direction */
+	u = spline(u', n);
+
+	return(u);
+}

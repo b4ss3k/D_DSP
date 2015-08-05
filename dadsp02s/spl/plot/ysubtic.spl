@@ -1,0 +1,63 @@
+/*****************************************************************************
+*                                                                            *
+*   YSUBTIC.SPL Copyright (C) 1998 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Sets Y subtic labeling for log plots                        *
+*                                                                            *
+*   Revisions:   23 Jun 1998  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_YSUBTIC
+
+    YSUBTIC
+
+    Purpose: Sets subtic labeling for log Y axis
+                                                                        
+    Format:  YSUBTIC(win, on_off)
+
+              win    - an optional window, defaults to current window
+              on_off - an integer 0:OFF 1:label subtics (default 0)
+
+    Returns: Nothing
+
+    Example:
+             W1: Abs(Gnorm(200, 1));setylog(1);ysubtic(0)
+             W2: W1;setylog(1);ysubtic(1)
+
+             Only the decades of the log plot in W1 are labeled (the
+             default), where each subtic of W2 is labeled if there is
+             enough room.
+
+    Remarks: Some subtics may not be labeled if there is not enough 
+             room between tics.
+
+    See Also:
+             Setxlog
+             Setylog
+             Xsubtic
+#endif
+
+
+ysubtic(win, val)
+{
+	if (argc < 1) {
+		error("ysubtic - integer argument required");
+	}
+	if (argc < 2) {
+		if (IS_SCALAR(win)) {
+			setylog(W0, -1, win);
+		}
+		else {
+			error("ysubtic - integer argument required");
+		}
+	}
+	else {
+		setylog(win, -1, val);
+	}
+}

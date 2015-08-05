@@ -1,0 +1,95 @@
+/*****************************************************************************
+*                                                                            *
+*   PDFNORM.SPL Copyright (C) 2001 DSP Development Corporation               *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Probabilty density function of a normal distribution        *
+*                                                                            *
+*   Revisions:    7 Apr 2000  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_PDFNORM
+
+    PDFNORM  
+
+    Purpose: Returns the probability density function of a normal distribution
+                                                                        
+    Format:  PDFNORM(z, mean, std)
+
+                 z - real or series, the z value
+
+              mean - an optional real, the mean of the distribution, 
+                     defaults to 0.0
+
+               std - an optional real, the standard deviation of the
+                     distribution, defaults to 1.0
+
+
+    Returns: A real or series, the value of the normal distribution for
+             the input value(s).
+
+
+    Example:
+             pdfnorm(0)
+
+             returns 1, the value of a normal distribution with a mean of 
+             0.0 and a standard deviation of 1.0 at z = 0.0. 
+
+             pdfnorm(-8..0.01..8)
+ 
+             displays the normal distribution with a mean of 0.0 and
+             a standard deviation of 1.0 over the range -8 to 8.
+
+             pdfnorm(-8..0.01..8, 0, 2.0)
+ 
+             Same as above except the standard deviation of the distribution
+             is set to 2.0.
+
+             W1: hist(gnorm(10000, 1, 10, 3), 200)
+             W2: pdfnorm(xvals(W1), 10, 3);overp(rescale(W1, 0, 1))
+
+             Compares the calculated normal distribution of random values 
+             with mean 10 and standard deviation 3 in W1 with the analytic 
+             distribution in W2;
+
+
+    Remarks:
+             STD is set to 1.0 if it equals 0.0.
+
+             See PROBN to calculate the normal cumulative distribution 
+             function.
+
+
+    See Also:
+             Gnorm
+             Grand
+             Invprobn
+             Probn
+             Rand
+             Randn
+#endif
+
+
+
+/* area under gaussian from -infinity to z */
+pdfnorm(z, mean, std)
+{
+	local x;
+
+	if (argc < 3) {
+		if (argc < 2) {
+			if (argc < 1) error("pdfnorm - input value required");
+			mean = 0;
+		}
+		std = 1;
+	}
+	if (std == 0) std = 1.0;
+
+	/* normalize */
+	x = (z - mean) / std;
+
+	return(exp(-0.5 * x*x));
+}

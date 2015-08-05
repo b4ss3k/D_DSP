@@ -1,0 +1,52 @@
+_getcbos(use_default, copy)
+{
+	local delim, otherstr = "";
+
+	if (argc < 2) {
+		if (argc < 1) {
+			use_default = 0;
+		}
+		copy = 0;
+	}
+
+	if (use_default) {
+		if (copy) {
+			delim = getconfdef("column_separator");
+		}
+		else {
+			delim = getconfdef("clipboard_delimiters");
+		}
+
+	}
+	else {
+		if (copy) {
+			delim = getconf("column_separator");
+		}
+		else {
+			delim = getconf("clipboard_delimiters");
+		}
+	}
+
+	if (strlen(delim) > 0) {
+		/* convert to series */
+		delchrs = charstrs(delim);
+
+		/* delete standard delimiters */
+
+		/* tab */
+		delchrs = delete(delchrs, delchrs == charstr(strescape("\t")));
+
+		/* space */
+		delchrs = delete(delchrs, delchrs == charstr(" "));
+
+		/* comma */
+		delchrs = delete(delchrs, delchrs == charstr(","));
+
+		/* semicolon */
+		delchrs = delete(delchrs, delchrs == charstr(";"));
+
+		/* convert to string */
+		otherstr = strchars(delchrs);
+	}
+	return(otherstr);
+}

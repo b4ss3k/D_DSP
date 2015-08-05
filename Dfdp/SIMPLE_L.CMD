@@ -1,0 +1,5 @@
+SECTIONS
+{
+	XIIR 300h (NOLOAD) : {} PAGE 1
+}
+

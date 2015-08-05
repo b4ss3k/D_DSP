@@ -1,0 +1,15 @@
+/* column to item number */
+_col2itm(c)
+{
+	local n, ic, tc, nc;
+
+	nc = numitems;
+	tc = 0;
+	for (n = 1; n < nc; n++) {
+		ic = itemcount(n);
+		if (c <= ic + tc) break;
+		tc += ic;
+	}
+	return(n);
+}
+

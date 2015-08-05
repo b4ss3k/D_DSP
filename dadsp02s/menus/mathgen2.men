@@ -1,0 +1,24 @@
+! MathGen2.men -- Series math functions
+@x0
+@y0
+@b{_bg1}
+@f{_fg1}
+   General Math 
+ 
+ Absolute Value    ~_deffname('ABS      Absolute Value')  |_defformat('Abs(series)')|_defxamp('Abs(W1*W2)')|_getser|_serform("Abs")
+ Round Down (int)  ~_deffname('FLOOR    Round Down to Nearest Integer')  |_defformat('Floor(series)')|_defxamp('Floor(W1)')|_getser|_serform("Floor")
+ Round Up   (int)  ~_deffname('CEILING  Round Up to Nearest Integer')  |_defformat('Ceiling(series)')|_defxamp('Ceiling(W1)')|_getser|_serform("Ceiling")
+ Square Root       ~_deffname('SQRT     Square Root')         |_defformat('Sqrt(series)')|_defxamp('Sqrt(W1*W2)')|_getser|_serform("Sqrt")
+ Derivative        ~_deffname('DERIV    Derivative')      |_defformat('Deriv(series)')|_defxamp('Deriv(W1*W2)')|_getser|_serform("Deriv")
+ Left Deriv        ~_deffname('LDERIV   Left Derivative') |_defformat('Lderiv(series)')|_defxamp('Lderiv(W1*W2)')|_getser|_serform("Lderiv")
+ Right Deriv       ~_deffname('RDERIV   Right Derivative')|_defformat('Rderiv(series)')|_defxamp('Rderiv(W1*W2)')|_getser|_serform("Rderiv")
+ Integrate         ~_deffname('INTEG    Integration')     |_defformat('Integ(series)')|_defxamp('Integ(W1*W2)')|_getser|_serform("Integ")
+ Partial Sum       ~_deffname('PARTSUM  Partial Sum')     |_defformat('Partsum(series)')|_defxamp('Partsum(W1*W2)')|_getser|_serform("Partsum")
+ Moving Average    ~_deffname('MOVAVG   N Point Moving Average')  |_defformat('Movavg(series, points)')|_defxamp('Movavg(W1,10)')|_getserint1("Input Series:  ", "Pts to Average:")|_serint1form("Movavg")
+ Amplitude Dist.   ~_deffname('AMPDIST  Amplitude Distribution')  |_defformat('Ampdist(series, delta-y)')|_defxamp('Ampdist(W1,0.7)')|_getserreal1("Series:     ", "Y Increment:")|_serreal1form("Ampdist")
+
+ Log              ~_deffname('LOG      Natural Log of a Series') | _defformat('Log(series)') | _defxamp('Log(W1)') | _getser | _serform("Log")
+ Log10            ~_deffname('LOG10    Log Base 10 of a Series') | _defformat('Log10(series)') | _defxamp('Log10(W1)') | _getser | _serform("Log10")
+ Natural Log      ~_deffname('LN       Natural Log of a Series') | _defformat('Ln(series)') | _defxamp('Ln(W1)') | _getser | _serform("Ln")
+
+ Exponent         ~_deffname('EXP      Raise "e" to Series Values') | _defformat('Exp(series)') | _defxamp('Exp(W1)') | _getser | _serform("Exp")

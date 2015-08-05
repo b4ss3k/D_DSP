@@ -1,0 +1,144 @@
+/*****************************************************************************
+*                                                                            *
+*   CUT.SPL      Copyright (C) 1998-2006 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Cuts displayed contents of a Window into the current Window *
+*                                                                            *
+*   Revisions:    8 Jun 1998  RRR  Creation                                  *
+*                16 Nov 2006  RRR  Optional cutxy parameter for y range      *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_CUT
+
+    CUT
+
+    Purpose: Cuts the displayed contents of a Window
+                                                                        
+    Format:  Cut(win, cutxy)
+
+              win    - A window
+
+              cutxy  - Optional. An integer, 1: cut using both the x and y 
+                       displayed range, 0: cut using the x range only (default). 
+
+    Returns: A series or array
+
+    Example:
+             W1: Gnorm(1000,.01);setx(.2, .5)
+             W2: Cut(W1)
+
+             W2 contains the data actually displayed in W1.
+
+    Remarks:
+             Cut works properly on arrays and images.
+
+    See Also:
+             Extract
+             Setvport
+#endif
+
+
+cut(win, cutxy)
+{
+	local s;
+
+	if (argc < 2) {
+		cutxy = 0;
+	}
+	if (argc < 1) {
+		s = wincut(w0, cutxy);
+	}
+	else {
+		s = wincut(win, cutxy);
+	}
+	return(s);
+}
+
+
+wincut(win, cutxy)
+{
+	local nr, nc, ixl, ixr, tmp, s2, s;
+
+	if (not(IS_WINDOW(win))) {
+		error("cut - requires Window");
+	}
+
+	(nr, nc) = size(win);
+
+	ixl = (getxl(win) - xoffset(win)) / deltax(win) + 1;
+	ixr = (getxr(win) - xoffset(win)) / deltax(win) + 1;
+
+	if (nc > 1) {
+		ixl = castint(ceil(ixl));
+	}
+	else {
+		ixl = castint(floor(ixl));
+	}
+	ixr = castint(floor(ixr));
+
+	(ixl, ixr) = wincut_swap(ixl, ixr);
+
+	if (ixl < 1)  ixl = 1;
+	if (ixl > nr) ixl = nr;
+
+	if (ixr < 1)  ixr = 1;
+	if (ixr > nr) ixr = nr;
+
+	if (nc > 1) { /* array or XY */
+		if (ISXYSERIES(win) && nc == 2) {
+			x = xvals(win);
+			ixl = getxl(win);
+			ixr = getxr(win);
+			(ixl, ixr) = wincut_swap(ixl, ixr);
+			s = delete(win, x < ixl || x > ixr);
+			
+			if (cutxy) {
+				y = yvals(s);
+				ixl = getyb(win);
+				ixr = getyt(win);
+				(ixl, ixr) = wincut_swap(ixl, ixr);
+				s = delete(s, y < ixl || y > ixr);
+			}
+		}
+		else {
+			iyb = castint(ceil((getyb(win) - yoffset(win)) / deltay(win)) + 1);
+			iyt = castint(floor((getyt(win) - yoffset(win)) / deltay(win)) + 1);
+
+			if (iyb < 1)  iyb = 1;
+			if (iyb > nc) iyb = nc;
+
+			if (iyt < 1)  iyt = 1;
+			if (iyt > nc) iyt = nc;
+
+			s  = win[ixl..ixr, iyb..iyt];
+		}
+	}
+	else {
+		s = extract(win, ixl, ixr - ixl + 1);
+		if (cutxy) {
+			ixl = getyb(win);
+			ixr = getyt(win);
+			(ixl, ixr) = wincut_swap(ixl, ixr);
+			s = clip(s, ixr, ixl);
+		}
+	}
+
+	return(s);
+}
+
+
+wincut_swap(a, b) 
+{
+	if (a > b) {
+		return(b, a);
+	}
+	else {
+		return(a, b);
+	}
+}

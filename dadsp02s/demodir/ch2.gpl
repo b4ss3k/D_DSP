@@ -1,0 +1,14 @@
+!  Menu for channel 2 setup
+@display
+@x0
+@y0
+  Channel 2
+_____________
+
+ Time Range  ~ defmacro("ttimrng",strnum(input(1,"Timebase Range in Seconds",10E-9,10)),3)
+ Volt Range  ~ defmacro("tvolrng",strnum(input(1,"Channel 2 Amplitude in Volts",4E-2,16)),3)
+ Time Delay  ~ defmacro("ttimdel",strnum(input(1,"Timebase Delay from Reference (in Seconds)")),3)
+ Volt Offset ~  defmacro("tvoloff",strnum(input(1,"Channel 2 Offset in Volts",-30,30)),3)
+ 
+ Query Curr. ~QUERTWOMEN
+ Options     ~OPTTWOMEN

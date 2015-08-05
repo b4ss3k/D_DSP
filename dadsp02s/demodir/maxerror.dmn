@@ -1,0 +1,16 @@
+! maxerror.mnu - extracts the Maximum abs difference between target & network
+! changed for demo.
+@x 0
+@y 0
+@panel
+
+        MLP Maximum error
+
+  Extracts the Maximum absolute difference
+
+  between the target & the network.
+
+  Inputs:
+       Source Window:  Wn
+       Run Number:     N
+~menuc()

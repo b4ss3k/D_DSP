@@ -1,0 +1,83 @@
+/*****************************************************************************
+*                                                                            *
+*   DTXY.SPL     Copyright (C) 2006 DSP Development Corporation              *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Get the date, time and y values from an XY series           *
+*                                                                            *
+*   Revisions:   23 Aug 2006  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_DTXY
+
+    DTXY
+
+    Purpose: Returns the date, time and Y values of a series.
+                                                                        
+    Format:  DTXY(series)
+
+             (date, time, y) = DTXY(series)
+
+             series - An interval or XY series.
+
+    Returns: A 3 column table with the date, time and y values in
+             each column.
+
+             (date, time, y) = DTXY(series) returns the date, time and
+             y values as separate series.
+
+    Example:
+             W1: {julstr("1-1-99"), julstr("1-10-99"), julstr("4-2-99")}
+             W2: {todstr("12:00"), todstr("14:00"), todstr("9:35")}
+             W3: {1, 2, .5};setvunits("V")
+             W4: xydt(w1, w2, w3)
+             W5: dtxy(w4)
+
+             The table in W5 consists of the values:
+
+             1-01-99,  12:00,  1.0
+             1-10-99,  14:00,  2.0
+             4-02-99,  09:35,  0.5
+
+    Remarks:
+             DTXY breaks out the date, time and y values from any series and
+             essentially performs the inverse operation of XYDT.
+
+             The plot style is set to table view.
+
+             See XYDT to produce an XY series from separate date, time and
+             y value series.
+
+             See GETDT to return just the date and time values of a series.
+
+    See Also:
+             Getdt
+             Julstr
+             Todstr
+             Julymd
+             Xy
+             Xydt
+#endif
+
+
+/* return separate Date, Time and Y values from a series */
+dtxy(s)
+{
+	local dt;
+
+	/* get date and time X value components */
+	(date, time) = getdt(s);
+
+	if (outargc > 1) {
+		return(date, time, yvals(s));
+	}
+	else {
+		dt = ravel(date, time, yvals(s));
+		/* plot as table */
+		setplotstyle(dt, 4);
+		return(dt);
+	}
+}

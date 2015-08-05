@@ -1,0 +1,158 @@
+/*****************************************************************************
+*                                                                            *
+*   CCEPS.SPL     Copyright (C) 1999 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Complex cepstrum calculation                               *
+*                                                                            *
+*   Revisions:     9 Jul 1999  RRR  Creation - from CEPSTRUM.MAC             *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_CCEPS
+
+    CCEPS
+
+    Purpose: Calculates the complex cepstrum
+                                                                        
+    Format:  CCEPS(s, n)
+
+             s   - input series or array
+
+             n   - an optional integer, the number of samples to use.
+                   If n > length(s), the series is zero padded. Defaults 
+                   to length(s).
+
+
+    Returns: A real series or array
+
+             (c, d) = cceps(s)
+
+             returns the cepstrum in C and the lag used to unwrap the 
+             phase in D.
+
+    Example:
+             W1: gtri(100, 1, 1/100)^3
+             W2: w1-delay(w1, 60)/2
+             W3: cceps(w1)
+             W4: cceps(w1, 512)
+
+             W2 adds a synthesized echo at 60 seconds to the data of 
+             W1.
+
+             W3 displays a small peak at t == 60 indicating the 
+             presence of the echo. W4 performs the same calculation 
+             with the data padded to 512 samples.
+
+    Example:
+
+             W1: {1, -4.0996, 8.4057, -10.1765, 7.7801, -3.5142, 0.7939}
+             W2: cceps(w1, 1024)
+
+             returns the example listed in [2].
+
+    Remarks:
+
+            The complex cepstrum of a series is essentially
+            IDFT(log(DFT(s))).  However, the complex log calculation
+            requires the evaluation of of the continuous phase
+            component.  CCEPS unwraps the phase using Shafer's
+            Algorithm.  A line is subtracted from the unwrapped phase
+            to remove the integer lag component.
+
+                 (c, d) = cceps(s)
+
+            returns both the cesptrum and the lag used to unwrap 
+            the phase such that:
+
+                 icceps(c, d)
+
+            ideally returns s if mean(s) > 0.
+
+
+            CCEPS was tested successfully against the output from [2].
+
+
+    See Also:
+             Iceps
+             Rceps
+
+
+    References:
+
+            [1] Oppenheim & Shafer
+                Discrete-Time Signal Processing
+                Prentice Hall, 1989
+                pp 788-792
+
+            [2] IEEE Press
+                Programs for Digital Signal Processing
+                IEEE Press, 1979
+                Section 7
+#endif
+
+/* complex cepstrum with phase unwrapping */
+cceps(s, n)
+{
+	local f, m, p, c, d;
+
+	if (argc < 2) {
+		if (argc < 1) error("cceps - input series required");
+		n = length(s);
+	}
+	if (n < 1) error("cceps - length must be >= 1");
+
+	if (n != length(s)) {
+		f = fft(extract(s, 1, n));
+	}
+	else {
+		f = fft(s);
+	}
+
+	/* unity dx for calculations below */
+	setdeltax(f, 1.0);
+
+	/* compute IDFT(log(DFT(s)) - use unwrapped phase */
+	(p, d) = cepphase(f);
+
+	c = log(mag(f)) + i * p;
+	c = real(ifft(c));
+
+	/* restore deltax */
+	setdeltax(c, deltax(s));
+
+	/* d is the delay used in the phase computation */
+	return(c, d);
+}
+
+
+/* unwrap phase for cepstrum */
+cepphase(s)
+{
+	local p, m, n, r;
+
+	/* standard phase unwrapping */
+	p = unwrap(phase(s), pi);
+
+	/* mid point */
+	m = int(1 + length(s)/2);
+
+	/* integer delay is mid point phase value in multiples of pi */
+	n = round(extract(p, m, 1) / pi);
+
+	/* generate phase delay indices */
+	r = gline(length(s), 1.0, 1/(length(s)), 0);
+
+	/* scale and subtract from unwrap phase - use *^ to work on arrays */
+	p = p - (2 * pi * r *^ n);
+
+	/* if not multi-column, make n a scalar */
+	if (numcols(n) == 1) {
+		n = castint(n);
+	}
+
+	/* return unwrapped phase and the lag value */
+	return(p, n);
+}

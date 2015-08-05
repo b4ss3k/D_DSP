@@ -1,0 +1,927 @@
+
+		--------------------------------------
+   	              DSP Development Corporation
+		One Kendall Square Cambridge, MA 02139
+				USA
+
+			PHONE:	(617) 577-1133
+			TELEX:	324168 OAKSCAMB
+			FAX:	(617) 494-1394
+
+                         September 19, 1988
+                --------------------------------------
+
+1)	Check to insure that you have received the following 
+	three DADiSP (day-disp) Version 1.05B disks:
+
+		a) STARTUP 
+		b) SYSTEM Disk
+		c) LABBOOKS Disk
+
+	If your delivery is on 3 1/2 inch microfloppies, you 
+	should have received the following two disks:
+
+		a) STARTUP and SYSTEM Disk
+		b) LABBOOKS Disk
+
+	The contents of the disks are shown below.
+
+
+ Volume in drive A is STARTUP    
+ Directory of  A:\
+
+DADISP2  EXE   188112   9-19-88  10:51a * DADiSP V1.05B executable
+DADATA2  OVL    72096   9-19-88  10:51a * Data Overlay
+DEMO     BAT       39   3-17-87   7:21p * DEMO batch file
+DSP      BAT       10   2-10-86   6:24a * shorthand for DADiSP2
+FCOPY    BAT      116   6-05-87   8:30a * used by FINSTALL 
+FDEMO    BAT       39   3-17-87   7:21p * FLOPPY install procedure
+FINSTALL BAT       13   2-10-86   6:00a * floppy demo
+HCOPY    BAT      196   6-05-87   8:29a * used by HINSTALL
+HDEMO    BAT       19   2-12-88   4:22p * hard disk demo
+HINSTALL BAT       11   2-10-86   5:58a * HARD disk install procedure
+HUPDATE  BAT       12   3-17-87   7:06p * HARD disk UPDATE procedure
+CONFIG   SYS       26   1-23-86  12:15a * file config required by DOS
+DSPSTALL EXE    16369   8-26-88   2:07p * used by install procedures
+INSTALL  BAT       93  11-24-87   2:01p * used by install procedures
+       14 File(s)     73728 bytes free
+
+ Volume in drive A is SYSTEM     
+ Directory of  A:\
+
+IXPORT2  OVL    44560   9-19-88  10:42a * Import overlay
+DADISPW2 OVL   254656   9-19-88  10:49a * Worksheet overlay
+HELP2    F      25573   2-19-86  11:26a * Function Help
+HELP2    I       1846   2-08-86   4:53p * Inside Window Help
+HELP2    L       1458   2-14-86   2:30a * Line Editor Help
+HELP2    M       1076   1-02-86   8:07a * Menu Help     
+HELP2    W       1076   1-02-86   8:03a * Worksheet Help
+SYSTEM   BAT      120   8-22-88   1:01a * used by install procedures
+CONFIG   SYS       26   1-23-86  12:15a * File config required by DOS
+        9 File(s)     26624 bytes free
+
+
+ Volume in drive A is LABBOOKS   
+ Directory of  A:\
+
+TUTOR2       <DIR>      2-10-86   3:46a * TUTOR2 Labbook
+CGA      BAT      106   5-11-86   5:13p * converts to CGA driver
+DEVCOPY  BAT      110   1-07-87   3:09p * used by install procedure
+GRAFCOPY BAT       77   5-11-86   5:47p * copies graphics drivers
+HERCULES BAT      111   5-11-86   5:11p * copies HERCULES driver
+LABCOPY  BAT       53   2-10-86  11:51p * used by install procedure
+LCOPY    BAT       35   2-11-88  10:43a * used by install procedure
+ULCOPY   BAT      141   8-25-88   4:04p * used by update procedure
+TEST     DAT     5650   1-21-86   8:33p * example data you can IMPORT
+CGA      DEV     9061   8-01-85   6:13p * CGA graphics driver
+GRAPHICS DEV     9061   8-01-85   6:13p * run time graphics driver
+HERCULES DEV     8519   8-01-85   5:56p * Hercules graphics driver
+DEMO     DSP    12379   8-22-88   1:06a * DEMO command file
+CCONFIG  FNT       30   4-03-86  12:15p * CGA config file
+CONFIG   FNT       30   4-03-86  12:15p * run time config file
+HCONFIG  FNT       30   8-21-88  11:56p * Hercules config file
+HNORM    FNT     7179   3-02-86   7:03p * Hercules normal font
+HSMALL   FNT      345   3-04-86   5:30p * Hercules small font
+INORM    FNT      345   3-04-86   5:30p * CGA normal font
+ISMALL   FNT      907   2-28-86   3:56p * CGA small font
+NORM     FNT      345   3-04-86   5:30p * run time normal font
+SMALL    FNT      907   2-28-86   3:56p * run time small font
+ECONFIG  FNT       32   3-28-87   8:05p * EGA config file
+READ     ME     33191   9-19-88  11:30a * this here file
+ACT2     PRN     3072   7-22-88  10:27a * ACT II printer
+CRONLASR PRN     2048   6-04-85   6:49p * CORONA Laser printer
+DIABLOIJ PRN     4096   4-26-85   5:01p * Diablo Ink Jet printer
+EPSON80  PRN     5120   4-25-85   3:04p * EPSON/OKI FX/MX 80 printer
+EPSONJX  PRN     4096   7-24-85   9:35a * EPSON JX printer
+IDSPRISM PRN     6144   4-24-85  10:30a * IDS Prism printer
+LASERJET PRN     5120   1-02-86   6:10p * HP LaserJet printer
+LJETPLUS PRN     6144   8-13-86   8:50a * HP LaserJet PLUS printer
+PRINTER  PRN     5120   4-25-85   3:04p * run time printer
+QUADJET  PRN     3584   1-13-80   3:04a * Quadram Quadjet Printer
+THINKJET PRN     4096   4-25-85   3:39p * HP ThinkJet printer
+DADISP   IDX       56   4-26-87   3:17a * DADiSP index file
+EGA      BAT      106   3-28-87   7:58p * converts to EGA driver
+EGA      DEV    11497   8-29-86   9:58a * EGA device driver
+ENORM    FNT     3597   4-06-87  12:54a * EGA normal fomt
+DSPCOLOR          629   7-06-87   7:07p * EGA color file
+ATT      DEV     9109   9-24-86   3:29p * AT&T graphics driver
+ATT      BAT      106   9-06-88   9:42a * converts to AT&T 
+ACONFIG  FNT       32   8-23-88   4:04p * AT&T configuration
+PLOTTER  EXE    92091   4-14-88   2:10p * Plotter Driver                
+PLOT     CNF        5   6-30-88  12:30p * Plotter Configuration Table
+PLOT     BAT       22   6-30-88  12:37p * Plotter Batch file
+FREQ     MAC      954   2-29-88  11:33a * Misc Frequency Domain Macros
+PLOTTER  FNT     7168   3-16-84  12:43p * Plotter Font File
+       48 File(s)     21504 bytes free
+
+
+2)	SYSTEM REQUIREMENTS
+	--------------------------------------------------------------
+
+	For proper operation, DADiSP requires:
+
+		a) IBM PC/XT/AT or compatible
+		b) 640K memory
+		c) IBM Color Graphics card or IBM Enhanced
+		   Graphics Card or Hercules Graphics Card
+
+
+3)	INSTALLING DADiSP ON FLOPPY DISKS
+	--------------------------------------------------------------
+
+	You are allowed to make 2 backup copies of DADiSP.  DADiSP
+	requires THREE formatted blank floppy disks for installation. 
+	Each disk MUST be formatted with the /V/S option so that a
+	volume label and a copy of DOS are transferred.  The volume
+	labels should correspond with the names listed above.  These
+	labels will help you to identify your disks.  The DOS transfer
+	allows your working DADiSP disks to be booted and is required
+	in the installation process.  To install DADiSP, use the
+	FINSTALL (floppy install) program on your STARTUP disk as
+	outlined below.
+
+	Steps to install DADiSP onto floppies:
+
+		1) Boot your PC
+
+		2) Obtain THREE formatted blank disks
+
+		3) Place your original STARTUP disk in 
+		   Drive B:
+
+		4) Place your first blank disk in Drive A:
+
+		5) Goto the B: Drive by typing:
+
+			b:
+
+		6) Type:
+
+			finstall
+
+
+	DADiSP will be installed onto your floppies. See the manual for 
+	instructions on UNINSTALLING DADiSP.
+
+
+4)	INSTALLING DADiSP ONTO A HARD DISK
+	--------------------------------------------------------------
+
+	You are allowed to make 2 backup copies of DADiSP.  To install
+	DADiSP onto your hard disk, use the HINSTALL (hard disk
+	install) program provided on the STARTUP disk as outlined
+	below.  DADiSP requires approximately 800K bytes of free disk
+	space for installation on your hard disk.
+
+	Steps to install DADiSP on a hard disk:
+
+		1) Boot your XT/AT
+	
+		2) Place your original STARTUP disk in Drive A:
+
+		3) Goto the A: Drive by typing:
+			
+			a:
+	
+		4) Type:
+	
+			hinstall	
+
+
+	DADiSP will be installed in a directory called DSP. 
+
+
+5)	UPDATING DADiSP
+	--------------------------------------------------------------
+
+	To update DADiSP Version 1.05 from a previous version, please
+	follow the instructions below.
+
+	Hard Disk Update
+
+	The DADiSP HUPDATE procedure will install your new
+	program disks to your hard disk.  Before you update
+	however, you must first UNINSTALL your old DADiSP to its
+	original distribution disk if it is version 1.03 or
+	earlier.  Versions 1.04A or later do not require
+	un-installation.  If you need to uninstall, please
+	follow the instructions detailed in the manual under
+	UNINSTALLING DADiSP.  After UNINSTALLING your old
+	version, you can update DADiSP by following the steps
+	outlined below:
+
+		1) place the Version 1.05 STARTUP disk in drive A:
+
+		2) Goto drive A: by typing
+
+			A:
+
+		3) Type:
+			
+			HUPDATE
+
+		4) Follow the instructions presented on the screen.
+
+	The update procedure will install new program files from the 
+	STARTUP and SYSTEM disks and also copy selected files from the 
+	LABBOOKS disk.
+
+	Floppy Disk Update
+
+	There is no UPDATE procedure for floppy disks. To use your new 
+	DADiSP, just INSTALL Version 1.05 to a new set of floppies.
+	
+
+6)	IMPORTANT
+	--------------------------------------------------------------
+
+	DADiSP uses several files during its operation.  To insure
+	that these files are always available, DADiSP requires that DOS
+	boot with the configuration file called CONFIG.SYS.  For DOS to
+	read this file correctly, CONFIG.SYS must be located on the
+	same disk or directory (usually the root directory) where
+	COMMAND.COM booted.
+
+	If you followed the above installation procedure, CONFIG.SYS 
+	will be copied to your Floppy or Hard disk or appended to
+	your current CONFIG.SYS if one exists.
+
+	CONFIG.SYS contains two simple statements, namely:
+
+		FILES=15
+		BUFFERS=15
+
+	As long as these two statements are included in the CONFIG.SYS
+	file that your DOS boots from, DADiSP should behave just fine.
+
+7)	RUNNING DADiSP
+	--------------------------------------------------------------
+
+	To run DADiSP on a floppy system:
+
+		a) set a path to the B: drive by typing:
+
+			path a:\;b:\;
+
+		b) Place STARTUP Disk in Drive A:
+
+		c) Place LABBOOK Disk in Drive B:
+
+		d) Goto Drive A: by typing:
+
+			a:
+
+		d) Type:
+
+			dadisp2 b:
+
+
+
+	To run DADiSP on a hard disk system:
+
+		a) Goto the hard disk by typing:
+
+			c:
+
+		b) Goto the DSP directory by typing:
+
+			cd \dsp
+
+		c) Type:
+
+			dadisp2
+
+
+8)	PRINTER SUPPORT
+	-------------------------------------------------------------
+
+	DADiSP can create printouts on a number of different printers. 
+	Your LABBOOKS disk contains a number of printer files with the
+	extension .PRN.  To use one of these printers, simply copy the
+	desired file into PRINTER.PRN.  For example, to use the HP
+	LaserJet printer, type:
+
+	   		copy laserjet.prn printer.prn
+
+	 DADiSP searches for PRINTER.PRN at run time.  If DADiSP cannot
+	 locate this file, it will use the default printer already set
+	 up by your computer system.  In other words, if you would like
+	 to use a printer driver that is capable of producing screen
+	 dumps and is not available from DSP, install your driver and
+	 delete PRINTER.PRN.  DADiSP will then redirect its print
+	 commands to your driver.
+
+	 DADiSP attempts to use a reasonable default printer
+	 configuration. If you are having printer trouble or 
+	 would like to change the default setup, give us a call.
+
+9)	GRAPHICS ADAPTER SUPPORT
+	-------------------------------------------------------------
+
+	DADiSP supports the IBM Color Graphics Adapter (CGA),
+	Enhanced Graphics Adapter (EGA), Hercules High
+	Resolution Mono Adapter and compatibles.  Version 1.05
+	now supports 16 colors and high resolution on the EGA
+	adapter and compatibles.  At least 128K of memory on the
+	EGA adapter card is required for high resolution color
+	mode.  Version 1.05 also supports the AT&T 640x400
+	graphics board. By default, DADiSP is configured for
+	Black & White CGA mode.
+
+	To allow DADiSP to run on the Hercules card, use the
+	HERCULES.BAT file by typing: HERCULES
+
+	The batch file will copy the Hercules driver into
+	GRAPHICS.DEV along with several font and configuration
+	files.  If you are on a floppy system, place your STARTUP
+	disk in A: and your LABBOOKS disk in B: and copy these
+	files by typing: 
+
+	   			GRAFCOPY A: 
+
+	To run in color on the EGA monitor, use the ega 
+	batch file by typing EGA at the DOS level. For AT&T 
+	graphics, just type: ATT.
+
+	We are continuing to broaden our graphics support, contact
+	DSP for information regarding other graphic cards.
+
+
+10)	CHANGES FROM VERSION 1.04
+	--------------------------------------------------------------
+
+	DADiSP Version 1.05 contains the following new features:
+
+
+	a) @SUSPEND function allows for user input in a
+	  command file.  @SUSPEND temporarily suspends command file
+	  execution until one of the specified terminator characters
+	  is received.  The user is placed into interactive mode and
+	  can type to DADiSP normally until a terminator character
+	  is typed.  Command file execution resumes after a
+	  terminator has been received.  For example:
+
+			@SUSPEND("@CR")
+
+	  suspends command file execution until the specified
+	  terminator character 'carriage return' (@CR) is pressed. 
+	  The carriage return is then passed through to DADiSP.
+
+	  The terminator characters are specified in a string
+	  enclosed in double quotes (").  You can specify multiple
+	  terminator characters in the string.  Whitespace is
+	  ignored - to use a space, tab or other special character
+	  as a terminator use the command file special character
+	  names (@SP @TAB etc).
+ 
+	  		 @SUSPEND("@F2 ZQ4 @SP")
+
+	  This suspends the command file until any one of F2, Z, Q,
+	  4, or space character is pressed.  The pressed character
+	  is passed and DADiSP resumes proccessing the command file.
+
+	  @SUSPEND_NOPASS operates exactly like @SUSPEND except that
+	  the terminating character is NOT passed through to DADiSP. 
+	  For example,
+	  	
+	  		@SUSPEND_NOPASS("@F1 @F2")
+
+	  suspends the command file and places the user in
+	  interactive mode until the F1 or F2 key is pressed.  The
+	  command file resumes without passing the F-key to DADiSP. 
+	  There is currently no error checking on these functions,
+	  when a terminating character is found the command file
+	  resumes regardless of the success or failure of the
+	  intervening operations.
+
+
+
+	b) DADiSP now has a CALC mode that allows you to 
+	   selectively turn on and off automatic 
+	   re-calculation of a worksheet.
+
+	   CALC(1) specifies automatic recalculation.  This is the
+	   default mode.  CALC(0) specifies manual re-calculation
+	   (i.e.  autocalc OFF).  In manual mode, you can enter
+	   window formulae without calculating a signal.  Once your
+	   formulae are entered, type CALC(1) to set
+	   autocalculation.  DADiSP now automatically recalculates
+	   the worksheet.
+
+	c) SHELL and RUN accept an optional integer
+  	   argument 0 that specifies the screen image will be saved
+  	   to the disk instead of memory.  Saving the screen to disk
+  	   frees up considerable memory for external programs
+  	   particularly if you are running in EGA mode.  For
+  	   example, RUN("DIR", 0, 1) saves the screen to disk, then
+  	   executes DIR and pauses before returning.  DOS now
+  	   defaults to SHELL(0) so the screen image is always saved
+  	   to disk.
+
+	d) DADiSP includes several simple string functions STRCAT, 
+	   STRNUM, STREXTRACT and NUMSTR.  STRCAT concatenates
+	   two or more strings so that
+
+		STRCAT("DADiSP", " is pronounced ", "Day-Disp")
+
+	  results in the string
+
+		DADiSP is pronounced Day-Disp
+
+	  STRNUM converts a number into a string. 
+
+		STRCAT("The number ", STRNUM(11), "is prime")
+
+	 produces
+
+		The number 11 is prime
+
+	and 	STRCAT("The mean value is ", STRNUM(MEAN(W1)))
+
+	results in
+
+		The mean value is 2.0
+
+	if the mean of W1 is 2.0. 
+
+	STREXTRACT(str, start, length) extracts parts of a string. 
+
+		STREXTRACT("ONE and a Two and a three", 11, 3)
+
+	returns
+
+		Two
+
+	Finally, NUMSTR(str) converts a string into a number.
+
+	These functions are very useful for 
+	creating IEEE-488 command strings with DADiSP-488.
+
+
+	e) GNORMAL creates a normally distributed random signal. 
+	   GNORMAL(100, .01, 2.0, 3.0) creates a 100 point normally 
+	   distributed random signal with a mean of 2.0 and a standard 
+	   deviation of 3.0. GNORMAL(100, .01) creates a 100 point 
+	   random signal with mean near 0.0 and standard deviation near 
+	   1.0.
+
+	f) REMOVE(window, interval, start, blocksize) 
+	   selectively removes points from a signal. 
+	   REMOVE(W1,64,4) removes every 64 points starting at 
+	   the 4th point. REMOVE(W1,64,4,8) removes a block of 8 
+	   points every 64 points starting at the 4th point.
+
+	g) IMPORT now supports LONG (4 byte) integer data.
+
+
+	h) Preliminary Multi-Channel data file on IMPORT. 
+	   DADiSP can directly import data files that contain
+	   multiple channels of data.  The import header file
+	   format has been updated to accommodate multi-channel
+	   data files.  You cannot currently edit multi-channel
+	   files with the EDIT option - to import the file, the
+	   proper keyword header values must be specified as
+	   described below.
+
+I. Multi-Channel Data Formats
+
+     Multi-channel data can be stored in any of the basic
+     data formats used by single channel import i.e. 
+     Ascii, Float, Integer etc.  The individual signals can
+     be organized into one of two Storage Modes -
+     INTERLACED, or SEQUENTIAL.
+
+     INTERLACED data has one point from each signal grouped
+     together, followed immediately by the group containing
+     the next point in each signal.  In the ASCII data
+     format each point in the group is separated by a space
+     and each group is separated by a new line (carriage
+     return-line feed).  In the binary data formats
+     (Float,Double,Integer,Byte) the data is an array
+     without any separators or delimiters between the
+     points.  It can be thought of as a two dimensional
+     array of width n where n is the number of signals in
+     the file.
+
+     SEQUENTIAL data has all the points in a signal grouped
+     together, followed by the next entire signal.  The end
+     of one signal and the beginning of the next is
+     determined by the argument to the NUM_SAMPS keyword in
+     the header.  In ASCII all points are separated by
+     newlines.
+
+II. Multi-Channel Header Format
+
+    The multi channel header uses the same basic structure
+    of Keyword followed by argument on a line as in single
+    channel import.  The difference is that most keywords
+    in multi channel import can be followed by a list of
+    arguments separated by spaces or commas.  If a keyword
+    or argument is missing DADiSP will use a default value
+    or the previous value in the argument list if one
+    exists.
+
+     The legal separators are SPACE, TAB, '=', ','(COMMA),
+     and ';'(SEMICOLON).  In addition COMMA and SEMICOLON
+     act as placeholders, which means that if two
+     placeholders appear on the line without an argument in
+     between then DADiSP will default that value to the
+     previous value in the list.
+
+     The form of a header line is:
+
+	The first item on the line must be a DADiSP
+	keyword, followed by a COLON ':' or a non
+	placeholder separator.  Lower case letters are
+	converted to upper case.
+
+	One or more arguments follow, separated by any of
+	the legal separators (a COLON is NOT a legal
+	separator between arguments).
+
+	If the number of arguments is less than the number
+	of channels being imported, the last value given is
+	used as a default for the rest of the channels.
+
+	A newline <CR-LF> ends the line.
+
+     Example:
+
+	DATASET MYDATA
+	VERSION: 3
+	NUM_SIGS 4
+	STORAGE_MODE INTERLACED
+	SIGNAL_NAME:THERM_1,THERM_2  PRESSURE, FLOW_RATE
+	VERT_UNITS C,,mmhg, Liters/Sec
+	HORZ_UNITS Secs
+	DATA
+	87.53 49.28 1009.432 2.053
+	87.16 51.54 992.675 2.205
+	etc.
+
+The above example would import four signals into the dataset
+MYDATA.3 with signal names THERM_1, THERM_2, PRESSURE, and
+FLOW_RATE.  The vertical units would be Degrees C for the first
+and second channels, mmhg for the third and Liters/second for
+the fourth.  The horizontal units would be Seconds for all four
+signals.  The other members of the header would be given default
+values.  In this example, the first point of THERM_1 is 87.53,
+the first point of THERM_2 is 49.28, the first point of PRESSURE
+is 1009.432 and the first point of FLOW_RATE is 2.053.  If the
+STORAGE_MODE of this file was SEQUENTIAL then NUM_SAMPS must be
+specified.  For the example above, if NUM_SAMPS is set to 2
+then the two points of THERM_1 would be 87.53 and 49.28, THERM_2
+would contain 1009.432 and 2.053, PRESSURE would contain 87.16
+and 51.54 and FLOW_RATE would contain the values 992.675 and
+2.205.
+
+Keywords, and their default values:
+
+DATASET
+
+     The name of the dataset to hold the imported data. 
+     You can specify different datasets for multiple
+     signals being imported.  The default value for the
+     DATASET is the filename of the file being imported
+     (with any path or file extension stripped off).  A
+     valid dataset name in DADiSP is a maximum of 15
+     characters long and can contain alphanumerics and the
+     UNDERSCORE '_' character.
+
+VERSION
+
+     The version number can be any integer value between 1
+     and 999 or the special values NEXT (abreviated NXT or
+     N) or LAST (LST or L).  NEXT automaticlly finds the
+     highest existing version of the dataset name and sets
+     the version to the next higher value.  LAST opens the
+     highest existing version of the dataset.  The default
+     for VERSION is LAST if the current Dataset name is the
+     same as the previous dataset in this import file, and
+     NEXT in all other cases.
+
+SIGNAL
+CHAN_NAME
+
+    These keywords are synonyms for the signal name.  Valid
+    name rules are the same as Datasets.  The default value
+    for the SIGNAL_NAME is SIGNAL_n where n is position in
+    the import file, i.e.  the first signal in the file is
+    SIGNAL_1 the second signal is SIGNAL_2 etc.  regardless
+    of its position in the dataset it is to be imported
+    into.  If both CHAN_NAME and SIGNAL_NAME appear in the
+    same header, the second occurence will be ignored and a
+    warning message displayed.
+
+NUM_SIGS
+
+     This determines the number of signals to be imported,
+     the argument must be a positive integer.  Only the
+     first argument is used, any additional arguments will
+     cause a warning.  The default value is 1.
+
+STORAGE_MODE
+
+      The order that the data appears in the file, can be
+      one of the two values INTERLACED or SEQUENTIAL
+      (abbreviated INT and SEQ).  The default value is
+      INTERLACED.
+
+NUM_SAMPS
+
+     The number of samples in each signal, valid arguments to
+     this keyword are a positive integer or the special value
+     ALL.  This keyword can take a list of different values for
+     multiple signals.  NUM_SAMPS is REQUIRED to find the extent
+     of the data for STORAGE_MODE SEQUENTIAL.  If importing
+     INTERLACED signals of different lengths, the shorter
+     signals must be padded out with dummy values (0 or any
+     other value will do) to maintain the width of the array. 
+     The default value is ALL.
+
+FILE_TYPE
+
+     The type of data as stored in this import file. 
+     Argument values are ASCII, DOUBLE, FLOAT INTEGER, or
+     BYTE.  Only one argument is accepted, the default
+     value is ASCII.
+
+DATA_TYPE
+
+     The data type that DADiSP will internally convert and store
+     the signal as inside the dataset.  Argument values are
+     DOUBLE, FLOAT, INTEGER, BYTE.  You can specify a seperate
+     type for each signal.  The default is DOUBLE. Because the 
+     default value DOUBLE is the recommended value, DATA_TYPE can 
+     normally be omitted.
+
+DATA
+
+    This is the final keyword in the header and it
+    indicates that data follows.  This keyword is required
+    for importing binary data (DOUBLE, FLOAT,INTEGER or
+    BYTE).  There are no arguments for this keyword.
+
+The other keywords are as documented in the DADiSP Manual except
+that they can take argument lists as described above to specify
+their values for multiple signals.
+
+
+In addition, Version 1.05B contains the following:
+
+	a) Signals may now have an arbitrary x offset (i.e.  the
+	   starting x value of the signal).  To specify the
+	   offset, use SETXOFFSET.  To retrieve the offset, use
+	   the XOFFSET function.  For example:
+
+		SETXOFFSET(W1, -10.0) 
+
+	   sets the offset of the signal in W1 to -10.0.  If you
+	   do not specify a window, DADiSP uses the current
+	   window.  You MUST specify the offset as a floating
+	   point number with a decimal point (i.e 5.0, not 5). 
+	   To set the offset of W1 to the offset of W2, try:
+
+	   	SETXOFFSET(W1, XOFFSET(W2))
+
+	   The arithmetic functions (+ - / *) set the offset of 
+	   the resulting signal to the offset of the first signal 
+	   in your expression.	For example, offset of W1 + W2 is 
+	   set to the offset of W1. You can use the | to set the 
+	   offset automatically to any expression you wish. For 
+	   example, 
+
+		W1 + W2 | SETXOFFSET(W1/100.0)  
+
+	   Because of this new capability, functions such as 
+	   AUTOCOR, CROSSCOR and AMPDIST now display the correct X 
+	   axis values.
+
+	   IMPORT now recognizes the optional keyword X_OFFSET so 
+	   you can specify the offset when importing data files.
+
+
+	b) New Peak and Valley functions.  GETPEAK finds the 
+	   peaks of a signal and places the values in the 
+	   resulting signal. GETVALLEY performs the same 
+	   operation on the valleys of a signal. GETPEAK and 
+	   GETVALLEY accept the following arguments:
+
+	   GETPEAK(signal, threshold, width, size, padmode, fillval)
+
+	   Only the signal argument is required, all other
+	   arguments are optional.  THRESHOLD specifies the
+	   minimum value above/below which peaks/valleys will be
+	   accepted (default: min/max of signal).  WIDTH is an
+	   integer that specifies the minimum number of points
+	   that comprise a peak/valley (default: 1).  SIZE
+	   specifies the minimum acceptable Peak to Valley
+	   height of a peak or valley (default: 0.0).  PADMODE
+	   determines whether the values between the
+	   peaks/valleys in the resulting signal will be padded. 
+	   Padmode = 1 to pad, Padmode = 0 not to pad (default:
+	   1).  FILLVAL is the padding value to use when padmode
+	   is on (default: 0.0).
+
+ 	   The default values for the optional arguments suffice
+ 	   for most applications. For example, just type:
+
+		GETPEAK(W1)
+
+	   to find all of the peaks of Window 1.
+
+
+	 	GETPEAK(W1, MIN(W1), 1, 0.0, 1, 0.0)
+
+	   does the same thing.  Note that because the default 
+	   fillval is 0.0, it is possible that peaks or valleys 
+	   of height 0.0 will be indistinguishable from the 
+	   fillval. If this is a problem, set the fillval to be 
+	   the minimum of the input signal for GETPEAK and the 
+	   maximum value of the input signal for GETVALLEY. For 
+	   example, to uniquely find all the peaks of a signal, 
+	   type:
+
+		GETPEAK(W1, MIN(W1), 1, 0.0, 1, MIN(W1))
+
+	c) SETXTIC and SETYTIC allow you to manually set the tic 
+	   spacing on the X and Y axes.  SETXTIC(.01) sets the X
+	   tic interval on the current window to 0.01. 
+	   SETYTIC(W3, 1.0) sets the Y tic interval of W3 to
+	   1.0.  If you do not specify an interval, or if you
+	   specify a negative tic interval, the tic intervals
+	   are set to the autoscale values.  For example,
+	   SETXTIC sets the tic interval of the current window
+	   to the default values.  The XTIC and YTIC functions
+	   return the current tic interval. SETXTIC(W2, XTIC(W1)) 
+	   sets the tic interval of W2 to the tic interval of W1.
+
+	d) Better memory management. DADiSP now employs a 
+	   slightly more efficient memory management scheme that 
+	   results in more available memory for Pipeline and DOS 
+	   shell routines.
+
+	
+11) PEN PLOTTER SUPPORT
+
+	   Version 1.05B now supports color hardcopy output to 
+	   the following HP pen plotters: 7470A, 7475A, 7550A, 
+	   7510A. Check with us for availability of other 
+	   plotters.
+
+	   We have included two functions for plotter output, 
+	   PLOT to plot a single window and PLOTALL to plot all 
+	   the windows in a Worksheet on a single page.
+
+	   Unlike PRINT, where DADiSP transmits the screen image 
+	   directly to the printer, PLOT and PLOTALL create an 
+	   intermediate plotfile that contains a list of commands 
+	   instructing the plotter to re-create the desired 
+	   graph. These instructions are transmitted to the 
+	   plotter via a separate program called a plotter 
+	   driver. The plotter driver is named PLOTTER.EXE. The 
+	   driver also requires a configuration file named 
+	   PLOT.CNF and a plotter font file named PLOTTER.FNT
+
+	   For example, to create a plotfile of Window 2, type:
+	
+		   PLOT(W2)
+	
+	   If you do not specify a window, the current window is
+	   used.  PLOT accepts an optional title string, so
+	   PLOT(W2, "This is My Title") creates a plot of Window
+	   2 with the title "This is My Title".  You can also
+	   specify a specific plotfile name.  By default, DADiSP
+	   creates a plotfile named PLOTFILE.LST.
+
+		    PLOT(W2, "This is My Title", "PLOT1.LST")
+
+           creates the same plot as above, but stores the plotter 
+           commands in a file named PLOT1.LST. If you only 
+           specify one string, that string becomes the Window 
+           title.
+
+	   PLOTALL accepts an optional plotfile name but does not 
+	   accept a title string.
+
+	   To send the plotfile commands to the plotter, exit
+	   from DADiSP to DOS and run the driver on the
+	   plotfile. Use the PLOT.BAT driver by typing: 
+
+			PLOT
+	   
+	   If you have created plotfiles with names other than 
+	   PLOTFILE.LST, type: 
+
+	   	PLOTTER plotfile
+
+	   where plotfile is the name of your plotfile. 
+
+	   You can create graphs on plotters connect to other 
+	   machine by copying PLOTTER.EXE, PLOT.CNF, PLOT.BAT and your 
+	   plotfile to the machine and running the PLOT batch 
+	   file.
+
+	   The plotter driver also accepts several command line 
+	   options described below.
+
+	   -C0		COM port 0 (default)
+	   -C1		COM port 1
+
+	   -Nn		n = number of pen colors
+
+	   -Ofilename	Translates the plotfile commands to HPGL 
+	   	        	commands and stores the HPGL command in 
+	   	        	filename. This file can then by sent 
+	   	        	directly to the plotter with the 
+	   	        	following commands:
+
+			mode com1: 9600,N,7,1,P
+			copy filename com1:
+
+			With this option, you can send output to 
+			a plotter connected to a different 
+			printer without using the plotter driver. 
+
+	  -P0,x,y	plot mode OFF
+	  			x = maximum x dimension
+	  			y = maximum y dimension
+
+				X Dimension	Y Dimension
+				-----------	-----------
+				
+		7470		10300		7650
+		7475		10365		7962
+		7550		10170		7721
+		7510		10170		7840
+
+			Use this option in conjunction with the 
+			-O option to create a HPGL file without 
+			actually plotting.
+
+
+	Example:
+
+	plotter plotter.lst -n6 -p0,10365,7962 -ohpgl.out
+
+	specifies 6 pens and creates a HPGL file named HPGL.OUT 
+	without plotting
+
+	To avoid typing the options on the command line each 
+	time, place the options in PLOT.CNF. For example, using 
+	the above options, PLOT.CNF could contain:
+
+	-n6
+	-ohpgl.out
+	-p0,10365,7962
+
+
+12) HP LASERJET JET PRINTERS
+   --------------------------------------------------------------
+
+	As discussed above, to use the HP LaserJet printer you need to
+	copy the proper printer driver, type:
+
+	copy laserjet.prn printer.prn
+	   			
+   		or, for the Laserjet Plus or LaserJet II,
+
+	copy ljetplus.prn printer.prn
+
+	Once the appropriate printer file has been copied, DADiSP 
+	now  automatically sets up the laser printer based on your 
+	graphics card.
+
+
+13) DADiSP-488
+   --------------------------------------------------------------
+
+	We are pleased to offer an exciting new
+	instrumentation interfacing capability to DADiSP. 
+	DADiSP-488 is a separate program module that allows
+	DADiSP to control and receive data directly from
+	hundreds of IEEE-488 based instruments.  DADiSP-488
+	is modelled after familiar HP-85 BASIC calls.  For
+	example, to send a command string to a device, you
+	would use the OUTPUT function.  
+
+		OUTPUT(1, "DATA	TARGET REF:1") 
+
+	sends the string "DATA TARGET REF:1 to device number 7
+	on the bus.  ENTER and ENTERB receive ASCII and binary
+	data directly from and instrument.  For example,
+
+		ENTERB(7, 1000, UBYTE) 
+
+	receives 1000 unsigned bytes from device 7.  By
+	combining macros and command files, you can build
+	specific routines to automatic the set up and transfer
+	of data from IEEE-488 based instruments.
+
+	DADiSP-488 is available for $195.00 and is 
+	compatible with IEEE-488 boards from Capital Equipment, 
+	IOtech, National Instruments, Scienfific Solutions 
+	and compatibles. DADiSP-488 requires DADiSP Version 1.04 or 
+	higher.
+
+			*** end of READ.ME ***

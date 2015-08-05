@@ -1,0 +1,15 @@
+! DType.men
+! 	menu to set the data type macro: _dtyp
+@x40
+@y0
+@f{_fg1}
+@b{_bg1}
+  Data Type
+______________
+FLOAT     ~DEFMACRO("_DTYP",20,2);"FLOAT"
+DOUBLE    ~DEFMACRO("_DTYP",25,2);"DOUBLE"
+INTEGER   ~DEFMACRO("_DTYP",30,2);"INTEGER"
+UINTEGER  ~DEFMACRO("_DTYP",35,2);"UINTEGER"
+BYTE      ~DEFMACRO("_DTYP",40,2);"BYTE"
+UBYTE     ~DEFMACRO("_DTYP",45,2);"UBYTE"
+LONG      ~DEFMACRO("_DTYP",50,2);"LONG"

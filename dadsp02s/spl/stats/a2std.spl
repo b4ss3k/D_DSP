@@ -1,0 +1,63 @@
+/*****************************************************************************
+*                                                                            *
+*   A2STD.SPL   Copyright (C) 2000-2001 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Converts an alpha confidence level to standard deviations   *
+*                                                                            *
+*   Revisions:    3 Apr 2000  RRR  Creation                                  *
+*                 7 Dec 2001  RRR  Use better INVPROBN function              *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_A2STD
+
+    A2STD  
+
+    Purpose: Converts an alpha confidence level to a standard deviation range
+                                                                        
+    Format:  A2STD(alpha)
+
+              alpha - real or series, the confidence level(s), defaults
+                      to, 0.01, a 99% confidence level.
+
+
+    Returns: a real or series, standard deviation range for the 
+             given confidence level(s).
+
+
+    Example:
+             a2std(0.01)
+
+             returns 2.5758 the standard deviation range for a 
+             confidence level of 99%
+
+
+    Example:
+             W1: {0.01, 0.02, 0.03, 0.04, 0.05}
+             W2: a2std(w1)
+
+             W2 == {2.5758, 2.3263, 2.1701, 2.0537, 1.9600}
+
+             the standard deviation ranges for confidence levels
+             99%, 98%, 97%, 96%, and 95%
+
+    Remarks:
+             A2STD uses the built-in INVPROBN function to lookup a Z value
+             for a given probability.
+
+    See Also:
+             Invprobn
+#endif
+
+
+/* alpha to std range */
+a2std(a)
+{
+	if (argc < 1) a = 0.01;
+
+	return(invprobn(.5 * (2 - a)));
+}
+

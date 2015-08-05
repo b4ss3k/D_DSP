@@ -1,0 +1,14 @@
+_mcchlst(list)
+{
+	local i, s = "", p;
+
+	if (argc < 1) {
+		list = "1";
+	}
+	i = 1;
+	while (strlen((p = strget(i++, list, " ,"))) > 0) {
+		if (strlen(s) > 0) s = strcat(s, strescape("\n"));
+		s = strcat(s, p);
+	}
+	return(s);
+}

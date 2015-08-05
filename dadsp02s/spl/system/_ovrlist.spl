@@ -1,0 +1,16 @@
+/* generate list of overplots */
+_ovrlist()
+{
+	local i = 1, s = "", p;
+
+	if (numitems == 1) return(_nonestr);
+
+	for (i = 1; i < numitems; i++) {
+		p = sprintf("%d", i);
+		if (i < numitems-1) p = strcat(p, strescape("\n"));
+		s = strcat(s, p);
+	}
+	return(s);
+}
+
+		

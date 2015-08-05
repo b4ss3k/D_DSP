@@ -1,0 +1,174 @@
+/*****************************************************************************
+*                                                                            *
+*   FREQSAMP.SPL Copyright (C) 1998-2000 DSP Development Corporation         *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    Designs FIR filter from magnitude response                  *
+*                                                                            *
+*   Revisions:   28 Apr 1998  RRR  Creation                                  *
+*                21 Mar 2000  RRR  interpolates XY input                     *
+*                                                                            *
+*****************************************************************************/
+
+#include <series.h>
+
+#if @HELP_FREQSAMP
+
+    FREQSAMP
+
+    Purpose: Designs a FIR filter from a given magnitude response using
+             the frequency sampling method
+                                                                        
+    Format:  FREQSAMP(f, m, full)
+
+                 f - an XY series specifying the desired frequencies 
+                     (in Hertz) and magnitudes of the filter OR an 
+                     explicit series specifying the frequencies only
+
+                 m - an optional series, explicit desired magnitudes
+
+              full - an optional integer specifying if f and m 
+                     represent the entire magnitude response (default 0)
+
+
+    Returns: A series, the impulse response of the filter
+
+    Example:
+             W1: {0, 1, 10, 20, 30}
+             W2: {1, 1, 2,  0, 0}
+             W3: xy(w1, w2)
+
+             W4: freqsamp(w3)
+             W5: mag(fft(w4, bestpow2(length(w4))))
+
+             W4 contains a 61 point linear phase FIR filter. The filter
+             has unity gain from at 0 and 1 Hz and a gain of 2 at
+             10 Hz. W5 shows the magnitude response of the filter.
+
+    Example:
+             freqsamp(w1, w2)
+
+             Same as above except the frequencies and magnitudes
+             are specified explicitly.
+
+    Example:
+             W1: {1, 1, 2, 1, 0, 0}
+             W2: Freqsamp(W1);
+             W3: Mag(fft(w2));overp(w1, lred)
+             
+             An arbitrary magnitude response is created in W1 and the
+             magnitude response of the resulting frequency sampling
+             filter is compared in W3.
+  
+    Example:
+             W1: Hamming(gsinc(100, .1, 2*pi, -5*2*pi));setxoffset(-5.0)
+             W2: Mag(fft(w1))
+             W3: Freqsamp(w2, 1)
+             W4: W1-w3
+
+             W1 creates a simple 1 Hz low pass filter with a gain of
+             5.0. The impulse response using the frequency sampling
+             method is compared to the original impulse response in
+             W4. The entire magnitude response is used to design the
+             filter.
+             
+
+    Remarks:
+             The FIR filter is designed by performing the IFFT of the
+             given magnitude response after adding a linear phase
+             component. The resulting FIR filter has linear phase.
+
+             FREQSAMP sorts the input frequencies in ascending order.
+             If a frequency of 0 Hz is not specified, a 0 Hz term 
+             equal to the magnitude of the frequency nearest 0
+             is added to the list.
+
+    See Also
+             Ifft
+             DADiSP Filters Module
+             Xyinterp
+#endif
+
+
+
+
+/* builds a linear phase FIR filter from a given magnitude response */
+freqsamp(f, m, full)
+{
+	local lm, isodd, fmag, L, N, k, p, imp;
+	local s, h;
+
+	if (argc < 3) {
+		full = FALSE;
+		if (argc < 2) {
+			m = yvals(f);
+			f = xvals(f);
+		}
+		else {
+			if (IS_NUMERIC(m)) {
+				full = castint(m);
+				m = yvals(f);
+				f = xvals(f);
+			}
+		}
+	}
+
+	/* sort values in ascending order */
+	h = grade(f, 1);
+	f = f[h];
+	m = m[h];
+
+	/* get XY plot so we can interpolate it */
+	m = xy(f, m);
+		
+	/* add DC term if required */
+	if (f[1] != 0) {
+		m = {xy({0}, {m[1]}), m};
+		printf("freqsamp: Setting DC Value to %g", m[1]);
+	}
+
+	/* interpolate to equally spaced samples */
+	m = xyinterp(m);
+
+	lm = length(m);
+	isodd = lm % 2;
+
+	if (full) { /* use given full magnitude response */
+		fmag = m;
+	}
+	else { /* build magnitude response by concating mirror image */
+		if (isodd) {
+			fmag = {m, m[lm], rev(m[2..(lm-1)])};
+		}
+		else {
+			fmag = {m, rev(m[2..(lm-1)])};
+		}
+	}
+
+	/* linear phase parameters */
+	L = length(fmag);
+	if (isodd) {
+		N = (L-1)/2;
+	}
+	else {
+		N = L/2;
+	}
+	k = (0..(L-1));
+
+	/* phase */
+	p = exp(-2*pi*i*N*k/L);
+
+	/* 
+	** IFFT to get impulse response - the imaginary part should 
+	** be zero or close to zero, but we remove it anyway
+	*/
+	imp = real(ifft(fmag*p));
+
+	/* correct deltax and offset for non-causal response */
+	setdeltax(imp, rate(m)/L);
+	setxoffset(imp, -(N)*deltax(imp));
+
+	return(imp);
+}

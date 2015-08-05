@@ -1,0 +1,33 @@
+_igw2str(s)
+{
+	local g, j, outstr, len;
+
+	if (argc < 2) {
+		nostr = "{}";
+	}
+
+	g = s;
+	j = 1;
+	outstr = "{";
+
+	while (strlen(g) > 0) {
+		h = strfind(sprintf("-%d", j), g);
+		if (strlen(h) > 0) {
+			/* have term */
+			outstr = strcat(outstr, "1,");
+			g = strextract(h, 3, -1);
+		}
+		else {
+			outstr = strcat(outstr, "0,");
+		}
+		j++;
+	}
+	len = strlen(outstr);
+	outstr[len] = "}";
+	if (outstr == "}" || outstr == "{}" || outstr == "{0,0,1,1,1}") {
+		outstr = "";
+	}
+	return(outstr);
+}
+			
+		

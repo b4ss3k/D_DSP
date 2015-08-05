@@ -1,0 +1,9 @@
+/* defaults cyclical calculation parameters */
+_defcalc()
+{
+	setvar("_cycmode",  getconfdef("CYCLE_MODE"));
+	setvar("_cyccnt",   getconfdef("CYCLE_COUNT"));
+	setvar("_ptabedit", getconfdef("TABLE_UPDATE"));
+	calc(1);
+}
+

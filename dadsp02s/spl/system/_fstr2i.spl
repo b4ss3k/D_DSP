@@ -1,0 +1,29 @@
+/* format string to format value */
+_fstr2i(str)
+{
+	switch (str) {
+		case _formafstr:
+			return(-1);
+
+		case _formfnstr:
+			return(0);
+
+		case _formbestr:
+			return(1);
+
+		case _formlestr:
+			return(3);
+
+		case _formgxstr:
+			return(4);
+
+		case _formhxstr:
+			return(6);
+
+		case _formrtstr:
+			return(7);
+
+		default:
+			return(str);			
+	}
+}

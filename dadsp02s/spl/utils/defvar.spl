@@ -1,0 +1,53 @@
+/*****************************************************************************
+*                                                                            *
+*   DEFVAR.SPL      Copyright (C) 2000 DSP Development Corporation           *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     sets a variable if the variable is undefined               *
+*                                                                            *
+*   Revisions:    17 Feb 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_DEFVAR
+
+    DEFVAR    
+
+    Purpose: Sets the value of a variable if the variable is undefined
+                                                                        
+    Format:  DEFVAR(vname, val)
+
+              vname - a string, the name of the variable
+
+              value - anything, the value to assign if the variable is
+                      undefined
+
+    Returns: Nothing, defines and sets the variable if it is undefined
+
+    Example:
+             defvar("myvar", 10)
+
+             If myvar is undefined, myvar is set to 10.0
+
+    Remarks:
+             DEFVAR is used by several panels and SPL routines to create
+             variables that behave similar to C's static variables.
+
+    See Also:
+             Setvar
+#endif
+
+
+/* define a variable if it does not exist */
+defvar(vname, val)
+{
+	local vstr;
+
+	vstr = sprintf("'%s'", vname);
+	if (not(isvar(eval(vstr)))) {
+		setvar(eval(vstr), val);
+	}
+}

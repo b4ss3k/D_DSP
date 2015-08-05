@@ -1,0 +1,13 @@
+! Initialize IEEE Interface
+@display
+@x0
+@y0
+  Init GPIB
+_______________
+
+ Init          ~INITIALIZE
+
+ Set Timeout   ~(input(2,"Time in Seconds"))|Echo("Timeout set")
+
+ Close GPIB   ~ Echo("Device Closed")
+

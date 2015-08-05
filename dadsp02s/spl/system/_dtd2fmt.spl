@@ -1,0 +1,31 @@
+_dtd2fmt(d)
+{
+	local fmt;
+
+	switch (d) {
+		case 1:
+			fmt = 2;
+			break;
+
+		case 2:
+			fmt = 3;
+			break;
+
+		case 3:
+			fmt = 1;
+			break;
+
+		case 4:
+			fmt = 4;
+			break;
+
+		case 5:
+			fmt = 7;
+			break;
+
+		default:
+			fmt = d;
+			break;
+	}
+	return(fmt);
+}

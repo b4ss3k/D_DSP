@@ -1,0 +1,11 @@
+! SVD.men - menu file for Singular Value Decomposition
+@x0
+@y0
+@b{_bg1}
+@f{_fg1}
+  Singular Value Decomposition
+
+Singular Values (W)             ~_deffname('SVD      Singular Value Decompostion')|_defformat('SVD(square matrix,type)')|_defxamp('SVD(W1,00)')|_getser|defmacro("_int1","00",2)|_serint1form("SVD")
+Right Singular Value Matrix (V) ~_deffname('SVD      Singular Value Decompostion')|_defformat('SVD(square matrix,type)')|_defxamp('SVD(W1,01)')|_getser|defmacro("_int1","01",2)|_serint1form("SVD")
+Left Singular Value Matrix (U)  ~_deffname('SVD      Singular Value Decompostion')|_defformat('SVD(square matrix,type)')|_defxamp('SVD(W1,10)')|_getser|defmacro("_int1","10",2)|_serint1form("SVD")
+Combined Matrix (U, V, W)       ~_deffname('SVD      Singular Value Decompostion')|_defformat('SVD(square matrix,type)')|_defxamp('SVD(W1,11)')|_getser|defmacro("_int1","11",2)|_serint1form("SVD")

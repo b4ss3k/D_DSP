@@ -1,0 +1,35 @@
+/* dt panel setup */
+_stprec()
+{
+	local tp;
+
+	tp = castint(getconf("TIME_PRECISION"));
+	if (tp == -1) {
+		setvar("_tpauto", 1);
+		setvar("_tprec", 3);
+	}
+	else {
+		setvar("_tpauto", 0);
+		setvar("_tprec", tp);
+	}
+	tp = castint(getconf("DT_DATE_FORMAT"));
+	if (tp == 0) {
+		setvar("_tpdauto", 1);
+	}
+	else {
+		setvar("_tpdauto", 0);
+	}
+	tp = castint(getconf("DT_TIME_FORMAT"));
+	if (tp == 0) {
+		setvar("_tptauto", 1);
+	}
+	else {
+		setvar("_tptauto", 0);
+	}
+	setvar("_tddfmt", _dtfmt2d(castint(getconf("dt_date_format"))));
+	setvar("_tdtfmt", _dtfmt2t(castint(getconf("dt_time_format"))));
+
+	setvar("_tpsfmt", getconf("DT_SCALES_FORMAT"));
+	setvar("_tplidt", getconf("LOCALE_IDATE"));
+	_mf("dt.pan");
+}

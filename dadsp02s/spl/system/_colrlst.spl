@@ -1,0 +1,35 @@
+_colrlst(sysflag)
+{
+	local i, s = "", p, nc;
+
+	if (argc < 1) {
+		sysflag = 0;
+	}
+
+	nc = getnumcolors();
+
+	/* first read color name list */
+	s = strfile(_mh("colors.txt"));
+
+	if (strlen(s) != 0) {
+		/* get number of colors */
+		cnt = 1 + sum(charstrs(s) == charstr(strescape("\n")));
+	}
+	else {
+		cnt = 0;
+	}
+
+	for (i = cnt; i < nc; i++) {
+		p = strcolor(i);
+		if (strlen(p) > 0) {
+			if (sysflag || (strlen(strfind("SYS_", p)) == 0)) {
+				/* not a system color */
+				if (strlen(s) > 0) s = strcat(s, strescape("\n"));
+				s = strcat(s, p);
+			}
+		}
+	}
+	return(s);
+}
+
+		

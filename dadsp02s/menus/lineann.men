@@ -1,0 +1,11 @@
+! Lineann.men - Draw lines in window
+@x0
+@y0
+@b{_bg2}
+@f{_fg2}
+ Draw Lines
+
+ Input      ~_MF("linann.pan")
+ Move       ~_mc|echo("Left Button Down, Cross Lines, Keep Button Down, Move")|linemove|echo(" ")
+ Copy       ~_mc|echo("Left Button Down, Cross Lines, Keep Button Down, Move Copy")|linecopy|echo(" ")
+ Delete     ~_mc|echo("Left Button Down, Cross Lines to Remove")|linedel|echo(" ")

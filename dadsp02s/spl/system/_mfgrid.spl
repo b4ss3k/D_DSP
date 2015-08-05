@@ -1,0 +1,5 @@
+/* shows correct grid menu based on data in current window */
+_mfgrid()
+{
+	_MF("grids.pan");
+}

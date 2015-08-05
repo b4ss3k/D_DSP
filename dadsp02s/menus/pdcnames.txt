@@ -1,0 +1,410 @@
+2024 New Worksheet            $Create a New Worksheet
+2002 New Labbook              $Create a New Labbook
+2015 Open Worksheet           $Load a Worksheet
+2033 Open Series              $Load a Series into a Window
+3228 Multiple Windows         $Load Dataset into Multiple Windows
+3229 One Window               $Load Dataset into One Window
+3337 One Window with Colors   $Load Dataset into One Window with Colors
+2001 Open Labbook             $Open a Labbook
+2117 Open External Worksheet  $Open a DWK Worksheet Document
+
+2016 Save Worksheet           $Save the Current Worksheet
+2017 Save Worksheet As        $Save Worksheet with a New Name
+2034 Save Series As           $Save Series with a New Name
+2116 Save DWK As              $Save External Worksheet with New Name
+
+2021 Copy Worksheet           $Copy a Worksheet to a New Labbook or Worksheet
+2029 Copy Series              $Copy a Series to a New Labbook
+2026 Copy Dataset             $Copy a Dataset to a New Labbook
+2002 Copy Labbook             $Copy a Labbook to a New Directory
+
+2020 Delete Worksheet         $Delete a Worksheet from the Current Labbook
+2030 Delete Series            $Delete a Series from the Current Labbook
+2027 Delete Dataset           $Delete a Dataset from the Current Labbook
+2004 Delete Labbook           $Delete a Labbook from the Current Directory
+
+2007 Print Setup              $Change Printer Settings
+2092 Preview Window           $Preview Window Hardcopy
+2093 Preview Worksheet        $Preview Worksheet Hardcopy
+2094 Preview All Windows      $Preview Each Window
+2036 Print Window             $Print Window
+2022 Print Worksheet          $Print Worksheet
+2091 Print All Windows        $Print Each Window
+
+2138 Send Worksheet           $Send Worksheet via Email
+2005 Change Directory         $Search for Labbooks in Different Directory
+
+2011 Edit Formula             $Edit Window Formula
+2104 Edit Window              $Edit Window Data in Table
+
+3131 Acorr                    $Auto Correlation
+3333 Acov                     $Auto Covariance
+3133 Conv                     $Convolution
+3332 Covm                     $Covariance Matrix
+3357 Deconv                   $Deconvolution in the Time or Frequency Domain
+3132 Xcorr                    $Cross Correlation
+3331 Xcov                     $Cross Covariance
+
+3249 Multireadb               $Read Interlaced Binary Data
+3011 Reada                    $Read ASCII Table
+3013 Readb                    $Read Binary Data
+3016 Writeb                   $Write Binary Data
+3014 Writet                   $Write ASCII Table
+
+
+3059 Clip               $Set Outliers to Threshold
+3258 Col                $Extract a Single Column
+3053 Concat             $Append Series
+3259 Cut                $Extract Displayed Contents of a Window
+3058 Decimate           $Keep Every Nth Point
+3062 Delete             $Delete Points Based on Condition
+3052 Extract            $Extract a Portion of a Series
+3057 Interp             $Linear Interpolate a Series
+3054 Merge              $Multiplex Series
+3321 Quantize           $Quantize Series to N Levels
+3060 Remove by Factor   $Delete Every Nth Point
+3340 Remove by Index    $Delete Based on Index Series
+3339 Replace            $Replace Points Based on Condition
+3055 Replicate          $Repeat Series
+3056 Reverse            $Reverse Series Right to Left
+3257 Row                $Extract a Single Row
+3061 SetNAvalue         $Replace NA Values
+3315 Spline             $Cubic Spline Interpolation
+3314 Unmerge            $Demultiplex Series
+3338 Xyinterp           $Linearly Interpolate Irregularly Spaced Data
+
+
+3356 Betai              $Incomplete Beta Function
+3121 Erf                $Error Function
+3122 Erfc               $Complementary Error Function
+3123 Gamm               $Gamma Function, Generalized Factorial
+3352 Gammln             $Log of Gamma Function
+3350 Erfinv             $Inverse Error Function
+3351 Erfcinv            $Inverse Complementary Error Function
+3119 Jn                 $Jn Bessel Function
+3120 Yn                 $Yn Bessel Fucntion
+
+3137 DFT                $Slow Fourier Transform
+3135 FFT                $Fast Fourier Transform
+3322 Fftshift           $Shift FFT Origin
+3364 Flattop            $Apply Flattop Window
+3134 Hamming            $Apply Hamming Window
+3243 Hanning            $Apply Hanning Window
+3138 IFFT               $Inverse Fourier Transform
+3244 Kaiser             $Apply Kaiser Window
+3142 PSD                $Power Spectral Density
+3285 Specgram           $Joint Time Frequency Transform
+3141 Spectrum           $Magnitude Spectrum
+3372 Power Spectrum     $Magnitude Squared Spectrum
+3358 Windowing          $Windowing Functions
+
+3005 Hyperbolic               $Sinh, Cosh, Tanh, etc. Trignometric Functions
+3006 Inverse Hyperbolic       $Asinh, Acosh, Atanh, etc. Trignometric Functions
+3004 Inverse Trig             $Asin, Acos Atan, etc. Trignometric Functions
+3304 Matrix                   $Ones, Zeros, Eye, Rand, Randn Matrix Generation
+3010 Other                    $Square wave, Triangle wave, Impulse, etc.
+3192 Random Noise (Normal)    $Normally Distributed Random Series
+3193 Random Noise (Uniform)   $Uniformly Distributed Random Series
+3003 Trigonometric            $Sin, Cos Tan, etc. Trignometric Functions
+3009 Windowing Functions      $Flattop, Hamming, Hanning, Kaiser Windows
+3282 XY                       $Arbitrary XY Data
+3284 XYZ                      $Arbitrary XYZ Data
+3007 Y = F(x)                 $2D General Curve
+3008 Z = F(x, y)              $3D General Surface
+
+3114 Acosh                    $Hyperbolic Inverse Cos
+3118 Acoth                    $Hyperbolic Inverse Cot
+3117 Acsch                    $Hyperbolic Inverse Csc
+3116 Asech                    $Hyperbolic Inverse Sec
+3113 Asinh                    $Hyperbolic Inverse Sin
+3115 Atanh                    $Hyperbolic Inverse Tan
+3108 Cosh                     $Hyperbolic Cosine
+3112 Coth                     $Hyperbolic Cotangent
+3111 Csch                     $Hyperbolic Cosecant
+3110 Sech                     $Hyperbolic Secant
+3107 Sinh                     $Hyperbolic Sine
+3109 Tanh                     $Hyperbolic Tangent
+
+3079 Abs                      $Absolute Value
+3089 Ampdist                  $Amplitude Distribution
+3081 Ceil                     $Round Up
+3083 Deriv                    $3 Point Quadratic Derivative
+3093 Exp                      $Exponential Power
+3080 Floor                    $Round Down
+3086 Integ                    $Integration using Simpson's Rule
+3084 Lderiv                   $2 Point Left Derivative
+3092 Ln                       $Natural Log (Base e)
+3090 Log                      $Natural Log (Base e)
+3091 Log10                    $Log Base 10
+3088 Movavg                   $Moving Average
+3313 Movavg2                  $Moving Average with End Point Padding
+3311 Movmax                   $Moving Maximum
+3310 Movmin                   $Moving Minimum
+3327 Movrms                   $Moving Root Mean Square
+3312 Movstd                   $Moving Standard Deviation
+3087 Partsum                  $Cumulative Sum
+3085 Rderiv                   $2 Point Right Derivative
+3082 Sqrt                     $Square Root
+
+
+3318 Gradient                 $2D Gradient
+3319 Igrid                    $Inverse Distance XYZ Gridding
+3316 Interp2                  $2D Linear Interpolation
+3317 Spline2                  $2D Cubic Spline Interpolation
+
+3165 Balance        $Matix Balancing to Improve Condition
+3153 Conj           $Complex Conjugate
+3151 Diag           $Matrix Diagonal
+3150 Det            $Matrix Determinant
+3161 Eigval         $Eigenvalues of a Square Matrix
+3162 Eigvec         $Eigenvectors of a Square Matrix
+3166 Hess           $Hessenberg Form of a Matrix
+3149 Inv            $Matrix Inverse
+3154 LU             $LU Decomposition
+3155 LLU            $Lower Triangle of LU Decomposition
+3148 Mdiv           $Matrix Divide
+3147 Mmult          $Matrix Multiply
+3163 Nbeigval       $Eigenvalues without Balancing
+3164 Nbeigvec       $Eigenvectors without Balancing
+3158 QR             $QR Decomposition
+3159 Schur          $Schur Decomposition
+3157 SVD            $Singular Value Decomposition
+3152 Transpose      $Swap Rows and Columns
+3156 ULU            $Upper Triangle of LU Decomposition
+3160 Uschur         $Unitary Schur Decomposition
+
+3167 Display Extremes $Display Min & Max
+3344 Fmax             $Find Maximum
+3345 Fmin             $Find Minimum
+3169 Fpeak            $Find First Peak
+3170 Fpeakn           $Find Next Peak
+3171 Fpeakp           $Find Previous Peak
+3172 Getpeak          $Get Peak Values
+3176 Getvalley        $Get Valley Values
+3173 Fvall            $Find First Valley
+3174 Fvalln           $Find Next Valley     
+3175 Fvallp           $Find Previous Valley
+
+3326 Delay                 $Prepend Zeros to a Series
+3066 Grade                 $Arrange Indices in Ascending or Descending Order
+3063 Lookup                $Address a Series Based on Indices
+3068 Ravel into Segments   $Divide Series into Equal Segments Ravel
+3248 Ravel into Table      $Combine Series into Multicolumn Table Ravel
+3067 Reorder               $Address a Long Series Based on Indices
+3070 Reshape               $Divide Series into Arbitrary Segments
+3065 Sort                  $Arrange in Ascending or Descending Order
+3064 Transpose             $Swap Rows and Columns
+3069 Unravel               $Convert Multicolumn Table to Series
+3359 Xylookup              $Lookup Y Values Based on Arbitrary X Values
+
+3325 Bitquant       $Quantize to 2^N Bits
+3323 Filteq         $Digital Difference Equation Evaluation
+3355 Shp            $Digital Single Pole High Pass Filter
+3354 Slp            $Digital Single Pole Low Pass Filter
+3324 Zfreq          $Z Transform Frequency Response
+3361 Impz           $Z Transform Impulse Response
+3362 Zplane         $Z Transform Pole-Zero Plot
+3363 Residue(z)     $Partial Fraction Expansion of a Transfer Function
+3373 Grpdelay       $Z Transform Group Delay
+
+
+3242 Collength                $Length of Columns
+3241 Colmax                   $Maximum of Columns
+3072 Colmean                  $Mean of Columns
+3239 Colmedian                $Median of Columns
+3240 Colmin                   $Minimum of Columns
+3329 Colprod                  $Product of Columns
+3238 Colstdev                 $Standard Deviation of Columns
+3328 Colsum                   $Sum of Columns
+3346 Descriptive Statistics   $Max, Min, Mean, Stdev, etc. Statistics and Calculus
+3073 Errorbar                 $Create Error Bar Chart
+3074 Histogram                $Equal Bin Histogram
+3349 Invprobn                 $z Value of Probability of X <= z
+3075 Linreg                   $Linear Regression
+3347 Pdfnorm                  $Normal Distribution Density Function
+3076 Polyfit                  $Polynomial Regression Coefficients
+3078 Polygraph                $Polynomial Regression Curve
+3353 Polyroot                 $Find Polynomial Roots using Companion Matrix
+3348 Probn                    $Probability of X <= z for Normal Distribution
+3368 Rowlen                   $Length of Rows
+3367 Rowmax                   $Maximum of Rows
+3371 Rowmean                  $Mean of Rows
+3366 Rowmin                   $Minimum of Rows
+3370 Rowprod                  $Product of Rows
+3365 Rowstdev                 $Standard Deviation of Rows
+3369 Rowsum                   $Sum of Rows
+
+
+3102 Acos                     $Inverse Cos
+3106 Acot                     $Inverse Tangent
+3105 Acsc                     $Inverse Csc
+3101 Asin                     $Inverse Sin
+3104 Asec                     $Inverse Sec
+3103 Atan                     $Inverse Tan
+3095 Cos                      $Cosine
+3099 Cot                      $Cotangent
+3098 Csc                      $Cosecant
+3094 Sin                      $Sine
+3100 Sinc                     $Sin(x)/x
+3097 Sec                      $Secant
+3096 Tan                      $Tangent
+
+3283 Label                    $View Window Labels
+3194 Title                    $View Window Title
+
+3177 Lines                    $Display Series as Lines
+3178 Points                   $Display Series as Unconnected Points
+3179 Sticks                   $Display Series as Vertical Lines
+3180 Bars                     $Display Series a Vertical Bars
+3181 Table                    $Display Series as a Table
+3182 Steps                    $Display Series as a Staircase
+3251 Stem                     $Display Series as a Vertical Stem Plot
+3018 Line Style               $Change Line Style
+3183 Waterfall                $Display Array as a Waterfall Plot
+3252 Z Surface                $Display Array as a 3D Surface
+3184 3D Bar Graph             $Display Array as a 3D Bar Graph
+3185 Contour Plot             $Display Array as a 2D Contour Plot
+3186 Density                  $Display Array as an Image
+3187 Matrix                   $Display Array as Separate Series
+
+3336 Set Like                 $Set Target Window Like Source Window
+
+3250 Colors                   $Set Default Window Colors
+3032 Graphical Settings       $Graphical Settings for Window
+3031 Grids                    $Grid Related Attributes
+3189 Axis                     $Axis, Range/Span
+3190 Label Orientation        $Axis Label Orientation
+3191 Rotation Rules           $Axis Label Rotation Rules
+
+3034 Data Settings            $Units, Deltax, Offsets, etc.
+3035 Overplot                 $Overplot a New Series on Top of Original
+3036 Overlay                  $Overlay a Series with Scaling
+3245 Load & Overlay           $Load a Series and Overlay
+3037 Remove 1 Overlay         $Remove a Specified Overlay
+3038 Remove All Overlays      $Clear Overlays
+
+2075 Vertical Cursor          $Display Vertical Data Cursor
+2076 Crosshair Cursor         $Display Crosshair Data Cursor
+3302 Cursor Settings          $Set Cursor Attributes
+
+3300 Properties               $Window and Series Properties
+
+2039 Add Text                 $Add Text Annotations to Current Window
+2043 Delete Text              $Remove Text Annotations from Curent Window
+2044 Move Text                $Move Text Annotations in Current Window
+2045 Edit Text                $Edit Text Annotations in Current Window
+
+2040 Add Line                 $Add Lines Annotations to Current Window
+2046 Delete Line              $Remove Lines from Curent Window
+2047 Move Line                $Move a Lines in Current Window
+2048 Copy Line                $Edit Lines in Current Window
+
+3196 Add Legend               $Add Legend to Current Window
+2043 Delete Legend            $Remove Legend from Curent Window
+2044 Move Legend              $Move Legend in Current Window
+2045 Edit Legend              $Edit Legend in Current Window
+3303 Text & Drawing Settings  $Change Text, Legend and Line Settings
+
+2084 New SPL File             $Create a New SPL Source File
+2088 Open SPL File            $Open an Existing SPL Source File
+2087 Read SPL File            $Load SPL Functions from File
+2097 List SPL Functions       $Display a List of Current SPL Functions
+3226 Save SPL Functions       $Save Current SPL Functions to a File
+2140 Reset SPL Functions      $Initialize SPL Functions to Default Settings
+
+
+3218 List Variables           $Display a List of Current Variables
+3219 Delete Variable          $Delete a Variable
+
+2066 New Macro File           $Create a New Macro File
+2070 Open Macro File          $Open an Existing Macro File
+2069 Read Macro File          $Load Macros from File
+2096 List Macros              $Display a List of Current Macros
+3227 Save Macros              $Save Current Macros to a File
+2139 Reset Macros             $Initialize Macros to Default Settings
+
+2066 New Command File         $Create a New Command File
+3198 Load Command File        $Run a Command File
+3199 Edit Command File        $Change a Command File
+
+3246 View Text File           $Display an ASCII text file
+3041 Modules                  $Display Module List
+2010 Fonts                    $Change Font Settings
+
+3200 Add Toolbar Button       $Add a Button to the Toolbar
+3201 Remove Toolbar Button    $Remove a Button from the Toolbar
+
+2124 Add Files to Worksheet   $Add Files to Worksheet Document
+3320 Misc Tools               $Miscellaneous Tools
+
+3253 System Preferences       $Change System Preferences
+3254 Print Preferences        $Change Print Preferences
+3301 Settings & Colors        $Change Settings and/or Colors
+3209 Restore Defaults         $Restore Default Preferences & Settings
+
+2104 Edit Table               $Edit Series in a Table
+2031 Import                   $Import a Dataset
+
+2066 New Header File          $Create a Dataset Header File for Importing
+3051 Edit Header File         $Change an Existing Header File
+3280 Single Channel Header    $Create a Single Channel Header File
+3281 Multi-Channel Header     $Create a Multiple Channel Header File
+
+2018 Add Windows              $Add One or More Windows to Worksheet
+2019 Remove Windows           $Remove One or More Windows from Worksheet
+
+2037 Clear Window             $Clear Data and Formula from Window
+2023 Clear All Windows        $Clear Data and Formulae from All Windows
+3221 Clear Window Range       $Clear Data and Formulae from Specified Windows
+
+2037 Clear Data               $Clear Data from Window
+2023 Clear All Data           $Clear Data from All Windows
+3221 Clear Data Range         $Clear Data from Specified Windows
+
+2041 Hide Window              $Hide Current Window
+2013 Display Windows          $Display Selected Windows
+
+2225 Update Worksheet         $Re-evaluate All Window Formulae
+2205 Redraw Worksheet         $Redraw All Windows
+
+2008 Tile Windows             $Automatically Tile Windows
+2114 Tile Vertically          $Tile Windows in Columns
+2113 Tile Horizontally        $Tile Windows in Rows
+2115 Tile Equal               $Tile Windows in Equal Size
+2009 Arrange Windows          $Arrange Windows without Overlapping
+
+3206 Layout Rows              $Layout Windows in Specified Rows
+3207 Layout Columns           $Layout Windows in Specified Columns
+3208 Layout Rows & Columns    $Layout Windows in Specified Rows & Columns
+
+2042 Magnify                  $Magnify a Section of a Window
+2038 Zoom                     $Zoom a Window
+3213 Margins                  $Set Plotting Margins for All Windows
+2098 Demo / Tutorial          $Run Automatic Demonstration and Tutorial
+2112 Password Request         $Generate a Password Request Form
+
+2107 Print Preview            $Print Preview Window or Worksheet
+2108 Print                    $Print Window or Worksheet
+
+3309 Brighten     $Brighten or Darken an Image
+3306 DCT2         $2D Discrete Cosine Transform
+3145 FFT2         $2D Fast Fourier Transform
+3308 Histeq       $Histogram Equalization
+3307 IDCT2        $2D Inverse Discrete Cosine Transform
+3146 IFFT2        $2D Inverse Fourier Transform
+3305 Image24      $Convert to 24 Bit RGB Image
+3330 Iminterp     $Image Interpolation
+3144 Nonlin2d     $Nonlinear 2D Filtering
+3334 Rgb2mono     $Convert to 8 Bit Monochrome Image
+3143 Sobel        $Sobel Edge Detection
+
+
+
+
+
+
+
+
+
+
+

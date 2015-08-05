@@ -1,0 +1,107 @@
+/*****************************************************************************
+*                                                                            *
+*   ICCEPS.SPL     Copyright (C) 1999 DSP Development Corporation            *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Inverse complex cepstrum calculation                       *
+*                                                                            *
+*   Revisions:     9 Jul 1999  RRR  Creation - from CEPSTRUM.MAC             *
+*                                                                            *
+*****************************************************************************/
+
+#if @HELP_ICCEPS
+
+    ICCEPS
+
+    Purpose: Calculates the inverse complex cepstrum
+                                                                        
+    Format:  ICCEPS(s, d)
+
+             s   - input series or array
+
+             d   - an optional integer, lag value for phase correction,
+                   defaults to 0.
+
+
+    Returns: A real series or array
+
+
+    Example:
+             W1: gtri(100, 1, 1/100)^3
+             W2: w1-delay(w1, 60)/2
+             W3: w1+w2
+             W4: cceps(w3)
+             W5: icceps(w4)
+
+             A a synthesized echo at 60 seconds is added to the data of 
+             W1. The cepstrum is calculated in W4 and the inverse 
+             cepstrum in W5. The inverse cepstrum is identical to the 
+             original data except for a period shift of 50 samples;
+
+    Example:
+
+             W6: (c, d) = cceps(w3);c
+             W7: icceps(w6, d)
+
+             Same as W5 except the 50 sample period shift is now 
+             corrected.
+
+    Remarks:
+
+            The complex cepstrum of a series is essentially
+            IDFT(log(DFT(s))).  Because the log is used, some 
+            information is lost and ICCEPS cannot always reconstruct 
+            the original data. For more information, see CCEPS.
+
+
+    See Also:
+             Cceps
+             Rceps
+
+
+    References:
+
+            [1] Oppenheim & Shafer
+                Discrete-Time Signal Processing
+                Prentice Hall, 1989
+                pp 788-792
+
+            [2] IEEE Press
+                Programs for Digital Signal Processing
+                IEEE Press, 1979
+                Section 7
+#endif
+
+
+/* inverse complex cepstrum */
+icceps(s, d)
+{
+	local f, c;
+
+	if (argc < 2) {
+		if (argc < 1) error("icceps - input series required");
+		d = zeros(1, numcols(s));
+	}
+	/* make d a series */
+	d = {d};
+
+	f = fft(s);
+
+	setdeltax(f, 1.0);
+
+	/* generate phase correction */
+	r = gline(length(s), 1.0, 1/(length(s)), 0);
+
+	/* use *^ in case we have multi column data */
+	p = 2 * pi * r *^ d;
+
+	/* inverse cepstrum */
+	c = real(ifft(exp(real(f)+i*(imag(f)+p))));
+
+	/* reset dx */
+	setdeltax(c, deltax(s));
+
+	return(c);
+}

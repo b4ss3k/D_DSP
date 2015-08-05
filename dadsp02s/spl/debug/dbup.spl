@@ -1,0 +1,96 @@
+/*****************************************************************************
+*                                                                            *
+*   DBUP.SPL      Copyright (C) 2000 DSP Development Corporation             *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:       Randy Race                                                 *
+*                                                                            *
+*   Synopsis:     Help text for dbup                                         *
+*                                                                            *
+*   Revisions:    27 Jun 2000  RRR  Creation                                 *
+*                                                                            *
+*****************************************************************************/
+
+
+#if @HELP_DBUP
+
+    DBUP
+
+    Purpose: Move up the debugger callstack
+                                                                        
+    Format:  DBUP
+
+    Returns: Nothing, moves the callstack up to the caller function
+
+
+    Example:
+
+             Assume the following two SPL routines:
+
+             mycall(x)
+             {
+                local y;
+
+                y = x + x;
+                y = myfunc(y);
+                return(y);
+             }
+
+             myfunc(x)
+             {
+                local y;
+
+                y = x*x;
+                return(y);
+             }
+
+             Now consider the following debugger session:
+
+
+             dbstop myfunc
+             dbcont
+
+             mycall(10)
+             dbstack
+             locals
+             dbup
+             locals
+
+
+             A breakpoint is set the routine myfunc and the function
+             mycall is executed. Since mycall calls myfunc, the debugger
+             stops in myfunc. DBSTACK shows the debugger stepped
+             through mycall at line 6 and myfunc at line 5.
+
+             At this point, the LOCALS command shows that the local
+             variable x is set to 20, the value set by the calling
+             mycall function.
+
+             The DBUP command moves up the call stack to the mycall
+             function. Now the LOCALS command shows x has the value
+             10, the value specified when mycall was executed.
+
+    Remarks:
+             Use DBCONT to start the debugging process. Use DBSTEP or
+             DBCONT to resume execution after a breakpoint has been
+             reached. Use DBSTATUS for information on the current
+             breakpoint. Use DBQUIT to exit debugging. 
+
+             Any DADiSP command or function can be executed once a breakpoint 
+             has been reached.
+
+
+    See Also:
+             Dbclear
+             Dbcont
+             Dbdown
+             Dbquit
+             Dbstack
+             Dbstatus
+             Dbstep
+             Dbstepi
+             Dbstepo
+             Dbstop
+             Locals
+             Vars
+#endif

@@ -1,0 +1,1398 @@
+! system.mac - Version 6.0 (B18) - MACROS for the DADiSP Menu System
+
+! _pdc_last     _pdc_exec375
+
+_dwinstr        undefmacro("_dwin");defvar("_dwin", _getcwin);if(setwfmode==1,sprintf('Destination: <= e0   >~setvar("_dwin","<%s>")~_winlist', _getcwin),   sprintf('Destination: <= %s     t" %s ">~setvar("_dwin","<%s>")~_winlist', "%", _dwinrestr, _dwin))
+_dwinstrS(x)    undefmacro("_dwin");defvar("_dwin", _getcwin);if(setwfmode==1,sprintf('Destination: <= e0 %s>~setvar("_dwin","<%s>")~_winlist', x, _getcwin),sprintf('Destination: <= %s  %s t" %s "}>~setvar("_dwin","<%s>")~_winlist', "%", x, _dwinrestr, _dwin))
+_cwinstr        sprintf("Current Window is W%d", getwnum)
+_checkdwin      (defvar("_chkwin", 1)|_chkwin == 1)
+_chkwinok       (defvar("_chkwin", 1)|_chkwin == 1)
+_chkdwin(w)     if(_checkwin(w), _querydwin, _chkdlen)
+_chksrc(w)      if(_checkwin(w), _queryswin, 1)
+_chkdlen        if(setwfmode!=1 && _dwinlen, _querydlen, 1)
+_checkwin(w)    (if(setwfmode!=1, (_querysrc && (strcmp(_dwin, w)==0 || strcmp(w, 'curr')==0)), 0))
+_dwinlen        eval(sprintf("length(%s)", _dwin))
+
+_querydwin      (queryign(_srcdesmes, sprintf(_replacemes, eval('_dwin')), _noaskagainmes, "_ignsrcflag"))
+_queryswin      (queryign(_srcdesmes, sprintf("Continue in %s?", eval('_dwin')), _noaskagainmes, "_ignsrconly"))
+_querydlen      (queryign(_desdatames, sprintf(_replacemes, eval('_dwin')), _noaskagainmes, "_ignlenflag"))
+
+_querysrc       (if(isvar("_ignsrcflag"), not(_ignsrcflag), 1))
+
+_noaskagainmes  "&Do Not Ask this Question Again"
+_srcdesmes      "Source Window Same as Destination"
+_replacemes     "Replace Series in %s?"
+_continmes      "Continue in %s?"
+_desdatames     "Destination Window Contains Data"
+_dwinrestr      "Destination Window for Result"
+
+_choosecolor    _colrlst(0)
+_choosesyscolor _colrlst(1)
+_chooseshading  strfile(_mh("cmaps.txt"), 0, 0)
+
+_verifydwin(w)  setvar("_chkwin", _chkdwin(w));if(getvar("_chkwin")==0, menureturn(), menuclear());
+_verifydlen     setvar("_chkwin", _chkdlen);if(getvar("_chkwin")==0, menureturn(), menuclear());
+_verifysrc(w)   setvar("_chkwin", _chksrc(w));if(getvar("_chkwin")==0, menureturn(), menuclear());
+
+_col1    "1"
+_col2    "1"
+_col3    "1"
+_row1    "1"
+! _xyintrp 1
+_xyintrp 0
+_pstat   0
+_pgxy    0
+_pgxv    0
+
+! Number format strings
+_formafstr   "Auto Format"
+_formfnstr   "Floating Notation"
+_formbestr   "Exponential Notation using 'E'"
+_formlestr   "Exponential Notation using 'e'"
+_formfxstr   "Fixed Format"
+_formgxstr   "Short Format"
+_formhxstr   "Hex Format"
+_formrtstr   "Rational Format"
+
+! Conformity strings
+_cnfrm0str   "Point Values"
+_cnfrm1str   "Union"
+_cnfrm2str   "Intersection"
+
+! savemode strings
+_promptstr    "Prompt"
+_cancelstr    "Cancel"
+_appendstr    "Append"
+_overwritestr "Overwrite"
+
+! interpolation strings
+_linearstr    "Linear"
+_splinestr    "Spline"
+
+! misc strings
+_yesstr        '&Yes'
+_nostr         '&No'
+_cancelstr2    '"   Cancel   "'
+_nodatastr     "No Data in %s"
+_intpxyprompt  "Interpolate XY to Interval Series"
+_intpivprompt  "Interpolation Interval"
+_apprxlenstr1  "Approximate Maximum Output Length: %1.0f"
+_apprxlenstr2  "Approximate Maximum Output Length: %ld"
+_ovrfocprompt  "Current Overlay Focus"
+_addformstr    "Add to Formula"
+_defsetstr     "Restore Defaults"
+_donestr       " Done "
+
+! tic strings
+_inticstr     "Inside Margin"
+_outticstr    "Outside Margin"
+
+! tabbed dialog box status
+_intabbed    menuintabbed()
+
+
+_DEFXYINTRP(str) defmacro("_xyintrp", str, 1)
+_DEFPSTAT(str)   defmacro("_pstat", str, 1)
+_DEFPGXY(str)    defmacro("_pgxy", str, 1)
+_DEFPGXV(str)    defmacro("_pgxv", str, 1)
+
+_SINTSTR   "Signed Integer"
+_UINTSTR   "Unsigned Integer"
+_UBYTESTR  "Unsigned Byte"
+_SBYTESTR  "Signed Byte"
+_LONGSTR   "Long Integer"
+_FLOATSTR  "Single Precision Float"
+_DOUBLESTR "Double Precision Float"
+_ULONGSTR  "Unsigned Long Integer"
+_ASCIISTR  "ASCII Text"
+_EXCELSTR  "Excel Binary Table"
+
+_zsurfstr      "Z Surface"
+_contourstr    "Contour"
+_waterfallstr  "Waterfall"
+_densitystr    "Density"
+_tablevstr     "Tableview"
+_seriesgrpstr  "Lines"
+_chartgrpstr   "Individual Series"
+
+
+! correlation strings 
+_fdomainstr    "Frequency Domain"
+_tdomainstr    "Time Domain"
+_nonestr       "None"
+_normalizedstr "Unity (-1 to 1)"
+_biasedstr     "Biased"
+_unbiasedstr   "Unbiased"
+_linstr        "Linear"
+_cirstr        "Circular"
+
+
+_DEFRTTAB(str1)       setvar("_rttab",      str1)
+_DEFRTCOMMA(str1)     setvar("_rtcomma",    str1)
+_DEFRTSPACE(str1)     setvar("_rtspace",    str1)
+_DEFRTSEMI(str1)      setvar("_rtsemi",     str1)
+_DEFRTOTHER(str1)     setvar("_rtother",    str1)
+_DEFRTOTHERSTR(str1)  setvar("_rtotherstr", strescape(str1))
+
+_DEFWTTAB(str1)       setvar("_wttab",      str1)
+_DEFWTCOMMA(str1)     setvar("_wtcomma",    str1)
+_DEFWTSPACE(str1)     setvar("_wtspace",    str1)
+_DEFWTSEMI(str1)      setvar("_wtsemi",     str1)
+_DEFWTOTHER(str1)     setvar("_wtother",    str1)
+_DEFWTOTHERSTR(str1)  setvar("_wtotherstr", strescape(str1))
+
+_verifydwin2(win1, win2) if((_chkwin = _checkdwin2(win1, win2))==0, menureturn(), menuclear());
+_checkdwin2(win1, win2)  if(_checkwin(win1)||_checkwin(win2), _querydwin, _chkdlen)
+
+_verifydwin3(win1, win2, win3) if((_chkwin = _checkdwin3(win1, win2, win3))==0, menureturn(), menuclear());
+_checkdwin3(win1, win2, win3)  if(_checkwin(win1)||_checkwin(win2)||_checkwin(win3), _querydwin, _chkdlen)
+
+_verifydwin4(win1, win2, win3, win4) if((_chkwin = _checkdwin4(win1, win2, win3, win4))==0, menureturn(), menuclear());
+_checkdwin4(win1, win2, win3, win4)  if(_checkwin(win1)||_checkwin(win2)||_checkwin(win3)||_checkwin(win4), _querydwin, _chkdlen)
+
+_verifydwin5(win1, win2, win3, win4, win5) if((_chkwin = _checkdwin5(win1, win2, win3, win4, win5))==0, menureturn(), menuclear());
+_checkdwin5(win1, win2, win3, win4, win5)  if(_checkwin(win1)||_checkwin(win2)||_checkwin(win3)||_checkwin(win4)||_checkwin(win5), _querydwin, _chkdlen)
+
+_DEFCOL1(str1)      defmacro("_COL1",str1,1)
+_DEFCOL2(str1)      defmacro("_COL2",str1,1)
+_DEFCOL3(str1)      defmacro("_COL3",str1,1)
+_DEFROW1(str1)      defmacro("_ROW1",str1,1)
+
+_setcol(ser, col)   (if(castint(eval(col))>eval(sprintf("numcols(%s)",ser)), defmacro(col, 1, -1)))
+
+_pdc_exec257      _deffname('ROW    Extract a Row   ')  |_defformat('Row(ser, rownum)')|_defxamp('Row(W1, 5)')|_getserrow("Series: ", "Row Number")|if(_chkwinok,_sercol("Row", eval('_ser1'), eval('_row1')))
+_pdc_exec258      _deffname('COL    Extract a Column')  |_defformat('Col(ser, colnum)')|_defxamp('Col(W1, 5)')|_getsercol("Series: ", "Column Number")|if(_chkwinok,_sercol("Col", eval('_ser1'), eval('_col1')))
+_pdc_exec259      _deffname('CUT    Extract Displayed Region') |_defformat('Cut(window)')|_defxamp('Cut(W1)')|_getwin|_windform("Cut")
+
+
+_sercol(f, s, c)  eval(sprintf("setwform(%s, '%s(%s, %s)')", eval('_dwin'), f, s, c))
+
+
+_sethunits(u, item, mem) if(strcmp(gethunits,getxlabel)==0,clearxlabel());sethunits(u, item, mem)
+_setvunits(u, item, mem) if(strcmp(getvunits,getylabel)==0,clearylabel());setvunits(u, item, mem)
+_setzunits(u) setzunits(u)
+
+
+_setpstyle(style, n, m) if(numitems<=1 && itemcount == 1,setplotstyle(style), setplotstyle(style, n, m))
+
+_gettrace    defvar("_trace", 1);if(_trace>numitems, _deftrace(1);_trace, _trace)
+_DEFTRACE(t) setvar("_trace", t)
+
+_getxaxistype getxlog
+_getyaxistype getylog
+_getzaxistype getzlog
+
+_pondwin     eval(sprintf("plotmode(%s, 1)", eval('_dwin')))
+_poffdwin    eval(sprintf("plotmode(%s, 0)", eval('_dwin')))
+
+_addhunits(s)     (if(strcmp(_gethunits, _hunits)!=0, strcat(s, sprintf(";sethunits('%s')", _hunits)),s))
+_addvunits(s)     (if(strcmp(_getvunits, _vunits)!=0, strcat(s, sprintf(";setvunits('%s')", _vunits)),s))
+_addxoff(s)       (if(numstr(_xoff)!=0, strcat(s, sprintf(";setxoffset(%s)", _xoff)),s))
+_addxyhunits(s)   (if(strcmp(_gcunit(eval('_ser1'), eval('_col1')), _hunits)!=0, strcat(s, sprintf(";sethunits('%s')", _hunits)),s))
+_addxyvunits(s)   (if(strcmp(_gcunit(eval('_ser2'), eval('_col2')), _vunits)!=0, strcat(s, sprintf(";setvunits('%s')", _vunits)),s))
+_adddtvunits(s)   (if(strcmp(_gcunit(eval('_ser3'), eval('_col3')), _vunits)!=0, strcat(s, sprintf(";setvunits('%s')", _vunits)),s))
+_adddthunits(s)   (if(strcmp('Time', _hunits)!=0, strcat(s, sprintf(";sethunits('%s')", _hunits)),s))
+
+_addxyzunits(s)   (if(strcmp(_gcunit(eval('_ser3'), eval('_col3')), _zunits)!=0, strcat(s, sprintf(";setzunits('%s')", _zunits)),s))
+
+_addhv(s)      s=_addhunits(s);s=_addvunits(s);
+_addhvx(s)     s=_addhunits(s);s=_addvunits(s);s=_addxoff(s);
+_addxyhv(s,dt) if(dt,s=_adddthunits(s),s=_addxyhunits(s));if(dt,s=_adddtvunits(s),s=_addxyvunits(s));
+_addzhv(s)     s=_addxyhunits(s);s=_addxyvunits(s);s=_addxyzunits(s);
+_adddthv(s)    s=_adddthunits(s);s=_adddtvunits(s);
+
+_getlit1(s1)             defmacro("_str1prompt",strcat("'",s1,"'"),1)|_mf("lit1.pan")
+_getlit1b(s1)            defmacro("_str1prompt",strcat("'",s1,"'"),1)|_mf("lit1b.pan")
+_getwin                 _mf("win1.pan")
+_getser                 _mf("ser1.pan")
+_getpfit(s1, s2)        defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_int1prompt",strcat("'",s2,"'"),1)|_mf("pfit.pan")
+_getpgraph(s1,s2)       defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|_mf("pgraph.pan")
+_getproot(s1,s2)        defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_rad1prompt",strcat("'",s2,"'"),1)|_mf("proot.pan")
+_getfftwin              _mf("fftwin.pan")
+_getifftwin             _mf("ifftwin.pan")
+_getspecwin             _mf("specwin.pan")
+_getspecg               _mf("specg.pan")
+_getfft2win             _mf("fft2win.pan")
+_getifft2win            _mf("ifft2win.pan")
+_gtser                  _mf("ser1b.pan")  ! this doesn't have destination window stuff
+_getserX                _mf("ser1x.pan")
+_getser2(s1,s2)         defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|_mf("ser2.pan")
+_getser2col(s1,s2,s3,s4)  defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_col1prompt",strcat("'",s2,"'"),1)|defmacro("_ser2prompt",strcat("'",s3,"'"),1)|defmacro("_col2prompt",strcat("'",s4,"'"),1)|_mf("xy.tab")
+_getser3col(s1,s2,s3,s4,s5,s6,m)  defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_col1prompt",strcat("'",s2,"'"),1)|defmacro("_ser2prompt",strcat("'",s3,"'"),1)|defmacro("_col2prompt",strcat("'",s4,"'"),1)|defmacro("_ser3prompt",strcat("'",s5,"'"),1)|defmacro("_col3prompt",strcat("'",s6,"'"),1)|_mf(m)
+_getsercol(s1,s2)       defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_col1prompt",strcat("'",s2,"'"),1)|_mf("sercol.pan")
+_getserrow(s1,s2)       defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_col1prompt",strcat("'",s2,"'"),1)|_mf("serrow.pan")
+_getser3(s1,s2,s3)      defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|defmacro("_ser3prompt",strcat("'",s3,"'"),1)|_mf("ser3.pan")
+_getstr1(s1)            defmacro("_str1prompt",strcat("'",s1,"'"),1)|_mf("str1.pan")
+_getint1(s1)            defmacro("_int1prompt",strcat("'",s1,"'"),1)|_mf("int1.pan")
+_getunovr(s1)           defmacro("_int1prompt",strcat("'",s1,"'"),1)|_mf("unover.pan")
+_getstr2(s1,s2)         defmacro("_str1prompt",strcat("'",s1,"'"),1)|defmacro("_str2prompt",strcat("'",s2,"'"),1) |_mf("str2.pan")
+_getserint2(s1,s2,s3)   defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_int1prompt",strcat("'",s2,"'"),1)|defmacro("_int2prompt",strcat("'",s3,"'"),1)|_mf("serint2.pan")
+_getserint1(s1,s2)      defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_int1prompt",strcat("'",s2,"'"),1)|_mf("serint1.pan")
+_getsercolor(s1,s2)     defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_clr1prompt",strcat("'",s2,"'"),1)|_mf("sercolor.pan")
+_getwincolor(s1,s2,s3)  defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_clr1prompt",strcat("'",s2,"'"),1)|defmacro("_syncprompt",strcat("'",s3,"'"),1)|_mf("winclr.pan")
+_getser2c(s1,s2,c1)     defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|defmacro("_chk1prompt",strcat("'",c1,"'"),1)|_mf("ser2c.pan")
+
+_getxylook(s1,s2,s3,s4,s5,m)  defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_col1prompt",strcat("'",s2,"'"),1)|defmacro("_ser2prompt",strcat("'",s3,"'"),1)|defmacro("_col2prompt",strcat("'",s4,"'"),1)|defmacro("_ser3prompt",strcat("'",s5,"'"),1)|_mf(m)
+
+_getserint4(s1,s2,s3,s4,s5)   defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_int1prompt",strcat("'",s2,"'"),1)|defmacro("_int2prompt",strcat("'",s3,"'"),1)|defmacro("_int3prompt",strcat("'",s4,"'"),1)|defmacro("_int4prompt",strcat("'",s5,"'"),1)|_mf("serint4.pan")
+_getser5c(s1,s2,s3,s4,s5,s6,s7) defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|defmacro("_ser3prompt",strcat("'",s3,"'"),1)|defmacro("_ser4prompt",strcat("'",s4,"'"),1)|defmacro("_ser5prompt",strcat("'",s5,"'"),1)|defmacro("_chk2prompt",strcat("'",s6,"'"),1)|defmacro("_eser5prompt",strcat("'",s7,"'"),1)|_mf("ser5c.pan")
+_getser2int2(s1,s2,s3,s4)     defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|defmacro("_int1prompt",strcat("'",s2,"'"),1)|defmacro("_int2prompt",strcat("'",s3,"'"),1)|_mf("ser2int2.pan")
+_getserreal1(s1,s2)           defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_real1prompt",strcat("'",s2,"'"),1)|_mf("serreal1.pan")
+_getserrealint2(s1,r1,i1,i2)  defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_real1prompt",strcat("'",r1,"'"),1)|defmacro("_int1prompt",strcat("'",i1,"'"),1)|defmacro("_int2prompt",strcat("'",i2,"'"),1)|_mf("serr1i2.pan")
+_getpeakpan(s1,r1,i1,i2,i3,f) defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_real1prompt",strcat("'",r1,"'"),1)|defmacro("_int1prompt",strcat("'",i1,"'"),1)|defmacro("_int2prompt",strcat("'",i2,"'"),1)|defmacro("_padprompt",strcat("'",i3,"'"),1)|setvar("_peakfun", f)|_mf("peak.pan")
+
+_getserreal2(s1,s2,s3)  defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_real1prompt",strcat("'",s2,"'"),1)|defmacro("_real2prompt",strcat("'",s3,"'"),1)|_mf("serreal2.pan")
+_getserstr1(s1,s2)      defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_str1prompt",strcat("'",s2,"'"),1)|_mf("serstr1.pan")
+_getrealint(r1,i1)      defmacro("_real1prompt",strcat("'",r1,"'"),1)|defmacro("_int1prompt",strcat("'",i1,"'"),1) | _mf("realint.pan")
+_str2int1(s1,s2,i1)     defmacro("_str1prompt",strcat("'",s1,"'"),1)|defmacro("_str2prompt",strcat("'",s2,"'"),1)|defmacro("_int1prompt",strcat("'",i1,"'"),1)
+_str1int1(s1,i1)        defmacro("_str1prompt",strcat("'",s1,"'"),1)|defmacro("_int1prompt",strcat("'",i1,"'"),1)
+_todef(n)               if(strcmp(n, "-1")==0, _DEFAULTSTR, n)
+_fromdeftic(a)          if(strcmp(a, _AUTOMATICSTR)==0, -1, abs(castreal(a)))
+_fromdef(n)             if(strcmp(n, _DEFAULTSTR)==0, "-1", n)
+_getcwin                sprintf("W%d", getwnum)
+_getxyintp(s1,s2,s3)    defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_real1prompt",strcat("'",s2,"'"),1)|defmacro("_str1prompt",strcat("'",s3,"'"),1)|_mf("xyinterp.pan")
+
+_getxtic                if(getxticset, caststring(getxtic), _AUTOMATICSTR)
+_getytic                if(getyticset, caststring(getytic), _AUTOMATICSTR)
+_getztic                if(getzticset, caststring(getztic), _AUTOMATICSTR)
+
+_defserint1rc(s1,s2,s3,r1,r2,r3,r4,m) defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_int1prompt",strcat("'",s2,"'"),1)|defmacro("_chk1prompt",strcat("'",s3,"'"),1)|defmacro("_r1prompt",strcat("'",r1,"'"),1)|defmacro("_r2prompt",strcat("'",r2,"'"),1)|defmacro("_r3prompt",strcat("'",r3,"'"),1)|defmacro("_r4prompt",strcat("'",r4,"'"),1)|_mf(m)
+_defser2c(s1,s2,s3,s4,s5,s6)          defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|defmacro("_int1prompt",strcat("'",s3,"'"),1)|defmacro("_int2prompt",strcat("'",s4,"'"),1)|defmacro("_real1prompt",strcat("'",s5,"'"),1)|_mf(s6)
+_defser4c(s1,s2,s3,s4,s5,s6)          defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|defmacro("_ser3prompt",strcat("'",s3,"'"),1)|defmacro("_ser4prompt",strcat("'",s4,"'"),1)|defmacro("_int1prompt",strcat("'",s5,"'"),1)|_mf(s6)
+_defser5c(s1,s2,s3,s4,s5,s6,s7,s8)    defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|defmacro("_ser3prompt",strcat("'",s3,"'"),1)|defmacro("_ser4prompt",strcat("'",s4,"'"),1)|defmacro("_int1prompt",strcat("'",s5,"'"),1)|defmacro("_ser5prompt",strcat("'",s6,"'"),1)|defmacro("_int2prompt",strcat("'",s7,"'"),1)|_mf(s8)
+_defser3p(s1,s2,s3,m)                 defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_r1prompt",strcat("'",s2,"'"),1)|defmacro("_r2prompt",strcat("'",s3,"'"),1)|_mf(m)
+
+_ser4cform(s)             if(_chkwinok,if(_ser4chk, eval(sprintf("setwf(%s, '%s(%s, %s, %s, %s)')", eval('_dwin'), s, _feqser1, _feqser2, eval('_ser3'), eval('_ser4'))), eval(sprintf("setwf(%s, '%s(%s, %s, %s)')", eval('_dwin'), s, _feqser1, _feqser2, eval('_ser3')))))
+_defser2p4(s1,s2,s3,s4,m) defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|defmacro("_r1prompt",strcat("'",s3,"'"),1)|defmacro("_r2prompt",strcat("'",s4,"'"),1)|_mf(m)
+
+_defser2int2c(s1,s2,s3,s4,s5,s6) defmacro("_ser1prompt",strcat("'",s1,"'"),1)|defmacro("_ser2prompt",strcat("'",s2,"'"),1)|defmacro("_int1prompt",strcat("'",s3,"'"),1)|defmacro("_int2prompt",strcat("'",s4,"'"),1)|defmacro("_chk1prompt",strcat("'",s5,"'"),1)|_mf(s6)
+_ser2int2cform(s)                if(_chkwinok,if(_ser2chk, eval(sprintf("setwf(%s, '%s(%s, %s, %d, %g, 1)')", eval('_dwin'), s, _zfser1, _zfser2, _zfn, _zfr)), eval(sprintf("setwf(%s, '%s(%s, %s, %d, %g)')", eval('_dwin'), s, _zfser1, _zfser2, _zfn, _zfr))))
+
+_getserint1c(s1,s2,c)   defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_int1prompt",strcat("'",s2,"'"),1)|defmacro("_chk1prompt",strcat("'",c,"'"),1)|_mf("serint1c.pan")
+_getserlit(s1,s2)       defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_str1prompt",strcat("'",s2,"'"),1)|_mf("serlit1.pan")
+_getser1c(s1,c)         defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_chk1prompt",strcat("'",c,"'"),1)|_mf("ser1c.pan")
+
+_getserlit2(s1,s2,s3,s4,s5) defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_str1prompt",strcat("'",s2,"'"),1)|defmacro("_str2prompt",strcat("'",s3,"'"),1)|defmacro("_str3prompt",strcat("'",s4,"'"),1)|defmacro("_str4prompt",strcat("'",s5,"'"),1)|_mf("serlit2.pan")
+
+_toauto(n)               if(strcmp(n, "-1")==0, _AUTOMATICSTR, if(strcmp(n, "-2")==0, _POW2STR, n))
+_fromautotic(a)          if(strcmp(a, _AUTOMATICSTR)==0, -1, abs(castreal(a)))
+_fromauto(n)             if(strcmp(n, _AUTOMATICSTR)==0, "-1", if(strcmp(n, _POW2STR)==0, "-2", n))
+_unitslist               objectlist(5, 0, 1)
+_isunit(u)               (strlen(strfind(u, _unitslist))>0)
+
+_toall(n)               if(strcmp(n, "-1")==0, _ALLSTR, n)
+_fromall(n)             if(strcmp(n, _ALLSTR)==0, "-1",  n)
+
+_datasettings             _dodataset(_vunits, _hunits, numstr(_xoff))
+_dodataset(vu, hu, xo)    eval(sprintf("setvunits(%s, '%s');sethunits(%s, '%s');setxoffset(%s, %g)", eval('_dwin'), vu, eval('_dwin'), hu, eval('_dwin'), xo))
+
+_dataunits                _dodataunits(_vunits, _hunits)
+_dodataunits(vu, hu)      eval(sprintf("setvunits(%s, '%s');sethunits(%s, '%s')", eval('_dwin'), vu, eval('_dwin'), hu))
+
+_zdataunits               _zdodataunits(_vunits, _hunits, _zunits)
+_zdodataunits(vu, hu, zu) eval(sprintf("setvunits(%s, '%s');sethunits(%s, '%s');setzunits(%s, '%s')", eval('_dwin'), vu, eval('_dwin'), hu, eval('_dwin'), zu))
+
+_defaultstr             "Default"
+_automaticstr           "Automatic"
+_pow2str                "Best Power of 2"
+_nonestr                "None"
+_allstr                 "All"
+
+_win                    "w1"
+_ser1                   "w1"
+_ser2                   "w1"
+_ser3                   "w1"
+_ser4                   "w1"
+_ser5                   "w1"
+_fwin                   "None"
+_fwin2                  "Hanning"
+_int1                   "10"
+_int2                   "128"
+_int3                   "1"
+_int4                   "4"
+_real1                  ".01"
+_real2                  ".02"
+_str1                   "data.dat"
+_lit1                   "1,2,3"
+_lit1b                  "data.dat"
+_ttl                    "My Title"
+_txtclr                 strcolor(getwcolor(1))
+_NmBSer                 1
+_clr1 4
+_int1a                  "2"
+_int2a                  "3"
+
+_str2                   "w1"
+_bdt                    "SINT"
+
+_defint1prmt(s1)   defmacro("_int1prompt",strcat("'",s1,"'"),1)
+_deflit1(s)        defmacro("_lit1", s, 1)
+_deflit1b(s)       defmacro("_lit1b", s, 1)
+_defstr1(s)        defmacro("_str1", s, 1)
+_defstr2(s)        defmacro("_str2", s, 1)
+_deffname(s)       defmacro("_funcstr", strcat("'", s, "'"),1)
+_defformat(s)      defmacro("_formatstr", strcat("'Format:  ", s, "'"),1)
+_defxamp(s)        defmacro("_examplestr", strcat("'Example: ", s, "'"),1)
+_DEFCLR1(str1)     defmacro("_CLR1",str1,1)
+_strform(s)        SETWF(strcat(s, "(",strcat('"', eval('_str1'),'"'),")"))
+_litform(s)        SETWF(strcat(s, "(",strcat('"', eval('_lit1'),'"'),")"))
+_litbform(s)       SETWF(strcat(s, "(",strcat('"', eval('_lit1b'),'"'),")"))
+_strmacform(s)     SETWF(strcat(s, "(",strcat('"',eval('_lit1b'),'"'),",", eval('_bdt'),")"))
+_form              SETWF(strcat(eval("_ser1")))
+_strmacintform(s)  SETWF(strcat(s, "(",strcat('"',eval('_lit1b'),'"'),",", eval('_bdt'),",",eval('_NmBSer'),")"))
+
+_confautolist(s)    if(strcmp(getconf(s), "-1")==0, strlist(_AUTOMATICSTR), strlist(getconf(s), _AUTOMATICSTR))
+_intdeflist(s)      if(strcmp(s, "-1")==0, strlist(_DEFAULTSTR), strlist(s, _DEFAULTSTR))
+_intautolist(s)     if(strcmp(s, "-1")==0||strcmp(s, "-2")==0, strlist(_AUTOMATICSTR, _POW2STR), strlist(s, _AUTOMATICSTR, _POW2STR))
+_intalllist(s)      if(strcmp(s, "-1")==0, strlist(_ALLSTR), strlist(s, _ALLSTR))
+_ticautolist(a, b)  if(a == 0, strlist(_AUTOMATICSTR), strlist(caststring(b), _AUTOMATICSTR))
+_stralllist(s)      if(strcmp(s, "-1")==0, strlist(_ALLSTR), eval(sprintf("strlist(%s, %s)", s, _ALLSTR)))
+
+
+_serform(s)        if(_checkdwin, eval(sprintf("setwf(%s, '%s(%s)')", eval('_dwin'), s, eval('_ser1'))))
+_windform(s)       if(_checkdwin, eval(sprintf("setwf(%s, '%s(%s)')", eval('_dwin'), s, eval('_win'))))
+
+_serfftwin(s)      if(_checkdwin, _fftwin(eval('_ser1'), _fftwin, eval('_len'), _fftoutf, _fftwinc, _fftshift, _fftdc, eval('_dwin')))
+_serifftwin(s)     if(_checkdwin, _ifftwin(eval('_ser1'), eval('_len'), _ifftoutf, eval('_dwin')))
+_serspecwin(s)     if(_checkdwin, _specwin(s, eval('_ser1'), _fftwin, eval('_len'), _fftwinc, _fftdc, eval('_dwin')))
+_serfft2win(s)     if(_checkdwin, _fft2w(eval('_ser1'), _fft2win, _rlen, _clen, _fft2outf, _fft2winc, _fft2shift, _fft2dc, eval('_dwin')))
+_serifft2win(s)    if(_checkdwin, _ifft2w(eval('_ser1'), _rlen, _clen, _ifft2outf, eval('_dwin')))
+
+_serpfit(s)        _pfit(s, eval('_ser1'), eval('_int1'), eval('_pstat'), eval('_dwin'))
+_serpgraph(s)      _pgraph(s, eval('_ser1'), eval('_ser2'), eval('_pgxv'), eval('_pgxy'), eval('_dwin'))
+
+_serform1(s)       if(strcmp(eval('_len'), "-1")==0,_serform(s),_serlenform(s))
+_serwinform1(s)    if(strcmp(eval('_len'), "-1")==0,_serwinform(s),_serwinlenform(s))
+
+_serwinform(s)     if(_checkdwin, eval(sprintf("setwf(%s, '%s(%s(%s))')", eval('_dwin'), s, eval('_fwin'), eval('_ser1'))))
+
+_serwinlenform(s)  if(_checkdwin, eval(sprintf("setwf(%s, '%s(%s(%s),%s)')", eval('_dwin'), s, eval('_fwin'), eval('_ser1'), eval('_len'))))
+
+_serlenform(s)     if(_checkdwin, eval(sprintf("setwf(%s, '%s(%s, %s)')", eval('_dwin'), s, eval('_ser1'), eval('_len'))))
+
+_ser2form(s)       if(_chkwinok,eval(sprintf("setwf(%s, '%s(%s, %s)')", eval('_dwin'), s, eval('_ser1'), eval('_ser2'))))
+_ser2cform(s,t,c)  if(_chkwinok,eval(sprintf("setwf(%s, '%s(%s, %s)')", eval('_dwin'), if(c,t,s), eval('_ser1'), eval('_ser2'))))
+_ser3form(s)       eval(strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_ser2'), ',', eval('_ser3'),')")'))
+_serint2form(s)    if(_checkdwin, eval(strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_int1'),',',eval('_int2'),')")')))
+
+_serint1form(s)    if(_checkdwin, eval(sprintf("setwf(%s, '%s(%s, %s)')", eval('_dwin'), s, eval('_ser1'), eval('_int1'))))
+
+_serint1cform(s)   if(_checkdwin, if(_chk1, eval(sprintf("setwf(%s, '%s(%s, %s)')", eval('_dwin'), s, eval('_ser1'), eval('_int1'))), eval(sprintf("setwf(%s, '%s(%s, %s, %d)')", eval('_dwin'), s, eval('_ser1'), eval('_int1'), _chk1))))
+_serlitform(s)     if(_checkdwin, eval(sprintf("setwf(%s, '%s(%s, %s)')", eval('_dwin'), s, eval('_ser1'), _lit1v)))
+_serlit2form(s)    if(_checkdwin, eval(sprintf("setwf(%s, '%s(%s, %s, %s)')", eval('_dwin'), s, eval('_ser1'), _lit1v, _lit2v)))
+_ser1cform(s)      if(_checkdwin, if(_chk1==0, eval(sprintf("setwf(%s, '%s(%s)')", eval('_dwin'), s, eval('_ser1'))), eval(sprintf("setwf(%s, '%s(%s, %d)')", eval('_dwin'), s, eval('_ser1'), _chk1))))
+
+
+_serint4form(s)    if(_checkdwin, eval(Strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_int1'),',',eval('_int2'),',',eval('_int3'),',',eval('_int4'),')")')))
+_ser4intform(s)    if(_checkdwin, eval(Strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_ser2'),',',eval('_ser3'),',',eval('_ser4'),',',eval('_chk2'),')")')))
+_ser5intform(s)    if(_checkdwin, eval(Strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_ser2'),',',eval('_ser3'),',',eval('_ser4'),',',eval('_ser5'),',',eval('_chk2'),')")')))
+_ser2int2form(s)   eval(Strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_ser2'),',', eval('_int1'),',',eval('_int2'),')")'))
+_serreal1form(s)   if(_checkdwin, eval(Strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_real1'),')")')))
+_serrealint2(s)    if(_checkdwin, eval(Strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_real1'),',',eval('_int1'),',',eval('_int2'),')")')))
+_serreal2form(s)   if(_checkdwin, eval(Strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_real1'),',',eval('_real2'),')")')))
+
+_evalwform(s)      EVAL(strcat(s, "(",eval('_win'),")"))
+_evalstrform(s)    EVAL(strcat(s, "(",strcat('"', eval('_str1'),'"'),")"))
+_evallit1bform(s)  EVAL(strcat(s, "(",strcat('"', eval('_lit1b'),'"'),")"))
+_evalserform(s)    EVAL(strcat(s, "(",eval('_ser1'),")"))
+_evaldispform(s)   if(strlen(_dispwins)>0, eval(sprintf("%s(%s)", s, _dispwins)))
+_evalint(s)        EVAL(strcat(s, "(",eval('_int1'),")"))
+_evalunovr(s)      EVAL(strcat(s, "(",eval('_trace'),")"))
+_evalserint(s)     EVAL(strcat(s, "(",strcat(eval('_ser1'),',',eval('_int1')),")"))
+_evalserwint(s)    EVAL(strcat(s, "(",strcat(eval('_ser1'),',',strcat("W",strnum(getwnum)),',',eval('_int1')),")"))
+_evalstr2form(s)   EVAL(strcat(s, "(",strcat('"',eval('_str1'),'"',',','"',eval('_str2'),'"'),")"))
+_evalstrcommand(s) EVAL(strcat(s, " ",eval('_str1')))
+_evalrealint(s)    EVAL(strcat(s, "(",strcat(eval('_real1'),',',eval('_int1')),")"))
+_evalricursor(s)   setvar("_menucleared", 1);if(setwfmode==1, EVAL(sprintf('setwf("%s(%g, %d)")', s, eval('_real1'), eval('_int1'))), EVAL(sprintf("%s(%g, %d)", s, eval('_real1'), eval('_int1')));cursoron)
+_evalcursor(s)     _mc;if(setwfmode==1, eval(sprintf('setwf("%s")', s)), eval(sprintf("%s", s));cursoron)
+
+_evalserclr(s, f)  if(_chkwin>0,  _tmpf = sprintf("%s(%s, %s)", s, eval('_ser1'), eval('_clr1'));if(f,addwform(_tmpf),eval(_tmpf)))
+
+_evalserwclr(s,f)  if(_chkwin>0, _tmpf = sprintf("%s(%s, %s)",s,eval('_ser1'),eval('_clr1'));if(f,addwform(_tmpf),eval(_tmpf));sync(_syncm))
+
+
+_setserstrform(s)  EVAL(strcat(s, "(",strcat(eval('_ser1'),',','"', eval('_str1'),'"'),")"))
+_evalstrmacform(s) EVAL(strcat(s, "(",strcat('"',eval('_lit1b'),'"'),",", eval('_bdt'),")"))
+_str2intform(s)    SETWF(strcat(s, "(",strcat('"', eval('_str1'),'"', ',','"', eval('_str2'),'"', ','),eval('_int1'),")"))
+_serstr1form(s)    SETWF(strcat(s, "(",eval('_ser1'),",", eval('_str1'),")"))
+
+_evalstrlist(s)    EVAL(strcat(s, "(",eval('_str1'),")"))
+_evallitlist(s)    EVAL(strcat(s, "(",eval('_lit1'),")"))
+_evalint2(s)       EVAL(strcat(s,"(",eval('_int1'),",",eval('_int2'),")"))
+_getint2(s1,s2)    defmacro("_int1prompt",strcat("'",s1,"'"),1)|defmacro("_int2prompt",strcat("'",s2,"'"),1)|_mf("int2.pan")
+
+_evalint2a(s)      EVAL(strcat(s,"(",eval('_int1a'),",",eval('_int2a'),")"))
+_getint2a(s1,s2)   defmacro("_int1prompt",strcat("'",s1,"'"),1)|defmacro("_int2prompt",strcat("'",s2,"'"),1)|_mf("int2a.pan")
+
+BW                 defmacro("_BG1S","'WHITE'",1)|defmacro("_BG2S","'WHITE'",1)|defmacro("_HELPBGS", "'WHITE'",0)|defmacro("_FG1S","'BLACK'",1)|defmacro("_FG2S","'BLACK'",1)|defmacro("_HELPFGS", "'BLACK'",0)|echo("Black & White SET")
+
+! Text & Line Annotations
+SMALL              1
+BIG                0
+USER1              8
+USER2              9
+USER3             10
+GLASS              1
+PAPER              0
+SOLID              1
+DASHED             2
+DOTTED             3
+DASHDOT            4
+DASHDOTDOT         5
+USESER            -1
+DEFAULT           -1
+GLASS_WMARGIN      2
+GLASS_WPMARGIN     3
+GLASS_WSMARGIN     4
+GLASS_WM           2
+GLASS_WPM          3
+GLASS_WSM          4
+WIN_MARGIN      GLASS_WMARGIN
+WP_MARGIN       GLASS_WPMARGIN
+WS_MARGIN       GLASS_WSMARGIN
+_textleg        "0"
+_textstretch    "0"
+_textpos        "PAPER"
+_textcolor      strnum(getgcolor(5))
+_textfont       "USER1"
+_textbox        "0"
+_textmargadj    "NO_MARGIN"
+_linecolor      strnum(getgcolor(5))
+_linestyle      "1"
+_linepos        "PAPER"
+_lineser        "1"
+_legpos         "PAPER"
+_legfont        "USER1"
+_legbox         "1"
+_legmargadj     "NO_MARGIN"
+
+! Graph attribute menu scalars
+_sym            DOTS
+_line           SOLID
+_col            15
+_wincol         1
+_gridcol        3
+
+_hunits         _gethunits
+_vunits         _getvunits
+_zunits         _getzunits
+
+_gethunits      if(strlen(getconf("hunits"))==0,"Sec", getconf("hunits"))
+_getvunits      if(strlen(getconf("vunits"))==0,"No Units", getconf("vunits"))
+_getzunits      if(strlen(getconf("zunits"))==0,"No Units", getconf("zunits"))
+
+_getdhunits     if(strlen(getconfdef("hunits"))==0,"Sec", getconfdef("hunits"))
+_getdvunits     if(strlen(getconfdef("vunits"))==0,"No Units", getconfdef("vunits"))
+_getdzunits     if(strlen(getconfdef("zunits"))==0,"No Units", getconfdef("zunits"))
+
+_getdeltax(item, mem)      if(length>0, deltax(item, mem), 1)
+_getdeltay                 if(length>0, deltay, 1)
+_getxoffset(item, mem)     if(length>0, xoffset(item, mem), 0)
+_getyoffset                if(length>0, yoffset, 0)
+
+_xoff           "0.0"
+_GRIDON         'GRIDON'
+_GRIDSTYLE      'GRIDSOL'
+_GRIDDIR        'GRIDHV'
+_SCALESON       'SCALESON'
+_symsp 1
+_stpt 1
+
+
+_lwid           '1'
+_cvn            '1'
+_linstyl        'SOLID'
+
+NONE             0
+DOTS             0
+SQUARE           1
+TRIANGLE         2
+INV_TRIANGLE     3
+CROSS            4
+XCROSS           5
+CLR_UP_ARROW     6
+CLR_DN_ARROW     7
+UP_ARROW         8
+DN_ARROW         9
+CLR_DIAMOND      10
+CLR_SQUARE       11
+CLR_TRIANGLE     12
+CLR_INV_TRI      13
+CIRCLE           14
+CLR_CIRCLE       15
+
+ON                1
+OFF               0
+
+! Margin adjustments
+NO_MARGIN        -1
+TOP               0
+RIGHT             1
+BOTTOM            2
+LEFT              3
+
+! Defaults
+_symb           "0"
+
+Vdef90          0
+Vdef270         1
+VdefChar90      2
+Vdef90_270      3
+Vdef270_90      4
+
+Rot0            0
+Rot90           1
+Rot180          2
+Rot270          3
+RotChar90       4
+
+_SetDfltRot(tp,n) if(tp==1,setavdefx(n),if(tp==2,settvdefx(n),if(tp==3,setavdefy(n),if(tp==4,settvdefy(n)))))
+_DTypStr(tp)      if(tp==1,"X Axis",if(tp==2,"Y Axis",if(tp==3,"X Tic",if(tp==4,"Y Tic"))))
+
+Vert 2
+Horiz 1
+
+! For nonlin2d.pan menu
+_ftypstr "Median"
+_oddint  3
+
+! Here are the macros to run the configuration menus
+cnfhlp(s)    strcat(_menudir,pathchar,s)
+_gpscr       _gpsc=getconf("PRNSCREEN_MODE");if(numstr(_gpsc)==0,'Bitmap Dump',if(numstr(_gpsc)==1,'PostScript',if(numstr(_gpsc)==2,'HPGL',if(numstr(_gpsc)==3,'System Printer'))))
+_defpscrn(s) defmacro("_pscrn",if(strcmp(s,"Bitmap Dump")==0,"0",if(strcmp(s,"PostScript")==0,"1",if(strcmp(s,"HPGL")==0,"2",if(strcmp(s,"System Printer")==0,"3")))),3)
+
+! Check the grid style
+CkGStyle(s) if(numstr(s)==0,"OFF",if(numstr(s)==1,"Solid",if(numstr(s)==2,"Dashed",if(numstr(s)==3,echo("Dotted")))))
+
+! Plot style
+_gplst(n)  if(n==9,5,if(n==10,6,n))
+_stplst(n) if(n==5,9,if(n==6,10,n))
+
+! Data type
+_gdtyp(n)   if(n==20,"FLOAT",if(n==25,"DOUBLE",if(n==30,"INTEGER",if(n==35,"UINTEGER",if(n==40,"BYTE",if(n==45,"UBYTE",if(n==50,"LONG")))))))
+_DTYP       getconf("DATA_TYPE")
+_defDTyp(s) defmacro("_dtyp",if(strcmp(s,"FLOAT")==0,"20",if(strcmp(s,"DOUBLE")==0,"25",if(strcmp(s,"INTEGER")==0,"30",if(strcmp(s,"UINTEGER")==0,"35",if(strcmp(s,"BYTE")==0,"40",if(strcmp(s,"UBYTE")==0,"45",if(strcmp(s,"LONG")==0,"50","25"))))))),2)
+
+! Change the string ON or OFF to a number: 0 or 1
+_OnOff2num(s) if(strcmp(s,"ON")==0,"1","0")
+_CNF_ONOFF(s) if(strcmp(getconf(s),"1")==0,"ON","OFF")
+
+! Macros for Strings describing Axis Types
+_axscale getconf("DEFAULT_SCALES")
+_ax0     "No Scales"
+_ax1     "X bottom Y left"
+_ax2     "X bottom Y left with labels"
+_ax3     "X bottom Y right with labels"
+_ax4     "X bottom Y right"
+_ax5     "X top Y right"
+_ax6     "X top Y left"
+_ax7     "X top Y left with labels"
+_ax8     "X top Y right with labels"
+_ax9     "Y left"
+_ax10    "Y right"
+_ax11    "X bottom"
+_ax12    "X top"
+_ax13    "Y left with labels"
+_ax14    "Y right with labels"
+_ax15    "X bottom with labels"
+_ax16    "X top with labels"
+
+_ax3d0   "No Scales"
+_ax3d1   "XYZ"
+_ax3d2   "XYZ with labels"
+
+
+_gaxstyl(s)   (if(strcmp(s,"-1")==0, eval("_ax0"), eval(strcat("_ax",(s)))))
+_gax3dstyl(s) (if((strcmp(s,"-1")==0)||(castint(s)>2), eval("_ax3d0"), eval(strcat("_ax3d",(s)))))
+
+! Postscript Orientation
+_gpsl if(numstr(getconf("POSTSCRIPT_LANDSCAPE"))==1,"Landscape","Portrait")
+
+! Title a window
+Title(c,s)   Text(.2,.2,3,c,-1,0,0,0,1,0,strcat("\g",s,"\g")," ")
+
+! Menu Directory Location
+_MENUDIR        "menus"
+_MENUHOME        strcat(_menudir, pathchar)
+
+! _MENUHOME
+hlp(s)            strcat(_MENUHOME,s)
+
+! Set.men calls these -->
+_COLORMEN        _mf("colors.men")
+_WCOLOR          "BLUE"
+_SCOLOR          "WHITE"
+_OCOLOR          "LRED"
+
+_DOGRID        eval("_CURGRIDSTYLE;_CURGRIDORIENT")
+_CURGRIDSTYLE  SOLID
+_CURGRIDORIENT GRIDHV
+
+! Menu colors by depth into menu structure
+_BG1S                "LBLUE"          ! Background
+_FG1S                "WHITE"          ! Foreground
+
+_BG2S                "LBLUE"
+_FG2S                "WHITE"
+
+_BG3S                _BG1S
+_FG3S                _FG1S
+
+_BG4S                "LBLUE"
+_FG4S                "WHITE"
+
+_HELPBGS             "RED"
+_HELPFGS             "WHITE"
+
+_BG1                eval(_BG1S)
+_FG1                eval(_FG1S)
+_BG2                eval(_BG2S)
+_FG2                eval(_FG2S)
+_BG3                eval(_BG3S)
+_FG3                eval(_FG3S)
+_BG4                eval(_BG4S)
+_FG4                eval(_FG4S)
+_HELPBG             eval(_HELPBGS)
+_HELPFG             eval(_HELPFGS)
+
+! Text strings for menu use
+_EXITMES            "Exit          (ESC)"
+_ENDMES             "Click Here or Press END to Process"
+
+! Misc. menus macros
+_MX                 79
+_MY                 1
+_WIN2               'w1'
+_SIG                'SIN'
+_PTS                '100'
+_SPC                '.01'
+_FRQ                '1'
+_PHA                '0'
+_FAC                '1'
+_OFS                '0'
+_MEA                '0.0'
+_STV                '1.0'
+_tbcolr            'red'
+_tbstr             'rnd'
+_tbcmd             'grand(100,.01)'
+_tbmsg             'Generate Random Data'
+_pcn               15
+_tbar              "0"
+_tbarn             '1'
+_tbutton           'Last_Button'
+_tbutn             '-1'
+_t1x              "Horiz"
+_t2x              "Horiz"
+_t1y              "Vert"
+_t2y              "Vert"
+_tv1x              'Vdef90'
+_tv2x              'Vdef90'
+_tv1y              'Vdef270'
+_tv2y              'Vdef270'
+_len               '-1'
+ 
+_INREAL(str1)       INPUT(1,str1,"Enter Real Value")
+_ININT(str1)        INPUT(2,str1,"Enter Integer Value")
+_INSTR(str1)        INPUT(3,str1,"Enter Text String")
+_INSER(str1)        INPUT(5,str1,"Enter Series Expression or Window")
+_INLIT(str1)        INPUT(5,str1,"Enter Literal")
+_INWIN(str1)        INPUT(4,str1,"Enter Window")
+_DEFWIN(str1)       defmacro("_WIN",str1,1)
+_DEFWIN2(str1)      defmacro("_WIN2",str1,1)
+_DEFSER1(str1)      defmacro("_SER1",str1,1)
+_DEFFWIN(str1)      defmacro("_FWIN",str1,1)
+_DEFFWIN2(str1)     defmacro("_FWIN2",str1,1)
+_DEFSER2(str1)      defmacro("_SER2",str1,1)
+_DEFSER3(str1)      defmacro("_SER3",str1,1)
+_DEFSER4(str1)      defmacro("_SER4",str1,1)
+_DEFSER5(str1)      defmacro("_SER5",str1,1)
+_DEFREAL1(str1)     defmacro("_REAL1",str1,1)
+_DEFREAL2(str1)     defmacro("_REAL2",str1,1)
+_DEFINT1(str1)      defmacro("_INT1",str1,1)
+_DEFINT2(str1)      defmacro("_INT2",str1,1)
+_DEFINT1A(str1)     defmacro("_INT1A",str1,1)
+_DEFINT2A(str1)     defmacro("_INT2A",str1,1)
+_DEFINT3(str1)      defmacro("_INT3",str1,1)
+_DEFINT4(str1)      defmacro("_INT4",str1,1)
+_DEFSIG(str1)       defmacro("_SIG",str1,1)
+_DEFPTS(str1)       defmacro("_PTS",str1,1)
+_DEFSPC(str1)       defmacro("_SPC",str1,1)
+_DEFFRQ(str1)       defmacro("_FRQ",str1,1)
+_DEFPHA(str1)       defmacro("_PHA",str1,1)
+_DEFFAC(str1)       defmacro("_FAC",str1,1)
+_DEFOFS(str1)       defmacro("_OFS",str1,1)
+_DEFMEA(str1)       defmacro("_MEA",str1,1)
+_DEFSTV(str1)       defmacro("_STV",str1,1)
+_DEFXLEFT(str1)     defmacro("_XLEFT",strcat("'",strnum(str1),"'"),1)
+_DEFXRIGHT(str1)    defmacro("_XRIGHT",strcat("'",strnum(str1),"'"),1)
+_DEFYTOP(str1)      defmacro("_YTOP",strcat("'",strnum(str1),"'"),1)
+_DEFYBOTTOM(str1)   defmacro("_YBOTTOM",strcat("'",strnum(str1),"'"),1)
+_DEFXTIC(str1)      defmacro("_XTIC",strcat("'",strnum(str1),"'"),1)
+_DEFYTIC(str1)      defmacro("_YTIC",strcat("'",strnum(str1),"'"),1)
+_DEFXDELTA(str1)    defmacro("_XDELTA",strcat("'",strnum(str1),"'"),1)
+_DEFXOFFSET(str1)   defmacro("_XOFF",strcat("'",strnum(str1),"'"),1)
+_DEFYDELTA(str1)    defmacro("_YDELTA",strcat("'",strnum(str1),"'"),1)
+_DEFYOFFSET(str1)   defmacro("_YOFF",strcat("'",strnum(str1),"'"),1)
+_DEFGRIDON(str1)    defmacro("_GRIDON",strcat("'",(str1),"'"),1)
+_DEFXGRIDSTYLE(str1) defmacro("_XGRIDSTYLE",_togridstyle(str1),1)
+_DEFYGRIDSTYLE(str1) defmacro("_YGRIDSTYLE",_togridstyle(str1),1)
+_DEFGRIDDIR(str1)   defmacro("_GRIDDIR",strcat("'",_togriddir(str1),"'"),1)
+_DEFSCALESON(str1)  defmacro("_SCALESON",strcat("'",(str1),"'"),1)
+
+! for generated series 
+_DEFHUNITS(str1)    defmacro("_HUNITS",strcat("'",(str1),"'"),1)
+_DEFVUNITS(str1)    defmacro("_VUNITS",strcat("'",(str1),"'"),1)
+_DEFZUNITS(str1)    defmacro("_ZUNITS",strcat("'",(str1),"'"),1)
+
+! for data
+_DEFDHUNITS(str1)    defmacro("_DHUNITS",strcat("'",(str1),"'"),1)
+_DEFDVUNITS(str1)    defmacro("_DVUNITS",strcat("'",(str1),"'"),1)
+_DEFDZUNITS(str1)    defmacro("_DZUNITS",strcat("'",(str1),"'"),1)
+
+_DEFDXDELTA(val)    setvar("_DXDELTA",val)
+_DEFDXOFFSET(val)   setvar("_DXOFF",val)
+_DEFDYDELTA(val)    setvar("_DYDELTA",val)
+_DEFDYOFFSET(val)   setvar("_DYOFF",val)
+
+_DEFWLABEL(str1)    setvar("_WLABEL",str1)
+
+_DEFZLABEL(str1)    setvar("_ZLABEL",str1)
+_DEFHLABEL(str1)    setvar("_HLABEL",str1)
+_DEFVLABEL(str1)    setvar("_VLABEL",str1)
+
+_DEFLEN(str1)      defmacro("_LEN",str1,2)
+
+_SEGLEN            32
+_DEFSEGLEN(str1)   defmacro("_SEGLEN",str1,1)
+_DEFOVRLAP(str1)   defmacro("_OVRLAP",str1,1)
+_DEFFFTLEN(str1)   defmacro("_FFTLEN",str1,1)
+
+_getgridstyle(s)    (s)
+_getgrid(s)         if(s==1,_vgridstr, if(s==2, _hgridstr, _hvgridstr))
+_togridstyle(s)     (s)
+_togriddir(s)       if(strcmp(s,_vgridstr)==0,"GRIDV", if(strcmp(s,_hgridstr)==0, "GRIDH", if(strcmp(s, _hvgridstr)==0, "GRIDHV", "GRIDOFF")))
+
+
+_getlinestyle(s)    if(s==1,"Solid", if(s==2, "Dashed", if(s==3, "Dotted", if(s==4, "DashDot", if(s==5, "DashDotDot", "Solid")))))
+_tolinestyle(s)     if(s=="Solid", 1, if(s=="Dashed", 2, if(s=="Dotted",3, if(s=="DashDot", 4, if(s=="DashDotDot", 5, 0)))))
+
+_hgridstr           "Horizontal"
+_vgridstr           "Vertical"
+_hvgridstr          "Horizontal + Vertical"
+
+! menuing
+_menuf(s)           (if(menudepth()==0, undefmacro("_dwin");setvar("_dwin", sprintf("W%d", getwnum));menufile(s), undefmacro("_dwin");menufile(s)))
+_MC                 (if(1,setvar("_menucleared", "1");MENUCLEAR()))
+
+_mf(n)              _menuf(_mh(n))    ! sets _dwin
+_mf2(n)             menufile(_mh(n))  ! no _dwin processing
+_mftmp(n)           _menuf(_mhtmp(n)) ! temp dir
+
+_ML(str1)           MENULIST(_MX,_MY,_HELPBG,_HELPFG,str1)
+_lf(n)              LOAD(strcat(_MENUHOME,n))
+_mh(s)              strcat(_menuhome, s)
+_mhtmp(s)           strcat(getmiscpath(1, 1), s)
+
+! Axes macros
+_getxaxestr         defmacro("_xaxes", setxlog, 1);if(setxlog, " LOG ", " LINEAR ")
+_getyaxestr         defmacro("_yaxes", setylog, 1);if(setylog, " LOG ", " LINEAR ")
+
+! Plot macros
+_hpfile             getconf("HPGL_FILE")
+_hptitle            _winform
+_psfile             getconf("POSTSCRIPT_FILE")
+_pstitle            _winform
+_pcolorstr          "COLOR"
+_pcolor             1
+
+_winform            strcat("W", strnum(getwnum), ":", getwform)
+
+_rwflg              0
+
+! F(X) and F(X,Y) macros
+_fxyloaded 0
+
+! Development macros
+DOBUTTON(m)         _DOBUTTON(m)
+_DOBUTTON(m)        reserved(1000, m)
+
+SETCONF(s1, s2)   _SETCONF(s1, s2)
+_SETCONF(s1, s2)  reserved(1002, (s1), (s2))
+GETCONF(s1)       _GETCONF(s1)
+_GETCONF(s1)      reserved(1002, (s1))
+
+! DATA pulldown
+_pdc_exec001  _MC | if (length==0,_lf("editdata.dsp"),_lf("editdat2.dsp"))
+_pdc_exec003  _MF("trig.tab")
+_pdc_exec004  _MF("invtrig.tab")
+_pdc_exec005  _MF("hyp.tab")
+_pdc_exec006  _MF("invhyp.tab")
+_pdc_exec007  _MF("yfx.tab")
+_pdc_exec008  _MF("fxy.tab")
+_pdc_exec009  _MF("winstuff.tab")
+_pdc_exec010  _MF("misc.tab")
+
+_pdc_exec011  _deffname('Readtable')  |_defformat('Readt("filename", numlines, startrow)')|_defxamp('Readt("ascii.txt")')|defmacro("_rwflg",0,1)|rtfname()
+_pdc_exec012  defmacro("_lit1b",Pickfile(dirpath(_lit1b),"READA  Read ASCII Data File",strescape("Data Files(*.dat)\0*.dat\0All Files(*.*)\0*.*\0\0")),2) | if(strlen(eval('_lit1b'))>0,_litbform("Reada"))
+_pdc_exec013  _deffname('READB    Read Binary File')  |_defformat('Readb("filename", datatype)')|_defxamp('Readb("binary.dat", SINT)')|defmacro("_rwflg",0,1)|rbfname()
+_pdc_exec014  _deffname('Writetable')  |_defformat('Writet("filename", series, delimiter)')|_defxamp('Writet("ascii.txt")')|defmacro("_rwflg",2,1)|wtfname()
+_pdc_exec015  defmacro("_lit1b",Pickfile(dirpath(_lit1b),"WRITEA  Write ASCII File",strescape("Data Files(*.dat)\0*.dat\0All Files(*.*)\0*.*\0\0"),1),2)  |if(strlen(eval('_lit1b'))>0,_evallit1bform("Writea"))
+_pdc_exec016  _deffname('WRITEB   Write Binary File')  |_defformat('Writeb("filename", datatype)')|_defxamp('Writeb("binary.dat", SINT)')|defmacro("_rwflg",1,2)|wbfname()
+_pdc_exec282  _deffname('XY       Generate an XY Plot')  |_defformat('Xy(xseries, yseries)')|_defxamp('Xy(W1,W2)')|_getser2col("X Series: ", "Column Number", "Y Series: ", "Column Number")
+_pdc_exec283  if(_is2d||_is3d, _MF("labelz.pan"), _MF("label.pan"))
+_pdc_exec284  _deffname('XYZ      Generate an XYZ Plot')  |_defformat('Xyz(xseries, yseries, zseries)')|_defxamp('Xyz(W1,W2,W3)')|_getser3col("X Series: ", "Column Number", "Y Series: ", "Column Number", "Z Series: ", "Column Number", "xyz.tab")
+
+_pdc_exec374  _deffname('XYDT     Generate an XY Plot from Date/Time Data')  |_defformat('Xydt(date, time, yvals)')|_defxamp('Xydt(W1,W2,W3)')|_getser3col("Date Series: ", "Column Number", "Time Series: ", "Column Number", "Y Series: ", "Column Number", "xydt.tab")
+
+! ANALYSIS pulldown
+_pdc_exec019  _MF("stats.men")
+_pdc_exec020  _MF("mathgen2.men")
+_pdc_exec021  _MF("trig.men")
+_pdc_exec022  _MF("trig2.men")
+_pdc_exec023  _MF("bessel.men")
+_pdc_exec024  _MF("complex.men")
+_pdc_exec025  _MF("corr.men")
+_pdc_exec026  _MF("trans2.men")
+_pdc_exec027  _MF("imagproc.men")
+_pdc_exec028  _MF("matrix.men")
+_pdc_exec029  _MF("peak.men")
+
+! VIEW pulldown
+_pdcviewstyle  _mf("gviews.men")
+_pdcviewgrids  _mf("grid.men")
+_pdcviewcolor  _mf("wincolor.tab")
+_pdcviewrange  _mf("windisp.pan")
+_pdc_exec030  _MF("gviews.men")
+_pdc_exec031  _mfgrid()
+_pdc_exec032  _mfsctl()
+_pdc_exec033  _mfaxis()
+_pdc_exec034  _mfunits()
+_pdc_exec035  _deffname('OVERPLOT Plot a New Series on top of Original')  |_defformat('Overplot(series,color)')|_defxamp('Overplot(W1,RED)')|_getsercolor("Series: ","Color:  ") | _evalserclr("Overplot", _ovpform)
+_pdc_exec036  _deffname('OVERLAY  Overlay a Series with Scaling') | _defformat('Overlay(series,color)') | _defxamp('Overlay(W1,RED)') | _getwincolor("Window: ","Color:  ", "Axes Sync:") | _evalserwclr("Overlay", _ovlform)
+_pdc_exec037  _deffname('UNOVERPLOT  Remove Overplotted Series') | _defformat('Unoverplot(series_index)') | _defxamp('Unoverplot(3)') | _getunovr("Overplot Number: ")
+_pdc_exec038  unoverlay;PON
+
+! Drawing pulldown
+_pdc_exec039  _MF("txtann.pan")
+_pdc_exec040  _MF("legmenu.men")
+
+! TOOLS pulldown
+_pdc_exec041  _MFTMP("modules.men")
+_pdc_exec042  _MF("wksconf.pan")
+_pdc_exec043  _MF("winconf.pan") 
+_pdc_exec044  _MF("serconf.pan")
+_pdc_exec045  _MF("msgconf.pan")
+_pdc_exec046  _MF("sethpglp.pan")
+_pdc_exec047  _MF("setpsp.pan")
+_pdc_exec048  _MF("setprnsc.pan")
+
+! Window pulldown
+_pdc_exec049  _MF("layout.men")
+_pdc_exec050  _MF("set.men")
+
+! Create Header File
+_pdc_exec051 defvar("_hedfn", getlabpath);setvar("_hedfn",pickfile(dirpath(_hedfn),'Choose Header File',strescape('Header Files(*.hed)\0*.hed\0All Files(*.*)\0*.*\0\0'),0));if(strlen(eval('_hedfn'))>0,eval(strcat('Run("notepad.exe ',eval('_hedfn'),'")')))
+
+! Data Reduction POP
+_pdc_exec052 _deffname('EXTRACT  Extract a Portion of a Series')  |_defformat('Extract(series, start, numpts)')|_defxamp('Extract(W1,1,256)')|_getserint2("Input Series:  ", "Starting Point:", "Number of Points:")|_serint2form("Extract")
+_pdc_exec053 _deffname('CONCAT   Concatenate Two or More Series End to End')  |_defformat('Concat(series1, series2, ..., seriesN)')|_defxamp('Concat(W1,W2)')|_getser2("Series 1: ", "Series 2: ")|_ser2form("Concat")
+_pdc_exec054 _deffname('MERGE    Merge Together Two or More Series')  |_defformat('Merge(series1, series2, ..., seriesN)')|_defxamp('Merge(W1,W2)')|_getser2c("Series 1: ", "Series 2: ", "Respect X Value Positions")|_ser2cform("Merge", "Xymerge", _chk2)
+_pdc_exec314 _deffname('UNMERGE  Unmerge Two or More Series')  |_defformat('Unmerge(series, numseries)')|_defxamp('Unmerge(W1,4)')|_getserint1("Input Series: ", "Number of Series: ")|_serint1form("Unmerge")
+_pdc_exec055 _deffname('REPLICATE Replicate (repeat) a Series N Times')  |_defformat('Rep(series, points)')|_defxamp('Rep(W1,10)')|_getserint1("Input Series: ", "Replications: ")|_serint1form("Rep")
+_pdc_exec056 _deffname('REVERSE  Reverse a Series')|_defformat('Reverse(series)')|_defxamp('Reverse(W1)')|_getser|_serform("Reverse")
+_pdc_exec057 _deffname('INTERPOLATE Linearly Interpolate a Series')  |_defformat('Interp(series, factor)')|_defxamp('Interp(W1,2)')|_getserint1("Input Series:", "Factor:      ")|_serint1form("Interp")
+_pdc_exec315 _deffname('SPLINE      Interpolate with Cubic Splines')  |_defformat('Spline(series, factor)')|_defxamp('Spline(W1,2)')|_getserint1("Input Series:", "Factor:      ")|_serint1form("Spline")
+_pdc_exec058 _deffname('DECIMATE Linearly Decimate a Series')  |_defformat('Decimate(series, points)')|_defxamp('Decimate(W1,2)')|_getserint2("Input Series:", "Factor:      ","Start Point: ")|_serint2form("Decimate")
+_pdc_exec059 _deffname('CLIP     Clip a Series to a Threshold')  |_defformat('Clip(series, max, min)')|_defxamp('Clip(W1,1.5,-1.5)')|_getserreal2("Input Series:  ", "Max Threshold:","Min Threshold:")|_serreal2form("Clip")
+_pdc_exec060 _deffname('REMOVE   Remove Every Nth Point from a Series')  |_defformat('Remove(series, factor)')|_defxamp('Remove(W1,3)')|_getserint1("Input Series:", "Factor:      ")|_serint1form("Remove")
+_pdc_exec340 _deffname('REMOVE   Remove Points Based on Indices')  |_defformat('Remove(series, idxseries)')|_defxamp('Remove(W1, {1, 2, 3})')|_getser2("Series:", "Index Series:")|_ser2form("Remove")
+_pdc_exec061 _deffname('SETNAVALUE Set NA Values to a Number') | _defformat('SetNAvalue(series,value)') | _defxamp('SetNAvalue(W1,-9999)')| _getserreal1("Input Series:","New Value:   ")|_serreal1form("SetNAvalue")
+_pdc_exec062 _deffname('DELETE   Delete Elements of a Series') | _defformat('Delete(series, condition)')|_defxamp('Delete(W1, W1==0)')|defvar("_lit1v", "W1 > 0")|_getserlit("Input Series: ", "Condition: ")|_serlitform("Delete")
+_pdc_exec321 _deffname('QUANTIZE Quantize a Series to N Discrete Levels:')  |_defformat('Quantize(series, numlevels)')|_defxamp('Quantize(W1, 10)')|_defserint1rc("Input Series:  ", "Number of Levels:", "Use I/O Ranges", "Minimum Input Range:", "Minimum Output Range:", "Maximum Input Range:", "Maximum Output Range:", "quant.pan")
+_pdc_exec338 _deffname('XYINTERP Linearly Interpolate to an Interval')  |_defformat('Xyinterp(series, interval)')|_defxamp('Xynterp(W1,.1)')|_getxyintp("Input Series:", "Interval:", "Automatic")
+_pdc_exec339 _deffname('REPLACE  Replace Elements of a Series') | _defformat('Replace(series, condition, newval)')|_defxamp('Replace(W1, W1>1, -1)')|defvar("_lit1v", "W1 > 0")|defvar("_lit2v", "0")|_getserlit2("Input Series: ", "Condition: ", "New Value: ", "Interpolate Values", "Interpolate Endpoints")
+_pdc_exec359  _MF("xylookup.tab")
+
+
+! Reordering POP
+_ASDS "Descending"
+_DEFASDS(str1)      defmacro("_ASDS",str1,1)
+_getserasds(s1,s2)  defmacro("_serprompt",strcat("'",s1,"'"),1)|defmacro("_asdsprompt",strcat("'",s2,"'"),1)|_mf("serasds.pan")
+_serasdsform(s)     if(_checkdwin, if(strcmp(eval('_ASDS'),"Ascending")==0,defmacro("_asdsnm",1,2),defmacro("_asdsnm",0,2));eval(Strcat('SETWF(',eval('_dwin'),',"',s, '(',eval('_ser1'),',', eval('_asdsnm'),')")')))
+
+_pdc_exec063 _deffname('LOOKUP   Look Up Values in a Series') |_defformat('Lookup(Series of Points to Look Up, Lookup Table)') |_defxamp('Lookup(W2, W1)')|_getser2("Series of Points to Look Up:  ","Lookup Series: ")|_ser2form("Lookup")
+_pdc_exec064 _deffname('TRANSPOSE Transpose a Table')|_defformat('Transpose(table)')|_defxamp('Transpose(W1)') | _getser|_serform("Transpose")
+_pdc_exec065 _deffname('SORT     Sort Series Values')|_defformat('Sort(series, order)')|_defxamp('Sort(W1,1)') | _getserasds("Input Series:   ", "Order: ")|_serasdsform("Sort")
+_pdc_exec066 _deffname('GRADE    Rank Series Indices')|_defformat('Grade(series, order)')|_defxamp('Grade(W1,1)') | _getserasds("Input Series:   ","Order: ") |_serasdsform("Grade")
+_pdc_exec067 _deffname('REORDER  Rearrange a Series Based on Indices')|_defformat('Reorder(series1, series2)')|_defxamp('Reorder(W1,Grade(W1))')|_getser2("Series 1: ", "Series 2: ")|_ser2form("Reorder")
+_pdc_exec068 _deffname('RAVEL    Break 1 Series into Multiple Series')|_defformat('Ravel(series, length)')|_defxamp('Ravel(W1,10)')|_getserint1("Input Series: ", "Length:       ")|_serint1form("Ravel")
+_pdc_exec069 _deffname('UNRAVEL  Create 1 Series from Multiple Columns')|_defformat('Unravel(Table)')|_defxamp('Unravel(W1)') | _getser|_serform("Unravel")
+_pdc_exec070 _deffname('RESHAPE  Break 1 Series into Multiple Series, Varying Lengths')|_defformat('Reshape(series, series of lengths)')|_defxamp('Reshape(W1,W2)')|_getser2("Input Series: ", "Series of Lengths: ")|_ser2form("Reshape")
+_pdc_exec326 _deffname('Delay   Delay a Series')  |_defformat('Delay(series, numpoints)')|_defxamp('Delay(W1,10)')|_getserint1("Input Series:  ", "Points to Delay:")|_serint1form("Delay")
+
+! Stats POP
+_pdc_exec071 _MF("statsum.men")
+_pdc_exec072 _deffname('COLMEAN  Column Mean')      |_defformat('Colmean(series)')|_defxamp('Colmean(W1)')|_getser|_serform("Colmean")
+_pdc_exec073 _deffname('ERRORBAR  Statistical Error Bars')|_defformat('Errorbar(5 series,ON/OFF)')|_defxamp('Errorbar(1*w1,2*w1,.8*w1,.9*w1,ON)')|_getser5c("Bar Top:   ","Stick Top: ","Stick Bottom:","Bar Bottom:  ", "Mid Point:", "Display Tees", "Use Mid Points")|eval('if(_eser5,_ser5intform("Errorbar"),_ser4intform("Errorbar"))')
+_pdc_exec074 _deffname('HISTOGRAM Histogram Distribution')|_defformat('Histogram(series, bins)')|_defxamp('Histogram(W1,10)')|_getserint1("Input Series: ", "Bins:         ")|_serint1form("Histogram")
+_pdc_exec075 _deffname('LINREG   Fit a Line to a Series')      |_defformat('Linreg(series)')|_defxamp('Linreg(W1)')|_getser|_serform("Linreg")
+_pdc_exec076 _deffname('PFIT  Least Square Polynomial Fit with Statistics')  |_defformat('Pfit(series, order)')|_defxamp('Polyfit(W1, 8)')|_getpfit("Input Series:", "Polynomial Order: ")|_serpfit("Polyfit")
+_pdc_exec077 _deffname('LINREG2  Linearly Regress Series1 vs Series2')  |_defformat('Linreg2(series1, series2)')|_defxamp('Linreg2(W1,W2)')|_getser2("Input Series 1:","Input Series 2:")|_ser2form("Linreg2")
+_pdc_exec078 _deffname('POLYGRAPH   Graph a Polynomial Fit') |_defformat('Polygraph(coefs,xvals)') |_defxamp('Polygraph(W2,xvals(W1))') | _getpgraph("Coefficients: ","X values:     ") | _serpgraph("Polygraph")
+_pdc_exec353 _deffname('POLYROOT    Find Polynomial Roots') |_defformat('Polyroot(coefs,form)') |_defxamp('Polyroot(W2,0)') | _getproot("Coefficients: ","Polynomial Form")
+
+_pdc_exec346 _mf("stat.pan")
+_pdc_exec347 _deffname('PDFNORM     Normal Probability Density')  |_defformat('Pdfnorm(z, mean, std)')|_defxamp('pdfnorm(-8..0.01..8, 0, 2.0)')|_getserreal2("Z Value Series:", "Mean:","Std Deviation:")|_serreal2form("pdfnorm")
+_pdc_exec348 _deffname('PROBN       Normal Probability of X <= z')  |_defformat('Probn(z, mean, std)')|_defxamp('probn(-3..0.01..3, 0, 2.0)')|_getserreal2("Z Value Series:", "Mean:","Std Deviation:")|_serreal2form("probn")
+_pdc_exec349 _deff2form("pdfnorm")
+_pdc_exec348 _deffname('PROBN       Normal Probability of X <= z')  |_defformat('Probn(z, mean, std)')|_defxamp('probn(-3..0.01..3, 0, 2.0)')|_getserreal2("Z Value Series:", "Mean:","Std Deviation:")|_serreal2form("probn")
+_pdc_exec349 _deffname('INVPROBN    z Value of Normal Probability of X <= z')  |_defformat('Invprobn(p, mean, std)')|_defxamp('invprobn(0.01..0.01..0.99)')|_getserreal2("Probability Value:", "Mean:","Std Deviation:")|_serreal2form("invprobn")
+
+
+
+! for Math POP
+_pdc_exec079 _deffname('ABS      Absolute Value')  |_defformat('Abs(series)')|_defxamp('Abs(W1*W2)')|_getser|_serform("Abs")
+_pdc_exec080 _deffname('FLOOR    Round Down to Nearest Integer')  |_defformat('Floor(series)')|_defxamp('Floor(W1)')|_getser|_serform("Floor")
+_pdc_exec081 _deffname('CEILING  Round Up to Nearest Integer')  |_defformat('Ceiling(series)')|_defxamp('Ceiling(W1)')|_getser|_serform("Ceiling")
+_pdc_exec082 _deffname('SQRT     Square Root')         |_defformat('Sqrt(series)')|_defxamp('Sqrt(W1*W2)')|_getser|_serform("Sqrt")
+_pdc_exec083 _deffname('DERIV    Derivative')      |_defformat('Deriv(series)')|_defxamp('Deriv(W1*W2)')|_getser|_serform("Deriv")
+_pdc_exec084 _deffname('LDERIV   Left Derivative') |_defformat('Lderiv(series)')|_defxamp('Lderiv(W1*W2)')|_getser|_serform("Lderiv")
+_pdc_exec085 _deffname('RDERIV   Right Derivative')|_defformat('Rderiv(series)')|_defxamp('Rderiv(W1*W2)')|_getser|_serform("Rderiv")
+_pdc_exec086 _deffname('INTEG    Time Series Integration')     |_defformat('Integ(series)')|_defxamp('Integ(W1*W2)')|_getser|_serform("Integ")
+_pdc_exec087 _deffname('PARTSUM  Partial Sum')     |_defformat('Partsum(series)')|_defxamp('Partsum(W1*W2)')|_getser|_serform("Partsum")
+_pdc_exec089 _deffname('AMPDIST  Amplitude Distribution')  |_defformat('Ampdist(series, delta-y)')|_defxamp('Ampdist(W1,0.7)')|_getserreal1("Series:     ", "Y Increment:")|_serreal1form("Ampdist")
+_pdc_exec090 _deffname('LOG      Natural Log of a Series') | _defformat('Log(series)') | _defxamp('Log(W1)') | _getser | _serform("Log")
+_pdc_exec091 _deffname('LOG10    Log Base 10 of a Series') | _defformat('Log10(series)') | _defxamp('Log10(W1)') | _getser | _serform("Log10")
+_pdc_exec092 _deffname('LN       Natural Log of a Series') | _defformat('Ln(series)') | _defxamp('Ln(W1)') | _getser | _serform("Ln")
+_pdc_exec093 _deffname('EXP      Raise "e" to Series Values') | _defformat('Exp(series)') | _defxamp('Exp(W1)') | _getser | _serform("Exp")
+
+! Math2d
+_pdc_exec316 _deffname('INTERP2     Linearly Interpolate an Array')  |_defformat('Interp2(series, points)')|_defxamp('Interp2(W1,2)')|_getserint1("Input Array:", "Factor:      ")|_serint1form("Interp2")
+_pdc_exec317 _deffname('SPLINE2     Interpolate an Array with Cubic Splines')  |_defformat('Spline2(series, points)')|_defxamp('Spline2(W1,2)')|_getserint1("Input Array:", "Factor:      ")|_serint1form("Spline2")
+_pdc_exec318 _deffname('GRADIENT    2D Gradient') | _defformat('Gradient(array)') | _defxamp('Gradient(W1)') | _getser | _serform("Gradient")
+_pdc_exec319 _deffname('IGRID     Inverse Distance Gridding')  |_defformat('Igrid(xseries, yseries, zseries) or Igrid(xyzseries)')|_defxamp('Igrid(W1,W2,W3)')|_getser3col("X Series: ", "Column Number", "Y Series: ", "Column Number", "Z Series: ", "Column Number", "igrid.tab")
+
+
+
+! Moving functions
+_pdc_exec088 _deffname('MOVAVG   N Point Moving Average')  |_defformat('Movavg(series, points)')|_defxamp('Movavg(W1,10)')|_getserint1c("Input Series:  ", "Points to Average:", "Ramp Up End Segments")|_serint1cform("Movavg")
+_pdc_exec313 _deffname('MOVAVG2  N Point Moving Average')  |_defformat('Movavg2(series, points)')|_defxamp('Movavg2(W1,10)')|_getserint1("Input Series:  ", "Points to Average:")|_serint1form("Movavg2")
+_pdc_exec310 _deffname('MOVMIN   N Point Moving Minimum')  |_defformat('Movmin(series, points)')|_defxamp('Movmin(W1,10)')|_getserint1("Input Series:  ", "Segment Length:")|_serint1form("Movmin")
+_pdc_exec311 _deffname('MOVMAX   N Point Moving Maximum')  |_defformat('Movmax(series, points)')|_defxamp('Movmax(W1,10)')|_getserint1("Input Series:  ", "Segment Length:")|_serint1form("Movmax")
+_pdc_exec312 _deffname('MOVSTD   N Point Moving Standrad Deviation')  |_defformat('Movstd(series, points)')|_defxamp('Movstd(W1,10)')|_getserint1c("Input Series:  ", "Segment Length:", "Ramp Up End Segments")|_serint1cform("Movstd")
+_pdc_exec327 _deffname('MOVRMS   N Point Moving RMS')  |_defformat('Movrms(series, points)')|_defxamp('Movrms(W1,10)')|_getserint1c("Input Series:  ", "Points to Average:", "Ramp Up End Segments")|_serint1cform("Movrms")
+
+! Trig POP
+_pdc_exec094 _deffname('SIN      Sine') | _defformat('Sin(series)') | _defxamp('Sin(W1)') | _getser | _serform("Sin")
+_pdc_exec095 _deffname('COS      Cosine') | _defformat('Cos(series)') | _defxamp('Cos(W1)') | _getser | _serform("Cos")
+_pdc_exec096 _deffname('TAN      Tangent') | _defformat('Tan(series)') | _defxamp('Tan(W1)') | _getser | _serform("Tan")
+_pdc_exec097 _deffname('SEC      Secant') | _defformat('Sec(series)') | _defxamp('Sec(W1)') | _getser | _serform("Sec")
+_pdc_exec098 _deffname('CSC      Cosecant') | _defformat('Csc(series)') | _defxamp('Csc(W1)') | _getser | _serform("Csc")
+_pdc_exec099 _deffname('COT      Cotangent') | _defformat('Cot(series)') | _defxamp('Cot(W1)') | _getser | _serform("Cot")
+_pdc_exec100 _deffname('SINC     Sin(x)/x') | _defformat('Sinc(series)') | _defxamp('Sinc(W1)') | _getser | _serform("Sinc")
+_pdc_exec101 _deffname('ASIN     ArcSine') | _defformat('ASin(series)') | _defxamp('ASin(W1)') | _getser | _serform("ASin")
+_pdc_exec102 _deffname('ACOS     ArcCosine') | _defformat('ACos(series)') | _defxamp('ACos(W1)') | _getser | _serform("ACos")
+_pdc_exec103 _deffname('ATAN     ArcTangent') | _defformat('ATan(series)') | _defxamp('ATan(W1)') | _getser | _serform("ATan")
+_pdc_exec104 _deffname('ASEC     ArcSecant') | _defformat('ASec(series)') | _defxamp('ASec(W1)') | _getser | _serform("ASec")
+_pdc_exec105 _deffname('ACSC     ArcCosecant') | _defformat('ACsc(series)') | _defxamp('ACsc(W1)') | _getser | _serform("ACsc")
+_pdc_exec106 _deffname('ACOT     ArcCotangent') | _defformat('ACot(series)') | _defxamp('ACot(W1)') | _getser | _serform("ACot")
+
+! Hyperbolic POP
+_pdc_exec107 _deffname('SINH     Hyperbolic Sine') | _defformat('Sinh(series)') | _defxamp('Sinh(W1)') | _getser | _serform("Sinh")
+_pdc_exec108 _deffname('COSH     Hyperbolic Cosine') | _defformat('Cosh(series)') | _defxamp('Cosh(W1)') | _getser | _serform("Cosh")
+_pdc_exec109 _deffname('TANH     Hyperbolic Tangent') | _defformat('Tanh(series)') | _defxamp('Tanh(W1)') | _getser | _serform("Tanh")
+_pdc_exec110 _deffname('SECH     Hyperbolic Secant') | _defformat('Sech(series)') | _defxamp('Sech(W1)') | _getser | _serform("Sech")
+_pdc_exec111 _deffname('CSCH     Hyperbolic Cosecant') | _defformat('Csch(series)') | _defxamp('Csch(W1)') | _getser | _serform("Csch")
+_pdc_exec112 _deffname('COTH     Hyperbolic Cotangent') | _defformat('Coth(series)') | _defxamp('Coth(W1)') | _getser | _serform("Coth")
+_pdc_exec113 _deffname('ASINH    Hyperbolic ArcSine') | _defformat('ASinh(series)') | _defxamp('ASinh(W1)') | _getser | _serform("ASinh")
+_pdc_exec114 _deffname('ACOSH    Hyperbolic ArcCosine') | _defformat('ACosh(series)') | _defxamp('ACosh(W1)') | _getser | _serform("ACosh")
+_pdc_exec115 _deffname('ATANH    Hyperbolic ArcTangent') | _defformat('ATanh(series)') | _defxamp('ATanh(W1)') | _getser | _serform("ATanh")
+_pdc_exec116 _deffname('ASECH    Hyperbolic ArcSecant') | _defformat('ASech(series)') | _defxamp('ASech(W1)') | _getser | _serform("ASech")
+_pdc_exec117 _deffname('ACSCH    Hyperbolic ArcCosecant') | _defformat('ACsch(series)') | _defxamp('ACsch(W1)') | _getser | _serform("ACsch")
+_pdc_exec118 _deffname('ACOTH    Hyperbolic ArcCotangent') | _defformat('ACoth(series)') | _defxamp('ACoth(W1)') | _getser | _serform("ACoth")
+
+! Err/Bess/Gamma POP
+_pdc_exec119 _deffname('JN       Bessel Function')|_defformat('JN(series, order)') |_defxamp('JN(W1,1)')|_getserint1("Series: ", "Order:  ")|_serint1form("JN")
+_pdc_exec120 _deffname('YN       Bessel Function')|_defformat('YN(series, order)') |_defxamp('YN(W1,1)')|_getserint1("Series: ", "Order:  ")|_serint1form("YN")
+_pdc_exec121 _deffname('ERF      Error Function') |_defformat('Erf(series)') | _defxamp('Erf(W1)') | _getser | _serform("Erf")
+_pdc_exec122 _deffname('ERFC     Complementary Error Function') |_defformat('Erfc(series)') | _defxamp('Erfc(W1)') | _getser | _serform("Erfc")
+_pdc_exec123 _deffname('GAMM     Gamma Function') | _defformat('Gamm(series)') |_defxamp('Gamm(W1)') | _getser | _serform("Gamm")
+_pdc_exec350 _deffname('ERFINV   Inverse Error Function') |_defformat('Erfinv(series)') | _defxamp('erfinv(W1)') | _getser | _serform("Erfinv")
+_pdc_exec351 _deffname('ERFCINV  Inverse Complementary Error Function') |_defformat('Erfcinv(series)') | _defxamp('erfcinv(W1)') | _getser | _serform("Erfcinv")
+_pdc_exec352 _deffname('GAMMLN   Log of Gamma Function') | _defformat('Gammln(series)') |_defxamp('Gammln(W1)') | _getser | _serform("Gammln")
+_pdc_exec356 _deffname('BETAI    Incomplete Beta Function')  |_defformat('Betai(series, a, b)')|_defxamp('Betai(W1, 1, 3)')|_getserreal2("Input Series:  ", "A:","B:")|_serreal2form("Betai")
+
+
+! Complex Cnvrsn POP
+_pdc_exec124 _deffname('REAL     Real Component of Complex Series')      |_defformat('Real(series)')|_defxamp('Real(W1)')|_getser|_serform("Real")
+_pdc_exec125 _deffname('IMAGINARY Imag Component of Complex Series')      |_defformat('Imag(series)')|_defxamp('Imag(W1)')|_getser|_serform("Imag")
+_pdc_exec126 _deffname('MAGNITUDE Magnitude Component of Complex Series')      |_defformat('Mag(series)')|_defxamp('Mag(W1)')|_getser|_serform("Mag")
+_pdc_exec127 _deffname('PHASE    Phase Component of Complex Series')      |_defformat('Phase(series)')|_defxamp('Phase(W1)')|_getser|_serform("Phase")
+_pdc_exec128 _deffname('POLAR    Convert to Polar (Magnitude/Phase) Form')      |_defformat('Polar(series)')|_defxamp('Polar(W1)')|_getser|_serform("Polar")
+_pdc_exec129 _deffname('CARTESIAN Convert to Cartesian (Real/Imag) Form')      |_defformat('  Cartesian(series)')|_defxamp('  Cartesian(W1)')|_getser|_serform("Cartesian")
+_pdc_exec130 _deffname('CONJUGATE Complex Conjugate')      |_defformat('Conj(series)')|_defxamp('Conj(W1)')|_getser|_serform("Conj")
+
+! Correlation POP
+_pdc_exec131 _deffname('ACORR  Auto-correlation')|_defformat('Acorr(series)')|_defxamp('Acorr(W1)')|_defser3p("Input Series", "Method", "Normalization", "acor.pan")
+_pdc_exec132 _deffname('XCORR  Cross-correlation')  |_defformat('Xcorr(series1, series2)')|_defxamp('Xcorr(W1,W2)')|_defser2p4("Input Series 1:","Input Series 2:", "Method", "Normalization", "xcor.pan")
+_pdc_exec133 _deffname('CONV   Convolution')  |_defformat('Conv(series1, series2)')|_defxamp('Conv(W1,W2)')|_defser2p4("Input Series 1:","Input Series 2:", "Method", "Type", "conv.pan")
+_pdc_exec331 _deffname('XCOV   Cross-covariance')  |_defformat('Xcov(series1, series2)')|_defxamp('Xcov(W1,W2)')|_defser2p4("Input Series 1:","Input Series 2:", "Method", "Normalization", "xcov.pan")
+_pdc_exec332 _deffname('COVM   Covariance Matrix')|_defformat('Covm(series)')|_defxamp('Covm(W1)')|_getser|_serform("Covm")
+_pdc_exec333 _deffname('ACOV   Auto-covariance')|_defformat('Acov(series)')|_defxamp('Acov(W1)')|_defser3p("Input Series", "Method", "Normalization", "acov.pan")
+
+! FFT/Spectral POP
+_pdc_exec134 _deffname('HAMMING  Hamming Window')      |_defformat('Hamming(series)')|_defxamp('Hamming(W1)')|_getser1c("Input Series:  ", "Apply Windowing Amplitude Corrections")|_ser1cform("Hamming")
+_pdc_exec358 _deffname('Windowing Functions')  |_defformat('Hamming(series)')|_defxamp('Hamming(W1*W2)')|_mf("winfun.pan")
+_pdc_exec135 _deffname('FFT      Fast Fourier Transform')  |_defformat('Fft(series)')|_defxamp('Fft(W1*W2)')|_getfftwin|_serfftwin("Fft")
+_pdc_exec136 _deffname('FFTP     Fast Fourier Transform Polar Form')  |_defformat('Fftp(series)')|_defxamp('Fftp(W1*W2)')|_getfftwin|_serfftwin("Fftp")
+_pdc_exec137 _deffname('DFT      Discrete Fourier Transform')  |_defformat('Dft(series)')|_defxamp('Dft(W1*W2)')|_getser|_serform("Dft")
+_pdc_exec138 _deffname('IFFT     Inverse Fast Fourier Transform')  |_defformat('Ifft(series)')|_defxamp('Ifft(W1*W2)')|_getifftwin|_serifftwin("Ifft")
+_pdc_exec139 _deffname('IFFTP    Inverse Fast Fourier Transform Polar Form')  |_defformat('Ifftp(series)')|_defxamp('Ifftp(W1*W2)')|_getser|_serform("Ifftp")
+_pdc_exec140 _deffname('IDFT     Inverse Discrete Fourier Transform')  |_defformat('Idft(series)')|_defxamp('Idft(W1*W2)')|_getser|_serform("Idft")
+_pdc_exec141 _deffname('Spectrum   Normalized FFT Magnitude')  |_defformat('  Spectrum(series)')|_defxamp('  Spectrum(W1*W2)')|_getspecwin|_serspecwin("Spectrum")
+_pdc_exec372 _deffname('Powspec    Normalized Power Spectrum')  |_defformat('  Powspec(series)')|_defxamp('  Powspec(W1*W2)')|_getspecwin|_serspecwin("Powspec")
+_pdc_exec142 _deffname('PSD      Power Spectral Density')  |_defformat('Psd(series)')|_defxamp('Psd(W1*W2)')|_getspecwin|_serspecwin("Psd")
+_pdc_exec322 _deffname('FFTSHIFT  Shift FFT Midpoint')  |_defformat('Fftshift(series)')|_defxamp('Fftshift(W1)')|_getser|_serform("Fftshift")
+
+_pdc_exec285 _deffname('Specgram  Joint Time-Frequency FFT')  |_defformat('Specgram(series,len,overlap,fftlen,win)')|_defxamp('Specgram(W1,32)')|_getspecg|if(_chkwinok,_specgwin("Specgram"))
+_specgwin(s) eval(sprintf("Setwform(%s, '%s(%s, %s, %s, %s, %d)')", eval('_dwin'), s, eval('_ser1'), eval('_seglen'), eval('_ovrlap'), eval('_fftlen'), _swin2i(eval('_fwin2'))))
+
+
+! Image Proc. POP
+_pdc_exec143 _deffname('SOBEL    Sobel Edge Detection')|_defformat('Sobel(Image Matrix,Threshold)')|_defxamp('Sobel(W1,5)')|_getserreal1("Matrix:   ","Threshold:")|_serreal1form("Sobel")
+_pdc_exec144 _mf("nonlin2d.pan")
+
+_pdc_exec145 _deffname('FFT2      2D Fast Fourier Transform')  |_defformat('Fft2(series)')|_defxamp('Fft2(W1)')|_getfft2win|_serfft2win("Fft2")
+_pdc_exec146 _deffname('IFFT2     2D Inverse Fast Fourier Transform')  |_defformat('Ifft2(series)')|_defxamp('Ifft2(W1)')|_getifft2win|_serifft2win("Ifft2")
+
+_pdc_exec305 _deffname('IMAGE24   Convert to 24 Bit RGB Image') | _defformat('Image24(image)')| _defxamp('Image24(W1)') |_getser |_serform("Image24")
+_pdc_exec334 _deffname('RGB2MONO  Convert to 8 Bit Monochrome Image') | _defformat('Rgb2mono(image)')| _defxamp('Rgb2mono(W1)') |_getser |_serform("Rgb2mono")
+_pdc_exec306 _mf("dct2d.pan")
+_pdc_exec307 _mf("idct2d.pan")
+_pdc_exec308 _deffname('HISTEQ    Histogram Equalization')  |_defformat('Histeq(image, intflag)')|_defxamp('Histeq(W1)')|_mf("histeq.pan")|if(_chkwinok,_histeqwin("Histeq", _histint))
+_histeqwin(s, f) eval(sprintf("Setwform(%s, '%s(%s, %d)')", eval('_dwin'), s, eval('_ser1'), f))
+_pdc_exec309 _deffname('BRIGHTEN  Brighten or Darken Current Image')  |_defformat('Brighten(value)')|_defxamp('Brighten(0.1)')|_mf("brighten.pan")
+_pdc_exec330 _deffname('IMINTERP  Interpolate an Image')  |_defformat('Iminterp(image, factor, method)')|_defxamp('Iminterp(W1, 4, 0)')|_defserint1rc("Input Image:  ", "Interpolation Factor:", "Interpolation Method", "", "", "", "", "iminterp.pan")
+
+! Signal Processing POP
+_pdc_exec323 _deffname('FILTEQ Evaluate a Difference Equation')|_defformat('Filteq(b, a, input)')|_defxamp('Filteq(w1, w2, w3)')|_defser5c("x[n] Coefficients B(z):","y[n] Coefficients A(z):","Input Series:","Y Initial Conditions","Use Initial Conditions", "X Initial Conditions","Use Initial Conditions", "filteq.pan")
+_pdc_exec324 _deffname('ZFREQ Frequency Response of a Z Transform')|_defformat('Zfreq(num, den, N, rate, whole)')|_defxamp('Zfreq({1}, {1, -0.5, 0.2}, 1024)')|_defser2int2c("Numerator Coefficients B(z):","Denominator Coefficients A(z):","Frequency Samples:","Sample Rate:", "Use Entire Unit Circle", "zfreq.pan")
+_pdc_exec325 _deffname('BITQUANT Quantize a Series to 2^N Discrete Levels:')  |_defformat('Bitquant(series, numbits)')|_defxamp('Bitquant(W1, 8)')|_defserint1rc("Input Series:  ", "Number of Bits:", "Specify Input Ranges", "Minimum Input Range:", "Maximum Input Range:", "", "", "bitquant.pan")
+_pdc_exec354 _deffname('SLP      Single Pole Low Pass Filter')  |_defformat('Slp(series, fc)')|_defxamp('Slp(W1, 10.0)')|_getserreal1("Series:     ", "Cutoff Frequency (Hz):")|_serreal1form("Slp")
+_pdc_exec355 _deffname('SHP      Single Pole High Pass Filter') |_defformat('Shp(series, fc)')|_defxamp('Shp(W1, 10.0)')|_getserreal1("Series:     ", "Cutoff Frequency (Hz):")|_serreal1form("Shp")
+_pdc_exec357 _deffname('DECONV Deconvolution')  |_defformat('Deconv(series1, series2)')|_defxamp('Deconv(W1,W2)')|_defser2p4("Input Series 1:","Input Series 2:", "Method", " ", "deconv.pan")
+_pdc_exec361 _deffname('IMPZ Impulse Response of a Z Transform')|_defformat('Impz(b, a, length)')|_defxamp('Impz({1}, {1, -.3}, 100)')|_defser2c("Num Coefficients B(z):","Den Coefficients A(z):", "Output Length:", _automaticstr, "Sample Frequency:", "impz.pan")
+_pdc_exec362 _deffname('ZPLANE Pole-Zero Plot of a Z Transform')|_defformat('Zplane(b, a)')|_defxamp('Zplane({1}, {1, -.3})')|_mf("zplane.pan")
+_pdc_exec363 _deffname('RESIDUE(Z) Partial Fraction Expansion of a Transform')|_defformat('Residuez(b, a) or Residue(b, a)')|_defxamp('Residuez({1}, {1, -.3})')|_mf("residuez.pan")
+_pdc_exec373 _deffname('GRPDELAY Group Delay of a Z Transform')|_defformat('Grpdelay(b, a, length)')|_defxamp('Grpdelay({1}, {1, -.3}, 1024)')|_defser2c("Num Coefficients B(z):","Den Coefficients A(z):", "Output Length:", _automaticstr, "Sample Frequency:", "grpdelay.pan")
+
+! Matrix POP
+_pdc_exec147 _deffname('MMULT    Multiply 2 Matrices') | _defformat('Mmult(m1,m2)')| _defxamp('Mmult(W1,W2)') |_getser2("Matrix 1:","Matrix 2:") | _ser2form("Mmult")
+_pdc_exec148 _deffname('MDIV     Divide 2 Matrices') | _defformat('Mdiv(square matrix1,matrix2)')|_defxamp('Mdiv(w1,w2)') |_getser2("Matrix 1:","Matrix 2:") |_ser2form("MDiv")
+_pdc_exec149 _deffname('INVERSE  Invert a Matrix')  |_defformat('Inv(matrix)')|_defxamp('Inv(W1)')|_getser|_serform("Inv")
+_pdc_exec150 _deffname('DET      Determinant')  |_defformat('DET(square matrix)')|_defxamp('DET(W1)')|_gtser|echo(_evalserform("Det"))
+_pdc_exec151 _deffname('DIAGONAL Diagonal of Matrix or Diagonalize Series') | _defformat('Diag(matrix)  or  Diag(series)')| _defxamp('Diag(W1)') |_getser |_serform("Diag")
+_pdc_exec152 _deffname('TRANSPOSE Transpose Matrix')|_defformat(' Transpose(matrix)')|_defxamp(' Transpose(W1)') | _getser|_serform("Transpose")
+_pdc_exec153 _deffname('CONJUGATE Complex Conjugate')|_defformat('Conj(matrix)')|_defxamp('Conj(W1)')|_getser|_serform("Conj")
+
+! Decomp. POP
+_pdc_exec154 _deffname('LU       LU Decomposition')  |_defformat('LU(matrix)')|_defxamp('LU(W2)')|_getser|_serform("Lu")
+_pdc_exec155 _deffname('LLU      LLU Decomposition')  |_defformat('LLU(matrix)')|_defxamp('LLU(W2)')|_getser|_serform("Llu")
+_pdc_exec156 _deffname('ULU      ULU Decomposition')  |_defformat('ULU(matrix)')|_defxamp('ULU(W2)')|_getser|_serform("Ulu")
+_pdc_exec157 _mf("svd.men")
+_pdc_exec158 _mf("qr.men")
+_pdc_exec159 _deffname('SCHUR    Schur Matrix')  |_defformat('Schur(series)')|_defxamp('Schur(W2)')|_getser|_serform("Schur")
+_pdc_exec160 _deffname('USCHUR   Schur Unit Matrix')  |_defformat('Uschur(series)')|_defxamp('Uschur(W2)')|_getser|_serform("USchur")
+ 
+! Eigen POP
+_pdc_exec161 _deffname('EIGVAL   Eigenvalue')  |_defformat('Eigval(matrix)')|_defxamp('Eigval(W1*W2)')|_getser|_serform("Eigval")
+_pdc_exec162 _deffname('EIGVEC   Eigenvector')  |_defformat('Eigvec(matrix)')|_defxamp('Eigvec(W1*W2)')|_getser|_serform("Eigvec")
+_pdc_exec163 _deffname('NBEIGVAL Unbalanced Eigenvalue Matrix')  |_defformat('Nbeigval(matrix)')|_defxamp('Nbeigval(W1*W2)')|_getser|_serform("NBeigval")
+_pdc_exec164 _deffname('NBEIGVEC Unbalanced Eigenvector Matrix')  |_defformat('Nbeigvec(matrix)')|_defxamp('Nbeigvec(W1*W2)')|_getser|_serform("NBeigvec")
+_pdc_exec165 _deffname('BALANCE  Balanced Matrix')  |_defformat('Balance(matrix)')|_defxamp('Balance(W1*W2)')|_getser|_serform("Balance")
+_pdc_exec166 _deffname('HESS     Hessenberg Matrix Form')  |_defformat('Hess(series)')|_defxamp('Hess(W1*W2)')|_getser|_serform("Hess")
+
+! Peaks POP
+_pdc_exec167 if(length==0,message("Max & Min", "No Series in Window", 3),_mf("maxmin.tab"))
+_pdc_exec168 Menulist(strcat("MAXIMUM Value in W",strnum(getwnum)),"  ",strcat("  The Maximum is ",strnum(real(MAX))),"  ")
+_pdc_exec169 _deffname('FPEAK    Find First Peak') | _defformat('Fpeak(threshold,width)') | _defxamp('Fpeak(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalricursor("Fpeak")
+_pdc_exec170 _deffname('FPEAKN   Find Next Peak') | _defformat('Fpeakn(threshold,width)') | _defxamp('Fpeakn(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalricursor("Fpeakn")
+_pdc_exec171 _deffname('FPEAKP   Find Previous Peak') | _defformat('Fpeakp(threshold,width)') | _defxamp('Fpeakp(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalricursor("Fpeakp")
+_pdc_exec172 _deffname('GETPEAK  Get Peaks') | _defformat('Getpeak(ser,thresh,width,size)') | _defxamp('Getpeak(W1,Min(W1))')|_DEFINT1('1')|_DEFINT2('0')|_getpeakpan("Series:","Threshold:","Width:","Size:", "Padding Between Peaks", "Getpeak")
+_pdc_exec173 _deffname('FVALL    Find First Valley') | _defformat('Fvall(threshold,width)') | _defxamp('Fvall(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalricursor("Fvall")
+_pdc_exec174 _deffname('FVALLN   Find Next Valley') | _defformat('Fvalln(threshold,width)') | _defxamp('Fvalln(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalricursor("Fvalln")
+_pdc_exec175 _deffname('FVALLP   Find Previous Valley') | _defformat('Fvallp(threshold,width)') | _defxamp('Fvallp(2.5,4)') | _getrealint("Threshold Value:","Width:          ") | _evalricursor("Fvallp")
+_pdc_exec176 _deffname('GETVALLEY   Get Valleys') | _defformat('Getvalley(ser,thresh,width,size)') | _defxamp('Getvalley(W1,Max(W1))') |_DEFINT1('1')|_DEFINT2('0')| _getpeakpan("Series:","Threshold:","Width:","Size:", "Padding Between Valleys", "Getvalley")
+_pdc_exec344 _deffname('FMAX     Find Maximum') | _defformat('Fmax') | _defxamp('Fmax') | _evalcursor("Fmax")
+_pdc_exec345 _deffname('FMIN     Find Minimum') | _defformat('Fmin') | _defxamp('Fmin') | _evalcursor("Fmin")
+
+! View, Styles POP
+_pdc_exec177 _MC ; setplottype(0) ; setplotstyle(0) 
+_pdc_exec178 _MC ; setplottype(0) ; setplotstyle(1)
+_pdc_exec179 _MC ; setplottype(0) ; setplotstyle(2)
+_pdc_exec180 _MC ; setplottype(0) ; setplotstyle(3)
+_pdc_exec181 _MC ; setplottype(0) ; setplotstyle(4)
+_pdc_exec182 _MC ; setplottype(0) ; setplotstyle(9)
+_pdc_exec183 _MC ; setplottype(1) ; setplotstyle(0) 
+_pdc_exec184 _MC ; setplottype(1) ; setplotstyle(3)
+_pdc_exec185 _MC ; setplottype(2) ; setplotstyle(0,getfocus)
+_pdc_exec186 _MC ; setplottype(3) ; setplotstyle(0,getfocus)
+_pdc_exec187 _MC ; setmatrix(1)   ; setplotstyle(4)
+_pdc_exec251 _MC ; setplottype(0) ; setplotstyle(10)
+_pdc_exec252 _MC ; setplottype(4) ; setplotstyle(0,getfocus)
+_pdc_exec360 _MC ; setplottype(6)
+
+_pdc_exec253  _MF("defconf.tab")
+_pdc_exec254  _MF("prnconf.tab")
+_pdc_exec255  _MF("prnopt.tab")
+_pdc_exec256  updatepreview(1)
+_pdc_exec342  updatepreview(-1)
+_pdc_exec343  updatepreview(2)
+
+
+! View scales POP
+_pdc_exec188 _mf("winscale.men")
+_pdc_exec189 _mfaxis()
+_pdc_exec190 _mf("lorient.pan")
+_pdc_exec191 _mf("vrotate.pan")
+
+! Generate Noise POP
+_pdc_exec192 _mf("norm.tab")
+_pdc_exec193 _mf("rand.tab")
+
+! View 
+_pdc_exec194 _mf("title.pan")
+_pdc_exec195 _mf("linann.pan")
+_pdc_exec196 defvar("_legfgauto", 1);defvar("_legbgauto", 1);LEGCUR(eval(_legpos),if(_legfgauto,-1,eval(_legfg)),if(_legbgauto,-1,eval(_legbg)),eval(_legfont),eval(_legbox),eval(_legmargadj),getfocus())
+_pdc_exec197 _mf("legann.pan")
+
+! Tools 
+_pdc_exec198 defvar("_comf1", getlabpath);setvar("_comf1",Pickfile(dirpath(_comf1),"Select Command File to Load",strescape("Command Files (*.dsp)\0*.dsp\0All Files(*.*)\0*.*\0\0"))); if(strlen(eval('_comf1'))>0,load(eval('_comf1')))
+_pdc_exec199 defvar("_comfn", getlabpath);   setvar("_comfn",   pickfile(dirpath(_comfn),'Choose Command File to Edit',   strescape('Command Files (*.dsp)\0*.dsp\0All Files(*.*)\0*.*\0\0'),2)); if(strlen(eval('_comfn'))>0,eval(strcat('Run("notepad.exe ',eval('_comfn'),'")')))
+_pdc_exec200 _mf("toolbar.pan")
+_pdc_exec201 _mf("deltbbut.pan")
+_pdc_exec202 _mf("scrnopt.pan")
+_pdc_exec203 _mf("setsysp.pan")
+_pdc_exec204 _mf("printopt.pan")
+_pdc_exec320 _mf("misctool.tab")
+
+! Window
+_pdc_exec205 REDRAWALL(2)
+_pdc_exec206 _deffname('ROWLAYOUT  Arrange Number of Windows Per Row')|_defformat('  Rowlayout(#Windows in Row 1,...,#Windows in Row n)')|_defxamp('  Rowlayout(3,1,2)')|_getlit1("List of Windows per Row")| _evallitlist("Rowlayout")
+_pdc_exec207 _deffname('COLLAYOUT  Arrange Number of Windows Per Column')|_defformat('  Collayout(#Windows in Col 1,...,#Windows in Col n)')|_defxamp('  Collayout(3,1,2)')|_getlit1("List of Windows per Column")| _evallitlist("Collayout")
+_pdc_exec208 _deffname('LAYOUT   Arrange Windows into Rows and Columns')|_defformat('Layout(# Cols, # Rows)')|_defxamp('Layout(4,2)')|_getint2a("Number of Columns:","Number of Rows:")|_evalint2a("Layout")
+_pdc_exec209 defmacro("_ans",message("Restore Defaults","Do you want to save current configuration settings?",7),1);if(eval('_ans')==1,PDC(2082);setconf("IGNORE_SESSION","1"),if(eval('_ans')==0,PDC(2082);setconf("IGNORE_SESSION","0")))
+
+_pdc_exec213 _initmgv();_mf("setwmarg.pan")
+
+_pdc_exec214 defmacro("_wchmarg","All Right",2)|_mf("setwmarg.pan")|SetAllwmargin(2,eval('_pcn')) 
+_pdc_exec215 defmacro("_wchmarg","All Top",2)|_mf("setwmarg.pan")|SetAllwmargin(4,eval('_pcn')) 
+_pdc_exec216 defmacro("_wchmarg","All Bottom",2)|_mf("setwmarg.pan")|SetAllwmargin(3,eval('_pcn')) 
+
+! Tools Variables
+_pdc_exec217 eval('vars')
+_pdc_exec218 eval('vars')
+_pdc_exec219 eval('vars')
+
+! Edit 
+_pdc_exec220 _oldval=getconf("comfile_input_processing");setconf("comfile_input_processing","0");if (length==0,_lf("editdata.dsp"),_lf("editdat2.dsp"))
+_pdc_exec221 _deffname('CLEAR    Clear Selected Windows') | _defformat('Clear(window,window,...)') | _defxamp('Clear(W2,W3,W6)') | _getserX | if(strlen(_dispwins)>0, if(message("Clear Range of Windows",strcat("Clear Windows ",toupper(_dispwins),"?"),2)>0,_evaldispform("Clear")))
+_pdc_exec222 if(message("Clear Data","Clear Data from Current Window?",2)>0,CLEARDATA)
+_pdc_exec223 if(message("Clear All Data","Clear All Data From Worksheet?",2)>0,eval(strcat("CLEARDATA(w1..w",strnum(numwin),")")))
+_pdc_exec224 _deffname('CLEARDATA Clear Data from Selected Windows') | _defformat('Cleardata(window,window,...)') | _defxamp('Cleardata(W2,W3..W6)') | _getserX | if(strlen(_dispwins)>0, if(message("Clear Data from Range of Windows",strcat("Clear Data from Windows ",toupper(_dispwins),"?"),2)>0,_evaldispform("Cleardata")))
+
+! Window 
+_pdc_exec225 UPDATE
+_pdc_exec226  defmacro("_lit1b",Pickfile(dirpath(_lit1b),"SPLWRITE  Write SPL Functions to ASCII File",strescape("SPL Files(*.spl)\0*.spl\0All Files(*.*)\0*.*\0\0"),1),2)  |if(strlen(eval('_lit1b'))>0,_evallit1bform("SPLwrite"))
+_pdc_exec227  defmacro("_lit1b",Pickfile(dirpath(_lit1b),"MACWRITE  Write Macros to ASCII File",strescape("Macro Files(*.mac)\0*.mac\0All Files(*.*)\0*.*\0\0"),1),2)  |if(strlen(eval('_lit1b'))>0,_evallit1bform("MACwrite"))
+
+_pdc_exec228 defmacro("_dsn",picklist("Load Dataset","Select Dataset",1,objectlist(3,0,1)),2);if(strlen(eval('_dsn'))>0,setwf(strcat("LoadDataset('",eval("_dsn"),"')")))
+_pdc_exec229 defmacro("_dsn",picklist("Load Dataset","Select Dataset",1,objectlist(3,0,1)),2);if(strlen(eval('_dsn'))>0,setwf(strcat("LoadDataset('",eval("_dsn"),"',1,1,0)")))
+_pdc_exec337 defmacro("_dsn",picklist("Load Dataset","Select Dataset",1,objectlist(3,0,1)),2);if(strlen(eval('_dsn'))>0,setwf(strcat("LoadDataset('",eval("_dsn"),"',1,1,1)")))
+
+_pdc_exec230 BEEP(1)
+_pdc_exec231 BEEP(0)
+_pdc_exec232 CALC(1)
+_pdc_exec233 CALC(0)
+_pdc_exec234 SETDEGREE
+_pdc_exec235 SETRADIAN 
+_pdc_exec236 _mf("conform.men")
+_pdc_exec237 _mf("sformat.men")
+
+! Stats
+_pdc_exec238 _deffname('COLSTDEV Column Stdev')     |_defformat('Colstdev(series)')|_defxamp('Colstdev(W1)')|_getser|_serform("Colstdev")
+_pdc_exec239 _deffname('COLMEDIAN  Column Median')   |_defformat('Colmedian(series)')|_defxamp('Colmedian(W1)')|_getser|_serform("Colmedian")
+_pdc_exec240 _deffname('COLMIN   Column Minimum')   |_defformat('Colmin(series)')|_defxamp('Colmin(W1)')|_getser|_serform("Colmin")
+_pdc_exec241 _deffname('COLMAX   Column Maximum')   |_defformat('Colmax(series)')|_defxamp('Colmax(W1)')|_getser|_serform("Colmax")
+_pdc_exec242 _deffname('COLLENGTH  Column Sample Count')   |_defformat('Collength(series)')|_defxamp('Collength(W1)')|_getser|_serform("Collength")
+_pdc_exec328 _deffname('COLSUM   Column Sum')   |_defformat('Colsum(series)')|_defxamp('Colsum(W1)')|_getser|_serform("Colsum")
+_pdc_exec329 _deffname('COLPROD  Column Product')   |_defformat('Colprod(series)')|_defxamp('Colprod(W1)')|_getser|_serform("Colprod")
+
+_pdc_exec365 _deffname('ROWSTDEV Row Stdev')     |_defformat('Rowstdev(series)')|_defxamp('Rowstdev(W1)')|_getser|_serform("Rowstdev")
+_pdc_exec366 _deffname('ROWMIN   Row Minimum')   |_defformat('Rowmin(series)')|_defxamp('Rowmin(W1)')|_getser|_serform("Rowmin")
+_pdc_exec367 _deffname('ROWMAX   Row Maximum')   |_defformat('Rowmax(series)')|_defxamp('Rowmax(W1)')|_getser|_serform("Rowmax")
+_pdc_exec368 _deffname('ROWLEN   Row Sample Count') |_defformat('Rowlen(series)')|_defxamp('Rowlength(W1)')|_getser|_serform("Rowlen")
+_pdc_exec369 _deffname('ROWSUM   Row Sum')   |_defformat('Rowsum(series)')|_defxamp('Rowsum(W1)')|_getser|_serform("Rowsum")
+_pdc_exec370 _deffname('ROWPROD  Row Product')   |_defformat('Rowprod(series)')|_defxamp('Rowprod(W1)')|_getser|_serform("Rowprod")
+_pdc_exec371 _deffname('ROWMEAN  Row Mean')     |_defformat('Rowmean(series)')|_defxamp('Rowmean(W1)')|_getser|_serform("Rowmean")
+
+
+! Windowing fcns
+_pdc_exec243 _deffname('HANNING  Hanning Window') |_defformat('Hanning(series)')|_defxamp('Hanning(W1)')|_getser1c("Input Series:  ", "Apply Windowing Amplitude Corrections")|_ser1cform("Hanning")
+_pdc_exec244 _deffname('KAISER   Kaiser Window')  |_defformat('Kaiser(series)') |_defxamp('Kaiser(W1)') |_getser1c("Input Series:  ", "Apply Windowing Amplitude Corrections")|_ser1cform("Kaiser")
+_pdc_exec364 _deffname('FLATTOP  Flattop Window')  |_defformat('Flattop(series)') |_defxamp('Flattop(W1)') |_getser1c("Input Series:  ", "Apply Windowing Amplitude Corrections")|_ser1cform("Flattop")
+
+! Load and overlay: 
+_gtDsnSer defmacro("_dsn",Picklist("Choose Dataset","Datasets",1,objectlist(3,0,1)),2);if(strlen(eval('_dsn'))>0,defmacro("_dser",Picklist("Choose Series",strcat("Series in ",eval('_dsn')),1,objectlist(4,0,1,eval('_dsn'))),2))
+_pdc_exec245 _gtDsnSer;if(strlen(eval('_dsn'))>0, if(strlen(eval('_dser'))>0, eval(strcat("overlay(Loadseries('",eval("_dsn"),".",eval("_dser"),"'))"))))
+
+! View file
+_pdc_exec246 defmacro("_lit1b",Pickfile(dirpath(_lit1b),"VIEWFILE  View ASCII Text File",strescape("Text Files(*.txt)\0*.txt\0All Files(*.*)\0*.*\0\0"),0),2)  |if(strlen(eval('_lit1b'))>0,_evallit1bform("Viewfile"))
+
+! Global colors
+_pdc_exec247 _MF("gcolor.pan")
+
+! Ravel multiple series
+_pdc_exec248  _deffname('RAVEL    Place Multiple Series into Columns of 1 Table')|_defformat('Ravel(series1, series2, ..., seriesn)')|_defxamp('Ravel(W1,W2,W4..W7)')|_getser2("Series1: ", "Series2:       ")|_ser2form("Ravel")
+
+! Multi-read b
+_pdc_exec249  _deffname('MULTIREADB    Read Multi-Channel Binary File')  |_defformat('Multireadb("filename", datatype, # channels)')|_defxamp('Multireadb("binary.dat", SINT, 3)')|defmacro("_rwflg",0,1)|rmbfname()
+
+! Colors
+_pdc_exec250 _mf("wincolor.tab")
+
+! Line style & thickness
+_pdc_exec018  _mf("dfltrot.men")
+
+! Text & Line Annotation Macros : to work from the 'Settings' menu:
+_pdc_exec002  textcur(eval(_textpos),eval(_textcolor),-1,eval(_textfont),eval(_textbox),0,eval(_textstretch),eval(_textmargadj)) 
+_pdc_exec017  linecur(eval(_linecolor),eval(_linestyle),eval(_linepos),eval(_lineser), _linewidth)
+
+! Header Creation
+_pdc_exec280 _mf("scheader.tab")
+_pdc_exec281 _mf("mcheader.tab")
+
+_pdc_exec300 _mf("chart.tab")
+_pdc_exec301 _mf("sysset.tab")
+_pdc_exec302 _initcur();_mf("cursor.pan")
+_pdc_exec303 _mf("drawset.tab")
+_pdc_exec304 _mf("gmatrix.tab")
+
+! Display
+_pdc_exec335 _mf("display.pan")
+_pdc_exec336 _mf("winlike.pan")
+
+! DWK files
+_pdc_exec341 _mf("dwkdoc.tab")
+
+! add & remove windows - called from PDC
+_pdcremwin _mf("remwin.pan")
+_pdcaddwin _mf("addwin.pan")
+
+! SPL support
+isglobal(v)   _isglobal(v)
+_isglobal(v)  isvar(v, 1)
+islocal(v)    _islocal(v)
+_islocal(v)   isvar(v, 2)
+isspl(v)      _isspl(v)
+_isspl(v)     isvar(v, 3)
+ishotvar(v)   _ishotvar(v)
+_ishotvar(v)  isvar(v, 4)
+isformal(v)   _isformal(v)
+_isformal(v)  isvar(v, 5)
+
+
+! message strings
+_fileexistsmes  "File Already Exists"
+_replacefilemes "Replace File %s ?"
+
+
+! DADiSP Macro Files
+_MACROSDIR         "macros"
+_MACROSHOME        strcat(_macrosdir, pathchar)
+DSPMACREAD(s)      macread(strcat(_MACROSHOME, s))
+DSPMACVIEW(s)      viewfile(strcat(_MACROSHOME, s))
+
+
+! DADiSP/LT
+_LTDIR             "lt"
+_LTHOME            strcat(_ltdir, pathchar)
+_MLT(s)            _menuf(strcat(_LTHOME, s));echo(eval('_ltmes'))
+_ltloaded          0
+_ltmes             "Requires DADiSP/LT"
+
+! DADiSP/Filters
+_FILTERDIR         "filters"
+_FILTERHOME        strcat(_filterdir, pathchar)
+_MFF(s)            _menuf(strcat(_FILTERHOME, s));echo(eval('_filtermes'))
+_filtersloaded     0
+_filtermes         "Requires DADiSP/Filters"
+
+! DADiMP
+_DADiMPDIR         "dadimp"
+_DADiMPHOME        strcat(_dadimpdir, pathchar)
+_MDD(s)            _menuf(strcat(_DADiMPHOME, s));echo(eval('_dadimpmes'))
+_dadimploaded      0
+_dadimpmes         "Requires DADiMP"
+
+! DADiSP/Stats
+_STATDIR           "stats"
+_STATHOME          strcat(_statdir,pathchar)
+_MST(f)            _menuf(strcat(_STATHOME, f));echo(eval('_statmes'))
+_stloaded          0
+_statmes           "Requires DADiSP/Stats"
+
+! DADiSP/NeuralNet
+_NNMENUDIR         "nnet"
+_NNMENUHOME        strcat(_nnmenudir, pathchar)
+_NNMF(s)           _menuf(strcat(_nnmenuhome, s));echo(eval('_nnetmes'))
+_nnetloaded        0
+_nnetmes           "Requires DADiSP/NeuralNet"
+
+
+! DADiSP/AdvDSP
+_ADSPDIR           "advdsp"
+_ADSPHOME          strcat(_adspdir, pathchar)
+_MADSP(s)          _menuf(strcat(_ADSPHOME, s));echo(eval('_adspmes'))
+_adsploaded        0
+_adspmes           "Requires DADiSP/AdvDSP"
+
+! DADiSP/Controls
+_controldir        "controls"
+_controlHOME       strcat(_controldir,pathchar)
+_mfc(s)            _menuf(strcat(_controlhome,s));echo(eval('_controlsmes'))
+_controlsloaded    0
+_controlsmes       "Requires DADiSP/Controls"
+
+! DADiSP/Comtrade
+_COMTRADEDIR       "comtrade"
+_COMTRADEHOME      strcat(_COMTRADEDIR,pathchar)
+_CMTDL(s)          splload(strcat(_COMTRADEHOME,s))
+_CMTDMF(s)         _menuf(strcat(_COMTRADEHOME,s));echo(eval('_comtrademes'))
+_comtradeloaded    0
+_comtrademes	   "Requires DADiSP/Comtrade"
+
+! DADiSP/WAV
+_wavdir            "wav"
+_WAVHOME           strcat(_wavdir,pathchar)
+_whelpext          ".hlp"
+_mfw(s)            _menuf(strcat(_WAVHOME, s));echo(eval('_wavmes'))
+_wavloaded         0
+_wavmes            "Requires DADiSP/WAV"
+
+! DADiSP/RainFlow
+_rainloaded        0
+_RAINFLOWDIR       "rainflow"
+_RAINFLOWHOME      strcat(_RAINFLOWDIR,pathchar)
+_rainmf(s)         _menuf(strcat(_RAINFLOWHOME, s));echo(eval('_rainflowmes'))
+_rainflowmes       "Requires DADiSP/RainFlow"
+
+! DADiSP/Octave
+_octaveloaded      0
+_OCTAVEDIR         "octave"
+_OCTAVEHOME        strcat(_OCTAVEDIR,pathchar)
+_octavemf(s)       _menuf(strcat(_OCTAVEHOME, s));echo(eval('_octavemes'))
+_octavemes         "Requires DADiSP/Octave"
+
+demoloaded         0
+

@@ -1,0 +1,30 @@
+@modeless 1
+               Chebyshev1 Highpass IIR Filter Parameters
+
+
+ Magnitude (dB) |
+                |
+                |                   
+     +Ripple -- |                -----------      
+          0  -- |               /\/\/\/\/\/\      _
+     -Ripple -- |              / -----------       |
+                |             /                    |
+                | Stop Band  /    Pass Band        | Attenuation
+                |           /                      |
+       -Attn __ | _________/                      _|
+                |
+                |________________________________________________________
+                           |     |             |        Frequency (Hz)
+                           f     f             f
+                            stop  cut           rate/2
+
+
+  frate  -  Sample Rate           Hz 
+
+  fstop  -  Stopband Frequency    Hz
+  fcut   -  Cutoff Frequency      Hz
+
+  ripple -  Passband Ripple       dB
+  attn   -  Stopband Attenuation  dB
+
+                        0 < fstop < fcut < frate/2

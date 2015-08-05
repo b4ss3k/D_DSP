@@ -1,0 +1,15 @@
+/* get ytic, ticval or -1 */
+_gytic(w)
+{
+	local tic;
+
+	if (argc < 1) {
+		if (getyticset) tic = getytic;
+		else tic = -1;
+	}
+	else {
+		if (getyticset(w)) tic = getytic(w);
+		else tic = -1;
+	}
+	return(tic);
+}

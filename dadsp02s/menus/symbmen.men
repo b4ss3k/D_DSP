@@ -1,0 +1,23 @@
+! SymbMen.men
+@x20
+@y0
+@f{_fg1}
+@b{_bg1}
+   Symbol Types
+
+Dots              ~defmacro("_sym",0,1);"DOTS"
+Square            ~defmacro("_sym",1,1);"SQUARE"
+Triangle          ~defmacro("_sym",2,1);"TRIANGLE"
+InvTriangle       ~defmacro("_sym",3,1);"INVTRIANGLE"
+Cross             ~defmacro("_sym",4,1);"CROSS"
+X                 ~defmacro("_sym",5,1);"X"
+Empty Up Arrow    ~defmacro("_sym",6,1);"CLRUPARROW"
+Empty Down-Arrow  ~defmacro("_sym",7,1);"CLRDNARROW"
+Filled Up-Arrow   ~defmacro("_sym",8,1);"UPARROW"
+Filled Down-Arrow ~defmacro("_sym",9,1);"DNARROW"
+Empty Diamond     ~defmacro("_sym",10,1);"CLRDIAMOND"
+Empty Square      ~defmacro("_sym",11,1);"CLRSQUARE"
+Empty Triangle    ~defmacro("_sym",12,1);"CLRTRIANGLE"
+Empty InvTriangle ~defmacro("_sym",13,1);"CLRINVTRIANGLE"
+Circle            ~defmacro("_sym",14,1);"CIRCLE"
+Empty Circle      ~defmacro("_sym",15,1);"CLRCIRCLE"

@@ -1,0 +1,127 @@
+/*****************************************************************************
+*                                                                            *
+*   PADFILT.SPL      Copyright (C) 1999 DSP Development Corporation          *
+*                               All Rights Reserved                          *
+*                                                                            *
+*   Author:      Randy Race                                                  *
+*                                                                            *
+*   Synopsis:    FIR filtering with optional padding                         *
+*                                                                            *
+*   Revisions:   25 Jun 1999  RRR  Creation                                  *
+*                                                                            *
+*****************************************************************************/
+
+#define ISEVEN(x) ((x)%2==0)
+
+#if @HELP_PADFILT
+
+    PADFILT
+
+    Purpose: FIR filtering with optional endpoint padding
+                                                                        
+    Format:  PADFILT(s, h, pad)
+
+                   s - input series
+
+                   h - FIR filter coefficients (i.e. impulse response)
+
+                 pad - optional integer, start and end point padding method,
+                       0:none, 1:flip about end points, 2: flip about 0.0, 
+                       defaults to 0, no padding
+
+              padlen - optional integer, length of segment to pad with,
+                       defaults to length(h) / 2
+
+    Returns: A series
+
+
+    Example:
+             W1: Integ(gnorm(1000,.001))*10+1
+             W2: Klpass(1000.0, 50.0, 60.0, 70.0)
+             W3: Padfilt(w1, w2, 0);
+             W4: Padfilt(w1, w2, 1); overp(w3, lred); overp(w1, lgreen)
+
+             W1 consists of simulated data with a low frequency trend. 
+             W2 contains an FIR lowpass filter with a cutoff frequency
+             of 50 Hertz.  The data is filtered by straight convolution
+             in W3.
+
+             Before filtering, the beginning and end points of the data
+             are padded by flipping the end segments in time and
+             amplitude in W4.  The overplot of the original and
+             convolution data provides a comparison of the effects of
+             the padding on the ramp-up and ramp-down transient
+             implicit in the filtering process.  Straight convolution
+             assumes the data is zero prior to the start and after the
+             end of the data.
+
+             W5: Padfilt(w1, w2, 2)
+
+             Same as W4, except the start and end points are padded by
+             flipping the start and end point segments about 0.0. 
+
+   Remarks:
+             PADFILT uses time domain convolution to perform the 
+             filtering.
+
+             PADFILT automatically sets the XOFFSET of the resulting
+             data to the correct value.  For non-causal filters of
+             even length, the XOFFSET of the output may be larger
+             (i.e. more positive) than the XOFFSET of the input data.
+
+    See Also:
+             Conv
+             Endflip
+             Fir
+             Filteq
+             Zeroflip
+#endif
+
+
+
+padfilt(s, h, pad, padlen)
+{
+	local slen, yout;
+
+	/* default pad mode and length */
+	if (argc < 4) {
+		if (argc < 3) {
+			if (argc < 2) {
+				error("padfilt - input series and FIR filter required");
+			}
+			pad = 0;
+		}
+		padlen = ceil(length(h) / 2) + ISEVEN(length(h));
+	}
+
+	/* original series length */
+	slen = length(s);
+
+	/* process padding */
+	switch (pad) {
+
+		case 1: /* flip about end points */
+			s = endflip(s, padlen);
+			break;
+
+		case 2: /* flip about 0.0 */
+			s = zeroflip(s, padlen);
+			break;
+
+		default: /* no flipping */
+			padlen = 0;
+			break;
+	}
+
+	/* filter series S with filter H */
+	yout = extract(conv(s,h), ceil(length(h)/2)+ISEVEN(length(h)), length(s));
+		
+	/* extract out padding */
+	if (padlen > 0) {
+		yout = extract(yout, padlen + 1, slen);
+	}
+
+	return(yout);
+}
+
+

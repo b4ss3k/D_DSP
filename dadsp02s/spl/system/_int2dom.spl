@@ -1,0 +1,13 @@
+/* domain string to integer */
+_int2dom(ival)
+{
+	switch (ival) {
+		case 0:
+		default:
+			return(_fdomainstr);
+
+		case 1:		
+			return(_tdomainstr);
+
+	}
+}

@@ -1,0 +1,24 @@
+_defhpgl()
+{
+	setvar("_hpgl_pro", getconfdef("HPGL_PROLOGUE"));
+	setvar("_hpgl_epi", getconfdef("HPGL_EPILOGUE"));
+	setvar("_hpgl_fil", getconfdef("HPGL_FILE"));
+	setvar("_hpgl_x",   getconfdef("HPGL_X"));
+	setvar("_hpgl_y",   getconfdef("HPGL_Y"));
+	setvar("_hpgl_whi", getconfdef("HPGL_WHITE"));
+	setvar("_hpgl_yel", getconfdef("HPGL_YELLOW"));
+	setvar("_hpgl_blk", getconfdef("HPGL_BLACK"));
+	setvar("_hpgl_blu", getconfdef("HPGL_BLUE"));
+	setvar("_hpgl_red", getconfdef("HPGL_RED"));
+	setvar("_hpgl_mag", getconfdef("HPGL_MAGENTA"));
+	setvar("_hpgl_grn", getconfdef("HPGL_GREEN"));
+	setvar("_hpgl_cyn", getconfdef("HPGL_CYAN"));
+	setvar("_hpgl_gl2", getconfdef("HPGL_HPGL2"));
+	setvar("_hpgl_fw",  getconfdef("HPGL_FONT_WIDTH"));
+	setvar("_hpgl_fh",  getconfdef("HPGL_FONT_HEIGHT"));
+	setvar("_hpgl_alo", getconfdef("HPGL_ONEFILE"));
+	setvar("_hpgl_np",  getconfdef("HPGL_NUMPENS"));
+
+	setvar("_hpproa", 1);
+	setvar("_hpepia", 1);
+}

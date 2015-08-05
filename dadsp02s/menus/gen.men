@@ -1,0 +1,18 @@
+! Gen.men -- Generate signals of all types
+@x0
+@y0 
+@b{_bg2}
+@f{_fg2}
+   Create New View
+
+ Edit a Table         ~_MC | if (length==0,_lf("editdata.dsp"),_lf("editdat2.dsp"))
+ Generate Data Series ~_MF("gendata.men")
+ Y = F(X)             ~_MF("yfx.pan")
+ XY Plot              ~_deffname('XYPLOT   Create an XY Graph')  |_defformat('XY(series1, series2)')|_defxamp('XY(W1,W2)')|_getser2("Series 1: ", "Series 2: ")|_ser2form("XY")
+ Histogram            ~_deffname('HISTOGRAM Generate Histogram Distribution')  |_defformat('Histogram(series, bins)')|_defxamp('Histogram(W1,10)')|_getserint1("Input Series:  ", "Number of Bins: ")|_serint1form("Histogram")
+
+ 3-D Plot              
+    Contour           ~_deffname('CONTOUR  Contour Plot')|_defformat('Contour(matrix)')|_defxamp('Contour(W1)') | _getser|_serform("Contour")
+    Density           ~_deffname('DENSITY  Density Plot')|_defformat('Density(matrix)')|_defxamp('Density(W1)') | _getser|_serform("Density")
+    Waterfall         ~_deffname('WATERFALL Waterfall Plot')|_defformat('Waterfall(matrix)')|_defxamp('Waterfall(W1)') | _getser|_serform("Waterfall")
+    Z = F(X,Y)        ~_MF("fxy.pan")
